@@ -3,7 +3,7 @@
 [팀원](#팀원) <br>
 [기술 스택](#기술-스택) <br>
 [화면](#화면) <br>
-[문서](#문서) <br>
+[문서](#📕-문서) <br>
 
 # 🐘 서비스
 
@@ -41,7 +41,7 @@
   <tr> 
     <td align="center">김미나</td>
     <td align="center">최윤지</td>
-    <td align="center">김소운운</td>
+    <td align="center">김소운</td>
   </tr> 
 </table>
 

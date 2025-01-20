@@ -5,6 +5,40 @@
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
+# Spring Boot-specific files
+target/                # Maven 빌드 결과물
+**/target/             # 하위 모듈 포함 Maven 빌드 결과물
+*.log                  # 로그 파일
+*.pid                  # 애플리케이션 PID 파일
+*.h2.db                # H2 데이터베이스 파일
+*.mv.db                # H2 파일 포맷
+
+# Gradle build cache
+.gradle/
+
+# Gradle build output directories
+build/
+**/build/
+
+# Gradle Wrapper files
+.gradle/gradle.properties
+gradle.properties
+gradlew
+gradlew.bat
+
+# Wrapper JAR file (이미 포함된 경우 확인)
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+
+
+# IntelliJ와 IDEA 관련
+*.iws
+.idea/
+*.iml
+*.ipr
+
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml

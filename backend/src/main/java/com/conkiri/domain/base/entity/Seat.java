@@ -22,11 +22,11 @@ public class Seat {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long seatId;
 
-	@Column(name = "row_number")
-	private Long rowNumber;
+	@Column(name = "row_line")
+	private Long rowLine;
 
-	@Column(name = "column_number")
-	private Long columnNumber;
+	@Column(name = "column_line")
+	private Long columnLine;
 
 	@Column(name = "section_number")
 	private Long sectionNumber;

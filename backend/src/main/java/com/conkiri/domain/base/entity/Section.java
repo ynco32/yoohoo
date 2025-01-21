@@ -1,7 +1,4 @@
-package com.conkiri.domain.view.entity;
-
-import com.conkiri.domain.base.entity.Seat;
-import com.conkiri.domain.user.entity.User;
+package com.conkiri.domain.base.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,24 +9,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScrapSeat {
+public class Section {
 
 	@Id
-	@Column(name = "scrap_seat_id")
+	@Column(name = "section_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long scrapSeatId;
+	private Long sectionId;
+
+	@Column(name = "section_number")
+	private Long sectionNumber;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "seat_id", nullable = false)
-	private Seat seat;
+	@JoinColumn(name = "arena_id", nullable = false)
+	private Arena arena;
 }

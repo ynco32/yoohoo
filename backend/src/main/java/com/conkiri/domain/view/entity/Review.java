@@ -1,6 +1,9 @@
 package com.conkiri.domain.view.entity;
 
 import java.time.LocalDateTime;
+
+import com.conkiri.global.domain.BaseTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,11 +15,13 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Review {
+public class Review extends BaseTime {
 
 	@Id
 	@Column(name = "review_id")
@@ -40,8 +45,7 @@ public class Review {
 	@Column(name = "photo_url")
 	private String photoUrl;
 
-	@Column(name = "write_time")
-	private LocalDateTime writeTime;
+
 
 	// [외래키] 회원 아이디
 

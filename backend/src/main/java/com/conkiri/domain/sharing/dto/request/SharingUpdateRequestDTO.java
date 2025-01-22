@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SharingUpdateRequestDTO {
 
-	@NotBlank
+	@NotBlank(message = "공백인 제목은 허용되지 않습니다")
 	private String title;
 	private String content;
 	private Double latitude;

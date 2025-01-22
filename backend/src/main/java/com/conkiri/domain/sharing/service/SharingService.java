@@ -10,7 +10,8 @@ import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
-import com.conkiri.global.exception.user.ConcertNotFoundException;
+import com.conkiri.global.exception.concert.ConcertNotFoundException;
+import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -34,5 +35,10 @@ public class SharingService {
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
 		sharingRepository.save(sharing);
+	}
+
+	public void deleteSharing(Long sharingId) {
+		Sharing sharing = sharingRepository.findById(sharingId).orElseThrow(SharingNotFoundException::new);
+		sharingRepository.delete(sharing);
 	}
 }

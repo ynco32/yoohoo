@@ -20,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +55,7 @@ public class Sharing extends BaseTime {
 	@Column(name = "status")
 	@Enumerated(EnumType.STRING)
 	@ColumnDefault("'BEFORE'")
-	private Status status;
+	private Status status = Status.BEFORE;
 
 	@Column(name = "start_time")
 	private LocalDateTime startTime;
@@ -69,16 +68,18 @@ public class Sharing extends BaseTime {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public static Sharing of(SharingRequestDTO sharingRequestDTO, String photoUrl) {
-		return new Sharing(sharingRequestDTO, photoUrl);
+	public static Sharing of(SharingRequestDTO sharingRequestDTO, String photoUrl, Concert concert, User user) {
+		return new Sharing(sharingRequestDTO, photoUrl, concert, user);
 	}
 
-	private Sharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
+	private Sharing(SharingRequestDTO sharingRequestDTO, String photoUrl, Concert concert, User user) {
 		this.latitude = sharingRequestDTO.getLatitude();
 		this.longitude = sharingRequestDTO.getLongitude();
 		this.title = sharingRequestDTO.getTitle();
 		this.content = sharingRequestDTO.getContent();
 		this.startTime = sharingRequestDTO.getStartTime();
 		this.photoUrl = photoUrl;
+		this.concert = concert;
+		this.user = user;
 	}
 }

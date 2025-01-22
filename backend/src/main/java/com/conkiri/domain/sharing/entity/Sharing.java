@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
 
 import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
@@ -19,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,4 +68,17 @@ public class Sharing extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	public static Sharing of(SharingRequestDTO sharingRequestDTO, String photoUrl) {
+		return new Sharing(sharingRequestDTO, photoUrl);
+	}
+
+	private Sharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
+		this.latitude = sharingRequestDTO.getLatitude();
+		this.longitude = sharingRequestDTO.getLongitude();
+		this.title = sharingRequestDTO.getTitle();
+		this.content = sharingRequestDTO.getContent();
+		this.startTime = sharingRequestDTO.getStartTime();
+		this.photoUrl = photoUrl;
+	}
 }

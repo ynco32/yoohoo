@@ -4,12 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
+import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.service.SharingService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,5 +33,11 @@ public class SharingController {
 	@ResponseStatus(HttpStatus.OK)
 	public void deleteSharing(@PathVariable("sharingId") Long sharingId) {
 		sharingService.deleteSharing(sharingId);
+	}
+
+	@PutMapping("/{sharingId}")
+	@ResponseStatus(HttpStatus.OK)
+	public void updateSharing(@PathVariable("sharingId") Long sharingId, @RequestBody SharingUpdateRequestDTO sharingUpdateRequestDTO) {
+		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO);
 	}
 }

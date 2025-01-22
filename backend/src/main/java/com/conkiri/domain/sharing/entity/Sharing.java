@@ -6,6 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
+import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
@@ -81,5 +82,13 @@ public class Sharing extends BaseTime {
 		this.photoUrl = photoUrl;
 		this.concert = concert;
 		this.user = user;
+	}
+
+	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, String photoUrl) {
+		this.title = sharingUpdateRequestDTO.getTitle() != null ? sharingUpdateRequestDTO.getTitle() : this.title;
+		this.content = sharingUpdateRequestDTO.getContent() != null ? sharingUpdateRequestDTO.getContent() : this.content;
+		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;
+		this.latitude = sharingUpdateRequestDTO.getLatitude() != null ? sharingUpdateRequestDTO.getLatitude() : this.latitude;
+		this.longitude = sharingUpdateRequestDTO.getLongitude() != null ? sharingUpdateRequestDTO.getLongitude() : this.longitude;
 	}
 }

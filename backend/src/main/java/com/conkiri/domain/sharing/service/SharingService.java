@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
+import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
@@ -59,5 +60,17 @@ public class SharingService {
 		if (!sharingRepository.existsById(sharingId)) {
 			throw new SharingNotFoundException();
 		}
+	}
+
+	/**
+	 * 나눔 게시글 수정
+	 * @param sharingId
+	 * @param sharingUpdateRequestDTO
+	 */
+	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
+		Sharing sharing = sharingRepository.findById(sharingId)
+				.orElseThrow(SharingNotFoundException::new);
+
+		sharing.update(sharingUpdateRequestDTO, null);
 	}
 }

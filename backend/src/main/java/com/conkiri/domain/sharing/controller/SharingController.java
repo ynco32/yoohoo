@@ -2,6 +2,7 @@ package com.conkiri.domain.sharing.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,5 +40,11 @@ public class SharingController {
 	@ResponseStatus(HttpStatus.OK)
 	public void updateSharing(@PathVariable("sharingId") Long sharingId, @RequestBody SharingUpdateRequestDTO sharingUpdateRequestDTO) {
 		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO);
+	}
+
+	@PatchMapping("/{sharingId}/status")
+	@ResponseStatus(HttpStatus.OK)
+	public void updateSharingStatus(@PathVariable("sharingId") Long sharingId, @RequestBody String status) {
+		sharingService.updateSharingStatus(sharingId, status);
 	}
 }

@@ -8,6 +8,7 @@ import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.entity.Sharing;
+import com.conkiri.domain.sharing.entity.Status;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
@@ -72,5 +73,12 @@ public class SharingService {
 				.orElseThrow(SharingNotFoundException::new);
 
 		sharing.update(sharingUpdateRequestDTO, null);
+	}
+
+	public void updateSharingStatus(Long sharingId, String status) {
+		Sharing sharing = sharingRepository.findById(sharingId)
+				.orElseThrow(SharingNotFoundException::new);
+
+		sharing.updateStatus(status);
 	}
 }

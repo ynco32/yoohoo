@@ -92,4 +92,8 @@ public class Sharing extends BaseTime {
 		this.longitude = sharingUpdateRequestDTO.getLongitude() != null ? sharingUpdateRequestDTO.getLongitude() : this.longitude;
 		this.startTime = sharingUpdateRequestDTO.getStartTime() != null ? sharingUpdateRequestDTO.getStartTime() : this.startTime;
 	}
+
+	public void updateStatus(String status) {
+		this.status = Status.valueOf(status);
+	}
 }

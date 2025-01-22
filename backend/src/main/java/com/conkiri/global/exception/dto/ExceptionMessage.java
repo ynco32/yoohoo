@@ -15,4 +15,5 @@ public final class ExceptionMessage {
 	public static final String LATITUDE_VALUE_NOT_EMPTY = "위도는 필수값 입니다.";
 	public static final String LONGITUDE_NOT_EMPTY = "경도는 필수값 입니다.";
 	public static final String PASSWORD_NOT_EMPTY = "비밀번호는 필수값 입니다.";
+	public static final String CONCERT_NOT_FOUND = "콘서트를 찾을 수 없습니다.";
 }

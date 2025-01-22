@@ -11,6 +11,6 @@ public enum SeatDistance {
 	AVERAGE("AVERAGE", "평범해요"),
 	WIDE("WIDE", "넓어요");
 
-	private final String value;
-	private final String responseValue;
+	private final String code;
+	private final String description;
 }

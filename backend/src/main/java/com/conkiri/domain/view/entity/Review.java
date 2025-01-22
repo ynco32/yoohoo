@@ -2,6 +2,7 @@ package com.conkiri.domain.view.entity;
 
 import java.time.LocalDateTime;
 
+import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
@@ -47,7 +48,7 @@ public class Review extends BaseTime {
 	@Column(name = "sound")
 	private Sound sound;
 
-	@Column(name = "photo_url")
+	@Column(name = "photo_url", length = 100)
 	private String photoUrl;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -57,4 +58,8 @@ public class Review extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seat_id", nullable = false)
 	private Seat seat;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
 }

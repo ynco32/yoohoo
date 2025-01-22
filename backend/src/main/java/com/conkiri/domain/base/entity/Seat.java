@@ -28,13 +28,10 @@ public class Seat {
 	@Column(name = "column_line")
 	private Long columnLine;
 
-	@Column(name = "section_number")
-	private Long sectionNumber;
-
 	@Column(name = "review_count")
 	private Long reviewCount;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arena_id", nullable = false)
-	private Arena arena;
+	@JoinColumn(name = "section_id", nullable = false)
+	private Section section;
 }

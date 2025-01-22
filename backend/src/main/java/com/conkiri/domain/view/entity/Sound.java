@@ -11,6 +11,6 @@ public enum Sound {
 	AVERAGE("AVERAGE", "평범해요"),
 	CLEAR("CLEAR", "선명해요");
 
-	private final String value;
-	private final String responseValue;
+	private final String code;
+	private final String description;
 }

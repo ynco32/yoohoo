@@ -1,4 +1,4 @@
-package com.conkiri.global.exception.user;
+package com.conkiri.global.exception.concert;
 
 import com.conkiri.global.exception.dto.ExceptionMessage;
 

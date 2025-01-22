@@ -18,13 +18,18 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SharingService {
 
 	private final SharingRepository sharingRepository;
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
 
-	@Transactional
+	/**
+	 * 나눔 게시글 작성
+	 * @param sharingRequestDTO
+	 * @param photoUrl
+	 */
 	public void writeSharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
 
 		User user = userRepository.findById(sharingRequestDTO.getUserId())
@@ -37,8 +42,22 @@ public class SharingService {
 		sharingRepository.save(sharing);
 	}
 
+	/**
+	 * 나눔 게시글 삭제
+	 * @param sharingId
+	 */
 	public void deleteSharing(Long sharingId) {
-		Sharing sharing = sharingRepository.findById(sharingId).orElseThrow(SharingNotFoundException::new);
-		sharingRepository.delete(sharing);
+		validateSharingExistById(sharingId);
+		sharingRepository.deleteById(sharingId);
+	}
+
+	/**
+	 * 나눔 게시글이 존재하는지 검증하는 내부 메서드
+	 * @param sharingId
+	 */
+	private void validateSharingExistById(Long sharingId) {
+		if (!sharingRepository.existsById(sharingId)) {
+			throw new SharingNotFoundException();
+		}
 	}
 }

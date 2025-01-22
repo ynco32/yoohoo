@@ -16,18 +16,18 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/sharing")
 public class SharingController {
 
 	private final SharingService sharingService;
 
-	@PostMapping("/sharing")
+	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public void writeSharing(@RequestBody SharingRequestDTO sharingRequestDTO) {
 		sharingService.writeSharing(sharingRequestDTO, null);
 	}
 
-	@DeleteMapping("/sharing/{sharingId}")
+	@DeleteMapping("/{sharingId}")
 	@ResponseStatus(HttpStatus.OK)
 	public void deleteSharing(@PathVariable("sharingId") Long sharingId) {
 		sharingService.deleteSharing(sharingId);

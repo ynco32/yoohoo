@@ -90,5 +90,6 @@ public class Sharing extends BaseTime {
 		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;
 		this.latitude = sharingUpdateRequestDTO.getLatitude() != null ? sharingUpdateRequestDTO.getLatitude() : this.latitude;
 		this.longitude = sharingUpdateRequestDTO.getLongitude() != null ? sharingUpdateRequestDTO.getLongitude() : this.longitude;
+		this.startTime = sharingUpdateRequestDTO.getStartTime() != null ? sharingUpdateRequestDTO.getStartTime() : this.startTime;
 	}
 }

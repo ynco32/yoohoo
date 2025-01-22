@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.dto.request;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,4 +15,5 @@ public class SharingUpdateRequestDTO {
 	private String content;
 	private Double latitude;
 	private Double longitude;
+	private LocalDateTime startTime;
 }

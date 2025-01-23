@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
+import com.conkiri.domain.sharing.dto.request.SharingStatusUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.service.SharingService;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,20 +33,18 @@ public class SharingController {
 	}
 
 	@DeleteMapping("/{sharingId}")
-	@ResponseStatus(HttpStatus.OK)
 	public void deleteSharing(@PathVariable("sharingId") Long sharingId) {
 		sharingService.deleteSharing(sharingId);
 	}
 
 	@PutMapping("/{sharingId}")
-	@ResponseStatus(HttpStatus.OK)
 	public void updateSharing(@PathVariable("sharingId") Long sharingId, @RequestBody SharingUpdateRequestDTO sharingUpdateRequestDTO) {
 		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO);
 	}
 
 	@PatchMapping("/{sharingId}/status")
-	@ResponseStatus(HttpStatus.OK)
-	public void updateSharingStatus(@PathVariable("sharingId") Long sharingId, @RequestBody String status) {
+	public void updateSharingStatus(@PathVariable("sharingId") Long sharingId, @RequestBody SharingStatusUpdateRequestDTO sharingStatusUpdateRequestDTO) {
+		String status = sharingStatusUpdateRequestDTO.getStatus();
 		sharingService.updateSharingStatus(sharingId, status);
 	}
 }

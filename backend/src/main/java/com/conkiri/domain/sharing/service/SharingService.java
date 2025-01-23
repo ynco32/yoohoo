@@ -54,6 +54,23 @@ public class SharingService {
 	}
 
 	/**
+	 * 나눔 게시글 수정
+	 * @param sharingId
+	 * @param sharingUpdateRequestDTO
+	 */
+	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
+		Sharing sharing = findSharingById(sharingId);
+
+		sharing.update(sharingUpdateRequestDTO, null);
+	}
+
+	public void updateSharingStatus(Long sharingId, String status) {
+		Sharing sharing = findSharingById(sharingId);
+
+		sharing.updateStatus(status);
+	}
+
+	/**
 	 * 나눔 게시글이 존재하는지 검증하는 내부 메서드
 	 * @param sharingId
 	 */
@@ -64,21 +81,12 @@ public class SharingService {
 	}
 
 	/**
-	 * 나눔 게시글 수정
+	 * 나눔 게시글 조회하는 내부 메서드
 	 * @param sharingId
-	 * @param sharingUpdateRequestDTO
+	 * @return
 	 */
-	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
-		Sharing sharing = sharingRepository.findById(sharingId)
+	private Sharing findSharingById(Long sharingId) {
+		return sharingRepository.findById(sharingId)
 				.orElseThrow(SharingNotFoundException::new);
-
-		sharing.update(sharingUpdateRequestDTO, null);
-	}
-
-	public void updateSharingStatus(Long sharingId, String status) {
-		Sharing sharing = sharingRepository.findById(sharingId)
-				.orElseThrow(SharingNotFoundException::new);
-
-		sharing.updateStatus(status);
 	}
 }

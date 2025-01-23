@@ -94,6 +94,6 @@ public class Sharing extends BaseTime {
 	}
 
 	public void updateStatus(String status) {
-		this.status = Status.valueOf(status);
+		this.status = Status.from(status);
 	}
 }

@@ -10,6 +10,7 @@ import com.conkiri.domain.base.repository.ArenaRepository;
 import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
+import com.conkiri.global.exception.view.ArenaNotFoundException;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,14 @@ public class ViewService {
 	}
 
 	public SectionResponseDTO getSectionsByStageType(Long arenaId, Integer stageType) {
-		List<Section> sections = sectionRepository.findByArena_ArenaId(arenaId);
+		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
+		List<Section> sections = sectionRepository.findByArena(arena);
 		return SectionResponseDTO.of(sections, stageType);
 	}
+
+	private Arena findArenaByAreaIdOrElseThrow(Long arenaId){
+		return arenaRepository.findArenaByArenaId(arenaId)
+			.orElseThrow(ArenaNotFoundException::new);
+	}
+
 }

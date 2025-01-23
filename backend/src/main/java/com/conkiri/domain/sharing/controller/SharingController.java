@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingStatusUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
+import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
+import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.service.SharingService;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -53,6 +54,16 @@ public class SharingController {
 	@GetMapping("/{concertId}")
 	public SharingResponseDTO getSharingList(@PathVariable("concertId") Long concertId) {
 		return sharingService.getSharingList(concertId);
+	}
+
+	@GetMapping("/detail/{sharingId}")
+	public SharingDetailResponseDTO getSharing(@PathVariable("sharingId") Long sharingId) {
+		return sharingService.getSharing(sharingId);
+	}
+
+	@GetMapping("/{sharingId}/comment")
+	public CommentResponseDTO getSharingCommentList(@PathVariable("sharingId") Long sharingId) {
+		return sharingService.getSharingCommentList(sharingId);
 	}
 
 }

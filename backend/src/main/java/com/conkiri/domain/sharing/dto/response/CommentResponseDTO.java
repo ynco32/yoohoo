@@ -3,7 +3,7 @@ package com.conkiri.domain.sharing.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.conkiri.domain.sharing.entity.Sharing;
+import com.conkiri.domain.sharing.entity.Comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SharingResponseDTO {
+public class CommentResponseDTO {
 
-	private List<SharingDetailResponseDTO> sharings;
+	private List<CommentDetailResponseDTO> comments;
 
-	public static SharingResponseDTO from(List<Sharing> sharings) {
-		return SharingResponseDTO.builder()
-			.sharings(sharings.stream()
-				.map(SharingDetailResponseDTO::from)
+	public static CommentResponseDTO from(List<Comment> comments) {
+		return CommentResponseDTO.builder()
+			.comments(comments.stream()
+				.map(CommentDetailResponseDTO::from)
 				.collect(Collectors.toList()))
 			.build();
 	}

@@ -7,7 +7,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.conkiri.global.auth.dto.TokenDto;
+import com.conkiri.global.auth.dto.TokenDTO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,10 +35,10 @@ public class JwtUtil {
 		this.refreshTokenExpiration = refreshTokenExpiration;
 	}
 
-	public TokenDto generateTokens(String email) {
+	public TokenDTO generateTokens(String email) {
 		String accessToken = generateToken(email, accessTokenExpiration);
 		String refreshToken = generateToken(email, refreshTokenExpiration);
-		return new TokenDto(accessToken, refreshToken, accessTokenExpiration);
+		return new TokenDTO(accessToken, refreshToken, accessTokenExpiration);
 	}
 
 	private String generateToken(String email, long expiration) {

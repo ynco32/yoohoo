@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
-import com.conkiri.global.auth.CustomOAuth2User;
+import com.conkiri.global.auth.entity.Auth;
+import com.conkiri.global.auth.repository.AuthRepository;
+import com.conkiri.global.auth.token.CustomOAuth2User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
+	private final AuthRepository authRepository;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -37,15 +40,36 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 		String nickname = (String) profile.get("nickname");
 		String profileImageUrl = (String) profile.get("profile_image_url");
 
-		User user = userRepository.findByEmail(email)
-			.orElseGet(() -> userRepository.save(User.builder()
-				.email(email)
-				.userName(nickname)
-				.profileUrl(profileImageUrl)
-				.provider(provider)
-				.providerId(providerId)
-				.build()));
-
+		User user = findOrCreateUser(email, nickname, profileImageUrl);
+		findOrCreateAuth(user, provider, providerId);
 		return new CustomOAuth2User(oauth2User, user);
+	}
+
+	private User findOrCreateUser(String email, String nickname, String profileImageUrl) {
+		return userRepository.findByEmail(email)
+			.orElseGet(() -> createUser(email, nickname, profileImageUrl));
+	}
+
+	private User createUser(String email, String nickname, String profileImageUrl) {
+		User user = User.builder()
+			.email(email)
+			.userName(nickname)
+			.profileUrl(profileImageUrl)
+			.build();
+		return userRepository.save(user);
+	}
+
+	private void findOrCreateAuth(User user, String provider, String providerId) {
+		authRepository.findByUser(user)
+			.orElseGet(() -> createAuth(user, provider, providerId));
+	}
+
+	private Auth createAuth(User user, String provider, String providerId) {
+		Auth auth = Auth.builder()
+			.user(user)
+			.provider(provider)
+			.providerId(providerId)
+			.build();
+		return authRepository.save(auth);
 	}
 }

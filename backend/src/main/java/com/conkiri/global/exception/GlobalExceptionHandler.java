@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.auth.ExpiredTokenException;
 import com.conkiri.global.exception.auth.InvalidTokenException;
 import com.conkiri.global.exception.auth.UnAuthorizedException;
@@ -87,6 +88,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(StatusInvalidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse statusInvalidHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(ArenaNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse arenaNotFoundHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

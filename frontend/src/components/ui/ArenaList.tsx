@@ -1,6 +1,7 @@
 'use client';
 
 import { Arena } from '@/components/ui/Arena';
+import router from 'next/router';
 import { useState } from 'react';
 
 export default function ArenaList() {
@@ -77,6 +78,7 @@ export default function ArenaList() {
             href={item.href}
             imageSrc={item.imageSrc}
             imageAlt={item.imageAlt}
+            onClick={() => router.push(item.href)}
           />
         ))}
       </div>

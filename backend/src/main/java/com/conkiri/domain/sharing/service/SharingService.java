@@ -9,6 +9,7 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
+import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.repository.SharingRepository;
@@ -86,6 +87,16 @@ public class SharingService {
 
 		List<Sharing> sharings = sharingRepository.findByConcert(concert);
 		return SharingResponseDTO.from(sharings);
+	}
+
+	/**
+	 * 나눔 게시글 상세 조회
+	 * @param sharingId
+	 * @return
+	 */
+	public SharingDetailResponseDTO getSharing(Long sharingId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+		return SharingDetailResponseDTO.from(sharing);
 	}
 
 	// ===============================================내부 메서드===================================================== //

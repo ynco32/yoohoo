@@ -1,7 +1,4 @@
-// Arena.tsx
 'use client';
-
-import { useRouter } from 'next/navigation';
 
 interface ArenaProps {
   arenaName: string;
@@ -10,6 +7,7 @@ interface ArenaProps {
   imageSrc?: string;
   imageAlt?: string;
   className?: string;
+  onClick?: () => void;
 }
 
 export const Arena = ({
@@ -19,14 +17,10 @@ export const Arena = ({
   imageSrc,
   imageAlt,
   className = '',
+  onClick,
 }: ArenaProps) => {
-  const router = useRouter();
-
   return (
-    <div
-      onClick={() => router.push(href)}
-      className={`cursor-pointer ${className}`}
-    >
+    <div onClick={onClick} className={`cursor-pointer ${className}`}>
       <div className="h-28 w-28 overflow-hidden rounded-2xl">
         <img
           src={imageSrc}

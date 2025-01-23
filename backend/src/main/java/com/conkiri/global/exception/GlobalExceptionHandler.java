@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
+import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.auth.ExpiredTokenException;
 import com.conkiri.global.exception.auth.InvalidTokenException;
@@ -94,6 +96,18 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ArenaNotFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse arenaNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(ScrapSharingNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse scrapSharingNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(AlreadyExistScrapSharingException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse alreadyExistScrapSharingHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

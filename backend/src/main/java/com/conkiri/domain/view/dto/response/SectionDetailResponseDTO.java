@@ -17,7 +17,7 @@ public class SectionDetailResponseDTO {
 	private Long sectionNumber;
 	private boolean isAvailable;
 
-	public static SectionDetailResponseDTO from(Section section, int stageType) {
+	public static SectionDetailResponseDTO of(Section section, int stageType) {
 		return SectionDetailResponseDTO.builder()
 			.sectionId(section.getSectionId())
 			.sectionNumber(section.getSectionNumber())

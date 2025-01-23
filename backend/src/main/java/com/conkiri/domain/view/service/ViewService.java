@@ -29,6 +29,6 @@ public class ViewService {
 
 	public SectionResponseDTO getSectionsByStageType(Long arenaId, Integer stageType) {
 		List<Section> sections = sectionRepository.findByArena_ArenaId(arenaId);
-		return SectionResponseDTO.from(sections, stageType);
+		return SectionResponseDTO.of(sections, stageType);
 	}
 }

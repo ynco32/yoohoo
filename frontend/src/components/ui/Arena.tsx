@@ -1,13 +1,14 @@
+// Arena.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
 
 interface ArenaProps {
-  arenaName: string; // 콘서트장 이름
-  engName: string; // 콘서트장 영문 이름
-  href: string; // 링크 URL
-  imageSrc?: string; // 이미지 URL/경로
-  imageAlt?: string; // 접근성을 위한 대체 텍스트
+  arenaName: string;
+  engName: string;
+  href: string;
+  imageSrc?: string;
+  imageAlt?: string;
   className?: string;
 }
 
@@ -22,11 +23,24 @@ export const Arena = ({
   const router = useRouter();
 
   return (
-    <div onClick={() => router.push(href)} className={className}>
-      <img src={imageSrc} alt={imageAlt} />
-      <div>
-        <div>{engName}</div>
-        <div>{arenaName}</div>
+    <div
+      onClick={() => router.push(href)}
+      className={`cursor-pointer ${className}`}
+    >
+      <div className="h-28 w-28 overflow-hidden rounded-2xl">
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className="h-full w-full object-cover"
+        />
+      </div>
+      <div className="mt-2 w-28">
+        <div className="text-center font-pretendard text-caption2 font-bold text-gray-400">
+          {engName}
+        </div>
+        <div className="text-center font-pretendard text-caption2 font-bold text-gray-900">
+          {arenaName}
+        </div>
       </div>
     </div>
   );

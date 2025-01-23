@@ -2,6 +2,7 @@ package com.conkiri.domain.sharing.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingStatusUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
+import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
+import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
+import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.service.SharingService;
 
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -47,4 +50,20 @@ public class SharingController {
 		String status = sharingStatusUpdateRequestDTO.getStatus();
 		sharingService.updateSharingStatus(sharingId, status);
 	}
+
+	@GetMapping("/{concertId}")
+	public SharingResponseDTO getSharingList(@PathVariable("concertId") Long concertId) {
+		return sharingService.getSharingList(concertId);
+	}
+
+	@GetMapping("/detail/{sharingId}")
+	public SharingDetailResponseDTO getSharing(@PathVariable("sharingId") Long sharingId) {
+		return sharingService.getSharing(sharingId);
+	}
+
+	@GetMapping("/{sharingId}/comment")
+	public CommentResponseDTO getSharingCommentList(@PathVariable("sharingId") Long sharingId) {
+		return sharingService.getSharingCommentList(sharingId);
+	}
+
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface ArenaProps {
   arenaName: string; // 콘서트장 이름

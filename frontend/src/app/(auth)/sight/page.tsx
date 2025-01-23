@@ -1,3 +1,9 @@
+import ArenaList from '@/components/ui/ArenaList';
+
 export default function Sight() {
-  return <div>sight page</div>;
+  return (
+    <div>
+      <ArenaList />
+    </div>
+  );
 }

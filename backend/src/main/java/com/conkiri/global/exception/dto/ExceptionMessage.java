@@ -15,6 +15,18 @@ public final class ExceptionMessage {
 	public static final String LATITUDE_VALUE_NOT_EMPTY = "위도는 필수값 입니다.";
 	public static final String LONGITUDE_NOT_EMPTY = "경도는 필수값 입니다.";
 	public static final String PASSWORD_NOT_EMPTY = "비밀번호는 필수값 입니다.";
+	public static final String DUPLICATE_NICKNAME = "중복된 닉네임입니다."; //CONFLICT
+	public static final String INVALID_NICKNAME = "사용할 수 없는 닉네임입니다.";
+
+	// Auth
+	public static final String INVALID_TOKEN = "유효하지 않는 토큰입니다.";
+	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
+	public static final String UNAUTHORIZED = "권한없는 접근입니다.";
+
+	// OAuth
+	public static final String OAUTH_PROCESSING_ERROR = "OAuth 오류입니다."; //HttpStatus.INTERNAL_SERVER_ERROR
+
 	public static final String CONCERT_NOT_FOUND = "콘서트를 찾을 수 없습니다.";
 	public static final String SHARING_NOT_FOUND = "나눔 게시글을 찾을 수 없습니다.";
+
 }

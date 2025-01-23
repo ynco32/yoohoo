@@ -1,4 +1,4 @@
-package com.conkiri.global.auth;
+package com.conkiri.global.auth.token;
 
 import java.util.Collection;
 import java.util.Collections;

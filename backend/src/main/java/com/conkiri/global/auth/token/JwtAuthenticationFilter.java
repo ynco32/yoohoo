@@ -1,4 +1,4 @@
-package com.conkiri.global.util;
+package com.conkiri.global.auth.token;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
-import com.conkiri.global.auth.CustomOAuth2User;
+import com.conkiri.global.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

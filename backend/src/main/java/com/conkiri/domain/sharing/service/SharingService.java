@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,8 +9,8 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
+import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.entity.Sharing;
-import com.conkiri.domain.sharing.entity.Status;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
@@ -34,11 +36,9 @@ public class SharingService {
 	 */
 	public void writeSharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
 
-		User user = userRepository.findById(sharingRequestDTO.getUserId())
-				.orElseThrow(UserNotFoundException::new);
+		User user = findUserByIdOrElseThrow(sharingRequestDTO.getUserId());
 
-		Concert concert = concertRepository.findById(sharingRequestDTO.getConcertId())
-				.orElseThrow(ConcertNotFoundException::new);
+		Concert concert = findConcertByIdOrElseThrow(sharingRequestDTO.getConcertId());
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
 		sharingRepository.save(sharing);
@@ -59,15 +59,63 @@ public class SharingService {
 	 * @param sharingUpdateRequestDTO
 	 */
 	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
-		Sharing sharing = findSharingById(sharingId);
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
 		sharing.update(sharingUpdateRequestDTO, null);
 	}
 
+	/**
+	 * 나눔 게시글 마감 여부 변경
+	 * @param sharingId
+	 * @param status
+	 */
 	public void updateSharingStatus(Long sharingId, String status) {
-		Sharing sharing = findSharingById(sharingId);
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
 		sharing.updateStatus(status);
+	}
+
+	/**
+	 * 해당 공연 나눔 게시글 리스트 조회
+	 * @param concertId
+	 * @return
+	 */
+	public SharingResponseDTO getSharingList(Long concertId) {
+
+		Concert concert = findConcertByIdOrElseThrow(concertId);
+
+		List<Sharing> sharings = sharingRepository.findByConcert(concert);
+		return SharingResponseDTO.from(sharings);
+	}
+
+	// ===============================================내부 메서드===================================================== //
+
+	/**
+	 * 유저를 조회하는 내부 메서드
+	 * @param userId
+	 */
+	private User findUserByIdOrElseThrow(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
+	}
+
+	/**
+	 * 공연을 조회하는 내부 메서드
+	 * @param concertId
+	 */
+	private Concert findConcertByIdOrElseThrow(Long concertId) {
+		return concertRepository.findById(concertId)
+			.orElseThrow(ConcertNotFoundException::new);
+	}
+
+	/**
+	 * 나눔 게시글 조회하는 내부 메서드
+	 * @param sharingId
+	 * @return
+	 */
+	private Sharing findSharingByIdOrElseThrow(Long sharingId) {
+		return sharingRepository.findById(sharingId)
+			.orElseThrow(SharingNotFoundException::new);
 	}
 
 	/**
@@ -79,14 +127,5 @@ public class SharingService {
 			throw new SharingNotFoundException();
 		}
 	}
-
-	/**
-	 * 나눔 게시글 조회하는 내부 메서드
-	 * @param sharingId
-	 * @return
-	 */
-	private Sharing findSharingById(Long sharingId) {
-		return sharingRepository.findById(sharingId)
-				.orElseThrow(SharingNotFoundException::new);
-	}
 }
+

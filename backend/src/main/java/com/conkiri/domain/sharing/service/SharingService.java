@@ -36,9 +36,9 @@ public class SharingService {
 	 */
 	public void writeSharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
 
-		User user = findUserById(sharingRequestDTO.getUserId());
+		User user = findUserByIdOrElseThrow(sharingRequestDTO.getUserId());
 
-		Concert concert = findConcertById(sharingRequestDTO.getConcertId());
+		Concert concert = findConcertByIdOrElseThrow(sharingRequestDTO.getConcertId());
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
 		sharingRepository.save(sharing);
@@ -59,7 +59,7 @@ public class SharingService {
 	 * @param sharingUpdateRequestDTO
 	 */
 	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
-		Sharing sharing = findSharingById(sharingId);
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
 		sharing.update(sharingUpdateRequestDTO, null);
 	}
@@ -70,7 +70,7 @@ public class SharingService {
 	 * @param status
 	 */
 	public void updateSharingStatus(Long sharingId, String status) {
-		Sharing sharing = findSharingById(sharingId);
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
 		sharing.updateStatus(status);
 	}
@@ -82,7 +82,7 @@ public class SharingService {
 	 */
 	public SharingResponseDTO getSharingList(Long concertId) {
 
-		Concert concert = findConcertById(concertId);
+		Concert concert = findConcertByIdOrElseThrow(concertId);
 
 		List<Sharing> sharings = sharingRepository.findByConcert(concert);
 		return SharingResponseDTO.from(sharings);
@@ -94,7 +94,7 @@ public class SharingService {
 	 * 유저를 조회하는 내부 메서드
 	 * @param userId
 	 */
-	private User findUserById(Long userId) {
+	private User findUserByIdOrElseThrow(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(UserNotFoundException::new);
 	}
@@ -103,7 +103,7 @@ public class SharingService {
 	 * 공연을 조회하는 내부 메서드
 	 * @param concertId
 	 */
-	private Concert findConcertById(Long concertId) {
+	private Concert findConcertByIdOrElseThrow(Long concertId) {
 		return concertRepository.findById(concertId)
 			.orElseThrow(ConcertNotFoundException::new);
 	}
@@ -113,7 +113,7 @@ public class SharingService {
 	 * @param sharingId
 	 * @return
 	 */
-	private Sharing findSharingById(Long sharingId) {
+	private Sharing findSharingByIdOrElseThrow(Long sharingId) {
 		return sharingRepository.findById(sharingId)
 			.orElseThrow(SharingNotFoundException::new);
 	}

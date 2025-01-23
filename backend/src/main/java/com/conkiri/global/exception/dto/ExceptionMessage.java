@@ -25,4 +25,8 @@ public final class ExceptionMessage {
 
 	// OAuth
 	public static final String OAUTH_PROCESSING_ERROR = "OAuth 오류입니다."; //HttpStatus.INTERNAL_SERVER_ERROR
+
+	public static final String CONCERT_NOT_FOUND = "콘서트를 찾을 수 없습니다.";
+	public static final String SHARING_NOT_FOUND = "나눔 게시글을 찾을 수 없습니다.";
+
 }

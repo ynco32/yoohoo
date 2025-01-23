@@ -1,11 +1,10 @@
-package com.conkiri.domain.base.entity;
+package com.conkiri.domain.sharing.entity;
 
-import java.time.LocalDateTime;
+import com.conkiri.domain.user.entity.User;
+import com.conkiri.global.domain.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,33 +15,28 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @Entity
 @Getter
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Concert {
+public class Comment extends BaseTime {
 
 	@Id
-	@Column(name = "concert_id")
+	@Column(name = "comment_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long concertId;
+	private Long commentId;
 
-	@Column(name = "concert_name", length = 100)
-	private String concertName;
-
-	@Column(name = "artist", length = 100)
-	private String artist;
-
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "stage_type")
-	private StageType stageType;
+	@Column(name = "content", length = 250)
+	private String content;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arena_id", nullable = false)
-	private Arena arena;
+	@JoinColumn(name = "sharing_id")
+	private Sharing sharing;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 }

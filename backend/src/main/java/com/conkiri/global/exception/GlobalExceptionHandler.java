@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.conkiri.global.exception.auth.ExpiredTokenException;
 import com.conkiri.global.exception.auth.InvalidTokenException;
 import com.conkiri.global.exception.auth.UnAuthorizedException;
+import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.dto.ExceptionResponse;
+
 import com.conkiri.global.exception.oauth.OAuthProcessingException;
+import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
@@ -65,6 +68,18 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserNotFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse userNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(ConcertNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse concertNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(SharingNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse sharingNotFoundHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

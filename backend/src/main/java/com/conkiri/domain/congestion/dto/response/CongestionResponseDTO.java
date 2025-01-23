@@ -1,4 +1,4 @@
 package com.conkiri.domain.congestion.dto.response;
 
-public class CongestionResDTO {
+public class CongestionResponseDTO {
 }

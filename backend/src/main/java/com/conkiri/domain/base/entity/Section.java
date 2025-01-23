@@ -1,48 +1,35 @@
 package com.conkiri.domain.base.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Concert {
+public class Section {
 
 	@Id
-	@Column(name = "concert_id")
+	@Column(name = "section_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long concertId;
+	private Long sectionId;
 
-	@Column(name = "concert_name", length = 100)
-	private String concertName;
+	@Column(name = "section_number")
+	private Long sectionNumber;
 
-	@Column(name = "artist", length = 100)
-	private String artist;
-
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "stage_type")
-	private StageType stageType;
+	@Column(name = "is_able")
+	private boolean isAble;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;
-
 }

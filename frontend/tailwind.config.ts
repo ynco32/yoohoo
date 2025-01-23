@@ -1,5 +1,10 @@
 // tailwind.config.js
 module.exports = {
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
   theme: {
     screens: {
       'mobile': '375px',
@@ -9,11 +14,10 @@ module.exports = {
       'desktop-l': '1440px',
     },
     extend: {
-      width: {
-        'mobile': '375px',
+      minHeight: {
+        screen: ['100vh', '100dvh'],
       },
       height: {
-        'mobile': '812px',
         'card': '140px',
       },
       borderRadius: {
@@ -80,7 +84,6 @@ module.exports = {
         },
       },
       colors: {
-        // Primary Colors
         primary: {
           900: '#070A17',
           800: '#141A3E',
@@ -93,24 +96,20 @@ module.exports = {
           100: '#C9CEEE',
           50: '#F0F1FA',
         },
-        // Secondary Colors
         secondary: {
           400: '#99D7FF',
           300: '#D0EEF9',
         },
-        // Background Color
         background: {
-          default: '#FCFCFC',
+          default: '#11FCFC',
           alt: '#F7F7F8',
         },
-        // Status Colors
         status: {
           info: '#4C8AF7',
           success: '#6AD08D',
           caution: '#F7C859',
           warning: '#EB674C',
         },
-        // Gray Scale
         gray: {
           900: '#101014',
           800: '#272830',

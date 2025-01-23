@@ -15,6 +15,7 @@ import com.conkiri.global.exception.dto.ExceptionResponse;
 
 import com.conkiri.global.exception.oauth.OAuthProcessingException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
+import com.conkiri.global.exception.sharing.StatusInvalidException;
 import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
@@ -80,6 +81,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(SharingNotFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse sharingNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(StatusInvalidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse statusInvalidHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

@@ -28,5 +28,6 @@ public final class ExceptionMessage {
 
 	public static final String CONCERT_NOT_FOUND = "콘서트를 찾을 수 없습니다.";
 	public static final String SHARING_NOT_FOUND = "나눔 게시글을 찾을 수 없습니다.";
+	public static final String STATUS_INVALID = "유효하지 않은 값입니다.";
 
 }

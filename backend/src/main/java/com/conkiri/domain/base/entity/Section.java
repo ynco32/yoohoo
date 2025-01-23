@@ -26,9 +26,6 @@ public class Section {
 	@Column(name = "section_number")
 	private Long sectionNumber;
 
-	@Column(name = "is_able")
-	private boolean isAble;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;

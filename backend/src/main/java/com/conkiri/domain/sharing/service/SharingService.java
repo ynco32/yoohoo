@@ -9,9 +9,12 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
+import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
+import com.conkiri.domain.sharing.entity.Comment;
 import com.conkiri.domain.sharing.entity.Sharing;
+import com.conkiri.domain.sharing.repository.CommentRepository;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
@@ -29,6 +32,7 @@ public class SharingService {
 	private final SharingRepository sharingRepository;
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
+	private final CommentRepository commentRepository;
 
 	/**
 	 * 나눔 게시글 작성
@@ -97,6 +101,18 @@ public class SharingService {
 	public SharingDetailResponseDTO getSharing(Long sharingId) {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 		return SharingDetailResponseDTO.from(sharing);
+	}
+
+	/**
+	 * 해당 나눔 게시글의 댓글 리스트 조회
+	 * @param sharingId
+	 * @return
+	 */
+	public CommentResponseDTO getSharingCommentList(Long sharingId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+
+		List<Comment> comments = commentRepository.findCommentsBySharing(sharing);
+		return CommentResponseDTO.from(comments);
 	}
 
 	// ===============================================내부 메서드===================================================== //

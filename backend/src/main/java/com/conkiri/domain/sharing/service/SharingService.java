@@ -13,8 +13,10 @@ import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.entity.Comment;
+import com.conkiri.domain.sharing.entity.ScrapSharing;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.repository.CommentRepository;
+import com.conkiri.domain.sharing.repository.ScrapSharingRepository;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
@@ -33,6 +35,7 @@ public class SharingService {
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
 	private final CommentRepository commentRepository;
+	private final ScrapSharingRepository scrapSharingRepository;
 
 	/**
 	 * 나눔 게시글 작성
@@ -113,6 +116,20 @@ public class SharingService {
 
 		List<Comment> comments = commentRepository.findCommentsBySharing(sharing);
 		return CommentResponseDTO.from(comments);
+	}
+
+	/**
+	 * 나눔 게시글 스크랩
+	 * @param sharingId
+	 * @param userId
+	 */
+	public void scrapSharing(Long sharingId, Long userId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+		User user = findUserByIdOrElseThrow(userId);
+
+		ScrapSharing scrapSharing = ScrapSharing.of(sharing, user);
+
+		scrapSharingRepository.save(scrapSharing);
 	}
 
 	// ===============================================내부 메서드===================================================== //

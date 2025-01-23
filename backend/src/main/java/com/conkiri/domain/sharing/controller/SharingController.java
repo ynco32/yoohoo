@@ -66,4 +66,9 @@ public class SharingController {
 		return sharingService.getSharingCommentList(sharingId);
 	}
 
+	@PostMapping("/{sharingId}/scrap/{userId}")
+	public void scrapSharing(@PathVariable("sharingId") Long sharingId, @PathVariable("userId") Long userId) {
+		sharingService.scrapSharing(sharingId, userId);
+	}
+
 }

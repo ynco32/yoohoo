@@ -33,4 +33,13 @@ public class ScrapSharing {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	public static ScrapSharing of(Sharing sharing, User user) {
+		return new ScrapSharing(sharing, user);
+	}
+
+	private ScrapSharing(Sharing sharing, User user) {
+		this.sharing = sharing;
+		this.user = user;
+	}
 }

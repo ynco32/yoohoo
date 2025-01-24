@@ -15,13 +15,13 @@ public class SectionDetailResponseDTO {
 
 	private Long sectionId;
 	private Long sectionNumber;
-	private boolean isAvailable;
+	private boolean available;
 
 	public static SectionDetailResponseDTO of(Section section, int stageType) {
 		return SectionDetailResponseDTO.builder()
 			.sectionId(section.getSectionId())
 			.sectionNumber(section.getSectionNumber())
-			.isAvailable(checkAvailability(section.getSectionNumber(), stageType))
+			.available(checkAvailability(section.getSectionNumber(), stageType))
 			.build();
 	}
 

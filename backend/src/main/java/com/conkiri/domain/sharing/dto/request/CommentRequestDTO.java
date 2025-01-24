@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.dto.request;
 
+import com.conkiri.global.exception.dto.ExceptionMessage;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentRequestDTO {
 
-	@NotBlank(message = "내용을 입력해주세요.")
+	@NotBlank(message = ExceptionMessage.BLANK_IS_NOT_ALLOWED)
 	private String content;
 	private Long sharingId;
 	private Long userId;

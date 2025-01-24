@@ -2,6 +2,8 @@ package com.conkiri.domain.sharing.dto.request;
 
 import java.time.LocalDateTime;
 
+import com.conkiri.global.exception.dto.ExceptionMessage;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SharingUpdateRequestDTO {
 
-	@NotBlank(message = "공백인 제목은 허용되지 않습니다")
+	@NotBlank(message = ExceptionMessage.BLANK_IS_NOT_ALLOWED)
 	private String title;
 	private String content;
 	private Double latitude;

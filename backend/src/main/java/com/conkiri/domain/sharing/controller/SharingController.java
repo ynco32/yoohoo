@@ -86,8 +86,13 @@ public class SharingController {
 	}
 
 	@PutMapping("/comment/{commentId}")
-	public void updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+	public void updateComment(@PathVariable("commentId") Long commentId, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
 		sharingService.updateComment(commentId, commentUpdateRequestDTO);
+	}
+
+	@DeleteMapping("/comment/{commentId}")
+	public void deleteComment(@PathVariable("commentId") Long commentId) {
+		sharingService.deleteComment(commentId);
 	}
 
 }

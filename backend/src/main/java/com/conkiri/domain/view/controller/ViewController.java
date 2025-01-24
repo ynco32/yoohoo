@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 
@@ -30,5 +31,13 @@ public class ViewController {
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType) {
 		return viewService.getSectionsByStageType(arenaId, stageType);
+	}
+
+	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/reviews")
+	public ReviewResponseDTO getReviewsBySectionAndStageType(
+		@PathVariable Long arenaId,
+		@PathVariable Long sectionId,
+		@RequestParam(name = "stageType") Integer stageType) {
+		return viewService.getReviewsBySectionAndStageType(arenaId, sectionId, stageType);
 	}
 }

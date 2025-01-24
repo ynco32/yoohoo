@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
+import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
@@ -50,6 +51,10 @@ public class Review extends BaseTime {
 
 	@Column(name = "photo_url", length = 100)
 	private String photoUrl;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "stage_type")
+	private StageType stageType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)

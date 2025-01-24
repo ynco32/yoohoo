@@ -3,6 +3,7 @@
 import { Arena } from '@/components/ui/Arena';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { SelectedArenaMenu } from '../features/sight/SelectedArenaMenu';
 
 /**
  * @component ArenaList
@@ -90,7 +91,7 @@ export default function ArenaList() {
         ))}
       </div>
       {/* 선택된 공연장 ID (디버깅용) */}
-      {selectedArenaId}
+      {selectedArenaId && SelectedArenaMenu({ arenaId: selectedArenaId })}
     </div>
   );
 }

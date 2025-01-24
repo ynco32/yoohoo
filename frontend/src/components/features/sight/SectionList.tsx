@@ -1,6 +1,11 @@
 'use client';
 import { Section } from '../../ui/Section';
 
+/**
+ * @component SectionList
+ * @description 공연장 구역 전체를 표시하는 컴포넌트
+ */
+
 // 섹션 데이터 인터페이스 정의
 interface SectionData {
   sectionId: number;

@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.View;
 
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,17 +27,19 @@ public class ViewController {
 	}
 
 	@GetMapping("/arenas/{arenaId}")
-	public SectionResponseDTO getSectionsByStageType(
+	public SectionResponseDTO getSections( // 무대 유형에 따른 구역 전체 조회
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType) {
 		return viewService.getSectionsByStageType(arenaId, stageType);
 	}
 
 	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/reviews")
-	public ReviewResponseDTO getReviewsBySectionAndStageType(
+	public ReviewResponseDTO getReviews(
 		@PathVariable Long arenaId,
 		@PathVariable Long sectionId,
-		@RequestParam(name = "stageType") Integer stageType) {
-		return viewService.getReviewsBySectionAndStageType(arenaId, sectionId, stageType);
+		@RequestParam(name = "stageType") Integer stageType,
+		@RequestParam(name = "row", required = false) Integer rowLine,
+		@RequestParam(name = "column", required = false) Integer columnLine) {
+		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
 	}
 }

@@ -18,6 +18,7 @@ import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
+import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -44,13 +45,34 @@ public class ViewService {
 		return SectionResponseDTO.of(sections, stageType);
 	}
 
-	public ReviewResponseDTO getReviewsBySectionAndStageType(Long arenaId, Long sectionId, Integer stageType) {
+	public ReviewResponseDTO getReviews(Long arenaId, Long sectionId, Integer stageType, Integer rowLine, Integer columnLine) {
 		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
+
+		if (rowLine != null && columnLine != null) {
+			Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+			return getReviewsBySeat(seat, stageType);
+		}
+		return getReviewsBySection(section, stageType);
+	}
+
+	public ReviewResponseDTO getReviewsBySection(Section section, Integer stageType) {
 		List<Seat> seats = seatRepository.findBySection(section);
 		List<Review> reviews = reviewRepository.findBySeatIn(seats);
 
 		if (stageType != 0) { // '전체'가 아닐 경우 stageType으로 필터링
+			StageType selectedType = StageType.values()[stageType];
+			reviews = reviews.stream()
+				.filter(review -> review.getStageType() == selectedType)
+				.collect(Collectors.toList());
+		}
+		return ReviewResponseDTO.from(reviews);
+	}
+
+	public ReviewResponseDTO getReviewsBySeat(Seat seat, Integer stageType) {
+		List<Review> reviews = reviewRepository.findBySeat(seat);
+
+		if (stageType != 0) {
 			StageType selectedType = StageType.values()[stageType];
 			reviews = reviews.stream()
 				.filter(review -> review.getStageType() == selectedType)
@@ -68,5 +90,10 @@ public class ViewService {
 		return sectionRepository.findSectionByArenaAndSectionId(arena, sectionId)
 			.orElseThrow(SectionNotFoundException::new);
 
+	}
+
+	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Integer rowLine, Integer columnLine, Section section) {
+		return seatRepository.findByRowLineAndColumnLineAndSection(rowLine, columnLine, section)
+			.orElseThrow(SeatNotFoundException::new);
 	}
 }

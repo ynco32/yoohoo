@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingStatusUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
@@ -75,6 +76,12 @@ public class SharingController {
 	@DeleteMapping("/{sharingId}/scrap/{userId}")
 	public void cancelScrapSharing(@PathVariable("sharingId") Long sharingId, @PathVariable("userId") Long userId) {
 		sharingService.cancelScrapSharing(sharingId, userId);
+	}
+
+	@PostMapping("/comment")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void writeComment(@RequestBody CommentRequestDTO commentRequestDTO) {
+		sharingService.writeComment(commentRequestDTO);
 	}
 
 }

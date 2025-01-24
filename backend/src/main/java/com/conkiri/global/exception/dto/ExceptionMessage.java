@@ -32,6 +32,8 @@ public final class ExceptionMessage {
 	public static final String STATUS_INVALID = "유효하지 않은 값입니다.";
 	public static final String SCRAP_SHARING_NOT_FOUND = "스크랩한 나눔 게시글을 찾을 수 없습니다.";
 	public static final String ALREADY_EXIST_SCRAP_SHARING = "이미 스크랩한 나눔 게시글입니다.";
+	public static final String BLANK_IS_NOT_ALLOWED = "내용을 입력해주세요.";
+	public static final String NULL_IS_NOT_ALLOWED = "필수값입니다.";
 
 	//view
 	public static final String ARENA_NOT_FOUND = "공연장을 찾을 수 없습니다.";

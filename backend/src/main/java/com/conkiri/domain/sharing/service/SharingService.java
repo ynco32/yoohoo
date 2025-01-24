@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
+import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
@@ -148,6 +149,19 @@ public class SharingService {
 		ScrapSharing scrapSharing = findScrapSharingBySharingAndUser(sharing, user);
 
 		scrapSharingRepository.delete(scrapSharing);
+	}
+
+	/**
+	 * 댓글 작성
+	 * @param commentRequestDTO
+	 */
+	public void writeComment(CommentRequestDTO commentRequestDTO) {
+		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.getSharingId());
+		User user = findUserByIdOrElseThrow(commentRequestDTO.getUserId());
+
+		Comment comment = Comment.of(commentRequestDTO, sharing, user);
+		commentRepository.save(comment);
+
 	}
 
 	// ===============================================내부 메서드===================================================== //

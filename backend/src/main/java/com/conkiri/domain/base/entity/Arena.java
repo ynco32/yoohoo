@@ -33,4 +33,6 @@ public class Arena {
 	@Column(name = "longitude")
 	private Double longitude;
 
+	@Column(name = "photo_url", length = 100)
+	private String photoUrl;
 }

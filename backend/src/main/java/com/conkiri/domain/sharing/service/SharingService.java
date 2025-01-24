@@ -177,6 +177,16 @@ public class SharingService {
 		comment.update(commentUpdateRequestDTO);
 	}
 
+	/**
+	 * 댓글 삭제
+	 * @param commentId
+	 */
+	public void deleteComment(Long commentId) {
+		Comment comment = findCommentByIdOrElseThrow(commentId);
+
+		commentRepository.delete(comment);
+	}
+
 	// ===============================================내부 메서드===================================================== //
 
 	/**

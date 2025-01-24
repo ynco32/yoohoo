@@ -129,7 +129,7 @@ public class SharingService {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 		User user = findUserByIdOrElseThrow(userId);
 
-		validateScrapSharingExistBySharingAndUser(sharing, user);
+		validateScrapSharingExistOrElseThrow(sharing, user);
 
 		ScrapSharing scrapSharing = ScrapSharing.of(sharing, user);
 
@@ -195,7 +195,7 @@ public class SharingService {
 	 * @param sharing
 	 * @param user
 	 */
-	private void validateScrapSharingExistBySharingAndUser(Sharing sharing, User user) {
+	private void validateScrapSharingExistOrElseThrow(Sharing sharing, User user) {
 		if (scrapSharingRepository.existsBySharingAndUser(sharing, user)) {
 			throw new AlreadyExistScrapSharingException();
 		}
@@ -208,7 +208,7 @@ public class SharingService {
 	 * @return
 	 */
 	private ScrapSharing findScrapSharingBySharingAndUser(Sharing sharing, User user) {
-		return (ScrapSharing)scrapSharingRepository.findBySharingAndUser(sharing, user)
+		return scrapSharingRepository.findBySharingAndUser(sharing, user)
 			.orElseThrow(ScrapSharingNotFoundException::new);
 	}
 }

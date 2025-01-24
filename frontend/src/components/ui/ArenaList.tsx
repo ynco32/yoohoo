@@ -4,7 +4,13 @@ import { Arena } from '@/components/ui/Arena';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+/**
+ * @component ArenaList
+ * @description 공연장 목록을 표시하고 선택된 공연장의 좌석 메뉴를 관리하는 컴포넌트
+ */
+
 export default function ArenaList() {
+  // 선택된 공연장의 ID를 관리하는 state (0: 미선택)
   const [selectedArenaId, setSelectedArenaId] = useState(0);
   const router = useRouter();
   // DUMMY_DATA: Arena venues - TO BE REMOVED
@@ -83,7 +89,7 @@ export default function ArenaList() {
           />
         ))}
       </div>
-
+      {/* 선택된 공연장 ID (디버깅용) */}
       {selectedArenaId}
     </div>
   );

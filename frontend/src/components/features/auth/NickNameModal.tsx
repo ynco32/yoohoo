@@ -8,7 +8,7 @@ const NickNameModal = () => {
     <div className="w-80 rounded-3xl bg-primary-sub1 p-6">
       <h2 className="mb-2 text-center text-xl font-medium">닉네임 만들기</h2>
       <p className="mb-6 text-center text-sm text-gray-600">
-        적석 후기 및 나눔글에서 사용됩니다
+        좌석 후기 및 나눔글에서 사용됩니다
       </p>
 
       <div className="relative flex h-12 w-full items-center rounded-full bg-primary-sub2">

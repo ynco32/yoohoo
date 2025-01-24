@@ -1,4 +1,4 @@
-package com.conkiri.global.auth;
+package com.conkiri.global.auth.service.handler;
 
 import java.io.IOException;
 
@@ -7,8 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.conkiri.global.auth.dto.TokenDto;
+import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
+import com.conkiri.global.auth.token.CustomOAuth2User;
 import com.conkiri.global.util.JwtUtil;
 
 import jakarta.servlet.http.Cookie;
@@ -31,21 +32,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
+
 		CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();
 
-		log.info("OAuth2 Login Success for email: {}", email);  // 로그 추가
-
 		// 토큰 생성
-		TokenDto tokens = jwtUtil.generateTokens(email);
-		log.info("Generated tokens - Access: {}, Refresh: {}", tokens.getAccessToken(), tokens.getRefreshToken());  // 로그 추가
+		TokenDTO tokens = jwtUtil.generateTokens(email);
 
 		// Refresh Token DB 저장
 		authService.saveRefreshToken(email, tokens.getRefreshToken());
 
 		// Refresh Token은 httpOnly 쿠키로 저장
 		addRefreshTokenCookie(response, tokens.getRefreshToken());
-
 
 		// Access Token을 secure 쿠키로 저장
 		addAccessTokenCookie(response, tokens.getAccessToken());

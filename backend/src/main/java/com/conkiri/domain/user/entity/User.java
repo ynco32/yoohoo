@@ -1,7 +1,5 @@
 package com.conkiri.domain.user.entity;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,13 +39,6 @@ public class User {
 
 	@Column(name = "tier", length = 100)
 	private String tier;
-
-	@Column(nullable = false, length = 20)
-	@ColumnDefault("'KAKAO'")
-	private String provider;
-
-	@Column(name = "provider_id", nullable = false)
-	private String providerId;
 
 	@Column(name = "profile_url")
 	private String profileUrl;

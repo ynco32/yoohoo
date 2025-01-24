@@ -13,9 +13,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.conkiri.global.auth.OAuth2SuccessHandler;
+import com.conkiri.global.auth.service.handler.OAuth2SuccessHandler;
 import com.conkiri.global.auth.oauth.service.OAuth2UserService;
-import com.conkiri.global.util.JwtAuthenticationFilter;
+import com.conkiri.global.auth.token.JwtAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

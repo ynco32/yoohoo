@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.entity;
 
+import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
+import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
@@ -39,4 +41,18 @@ public class Comment extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	public static Comment of(CommentRequestDTO commentRequestDTO, Sharing sharing, User user) {
+		return new Comment(commentRequestDTO, sharing, user);
+	}
+
+	private Comment(CommentRequestDTO commentRequestDTO, Sharing sharing, User user) {
+		this.content = commentRequestDTO.getContent();
+		this.sharing = sharing;
+		this.user = user;
+	}
+
+	public void update(CommentUpdateRequestDTO commentUpdateRequestDTO) {
+		this.content = commentUpdateRequestDTO.getContent();
+	}
 }

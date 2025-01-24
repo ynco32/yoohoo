@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
+import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingStatusUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
@@ -82,6 +83,11 @@ public class SharingController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void writeComment(@RequestBody CommentRequestDTO commentRequestDTO) {
 		sharingService.writeComment(commentRequestDTO);
+	}
+
+	@PutMapping("/comment/{commentId}")
+	public void updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+		sharingService.updateComment(commentId, commentUpdateRequestDTO);
 	}
 
 }

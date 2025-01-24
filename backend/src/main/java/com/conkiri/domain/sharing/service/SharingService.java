@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
+import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
@@ -23,6 +24,7 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
+import com.conkiri.global.exception.sharing.CommentNotFoundException;
 import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
@@ -60,7 +62,7 @@ public class SharingService {
 	 * @param sharingId
 	 */
 	public void deleteSharing(Long sharingId) {
-		validateSharingExistById(sharingId);
+		validateSharingExistByIdOrElseThrow(sharingId);
 		sharingRepository.deleteById(sharingId);
 	}
 
@@ -164,6 +166,17 @@ public class SharingService {
 
 	}
 
+	/**
+	 * 댓글 수정
+	 * @param commentId
+	 * @param commentUpdateRequestDTO
+	 */
+	public void updateComment(Long commentId, CommentUpdateRequestDTO commentUpdateRequestDTO) {
+		Comment comment = findCommentByIdOrElseThrow(commentId);
+
+		comment.update(commentUpdateRequestDTO);
+	}
+
 	// ===============================================내부 메서드===================================================== //
 
 	/**
@@ -198,7 +211,7 @@ public class SharingService {
 	 * 나눔 게시글이 존재하는지 검증하는 내부 메서드
 	 * @param sharingId
 	 */
-	private void validateSharingExistById(Long sharingId) {
+	private void validateSharingExistByIdOrElseThrow(Long sharingId) {
 		if (!sharingRepository.existsById(sharingId)) {
 			throw new SharingNotFoundException();
 		}
@@ -224,6 +237,16 @@ public class SharingService {
 	private ScrapSharing findScrapSharingBySharingAndUser(Sharing sharing, User user) {
 		return scrapSharingRepository.findBySharingAndUser(sharing, user)
 			.orElseThrow(ScrapSharingNotFoundException::new);
+	}
+
+	/**
+	 * 댓글을 조회하는 내부 메서드
+	 * @param commentId
+	 * @return
+	 */
+	private Comment findCommentByIdOrElseThrow(Long commentId) {
+		return commentRepository.findById(commentId)
+			.orElseThrow(CommentNotFoundException::new);
 	}
 }
 

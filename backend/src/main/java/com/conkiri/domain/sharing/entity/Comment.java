@@ -1,6 +1,7 @@
 package com.conkiri.domain.sharing.entity;
 
 import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
+import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
@@ -49,5 +50,9 @@ public class Comment extends BaseTime {
 		this.content = commentRequestDTO.getContent();
 		this.sharing = sharing;
 		this.user = user;
+	}
+
+	public void update(CommentUpdateRequestDTO commentUpdateRequestDTO) {
+		this.content = commentUpdateRequestDTO.getContent();
 	}
 }

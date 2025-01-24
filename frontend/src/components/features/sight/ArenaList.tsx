@@ -3,7 +3,7 @@
 import { Arena } from '@/components/ui/Arena';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { SelectedArenaMenu } from '../features/sight/SelectedArenaMenu';
+import { SelectedArenaMenu } from './SelectedArenaMenu';
 
 /**
  * @component ArenaList

@@ -1,9 +1,9 @@
 'use client';
 
 interface ArenaProps {
-  arenaName: string;
+  arenaId: number;
   engName: string;
-  href: string;
+  arenaName: string;
   imageSrc?: string;
   imageAlt?: string;
   className?: string;
@@ -13,7 +13,6 @@ interface ArenaProps {
 export const Arena = ({
   arenaName,
   engName,
-  href,
   imageSrc,
   imageAlt,
   className = '',

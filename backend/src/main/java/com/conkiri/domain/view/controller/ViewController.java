@@ -40,10 +40,6 @@ public class ViewController {
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "row", required = false) Integer rowLine,
 		@RequestParam(name = "column", required = false) Integer columnLine) {
-
-		if (rowLine != null && columnLine != null) {
-			return viewService.getReviewsBySeatAndSectionAndStageType(arenaId, sectionId, stageType, rowLine, columnLine);
-		}
-		return viewService.getReviewsBySectionAndStageType(arenaId, sectionId, stageType);
+		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
 	}
 }

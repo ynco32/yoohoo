@@ -45,9 +45,18 @@ public class ViewService {
 		return SectionResponseDTO.of(sections, stageType);
 	}
 
-	public ReviewResponseDTO getReviewsBySectionAndStageType(Long arenaId, Long sectionId, Integer stageType) {
+	public ReviewResponseDTO getReviews(Long arenaId, Long sectionId, Integer stageType, Integer rowLine, Integer columnLine) {
 		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
+
+		if (rowLine != null && columnLine != null) {
+			Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+			return getReviewsBySeat(seat, stageType);
+		}
+		return getReviewsBySection(section, stageType);
+	}
+
+	public ReviewResponseDTO getReviewsBySection(Section section, Integer stageType) {
 		List<Seat> seats = seatRepository.findBySection(section);
 		List<Review> reviews = reviewRepository.findBySeatIn(seats);
 
@@ -60,10 +69,7 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
-	public ReviewResponseDTO getReviewsBySeatAndSectionAndStageType(Long arenaId, Long sectionId, Integer stageType, Integer rowLine, Integer columnLine) {
-		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
-		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
-		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+	public ReviewResponseDTO getReviewsBySeat(Seat seat, Integer stageType) {
 		List<Review> reviews = reviewRepository.findBySeat(seat);
 
 		if (stageType != 0) {

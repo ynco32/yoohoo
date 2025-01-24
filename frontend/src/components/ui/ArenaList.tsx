@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function ArenaList() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [selectedArenaId, setSelectedArenaId] = useState(0);
   const router = useRouter();
   // DUMMY_DATA: Arena venues - TO BE REMOVED
   // TODO: Replace with real API data
@@ -78,11 +78,13 @@ export default function ArenaList() {
             engName={item.engName}
             imageSrc={item.imageSrc}
             imageAlt={item.imageAlt}
-            onClick={() => router.push(`/sights/${item.arenaId}`)}
+            onClick={() => setSelectedArenaId(item.arenaId)}
             arenaId={item.arenaId}
           />
         ))}
       </div>
+
+      {selectedArenaId}
     </div>
   );
 }

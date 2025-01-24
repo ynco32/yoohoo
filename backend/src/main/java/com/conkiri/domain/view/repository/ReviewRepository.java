@@ -10,4 +10,5 @@ import com.conkiri.domain.view.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 	List<Review> findBySeatIn(List<Seat> seats);
+	List<Review> findBySeat(Seat seat);
 }

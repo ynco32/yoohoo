@@ -18,6 +18,7 @@ import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
+import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +60,21 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
+	public ReviewResponseDTO getReviewsBySeatAndSectionAndStageType(Long arenaId, Long sectionId, Integer stageType, Integer rowLine, Integer columnLine) {
+		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
+		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
+		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+		List<Review> reviews = reviewRepository.findBySeat(seat);
+
+		if (stageType != 0) {
+			StageType selectedType = StageType.values()[stageType];
+			reviews = reviews.stream()
+				.filter(review -> review.getStageType() == selectedType)
+				.collect(Collectors.toList());
+		}
+		return ReviewResponseDTO.from(reviews);
+	}
+
 	private Arena findArenaByAreaIdOrElseThrow(Long arenaId) {
 		return arenaRepository.findArenaByArenaId(arenaId)
 			.orElseThrow(ArenaNotFoundException::new);
@@ -68,5 +84,10 @@ public class ViewService {
 		return sectionRepository.findSectionByArenaAndSectionId(arena, sectionId)
 			.orElseThrow(SectionNotFoundException::new);
 
+	}
+
+	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Integer rowLine, Integer columnLine, Section section) {
+		return seatRepository.findByRowLineAndColumnLineAndSection(rowLine, columnLine, section)
+			.orElseThrow(SeatNotFoundException::new);
 	}
 }

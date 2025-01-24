@@ -35,7 +35,7 @@ export const ConcertItem = ({
         <p className="mt-2 text-sm text-gray-500">{date}</p>
       </div>
       {/* 오른쪽: 공연 포스터 */}
-      <img src={image} alt={title} className="h-24 w-24 rounded object-cover" />
+      <img src={image} alt={title} className="h-24 w-16 object-cover" />
     </ContentCard>
   );
 };

@@ -21,6 +21,7 @@ import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
 import com.conkiri.global.exception.user.UserNotFoundException;
+import com.conkiri.global.exception.view.SectionNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -94,6 +95,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ArenaNotFoundException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse arenaNotFoundHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(SectionNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse sectionNotFoundHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

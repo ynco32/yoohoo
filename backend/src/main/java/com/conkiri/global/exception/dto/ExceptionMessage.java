@@ -33,5 +33,5 @@ public final class ExceptionMessage {
 
 	//view
 	public static final String ARENA_NOT_FOUND = "공연장을 찾을 수 없습니다.";
-
+	public static final String SECTION_NOT_FOUND = "구역을 찾을 수 없습니다.";
 }

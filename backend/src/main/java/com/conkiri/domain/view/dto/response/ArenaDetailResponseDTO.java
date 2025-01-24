@@ -15,11 +15,13 @@ public class ArenaDetailResponseDTO {
 
 	private Long arenaId;
 	private String arenaName;
+	private String photoUrl;
 
 	public static ArenaDetailResponseDTO from(Arena arena) {
 		return ArenaDetailResponseDTO.builder()
 			.arenaId(arena.getArenaId())
 			.arenaName(arena.getArenaName())
+			.photoUrl(arena.getPhotoUrl())
 			.build();
 	}
 }

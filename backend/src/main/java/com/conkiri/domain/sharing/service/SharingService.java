@@ -13,12 +13,16 @@ import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.entity.Comment;
+import com.conkiri.domain.sharing.entity.ScrapSharing;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.repository.CommentRepository;
+import com.conkiri.domain.sharing.repository.ScrapSharingRepository;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.exception.concert.ConcertNotFoundException;
+import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
+import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 
@@ -33,6 +37,7 @@ public class SharingService {
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
 	private final CommentRepository commentRepository;
+	private final ScrapSharingRepository scrapSharingRepository;
 
 	/**
 	 * 나눔 게시글 작성
@@ -115,6 +120,36 @@ public class SharingService {
 		return CommentResponseDTO.from(comments);
 	}
 
+	/**
+	 * 나눔 게시글 스크랩
+	 * @param sharingId
+	 * @param userId
+	 */
+	public void scrapSharing(Long sharingId, Long userId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+		User user = findUserByIdOrElseThrow(userId);
+
+		validateScrapSharingExistOrElseThrow(sharing, user);
+
+		ScrapSharing scrapSharing = ScrapSharing.of(sharing, user);
+
+		scrapSharingRepository.save(scrapSharing);
+	}
+
+	/**
+	 * 나눔 게시글 스크랩 취소
+	 * @param sharingId
+	 * @param userId
+	 */
+	public void cancelScrapSharing(Long sharingId, Long userId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+		User user = findUserByIdOrElseThrow(userId);
+
+		ScrapSharing scrapSharing = findScrapSharingBySharingAndUser(sharing, user);
+
+		scrapSharingRepository.delete(scrapSharing);
+	}
+
 	// ===============================================내부 메서드===================================================== //
 
 	/**
@@ -153,6 +188,28 @@ public class SharingService {
 		if (!sharingRepository.existsById(sharingId)) {
 			throw new SharingNotFoundException();
 		}
+	}
+
+	/**
+	 * 스크랩이 존재하는지 검증하는 내부 메서드
+	 * @param sharing
+	 * @param user
+	 */
+	private void validateScrapSharingExistOrElseThrow(Sharing sharing, User user) {
+		if (scrapSharingRepository.existsBySharingAndUser(sharing, user)) {
+			throw new AlreadyExistScrapSharingException();
+		}
+	}
+
+	/**
+	 * 나눔 게시글 스크랩을 조회하는 내부 메서드
+	 * @param sharing
+	 * @param user
+	 * @return
+	 */
+	private ScrapSharing findScrapSharingBySharingAndUser(Sharing sharing, User user) {
+		return scrapSharingRepository.findBySharingAndUser(sharing, user)
+			.orElseThrow(ScrapSharingNotFoundException::new);
 	}
 }
 

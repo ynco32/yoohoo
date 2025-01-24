@@ -1,73 +1,46 @@
-'use client';
-import { Section } from '@/components/ui/Section';
+import type { Meta, StoryObj } from '@storybook/react';
+import { SectionList } from './SectionList';
 
-interface SectionData {
-  sectionId: number;
-  arenaId: string;
-  sectionName: string;
-  isScraped: boolean;
-}
+const sampleSections = [
+  { sectionId: 1, arenaId: 'arena1', sectionName: '001', isScraped: false },
+  { sectionId: 2, arenaId: 'arena1', sectionName: '002', isScraped: true },
+  { sectionId: 3, arenaId: 'arena1', sectionName: '003', isScraped: false },
+  { sectionId: 4, arenaId: 'arena1', sectionName: '004', isScraped: false },
+  { sectionId: 5, arenaId: 'arena1', sectionName: '005', isScraped: true },
+  { sectionId: 6, arenaId: 'arena1', sectionName: '111', isScraped: false },
+  { sectionId: 7, arenaId: 'arena1', sectionName: '110', isScraped: true },
+  { sectionId: 8, arenaId: 'arena1', sectionName: '109', isScraped: false },
+  { sectionId: 9, arenaId: 'arena1', sectionName: '108', isScraped: false },
+  { sectionId: 10, arenaId: 'arena1', sectionName: '107', isScraped: true },
+  { sectionId: 11, arenaId: 'arena1', sectionName: '106', isScraped: false },
+  { sectionId: 12, arenaId: 'arena1', sectionName: '105', isScraped: false },
+  { sectionId: 13, arenaId: 'arena1', sectionName: '235', isScraped: true },
+  { sectionId: 14, arenaId: 'arena1', sectionName: '234', isScraped: false },
+  { sectionId: 15, arenaId: 'arena1', sectionName: '233', isScraped: false },
+  { sectionId: 16, arenaId: 'arena1', sectionName: '232', isScraped: true },
+  { sectionId: 17, arenaId: 'arena1', sectionName: '231', isScraped: false },
+];
 
-interface SectionListProps {
-  sections: SectionData[];
-  onSectionClick?: (sectionId: number) => void;
-}
-
-export const SectionList = ({ sections, onSectionClick }: SectionListProps) => {
-  const getPositionForSection = (index: number, totalSections: number) => {
-    // Floor sections (first row)
-    if (index < 3) {
-      return {
-        startAngle: 145 + index * 30,
-        endAngle: 170 + index * 30,
-        innerRadius: 60,
-        outerRadius: 100,
-      };
-    }
-    // Second row
-    else if (index < 7) {
-      const adjustedIndex = index - 3;
-      return {
-        startAngle: 135 + adjustedIndex * 30,
-        endAngle: 165 + adjustedIndex * 30,
-        innerRadius: 100,
-        outerRadius: 140,
-      };
-    }
-    // Third row
-    else {
-      const adjustedIndex = index - 7;
-      return {
-        startAngle: 130 + adjustedIndex * 30,
-        endAngle: 155 + adjustedIndex * 30,
-        innerRadius: 140,
-        outerRadius: 180,
-      };
-    }
-  };
-
-  return (
-    <svg viewBox="0 0 800 450" className="w-full">
-      {/* Stage */}
-      <rect x="300" y="50" width="200" height="50" fill="#ccc" />
-      <text x="400" y="75" textAnchor="middle" dominantBaseline="middle">
-        STAGE
-      </text>
-
-      {/* Sections */}
-      {sections.map((section, index) => {
-        const position = getPositionForSection(index, sections.length);
-        return (
-          <Section
-            key={section.sectionId}
-            {...section}
-            {...position}
-            onClick={() => onSectionClick?.(section.sectionId)}
-          />
-        );
-      })}
-    </svg>
-  );
+const meta: Meta<typeof SectionList> = {
+  title: 'Components/SectionList',
+  component: SectionList,
+  parameters: {
+    layout: 'fullscreen',
+  },
 };
 
-export default SectionList;
+export default meta;
+type Story = StoryObj<typeof SectionList>;
+
+export const Default: Story = {
+  args: {
+    sections: sampleSections,
+    onSectionClick: (id) => console.log('Clicked:', id),
+  },
+};
+
+export const WithoutClickHandler: Story = {
+  args: {
+    sections: sampleSections,
+  },
+};

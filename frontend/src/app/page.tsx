@@ -1,21 +1,21 @@
-'use client'
+'use client';
 import Image from 'next/image';
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() =>{
-      router.push('/login')
-    }, 3000)
+    const timer = setTimeout(() => {
+      router.push('/login');
+    }, 3000);
 
-    return () => clearTimeout(timer)
-  },[router])
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
-    <div className="h-dvh min-h-screen flex items-center justify-center flex-wrap bg-cover bg-center p-md" >
+    <div className="flex h-dvh min-h-screen flex-wrap items-center justify-center bg-cover bg-center p-md">
       <div>
         <Image
           src="/images/loading.gif"

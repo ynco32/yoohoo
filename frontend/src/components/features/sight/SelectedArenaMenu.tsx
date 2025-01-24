@@ -1,10 +1,19 @@
+/**
+ * 공연장 좌석 메뉴를 표시하는 컴포넌트
+ * @param {number} arenaId - 공연장 ID
+ */
 'use client';
 
 interface SelectedArenaMenuProps {
-  arenaId: number;
+  arenaId: number; // 공연장 고유 ID
 }
 
 export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
+  /**
+   * 공연장 ID에 따른 좌석 메뉴 목록을 반환
+   * @param {number} arenaId - 공연장 ID
+   * @returns {Array<{id: number, name: string}>} 좌석 메뉴 배열
+   */
   const getMenuByArenaId = (arenaId: number) => {
     // DUMMY_DATA: Arena venues - TO BE REMOVED
     // TODO: Replace with real API data
@@ -24,7 +33,6 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
       default:
         return [];
     }
-    // DUMMY_DATA END
   };
 
   const menuItems = getMenuByArenaId(arenaId);
@@ -32,6 +40,7 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
   return (
     <div className="mt-4 px-4">
       <h2>Arena {arenaId} Menu</h2>
+      {/* 2열 그리드 레이아웃으로 메뉴 아이템 표시 */}
       <div className="grid grid-cols-2 gap-4">
         {menuItems.map((item) => (
           <div

@@ -3,7 +3,7 @@
 import { Arena } from '@/components/ui/Arena';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { SelectedArenaMenu } from './SelectedArenaMenu';
+import { SelectedArenaMenu } from '../sight/SelectedArenaMenu';
 
 /**
  * @component ArenaList
@@ -76,22 +76,26 @@ export default function ArenaList() {
   ];
   // DUMMY_DATA END
   return (
-    <div className="scrollbar-hide w-full overflow-x-auto">
-      <div className="flex gap-4 px-4">
-        {ArenaItems.map((item) => (
-          <Arena
-            key={item.arenaId}
-            arenaName={item.arenaName}
-            engName={item.engName}
-            imageSrc={item.imageSrc}
-            imageAlt={item.imageAlt}
-            onClick={() => setSelectedArenaId(item.arenaId)}
-            arenaId={item.arenaId}
-          />
-        ))}
+    <div className="flex h-screen flex-col">
+      <div className="scrollbar-hide overflow-x-auto">
+        <div className="flex gap-4 px-4">
+          {ArenaItems.map((item) => (
+            <Arena
+              key={item.arenaId}
+              arenaName={item.arenaName}
+              engName={item.engName}
+              imageSrc={item.imageSrc}
+              imageAlt={item.imageAlt}
+              onClick={() => setSelectedArenaId(item.arenaId)}
+              arenaId={item.arenaId}
+            />
+          ))}
+        </div>
       </div>
       {/* 선택된 공연장 ID (디버깅용) */}
-      {selectedArenaId && SelectedArenaMenu({ arenaId: selectedArenaId })}
+      <div className="flex-1 overflow-y-auto">
+        {selectedArenaId && <SelectedArenaMenu arenaId={selectedArenaId} />}
+      </div>
     </div>
   );
 }

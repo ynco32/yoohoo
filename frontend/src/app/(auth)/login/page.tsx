@@ -6,7 +6,6 @@ import KakaoLoginButton from '@/components/features/auth/KakaoLoginButton';
 export default function Login() {
   return (
     <div className="flex flex-col items-center justify-center">
-      \
       <Image
         src="/images/poster.png"
         alt="Logo"

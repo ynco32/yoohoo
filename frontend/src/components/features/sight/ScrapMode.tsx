@@ -4,7 +4,7 @@ import { StarButton } from '@/components/ui/StarButton';
 import { SectionList } from './SectionList';
 import { sections } from '@/types/sections';
 
-export const ScrapSection = () => {
+export const ScrapMode = () => {
   const [isScrapMode, setIsScrapMode] = useState(false);
   const [scrapData, setScrapData] = useState<{ sectionId: string[] }>({
     sectionId: [],

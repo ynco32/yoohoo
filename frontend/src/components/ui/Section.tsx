@@ -10,6 +10,7 @@ interface SectionProps {
   endAngle: number;
   innerRadius: number;
   outerRadius: number;
+  isScrapMode: boolean;
 }
 
 export const Section = ({
@@ -22,6 +23,7 @@ export const Section = ({
   endAngle,
   innerRadius,
   outerRadius,
+  isScrapMode,
 }: SectionProps) => {
   const createArc = () => {
     const startRadians = ((startAngle - 90) * Math.PI) / 180;
@@ -56,6 +58,11 @@ export const Section = ({
         Math.sin((((startAngle + endAngle) / 2 - 90) * Math.PI) / 180),
   };
 
+  const getFillColor = () => {
+    if (!isScrapMode) return '#4A90E2';
+    return isScraped ? '#FF6B6B' : '#4A90E2';
+  };
+
   return (
     <g
       onClick={onClick}
@@ -65,10 +72,11 @@ export const Section = ({
     >
       <path
         d={createArc()}
-        fill={isScraped ? '#FF6B6B' : '#4A90E2'}
+        fill={getFillColor()}
         stroke="#fff"
         strokeWidth="1"
       />
+
       <text
         x={labelPosition.x}
         y={labelPosition.y}

@@ -12,6 +12,7 @@ interface SectionData {
   arenaId: number;
   sectionName: string;
   isScraped: boolean;
+  isScrapMode: boolean;
 }
 
 // 섹션 리스트 props 인터페이스 정의

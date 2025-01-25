@@ -23,7 +23,7 @@ type Story = StoryObj<typeof Section>;
 export const Default: Story = {
   args: {
     sectionId: 1,
-    arenaId: 'arena123',
+    arenaId: 1,
     sectionName: '001',
     isScraped: false,
     startAngle: 145,

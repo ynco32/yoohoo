@@ -6,7 +6,7 @@ export default function Page() {
     <div className="container mx-auto px-4 py-8">
       <div className="pt-16"></div>
       <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-8">
-        <SectionWrapper sections={sections} />
+        <SectionWrapper />
       </div>
     </div>
   );

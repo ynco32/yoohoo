@@ -79,7 +79,8 @@ export const SectionList = ({
       preserveAspectRatio="xMidYMid meet"
       className="mx-auto h-full w-full"
     >
-      <g transform="translate(-300, -300) scale(1.0)">
+      {/* 섹션 컴포넌트 위치 조정 */}
+      <g transform="translate(-500, -550) scale(1.3)">
         {filteredSections.map((section, index) => {
           const position = getPositionForSection(
             index,

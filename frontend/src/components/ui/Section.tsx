@@ -2,7 +2,7 @@
 
 interface SectionProps {
   sectionId: number;
-  arenaId: string;
+  arenaId: number;
   sectionName: string;
   isScraped: boolean;
   onClick?: () => void;

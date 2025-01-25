@@ -9,7 +9,7 @@ import { Section } from '../../ui/Section';
 // 섹션 데이터 인터페이스 정의
 interface SectionData {
   sectionId: number;
-  arenaId: string;
+  arenaId: number;
   sectionName: string;
   isScraped: boolean;
 }
@@ -18,10 +18,19 @@ interface SectionData {
 interface SectionListProps {
   sections: SectionData[];
   onSectionClick?: (sectionId: number) => void;
+  arenaId: number;
 }
 
-export const SectionList = ({ sections, onSectionClick }: SectionListProps) => {
-  // 각 섹션의 위치와 크기를 계산하는 함수
+export const SectionList = ({
+  sections,
+  onSectionClick,
+  arenaId,
+}: SectionListProps) => {
+  const filteredSections = sections.filter(
+    (section) => section.arenaId === arenaId
+  );
+
+  // 각 섹션의 위치와 크기를 계산하는 함수s
   const getPositionForSection = (index: number, totalSections: number) => {
     // 첫 번째 행 (가장 안쪽)
     if (index < 5) {
@@ -53,17 +62,17 @@ export const SectionList = ({ sections, onSectionClick }: SectionListProps) => {
   };
 
   return (
-    // SVG 컨테이너 설정 (뷰포트 크기 및 반응형)
     <svg
       viewBox="-400 -400 800 800"
       preserveAspectRatio="xMidYMid meet"
       className="mx-auto h-full w-full"
     >
-      {/* 섹션 리스트 그룹 */}
-      // translate(좌우 위치, 상하 위치) scale(크기)
-      <g transform="translate(-470, -700) scale(1.3)">
-        {sections.map((section, index) => {
-          const position = getPositionForSection(index, sections.length);
+      <g transform="translate(-300, -300) scale(1.0)">
+        {filteredSections.map((section, index) => {
+          const position = getPositionForSection(
+            index,
+            filteredSections.length
+          );
           return (
             <Section
               key={section.sectionId}

@@ -22,7 +22,7 @@ interface SectionListProps {
 }
 
 export const SectionList = ({
-  sections,
+  sections = [],
   onSectionClick,
   arenaId,
 }: SectionListProps) => {

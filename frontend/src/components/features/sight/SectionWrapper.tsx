@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import { SectionList } from './SectionList';
 import { sections } from '@/types/sections';
 
-export default function VenueSectionWrapper() {
+export default function SectionWrapper() {
   const { arenaId } = useParams();
   const currentArenaId = Number(arenaId);
 

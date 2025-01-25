@@ -30,34 +30,46 @@ export const SectionList = ({
     (section) => section.arenaId === arenaId
   );
 
+  const calculateSectionSize = (totalSections: number) => {
+    const BASE_INNER_RADIUS = 120;
+    const BASE_OUTER_RADIUS = 330;
+    const scaleFactor = Math.max(0.5, Math.min(1, 16 / totalSections));
+
+    return {
+      innerRadius: BASE_INNER_RADIUS * scaleFactor,
+      outerRadius: BASE_OUTER_RADIUS * scaleFactor,
+      angleSpread: Math.min(22, 360 / totalSections),
+    };
+  };
   // 각 섹션의 위치와 크기를 계산하는 함수s
   const getPositionForSection = (index: number, totalSections: number) => {
-    // 첫 번째 행 (가장 안쪽)
+    const { innerRadius, outerRadius, angleSpread } =
+      calculateSectionSize(totalSections);
+    const radiusRatio = (outerRadius - innerRadius) / 3;
+
     if (index < 5) {
       return {
-        startAngle: 150 + index * 22,
-        endAngle: 170 + index * 22,
-        innerRadius: 120,
-        outerRadius: 190,
+        startAngle: 150 + index * angleSpread,
+        endAngle: 170 + index * angleSpread,
+        innerRadius: innerRadius,
+        outerRadius: innerRadius + radiusRatio,
       };
     }
-    // 두 번째 행
     if (index < 11) {
       const adjustedIndex = index - 5;
       return {
-        startAngle: 145 + adjustedIndex * 22,
-        endAngle: 165 + adjustedIndex * 22,
-        innerRadius: 190,
-        outerRadius: 260,
+        startAngle: 145 + adjustedIndex * angleSpread,
+        endAngle: 165 + adjustedIndex * angleSpread,
+        innerRadius: innerRadius + radiusRatio,
+        outerRadius: innerRadius + 2 * radiusRatio,
       };
     }
-    // 세 번째 행 (가장 바깥쪽)
     const adjustedIndex = index - 11;
     return {
-      startAngle: 140 + adjustedIndex * 22,
-      endAngle: 160 + adjustedIndex * 22,
-      innerRadius: 260,
-      outerRadius: 330,
+      startAngle: 140 + adjustedIndex * angleSpread,
+      endAngle: 160 + adjustedIndex * angleSpread,
+      innerRadius: innerRadius + 2 * radiusRatio,
+      outerRadius: outerRadius,
     };
   };
 

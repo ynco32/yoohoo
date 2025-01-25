@@ -4,9 +4,12 @@
  */
 'use client';
 
+import { useParams } from 'next/navigation';
 import { SectionList } from './SectionList';
 
 export default function VenueSectionWrapper() {
+  const { arenaId } = useParams();
+  const currentArenaId = Number(arenaId);
   const sections = [
     { sectionId: 1, arenaId: 1, sectionName: '001', isScraped: false },
     { sectionId: 2, arenaId: 1, sectionName: '002', isScraped: true },
@@ -24,6 +27,11 @@ export default function VenueSectionWrapper() {
     { sectionId: 14, arenaId: 1, sectionName: '234', isScraped: true },
     { sectionId: 15, arenaId: 1, sectionName: '233', isScraped: false },
     { sectionId: 16, arenaId: 1, sectionName: '232', isScraped: true },
+    { sectionId: 12, arenaId: 2, sectionName: '105', isScraped: true },
+    { sectionId: 13, arenaId: 2, sectionName: '235', isScraped: false },
+    { sectionId: 14, arenaId: 2, sectionName: '234', isScraped: true },
+    { sectionId: 15, arenaId: 2, sectionName: '233', isScraped: false },
+    { sectionId: 16, arenaId: 2, sectionName: '232', isScraped: true },
   ];
 
   const handleSectionClick = (sectionId: number) => {
@@ -34,7 +42,7 @@ export default function VenueSectionWrapper() {
     <div className="flex h-full w-full items-center justify-center">
       <div className="aspect-square w-full max-w-[800px] mobile:max-w-[375px] mobile-l:max-w-[425px] tablet:max-w-[600px] desktop:max-w-[800px]">
         <SectionList
-          arenaId={1}
+          arenaId={currentArenaId}
           sections={sections}
           onSectionClick={handleSectionClick}
         />

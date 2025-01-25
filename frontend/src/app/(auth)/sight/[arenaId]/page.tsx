@@ -1,10 +1,12 @@
-import ArenaList from '@/components/features/sight/ArenaList';
+import SectionWrapper from '@/components/features/sight/SectionWrapper';
 
-export default function Sight() {
+export default function Page() {
   return (
-    <div className="pt-16">
-      {/* 테스트용  */}
-      <div>/sights/areanId/</div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="pt-16"></div>
+      <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-8">
+        <SectionWrapper />
+      </div>
     </div>
   );
 }

@@ -54,19 +54,26 @@ export const SectionList = ({ sections, onSectionClick }: SectionListProps) => {
 
   return (
     // SVG 컨테이너 설정 (뷰포트 크기 및 반응형)
-    <svg viewBox="0 0 1200 800" className="mx-auto w-full max-w-5xl">
-      {/* 섹션 맵핑 및 렌더링 */}
-      {sections.map((section, index) => {
-        const position = getPositionForSection(index, sections.length);
-        return (
-          <Section
-            key={section.sectionId}
-            {...section}
-            {...position}
-            onClick={() => onSectionClick?.(section.sectionId)}
-          />
-        );
-      })}
+    <svg
+      viewBox="-400 -400 800 800"
+      preserveAspectRatio="xMidYMid meet"
+      className="mx-auto h-full w-full"
+    >
+      {/* 섹션 리스트 그룹 */}
+      // translate(좌우 위치, 상하 위치) scale(크기)
+      <g transform="translate(-470, -700) scale(1.3)">
+        {sections.map((section, index) => {
+          const position = getPositionForSection(index, sections.length);
+          return (
+            <Section
+              key={section.sectionId}
+              {...section}
+              {...position}
+              onClick={() => onSectionClick?.(section.sectionId)}
+            />
+          );
+        })}
+      </g>
     </svg>
   );
 };

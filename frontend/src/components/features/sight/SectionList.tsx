@@ -20,12 +20,14 @@ interface SectionListProps {
   sections: SectionData[];
   onSectionClick?: (sectionId: number) => void;
   arenaId: number;
+  isScrapMode: boolean;
 }
 
 export const SectionList = ({
   sections = [],
   onSectionClick,
   arenaId,
+  isScrapMode,
 }: SectionListProps) => {
   const filteredSections = sections.filter(
     (section) => section.arenaId === arenaId

@@ -13,6 +13,7 @@ pipeline {  // 파이프라인 정의 시작
         }
         
         stage('Build and Test') {  // 두 번째 단계: 빌드와 테스트
+            failFast true  // 하나라도 실패하면 전체 중단
             parallel {  // 병렬로 Backend와 Frontend 작업 수행
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
@@ -70,6 +71,7 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
                         string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD')
                     ]) {
+                        sh "${DOCKER_COMPOSE} down"  // 기존 컨테이너 중지 및 삭제
                         sh "${DOCKER_COMPOSE} build"  // Docker 이미지 빌드
                         sh "${DOCKER_COMPOSE} up -d"  // 컨테이너를 백그라운드 모드로 실행
                     }
@@ -84,9 +86,8 @@ pipeline {  // 파이프라인 정의 시작
         }
         failure {  // 파이프라인 실패 시 메시지 출력
             echo 'Pipeline failed!'
-        }
-        always {  // 항상 실행되는 단계
-            sh "${DOCKER_COMPOSE} logs"  // docker-compose 로그 출력
+            sh "${DOCKER_COMPOSE} down"
+            sh "${DOCKER_COMPOSE} logs > pipeline_failure.log"  // 실패 시 로그 저장  
         }
     }
 }

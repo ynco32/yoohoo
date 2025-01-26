@@ -1,5 +1,7 @@
 'use client';
 import { Section } from '../../ui/Section';
+import { sections } from '../../../types/sections';
+import { useRouter } from 'next/navigation';
 
 /**
  * @component SectionList
@@ -17,21 +19,16 @@ interface SectionData {
 
 // 섹션 리스트 props 인터페이스 정의
 interface SectionListProps {
-  sections: SectionData[];
-  onSectionClick?: (sectionId: number) => void;
   arenaId: number;
   isScrapMode: boolean;
 }
 
-export const SectionList = ({
-  sections = [],
-  onSectionClick,
-  arenaId,
-  isScrapMode,
-}: SectionListProps) => {
+export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
   const filteredSections = sections.filter(
     (section) => section.arenaId === arenaId
   );
+
+  const router = useRouter();
 
   const calculateSectionSize = (totalSections: number) => {
     const BASE_INNER_RADIUS = 120;
@@ -94,7 +91,9 @@ export const SectionList = ({
               key={section.sectionId}
               {...section}
               {...position}
-              onClick={() => onSectionClick?.(section.sectionId)}
+              onClick={() =>
+                router.push(`/sight/${arenaId}/${section.sectionId}`)
+              }
             />
           );
         })}

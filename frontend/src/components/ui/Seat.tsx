@@ -3,6 +3,7 @@
 interface SeatProps {
   seatId: number;
   arenaId: number;
+  sectionId: number;
   row: number;
   col: number;
   isScraped: boolean;
@@ -14,6 +15,7 @@ interface SeatProps {
 export const Seat = ({
   seatId,
   arenaId,
+  sectionId,
   row,
   col,
   isScraped,
@@ -34,6 +36,7 @@ export const Seat = ({
       style={{ cursor: onClick ? 'pointer' : 'default' }} // 클릭 가능한 경우 커서 스타일 변경
       data-seat-id={seatId} // 좌석 식별자
       data-arena-id={arenaId} // 영역 식별자
+      data-section-id={sectionId} // 섹션 식별자
     >
       {/* 직사각형 도형 */}
       <rect

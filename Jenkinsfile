@@ -13,7 +13,6 @@ pipeline {  // 파이프라인 정의 시작
         }
         
         stage('Build and Test') {  // 두 번째 단계: 빌드와 테스트
-            failFast true  // 하나라도 실패하면 전체 중단
             parallel {  // 병렬로 Backend와 Frontend 작업 수행
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정

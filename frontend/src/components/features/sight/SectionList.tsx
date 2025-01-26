@@ -91,6 +91,7 @@ export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
               key={section.sectionId}
               {...section}
               {...position}
+              isScrapMode={isScrapMode}
               onClick={() =>
                 router.push(`/sight/${arenaId}/${section.sectionId}`)
               }

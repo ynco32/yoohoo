@@ -3,6 +3,7 @@
  * @description ContentCard를 기반으로 공연 제목, 장소, 날짜, 포스터를 표시
  */
 import { ContentCard } from '../../ui/ContentCard';
+import Link from 'next/link';
 
 interface ConcertItemProps {
   id: number; // 공연 ID
@@ -29,15 +30,17 @@ export const ConcertItem = ({
     title.length > charsToFit ? title.slice(0, charsToFit - 3) + '...' : title;
 
   return (
-    <ContentCard>
-      {/* 왼쪽: 공연 정보 */}
-      <div className="min-w-0 flex-1">
-        <h3 className="truncate font-bold">{truncatedTitle}</h3>
-        <p className="text-sm text-gray-600">{artist}</p>
-        <p className="mt-2 text-sm text-gray-500">{start_time}</p>
-      </div>
-      {/* 오른쪽: 공연 포스터 */}
-      <img src={image} alt={title} className="ml-4 h-24 w-16 object-cover" />
-    </ContentCard>
+    <Link href={`/sharing/${id}`} className="block">
+      <ContentCard>
+        {/* 왼쪽: 공연 정보 */}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-bold">{truncatedTitle}</h3>
+          <p className="text-sm text-gray-600">{artist}</p>
+          <p className="mt-2 text-sm text-gray-500">{start_time}</p>
+        </div>
+        {/* 오른쪽: 공연 포스터 */}
+        <img src={image} alt={title} className="ml-4 h-24 w-16 object-cover" />
+      </ContentCard>
+    </Link>
   );
 };

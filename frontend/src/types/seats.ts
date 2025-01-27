@@ -14,7 +14,7 @@ export const seats: SeatProps[] = [
   {
     seatId: 1,
     arenaId: 1,
-    sectionId: 101,
+    sectionId: 1,
     row: 1,
     col: 1,
     isScraped: true,
@@ -24,7 +24,7 @@ export const seats: SeatProps[] = [
   {
     seatId: 2,
     arenaId: 1,
-    sectionId: 101,
+    sectionId: 1,
     row: 1,
     col: 2,
     isScraped: true,
@@ -34,7 +34,7 @@ export const seats: SeatProps[] = [
   {
     seatId: 3,
     arenaId: 1,
-    sectionId: 101,
+    sectionId: 1,
     row: 2,
     col: 1,
     isScraped: false,
@@ -45,9 +45,9 @@ export const seats: SeatProps[] = [
   {
     seatId: 4,
     arenaId: 1,
-    sectionId: 102,
-    row: 1,
-    col: 1,
+    sectionId: 1,
+    row: 3,
+    col: 2,
     isScraped: true,
     isScrapMode: false,
     isSelected: false,

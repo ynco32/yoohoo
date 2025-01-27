@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes } from 'react';
 import { ReactNode } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
 interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: ReactNode;
@@ -23,7 +23,7 @@ export const IconButton = ({
 
   // variant별 스타일 매핑
   const variantStyles = {
-    primary: 'bg-blue-500 text-white hover:bg-blue-600',
+    primary: 'bg-background text-gray-900 hover:bg-primary-sub1',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
     ghost: 'bg-transparent hover:bg-gray-100',
   };
@@ -54,7 +54,7 @@ export const IconButton = ({
       <span>{children}</span>
 
       {/* 오른쪽 화살표 아이콘 */}
-      {showRightArrow && <ChevronRight className="h-4 w-4" />}
+      {showRightArrow && <ChevronRightIcon className="h-4 w-4" />}
     </button>
   );
 };

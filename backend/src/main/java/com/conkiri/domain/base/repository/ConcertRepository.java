@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.conkiri.domain.base.entity.Concert;
 
-public interface ConcertRepository extends JpaRepository<Concert, Long> {
+public interface ConcertRepository extends JpaRepository<Concert, Long>, ConcertRepositoryCustom {
 	// 검색어가 있는 경우
 	// 초기 요청 시
 	Slice<Concert> findByStartTimeAfterAndConcertNameContainingIgnoreCase(LocalDateTime now, String concertSearch, Pageable pageable);

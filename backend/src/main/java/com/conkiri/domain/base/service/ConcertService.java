@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
+import com.conkiri.global.exception.concert.ConcertNotFoundException;
+import com.conkiri.global.exception.concert.SearchResultNullException;
+import com.conkiri.global.exception.dto.ExceptionMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,35 +26,17 @@ public class ConcertService {
 	public ConcertResponseDTO getConcertList(String concertSearch, Long lastConcertId) {
 		Pageable pageable = Pageable.ofSize(10);
 
-		Slice<Concert> concerts;
+		Slice<Concert> concerts = concertRepository.findConcerts(
+			LocalDateTime.now(),
+			concertSearch,
+			lastConcertId,
+			pageable);
 
-		if (concertSearch == null || concertSearch.isEmpty()) {
-			if (lastConcertId == null) {
-				concerts = concertRepository.
-					findByStartTimeAfter(
-						LocalDateTime.now(),
-						pageable);
+		if (concerts.isEmpty()) {
+			if (concertSearch == null || concertSearch.isEmpty()) {
+				throw new ConcertNotFoundException();
 			} else {
-				concerts = concertRepository.
-					findByStartTimeAfterAndConcertIdGreaterThan(
-						LocalDateTime.now(),
-						lastConcertId,
-						pageable);
-			}
-		} else {
-			if (lastConcertId == null) {
-				concerts = concertRepository.
-					findByStartTimeAfterAndConcertNameContainingIgnoreCase(
-						LocalDateTime.now(),
-						concertSearch,
-						pageable);
-			} else {
-				concerts = concertRepository.
-					findByStartTimeAfterAndConcertNameContainingIgnoreCaseAndConcertIdGreaterThan(
-						LocalDateTime.now(),
-						concertSearch,
-						lastConcertId,
-						pageable);
+				throw new SearchResultNullException();
 			}
 		}
 

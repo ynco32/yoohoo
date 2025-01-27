@@ -1,6 +1,6 @@
 'use client';
 
-interface SeatProps {
+interface SeatData {
   seatId: number;
   arenaId: number;
   sectionId: number;
@@ -9,10 +9,18 @@ interface SeatProps {
   isScraped: boolean;
   isScrapMode: boolean;
   isSelected: boolean;
-  onClick?: () => void;
 }
 
-export const Seat = ({
+interface SeatProps extends Omit<SeatData, 'isScrapMode'> {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  isScrapMode: boolean;
+  onClick: () => void;
+}
+
+const Seat = ({
   seatId,
   arenaId,
   sectionId,
@@ -21,6 +29,10 @@ export const Seat = ({
   isScraped,
   isScrapMode,
   isSelected,
+  x,
+  y,
+  width,
+  height,
   onClick,
 }: SeatProps) => {
   const getFillColor = () => {
@@ -30,24 +42,16 @@ export const Seat = ({
   };
 
   return (
-    // 클릭 이벤트를 처리하는 그룹 컴포넌트
     <g
       onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'default' }} // 클릭 가능한 경우 커서 스타일 변경
-      data-seat-id={seatId} // 좌석 식별자
-      data-arena-id={arenaId} // 영역 식별자
-      data-section-id={sectionId} // 섹션 식별자
+      style={{ cursor: 'pointer' }}
+      data-seat-id={seatId}
+      data-arena-id={arenaId}
+      data-section-id={sectionId}
     >
-      {/* 직사각형 도형 */}
-      <rect
-        x={row} // x 좌표
-        y={col} // y 좌표
-        width={100} // 너비
-        height={100} // 높이
-        fill={getFillColor()} // 채우기 색상
-        stroke="#fff" // 테두리 색상
-        strokeWidth="1" // 테두리 두께
-      />
+      <rect x={x} y={y} width={width} height={height} fill={getFillColor()} />
     </g>
   );
 };
+
+export default Seat;

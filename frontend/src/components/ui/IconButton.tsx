@@ -23,7 +23,7 @@ export const IconButton = ({
 
   // variant별 스타일 매핑
   const variantStyles = {
-    primary: 'bg-background text-gray-900 hover:bg-primary-sub1',
+    primary: 'bg-background-default text-gray-900 hover:bg-primary-sub1',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
     ghost: 'bg-transparent hover:bg-gray-100',
   };

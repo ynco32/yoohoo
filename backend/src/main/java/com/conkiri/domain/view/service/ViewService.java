@@ -12,12 +12,19 @@ import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.base.repository.ArenaRepository;
 import com.conkiri.domain.base.repository.SeatRepository;
 import com.conkiri.domain.base.repository.SectionRepository;
+import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
+import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
+import com.conkiri.domain.view.repository.ScrapSeatRepository;
+import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
+import com.conkiri.global.exception.view.DuplicateScrapSeatException;
+import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 
@@ -33,6 +40,8 @@ public class ViewService {
 	private final SectionRepository sectionRepository;
 	private final ReviewRepository reviewRepository;
 	private final SeatRepository seatRepository;
+	private final UserRepository userRepository;
+	private final ScrapSeatRepository scrapSeatRepository;
 
 	public ArenaResponseDTO getArenas() {
 		List<Arena> arenas = arenaRepository.findAll();
@@ -81,6 +90,41 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
+	@Transactional
+	public void createScrapSeat(Long seatId, Long userId) {
+		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		User user = findUserByUserIdOrElseThrow(userId);
+
+		if (scrapSeatRepository.existsByUserAndSeat(user, seat)) {
+			throw new DuplicateScrapSeatException();
+		}
+
+		ScrapSeat scrapSeat = ScrapSeat.builder()
+			.user(user)
+			.seat(seat)
+			.build();
+
+		scrapSeatRepository.save(scrapSeat);
+	}
+
+	@Transactional
+	public void deleteScrapSeat(Long seatId, Long userId) {
+		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		User user = findUserByUserIdOrElseThrow(userId);
+
+		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeat(user, seat)
+			.orElseThrow(ScrapSeatNotFoundException::new);
+
+		scrapSeatRepository.delete(scrapSeat);
+	}
+
+	// ---------- 내부 메서드 ----------
+
+	private User findUserByUserIdOrElseThrow(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
+	}
+
 	private Arena findArenaByAreaIdOrElseThrow(Long arenaId) {
 		return arenaRepository.findArenaByArenaId(arenaId)
 			.orElseThrow(ArenaNotFoundException::new);
@@ -94,6 +138,11 @@ public class ViewService {
 
 	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Integer rowLine, Integer columnLine, Section section) {
 		return seatRepository.findByRowLineAndColumnLineAndSection(rowLine, columnLine, section)
+			.orElseThrow(SeatNotFoundException::new);
+	}
+
+	private Seat findSeatBySeatIdOrElseThrow(Long seatId) {
+		return seatRepository.findById(seatId)
 			.orElseThrow(SeatNotFoundException::new);
 	}
 }

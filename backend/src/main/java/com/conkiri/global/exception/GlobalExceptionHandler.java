@@ -23,6 +23,8 @@ import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
 import com.conkiri.global.exception.user.UserNotFoundException;
+import com.conkiri.global.exception.view.DuplicateScrapSeatException;
+import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 
@@ -122,6 +124,18 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AlreadyExistScrapSharingException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse alreadyExistScrapSharingHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(DuplicateScrapSeatException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse duplicateScrapSeatExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(ScrapSeatNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse scrapSeatNotFoundExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

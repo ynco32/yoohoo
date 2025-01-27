@@ -1,14 +1,12 @@
-'use client';
-
 import React from 'react';
 import Image from 'next/image';
 import { ContentCard } from '@/components/ui/ContentCard';
-import { SharingPost, STATUS_INFO } from '@/types/sharing';
+import { SharingPost, SharingStatus, STATUS_INFO } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
 
 /**
  * 나눔 게시글 카드 컴포넌트
- * @description 나눔 게시글의 기본 정보를 카드 형태로 표시하는 컴포넌트
+ * @description 나눔 게시글의 기본 정보를 카드 형태로 보여주는 컴포넌트
  */
 export const SharingCard = ({
   title,
@@ -17,17 +15,48 @@ export const SharingCard = ({
   start_time,
   image,
 }: SharingPost) => {
-  const { color, text } = STATUS_INFO[status] || STATUS_INFO.CLOSED;
+  const getStatusText = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return '진행중';
+      case 'UPCOMING':
+        return '준비중';
+      case 'CLOSED':
+        return '마감';
+      default:
+        return '';
+    }
+  };
+
+  const getStatusColor = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return 'bg-status-success';
+      case 'UPCOMING':
+        return 'bg-status-caution';
+      case 'CLOSED':
+        return 'bg-gray-400';
+      default:
+        return 'bg-gray-400';
+    }
+  };
+
+  // 제목 길이에 따른 말줄임표 처리
+  const maxTitleLength = 30;
+  const truncatedTitle =
+    title.length > maxTitleLength
+      ? `${title.slice(0, maxTitleLength - 3)}...`
+      : title;
 
   return (
     <ContentCard className="border-0">
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium">{title}</h3>
+          <h3 className="font-medium max-w-[calc(100%-80px)] truncate">{truncatedTitle}</h3>
           <span
-            className={`rounded-full px-2 py-1 text-xs text-white ${color}`}
+            className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
           >
-            {text}
+            {getStatusText(status)}
           </span>
         </div>
         <div className="mt-1 text-sm text-gray-600">{nickname}</div>

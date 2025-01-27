@@ -71,6 +71,7 @@ export const SharingCard = ({
           src={image}
           alt={title}
           fill
+          sizes="(max-width: 80px) 100vw, 80px"
           className="rounded-md object-cover"
         />
       </div>

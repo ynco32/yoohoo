@@ -24,6 +24,7 @@ pipeline {  // 파이프라인 정의 시작
                     }
                     steps {  // Backend 빌드 및 테스트 수행
                         dir('backend') {  // backend 디렉토리로 이동
+                            sh 'chmod +x gradlew'  // 실행 권한 부여
                             sh './gradlew clean build test'  // Gradle로 클린 빌드 및 테스트 실행
                         }
                     }

@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { ContentCard } from '@/components/ui/ContentCard';
 import { SharingPost, STATUS_INFO } from '@/types/sharing';
+import { ClockIcon } from '@heroicons/react/24/outline';
 
 /**
  * 나눔 게시글 카드 컴포넌트
@@ -30,7 +31,10 @@ export const SharingCard = ({
           </span>
         </div>
         <div className="mt-1 text-sm text-gray-600">{nickname}</div>
-        <div className="mt-1 text-sm text-gray-500">{start_time}</div>
+        <div className="mt-1 flex items-center gap-1 text-sm text-gray-900">
+          <ClockIcon className="h-4 w-4" />
+          {start_time}
+        </div>
       </div>
 
       <div className="relative h-20 w-20">

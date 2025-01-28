@@ -53,8 +53,7 @@ pipeline {  // 파이프라인 정의 시작
                     steps {  // Frontend 빌드 및 테스트 수행
                         dir('frontend') {  // frontend 디렉토리로 이동
                             sh 'npm install'  // 필요한 패키지 설치
-                            sh 'npm run dev'  // 빌드 실행
-                            sh 'npm run storybook'
+                            sh 'npm run build'  // 빌드 실행
                         }
                     }
                 }
@@ -64,10 +63,10 @@ pipeline {  // 파이프라인 정의 시작
         stage('Docker Build and Deploy') {  // Docker 빌드 및 배포 단계
             when {  // 조건 설정
                 anyOf {  // 아래 브랜치에서만 실행
-                    branch 'dev-be'  // dev-be 브랜치
-                    branch 'dev-fe'  // dev-fe 브랜치
-                    branch 'dev'  // dev 브랜치
-                    branch 'master'  // master 브랜치
+                    expression { env.BRANCH_NAME == 'dev-be' }
+                    expression { env.BRANCH_NAME == 'dev-fe' }
+                    expression { env.BRANCH_NAME == 'dev' }
+                    expression { env.BRANCH_NAME == 'master' }
                 }
             }
             steps {
@@ -78,25 +77,31 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                         string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
                         string(credentialsId: 'KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
+                        string(credentialsId: 'KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URL'),
                         string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
                         string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
-                        string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD')
+                        string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
+                        string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
+                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL')
                     ]) {
-                        sh """
-                            export KAKAO_CLIENT_ID='${KAKAO_CLIENT_ID}'
-                            export KAKAO_CLIENT_SECRET='${KAKAO_CLIENT_SECRET}'
-                            export JWT_SECRET_KEY='${JWT_SECRET_KEY}'
-                            export DB_URL='${DB_URL}'
-                            export DB_USERNAME='${DB_USERNAME}'
-                            export DB_PASSWORD='${DB_PASSWORD}'
-                            export MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'
-                            export MYSQL_USER='${MYSQL_USER}'
-                            export MYSQL_PASSWORD='${MYSQL_PASSWORD}'
-                            ${DOCKER_COMPOSE} down
-                            ${DOCKER_COMPOSE} build
-                            ${DOCKER_COMPOSE} up -d
-                        """
+                        sh '''
+                            docker-compose down
+                            docker-compose build \
+                                --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
+                                --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
+                                --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
+                                --build-arg DB_URL=$DB_URL \
+                                --build-arg DB_USERNAME=$DB_USERNAME \
+                                --build-arg DB_PASSWORD=$DB_PASSWORD \
+                                --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+                                --build-arg MYSQL_USER=$MYSQL_USER \
+                                --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
+                                --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
+                                --build-arg FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg KAKAO_REDIRECT_URL=$$KAKAO_REDIRECT_URL
+                            docker-compose up -d
+                        '''
                     }
                 }
             }

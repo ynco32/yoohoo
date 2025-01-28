@@ -18,7 +18,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-be*'  // dev-be로 시작하는 브랜치
+                            branch 'dev-be'  // dev-be로 시작하는 브랜치
                             branch 'dev'  // dev 브랜치
                             branch 'master'  // master 브랜치
                         }
@@ -34,7 +34,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Frontend') {  // Frontend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-fe*'  // dev-fe로 시작하는 브랜치
+                            branch 'dev-fe'  // dev-fe로 시작하는 브랜치
                             branch 'dev'  // dev 브랜치
                             branch 'master'  // master 브랜치
                         }

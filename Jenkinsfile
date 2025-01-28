@@ -6,9 +6,20 @@ pipeline {  // 파이프라인 정의 시작
     }
     
     stages {  // 파이프라인의 주요 단계들 정의
+        stage('Debug') {  // 현재 브랜치 디버깅용 스테이지
+            steps {
+                script {
+                    echo "Current Branch: ${env.BRANCH_NAME}"
+                }
+            }
+        }
+        
         stage('Checkout') {  // 첫 번째 단계: 코드 체크아웃
             steps {
                 checkout scm  // 소스 코드 관리(SCM)에서 현재 브랜치의 코드 체크아웃
+                script {
+                    echo "Checked out Branch: ${env.BRANCH_NAME}"
+                }
             }
         }
         
@@ -18,9 +29,9 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-be'  // dev-be로 시작하는 브랜치
-                            branch 'dev'  // dev 브랜치
-                            branch 'master'  // master 브랜치
+                            expression { env.BRANCH_NAME == 'dev-be' }
+                            expression { env.BRANCH_NAME == 'dev' }
+                            expression { env.BRANCH_NAME == 'master' }
                         }
                     }
                     steps {  // Backend 빌드 및 테스트 수행
@@ -34,9 +45,9 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Frontend') {  // Frontend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-fe'  // dev-fe로 시작하는 브랜치
-                            branch 'dev'  // dev 브랜치
-                            branch 'master'  // master 브랜치
+                            expression { env.BRANCH_NAME == 'dev-fe' }
+                            expression { env.BRANCH_NAME == 'dev' }
+                            expression { env.BRANCH_NAME == 'master' }
                         }
                     }
                     steps {  // Frontend 빌드 및 테스트 수행

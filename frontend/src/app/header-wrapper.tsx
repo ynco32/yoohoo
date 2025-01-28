@@ -10,11 +10,14 @@ export default function HeaderWrapper({
 }) {
   const pathname = usePathname();
   const pagesWithoutHeader = ['/', '/login', '/main'];
+  const hasHeader = !pagesWithoutHeader.includes(pathname);
 
   return (
     <>
-      {!pagesWithoutHeader.includes(pathname) && <Header />}
-      {children}
+      {hasHeader && <Header />}
+      <main className={hasHeader ? 'mt-[56px] min-h-[calc(100vh-56px)]' : ''}>
+        {children}
+      </main>
     </>
   );
 }

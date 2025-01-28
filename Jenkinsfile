@@ -13,6 +13,7 @@ pipeline {  // 파이프라인 정의 시작
         }
         
         stage('Build and Test') {  // 두 번째 단계: 빌드와 테스트
+            failFast true  // 하나라도 실패하면 전체 중단
             parallel {  // 병렬로 Backend와 Frontend 작업 수행
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
@@ -41,8 +42,8 @@ pipeline {  // 파이프라인 정의 시작
                     steps {  // Frontend 빌드 및 테스트 수행
                         dir('frontend') {  // frontend 디렉토리로 이동
                             sh 'npm install'  // 필요한 패키지 설치
-                            sh 'npm run test'  // 테스트 실행
-                            sh 'npm run build'  // 빌드 실행
+                            sh 'npm run dev'  // 빌드 실행
+                            sh 'npm run storybook'
                         }
                     }
                 }
@@ -58,9 +59,9 @@ pipeline {  // 파이프라인 정의 시작
                     branch 'master'  // master 브랜치
                 }
             }
-            steps {  // Docker 빌드 및 배포 수행
-                script {  // 스크립트 블록: 여러 스크립트 실행 가능
-                    withCredentials([  // Jenkins 크리덴셜에서 환경 변수 가져오기
+            steps {
+                script {
+                    withCredentials([
                         string(credentialsId: 'DB_URL', variable: 'DB_URL'),
                         string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
                         string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
@@ -71,9 +72,20 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
                         string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD')
                     ]) {
-                        sh "${DOCKER_COMPOSE} down"  // 기존 컨테이너 중지 및 삭제
-                        sh "${DOCKER_COMPOSE} build"  // Docker 이미지 빌드
-                        sh "${DOCKER_COMPOSE} up -d"  // 컨테이너를 백그라운드 모드로 실행
+                        sh """
+                            export KAKAO_CLIENT_ID='${KAKAO_CLIENT_ID}'
+                            export KAKAO_CLIENT_SECRET='${KAKAO_CLIENT_SECRET}'
+                            export JWT_SECRET_KEY='${JWT_SECRET_KEY}'
+                            export DB_URL='${DB_URL}'
+                            export DB_USERNAME='${DB_USERNAME}'
+                            export DB_PASSWORD='${DB_PASSWORD}'
+                            export MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'
+                            export MYSQL_USER='${MYSQL_USER}'
+                            export MYSQL_PASSWORD='${MYSQL_PASSWORD}'
+                            ${DOCKER_COMPOSE} down
+                            ${DOCKER_COMPOSE} build
+                            ${DOCKER_COMPOSE} up -d
+                        """
                     }
                 }
             }

@@ -82,20 +82,20 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
                         string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD')
                     ]) {
-                        sh """
-                            export KAKAO_CLIENT_ID='${KAKAO_CLIENT_ID}'
-                            export KAKAO_CLIENT_SECRET='${KAKAO_CLIENT_SECRET}'
-                            export JWT_SECRET_KEY='${JWT_SECRET_KEY}'
-                            export DB_URL='${DB_URL}'
-                            export DB_USERNAME='${DB_USERNAME}'
-                            export DB_PASSWORD='${DB_PASSWORD}'
-                            export MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'
-                            export MYSQL_USER='${MYSQL_USER}'
-                            export MYSQL_PASSWORD='${MYSQL_PASSWORD}'
-                            ${DOCKER_COMPOSE} down
-                            ${DOCKER_COMPOSE} build
-                            ${DOCKER_COMPOSE} up -d
-                        """
+                        sh '''
+                            docker-compose down
+                            docker-compose build \
+                                --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
+                                --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
+                                --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
+                                --build-arg DB_URL=$DB_URL \
+                                --build-arg DB_USERNAME=$DB_USERNAME \
+                                --build-arg DB_PASSWORD=$DB_PASSWORD \
+                                --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+                                --build-arg MYSQL_USER=$MYSQL_USER \
+                                --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD
+                            docker-compose up -d
+                        '''
                     }
                 }
             }

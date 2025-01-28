@@ -17,7 +17,8 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
       - SERVER_DOMAIN=${SERVER_DOMAIN}
     depends_on:          # 의존성 설정
-      - mysql
+      mysql:
+        condition: service_healthy
 
   frontend:
     build: ./frontend    # frontend Dockerfile 위치
@@ -39,6 +40,11 @@ services:
       - "13309:3306"
     volumes:            # 데이터 영속성
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql_data:          # MySQL 데이터 저장용 볼륨

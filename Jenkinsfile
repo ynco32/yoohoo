@@ -63,10 +63,10 @@ pipeline {  // 파이프라인 정의 시작
         stage('Docker Build and Deploy') {  // Docker 빌드 및 배포 단계
             when {  // 조건 설정
                 anyOf {  // 아래 브랜치에서만 실행
-                    branch 'dev-be'  // dev-be 브랜치
-                    branch 'dev-fe'  // dev-fe 브랜치
-                    branch 'dev'  // dev 브랜치
-                    branch 'master'  // master 브랜치
+                    expression { env.BRANCH_NAME == 'dev-be' }
+                    expression { env.BRANCH_NAME == 'dev-fe' }
+                    expression { env.BRANCH_NAME == 'dev' }
+                    expression { env.BRANCH_NAME == 'master' }
                 }
             }
             steps {
@@ -77,10 +77,13 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                         string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
                         string(credentialsId: 'KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
+                        string(credentialsId: 'KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URL'),
                         string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
                         string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
-                        string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD')
+                        string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
+                        string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
+                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL')
                     ]) {
                         sh '''
                             docker-compose down
@@ -93,7 +96,10 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg DB_PASSWORD=$DB_PASSWORD \
                                 --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
                                 --build-arg MYSQL_USER=$MYSQL_USER \
-                                --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD
+                                --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
+                                --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
+                                --build-arg FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg KAKAO_REDIRECT_URL=$$KAKAO_REDIRECT_URL
                             docker-compose up -d
                         '''
                     }

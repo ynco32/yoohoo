@@ -29,6 +29,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	@Value("${frontend.url}")
 	private String frontendUrl;
 
+	@Value("${server.domain}")
+	private String serverDomain;
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
@@ -63,7 +66,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		Cookie cookie = new Cookie("access_token", accessToken);
 		cookie.setSecure(true);
 		cookie.setPath("/");
-		cookie.setDomain("localhost");
+		cookie.setDomain(serverDomain);
 		cookie.setMaxAge(3600); // 1시간
 		response.addCookie(cookie);
 	}
@@ -74,7 +77,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		cookie.setSecure(true);
 		cookie.setPath("/");
 		cookie.setMaxAge(14 * 24 * 60 * 60); // 14일
-		cookie.setDomain("localhost"); // 도메인 설정 추가
+		cookie.setDomain(serverDomain); // 도메인 설정 추가
 		response.addCookie(cookie);
 	}
 }

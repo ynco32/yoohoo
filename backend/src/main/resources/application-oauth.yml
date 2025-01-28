@@ -6,7 +6,7 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: ${KAKAO_REDIRECT_URL}
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
@@ -27,4 +27,7 @@ jwt:
   refresh-token-expiration: 1209600000  # 14일
 
 frontend:
-  url: http://localhost:8080
+  url: ${FRONTEND_URL}
+
+server:
+  domain: ${SERVER_DOMAIN}

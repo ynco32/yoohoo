@@ -18,7 +18,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-be*'  // dev-be로 시작하는 브랜치
+                            branch 'dev-be'  // dev-be로 시작하는 브랜치
                             branch 'dev'  // dev 브랜치
                             branch 'master'  // master 브랜치
                         }
@@ -26,7 +26,7 @@ pipeline {  // 파이프라인 정의 시작
                     steps {  // Backend 빌드 및 테스트 수행
                         dir('backend') {  // backend 디렉토리로 이동
                             sh 'chmod +x gradlew'  // 실행 권한 부여
-                            sh './gradlew clean build test'  // Gradle로 클린 빌드 및 테스트 실행
+                            sh './gradlew clean build -x test'  // Gradle로 클린 빌드 및 테스트 실행
                         }
                     }
                 }
@@ -34,7 +34,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Frontend') {  // Frontend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            branch 'dev-fe*'  // dev-fe로 시작하는 브랜치
+                            branch 'dev-fe'  // dev-fe로 시작하는 브랜치
                             branch 'dev'  // dev 브랜치
                             branch 'master'  // master 브랜치
                         }

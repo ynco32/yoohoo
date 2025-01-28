@@ -53,8 +53,8 @@ pipeline {  // 파이프라인 정의 시작
                     steps {  // Frontend 빌드 및 테스트 수행
                         dir('frontend') {  // frontend 디렉토리로 이동
                             sh 'npm install'  // 필요한 패키지 설치
-                            sh 'npm run dev'  // 빌드 실행
-                            sh 'npm run storybook'
+                            sh 'npm run build'  // 빌드 실행
+                            sh 'npm run build-storybook'
                         }
                     }
                 }

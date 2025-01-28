@@ -11,6 +11,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.7.9",
     "next": "15.1.5",
     "react": "^19.0.0",
@@ -24,9 +25,11 @@
     "@storybook/addon-interactions": "^8.5.0",
     "@storybook/addon-onboarding": "^8.5.0",
     "@storybook/blocks": "^8.5.0",
+    "@storybook/jest": "^0.2.2",
     "@storybook/nextjs": "^8.5.0",
     "@storybook/react": "^8.5.0",
     "@storybook/test": "^8.5.0",
+    "@storybook/testing-library": "^0.2.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

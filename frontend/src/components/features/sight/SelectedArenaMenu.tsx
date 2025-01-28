@@ -3,6 +3,7 @@
  * @param {number} arenaId - 공연장 ID
  */
 'use client';
+import { useRouter } from 'next/navigation';
 
 interface SelectedArenaMenuProps {
   arenaId: number; // 공연장 고유 ID
@@ -14,6 +15,7 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
    * @param {number} arenaId - 공연장 ID
    * @returns {Array<{id: number, name: string}>} 좌석 메뉴 배열
    */
+  const router = useRouter();
   const getMenuByArenaId = (arenaId: number) => {
     // DUMMY_DATA: Arena venues - TO BE REMOVED
     // TODO: Replace with real API data
@@ -46,6 +48,7 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
           <div
             key={item.id}
             className="flex h-32 items-center justify-center rounded border border-none bg-primary-main p-2 text-white shadow"
+            onClick={() => router.push(`/sight/${arenaId}`)}
           >
             {item.name}
           </div>

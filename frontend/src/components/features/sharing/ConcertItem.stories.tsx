@@ -19,9 +19,10 @@ export const Default: Story = {
     ),
   ],
   args: {
+    id: 1,
     title: '2025 TREASURE FAN CONCERT',
-    venue: 'Grand Peace Palace, Kyung Hee Univ.',
-    date: '2025.01.25',
+    artist: 'TREASURE',
+    start_time: '2025.01.25',
     image: '/images/poster.png',
   },
 };

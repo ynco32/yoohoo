@@ -9,10 +9,13 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
       - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+      - KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - SERVER_DOMAIN=${SERVER_DOMAIN}
     depends_on:          # 의존성 설정
       - mysql
 

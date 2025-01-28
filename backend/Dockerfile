@@ -1,19 +1,26 @@
 # 빌드 스테이지
 FROM gradle:7.6.1-jdk17 AS build
 
-WORKDIR /app                    # 작업 디렉토리 설정
+# 작업 디렉토리 설정
+WORKDIR /app
 
-COPY build.gradle settings.gradle /app/  # Gradle 설정 파일 복사
+# Gradle 설정 파일 복사
+COPY build.gradle settings.gradle /app/
 
-COPY src /app/src              # 소스 코드 복사
+# 소스 코드 복사
+COPY src /app/src
 
-RUN gradle build -x test       # 테스트 제외하고 빌드
+# 테스트 제외하고 빌드
+RUN gradle build -x test
 
 # 실행 스테이지
-FROM openjdk:17-slim           # 실행용 경량 이미지
+FROM openjdk:17-slim
 
-COPY --from=build /app/build/libs/*.jar app.jar  # 빌드된 jar 복사
+# 빌드된 jar 복사
+COPY --from=build /app/build/libs/*.jar app.jar
 
-EXPOSE 8080                    # 포트 설정
+# 포트 설정
+EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","/app.jar"]  # 실행 명령어
+# 실행 명령어
+ENTRYPOINT ["java","-jar","/app.jar"]

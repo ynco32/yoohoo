@@ -1,15 +1,23 @@
-FROM node:18-alpine           # Node.js 경량 이미지
+# Node.js 경량 이미지
+FROM node:18-alpine
 
-WORKDIR /app                  # 작업 디렉토리
+# 작업 디렉토리
+WORKDIR /app
 
-COPY package*.json ./         # package.json 파일 복사
+# package.json 파일 복사
+COPY package*.json ./
 
-RUN npm install              # 의존성 설치
+# 의존성 설치
+RUN npm install
 
-COPY . .                     # 소스 코드 복사
+# 소스 코드 복사
+COPY . .
 
-RUN npm run build           # 프로젝트 빌드
+# 프로젝트 빌드
+RUN npm run build
 
-EXPOSE 3000                 # 포트 설정
+# 포트 설정
+EXPOSE 3000
 
-CMD ["npm", "start"]        # 실행 명령어
+# 실행 명령어
+CMD ["npm", "start"]

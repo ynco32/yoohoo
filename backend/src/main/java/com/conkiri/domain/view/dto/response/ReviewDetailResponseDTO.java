@@ -23,7 +23,7 @@ public class ReviewDetailResponseDTO {
 	private Long seatId;
 	private Long concertId;
 	private String content;
-	private int view_score;
+	private int viewScore;
 	private SeatDistance seatDistance;
 	private Sound sound;
 	private String photoUrl;
@@ -37,7 +37,7 @@ public class ReviewDetailResponseDTO {
 			.seatId(review.getSeat().getSeatId())
 			.concertId(review.getConcert().getConcertId())
 			.content(review.getContent())
-			.view_score(review.getViewScore())
+			.viewScore(review.getViewScore())
 			.seatDistance(review.getSeatDistance())
 			.sound(review.getSound())
 			.photoUrl(review.getPhotoUrl())

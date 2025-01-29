@@ -63,9 +63,12 @@ public class SharingController {
 		return sharingService.getSharing(sharingId);
 	}
 
-	@GetMapping("/{sharingId}/comment")
-	public CommentResponseDTO getSharingCommentList(@PathVariable("sharingId") Long sharingId) {
-		return sharingService.getSharingCommentList(sharingId);
+	@GetMapping("/{sharingId}/comment/{lastCommentId}")
+	public CommentResponseDTO getSharingCommentList(
+		@PathVariable("sharingId") Long sharingId,
+		@PathVariable(value = "lastCommentId", required = false) Long lastCommentId)
+	{
+		return sharingService.getSharingCommentList(sharingId, lastCommentId);
 	}
 
 	@PostMapping("/{sharingId}/scrap/{userId}")

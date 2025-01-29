@@ -19,7 +19,7 @@ export const ViewModeToggle = ({
   onModeChange,
 }: ViewModeToggleProps) => {
   return (
-    <div className="flex gap-2 p-4">
+    <div className="flex gap-2">
       {/* 지도 보기 버튼 */}
       <button
         className={`rounded-full px-4 py-2 ${

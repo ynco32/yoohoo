@@ -6,10 +6,12 @@ import { ViewModeToggle } from './ViewModeToggle';
 import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
+import { VENUE_COORDINATES } from '@/lib/constans/venues';
 
 type ViewMode = 'list' | 'map';
 
 //DUMMY DATA
+
 const MOCK_POSTS: SharingPost[] = [
   {
     id: '1',
@@ -18,6 +20,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'ONGOING',
     start_time: '14:00',
     image: '/images/card.png',
+    latitude: 37.518073, // 한얼광장
+    longitude: 127.127244,
   },
   {
     id: '2',
@@ -26,6 +30,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'UPCOMING',
     start_time: '15:30',
     image: '/images/card.png',
+    latitude: 37.518851, // 88잔디마당
+    longitude: 127.125405,
   },
   {
     id: '3',
@@ -34,6 +40,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'CLOSED',
     start_time: '13:00',
     image: '/images/card.png',
+    latitude: 37.520402, // 꿈나무다리
+    longitude: 127.128242,
   },
   {
     id: '4',
@@ -42,6 +50,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'ONGOING',
     start_time: '16:00',
     image: '/images/card.png',
+    latitude: 37.518843, // 올림픽공원 주차장
+    longitude: 127.128111,
   },
   {
     id: '5',
@@ -50,6 +60,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'UPCOMING',
     start_time: '17:30',
     image: '/images/card.png',
+    latitude: 37.51795, // 편의점앞
+    longitude: 127.126744,
   },
   {
     id: '6',
@@ -58,6 +70,8 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'UPCOMING',
     start_time: '17:30',
     image: '/images/card.png',
+    latitude: 37.517201, // 만남의 광장
+    longitude: 127.129205,
   },
 ];
 
@@ -77,14 +91,31 @@ export const SharingView = () => {
   const [posts, setPosts] = React.useState<SharingPost[]>(MOCK_POSTS);
 
   return (
-    <div className="flex h-[calc(100vh-56px)] flex-col overflow-hidden">
-      {/* 지도/목록 토글 버튼 */}
-      <ViewModeToggle viewMode={viewMode} onModeChange={setViewMode} />
+    <div
+      className={`${
+        viewMode === 'map'
+          ? '-mt-[56px] h-screen'
+          : 'flex h-[calc(100vh-56px)] flex-col'
+      }`}
+    >
+      {/* 토글 버튼 - 지도 모드일 때는 absolute, 목록 모드일 때는 일반 배치 */}
+      <div
+        className={viewMode === 'map' ? 'absolute top-[56px] z-10 p-4' : 'p-4'}
+      >
+        <ViewModeToggle viewMode={viewMode} onModeChange={setViewMode} />
+      </div>
 
-      {/* 선택된 뷰 모드에 따른 컴포넌트 렌더링 */}
-      <div className="flex-1 overflow-auto">
+      {/* 컨텐츠 영역 */}
+      <div
+        className={`${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
+      >
         {viewMode === 'list' && <SharingList posts={posts} />}
-        {viewMode === 'map' && <SharingMap posts={posts} />}
+        {viewMode === 'map' && (
+          <SharingMap
+            posts={posts}
+            venueLocation={VENUE_COORDINATES.KSPO_DOME}
+          />
+        )}
       </div>
     </div>
   );

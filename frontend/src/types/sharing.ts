@@ -18,6 +18,8 @@ export interface SharingPost {
   status: SharingStatus;
   start_time: string;
   image: string;
+  latitude?: number;  // 위도
+  longitude?: number; // 경도
 }
 
 /**

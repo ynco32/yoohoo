@@ -57,6 +57,7 @@ public class SecurityConfig {
 					log.error("OAuth2 failure: {}", exception.getMessage());
 					log.info("Original State: {}", request.getSession().getAttribute("OAUTH2_STATE"));
 					log.info("Received State: {}", request.getParameter("state"));
+					log.info(request.getRequestURI());
 					log.info("Code: {}", request.getParameter("code"));
 					log.info("Error: {}", request.getParameter("error"));
 					log.info("Error Description: {}", request.getParameter("error_description"));

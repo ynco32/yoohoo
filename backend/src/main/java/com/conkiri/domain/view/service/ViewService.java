@@ -16,6 +16,7 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
+import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
@@ -90,29 +91,42 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
+	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Long sectionId, Integer stageType, Long userId) {
+		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
+		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
+		User user = findUserByUserIdOrElseThrow(userId);
+		StageType selectedType = StageType.values()[stageType];
+
+		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section(user, selectedType, section);
+		return ScrapSeatResponseDTO.from(scraps);
+	}
+
 	@Transactional
-	public void createScrapSeat(Long seatId, Long userId) {
+	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		StageType selectedType = StageType.values()[stageType];
 		User user = findUserByUserIdOrElseThrow(userId);
 
-		if (scrapSeatRepository.existsByUserAndSeat(user, seat)) {
+		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
 			throw new DuplicateScrapSeatException();
 		}
 
 		ScrapSeat scrapSeat = ScrapSeat.builder()
 			.user(user)
 			.seat(seat)
+			.stageType(selectedType)
 			.build();
 
 		scrapSeatRepository.save(scrapSeat);
 	}
 
 	@Transactional
-	public void deleteScrapSeat(Long seatId, Long userId) {
+	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		StageType selectedType = StageType.values()[stageType];
 		User user = findUserByUserIdOrElseThrow(userId);
 
-		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeat(user, seat)
+		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
 			.orElseThrow(ScrapSeatNotFoundException::new);
 
 		scrapSeatRepository.delete(scrapSeat);

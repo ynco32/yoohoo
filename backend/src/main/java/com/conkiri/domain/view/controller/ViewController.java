@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
+import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
@@ -49,15 +50,33 @@ public class ViewController {
 		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
 	}
 
-	// 좌석 스크랩 API
+	// 구역 조회 시 스크랩한 좌석 전체 조회 API
+
+	// 좌석 조회 시 스크랩한 좌석 전제 조회 API
+	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/scraps")
+	public ScrapSeatResponseDTO getScraps(
+		@PathVariable Long arenaId,
+		@PathVariable Long sectionId,
+		@RequestParam(name = "stageType") Integer stageType,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		return viewService.getScrapsBySeat(arenaId, sectionId, stageType, userPrincipal.getUserId());
+	}
+
+	// 좌석 스크랩 등록 API
 	@PostMapping("/scraps/{seatId}")
-	public void createScrapSeat(@PathVariable Long seatId, @AuthenticationPrincipal CustomOAuth2User userPrincipal) {
-		viewService.createScrapSeat(seatId, userPrincipal.getUserId());
+	public void createScrapSeat(
+		@PathVariable Long seatId,
+		@RequestParam(name = "stageType") Integer stageType,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.createScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 
 	// 좌석 스크랩 해제 API
 	@DeleteMapping("/scraps/{seatId}")
-	public void deleteScrapSeat(@PathVariable Long seatId, @AuthenticationPrincipal CustomOAuth2User userPrincipal) {
-		viewService.deleteScrapSeat(seatId, userPrincipal.getUserId());
+	public void deleteScrapSeat(
+		@PathVariable Long seatId,
+		@RequestParam(name = "stageType") Integer stageType,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 }

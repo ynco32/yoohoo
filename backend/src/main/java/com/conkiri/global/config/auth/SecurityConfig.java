@@ -20,8 +20,9 @@ import com.conkiri.global.auth.token.JwtAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-// global/config/auth/SecurityConfig.java
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -53,6 +54,7 @@ public class SecurityConfig {
 				.successHandler(oAuth2SuccessHandler)
 				.failureHandler((request, response, exception) -> {
 					// OAuth 실패 시 401 반환
+					log.error("OAuth2 failure: ", exception);
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				})
 			)

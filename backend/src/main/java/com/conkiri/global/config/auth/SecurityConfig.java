@@ -55,6 +55,9 @@ public class SecurityConfig {
 				.failureHandler((request, response, exception) -> {
 					// OAuth 실패 시 401 반환
 					log.error("OAuth2 failure: ", exception);
+					log.info(request.getRequestURI());
+					log.info(request.getQueryString());
+					log.info(request.getPathInfo());
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				})
 			)

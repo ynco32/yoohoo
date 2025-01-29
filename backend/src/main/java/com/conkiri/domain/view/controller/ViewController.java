@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
+import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
@@ -50,7 +51,14 @@ public class ViewController {
 		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
 	}
 
-	// 구역 조회 시 스크랩한 좌석 전체 조회 API
+	// 구역 조회 시 스크랩한 좌석이 존재하는 구역 전체 조회 API
+	@GetMapping("/arenas/{arenaId}/scraps")
+	public ScrapSectionResponseDTO getScrapedSections(
+		@PathVariable Long arenaId,
+		@RequestParam(name = "stageType") Integer stageType,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		return viewService.getScrapedSections(arenaId, stageType, userPrincipal.getUserId());
+	}
 
 	// 좌석 조회 시 스크랩한 좌석 전제 조회 API
 	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/scraps")

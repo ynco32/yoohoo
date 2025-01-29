@@ -17,6 +17,7 @@ import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
+import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
@@ -89,6 +90,20 @@ public class ViewService {
 				.collect(Collectors.toList());
 		}
 		return ReviewResponseDTO.from(reviews);
+	}
+
+	public ScrapSectionResponseDTO getScrapedSections(Long arenaID, Integer stageType, Long userId) {
+		Arena arena = findArenaByAreaIdOrElseThrow(arenaID);
+		StageType selectedType = StageType.values()[stageType];
+		User user = findUserByUserIdOrElseThrow(userId);
+
+		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section_Arena(user, selectedType, arena);
+		List<Section> sections = scraps.stream()
+			.map(scrapSeat -> scrapSeat.getSeat().getSection())
+			.distinct()
+			.collect(Collectors.toList());
+
+		return ScrapSectionResponseDTO.from(sections);
 	}
 
 	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Long sectionId, Integer stageType, Long userId) {

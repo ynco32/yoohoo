@@ -99,7 +99,7 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
                                 --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
                                 --build-arg FRONTEND_URL=$FRONTEND_URL \
-                                --build-arg KAKAO_REDIRECT_URL=$$KAKAO_REDIRECT_URL
+                                --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL
                             docker-compose up -d
                         '''
                     }

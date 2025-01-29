@@ -109,6 +109,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String path = request.getServletPath();
 		System.out.println(path);
 		return path.startsWith("/oauth2") ||
+			path.startsWith("/") ||
 			path.startsWith("/login") ||
 			path.equals("/api/v1/auth/refresh");
 	}

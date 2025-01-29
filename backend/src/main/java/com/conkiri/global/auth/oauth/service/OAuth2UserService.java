@@ -16,7 +16,9 @@ import com.conkiri.global.auth.repository.AuthRepository;
 import com.conkiri.global.auth.token.CustomOAuth2User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oauth2User = super.loadUser(userRequest);
+		log.info("OAuth2 Request: {}", userRequest);
 
 		String provider = userRequest.getClientRegistration().getRegistrationId();  // "kakao"
 		String providerId = oauth2User.getName();  // OAuth2 제공자의 고유 ID

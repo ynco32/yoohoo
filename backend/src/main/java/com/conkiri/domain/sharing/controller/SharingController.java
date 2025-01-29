@@ -53,9 +53,13 @@ public class SharingController {
 		sharingService.updateSharingStatus(sharingId, status);
 	}
 
-	@GetMapping("/{concertId}")
-	public SharingResponseDTO getSharingList(@PathVariable("concertId") Long concertId) {
-		return sharingService.getSharingList(concertId);
+	@GetMapping("/{concertId}/{lastSharingId}")
+	public SharingResponseDTO getSharingList(
+		@PathVariable("concertId") Long concertId,
+		@PathVariable("lastSharingId") Long lastSharingId
+		)
+	{
+		return sharingService.getSharingList(concertId, lastSharingId);
 	}
 
 	@GetMapping("/detail/{sharingId}")

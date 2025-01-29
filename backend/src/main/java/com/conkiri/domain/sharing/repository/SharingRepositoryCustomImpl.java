@@ -7,8 +7,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
-import com.conkiri.domain.sharing.entity.Comment;
-import com.conkiri.domain.sharing.entity.QComment;
+import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.sharing.entity.QSharing;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,31 +16,31 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
 @Repository
-public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
+public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
 
-	public CommentRepositoryCustomImpl(EntityManager entityManager) {
+	public SharingRepositoryCustomImpl(EntityManager entityManager) {
 		this.jpaQueryFactory = new JPAQueryFactory(entityManager);
 	}
 
 	@Override
-	public Slice<Comment> findComments(Sharing sharing, Long lastCommentId, Pageable pageable) {
-		QComment comment = QComment.comment;
+	public Slice<Sharing> findSharings(Concert concert, Long lastSharingId, Pageable pageable) {
+		QSharing sharing = QSharing.sharing;
 
-		// 기본 조건 : 해당 나눔 게시글의 댓글만 조회
-		BooleanExpression conditions = comment.sharing.sharingId.eq(sharing.getSharingId());
+		// 기본조건 : 해당 공연의 나눔 게시글만 조회
+		BooleanExpression conditions = sharing.concert.concertId.eq(concert.getConcertId());
 
 		// 첫 조회가 아닐 때
-		if (lastCommentId != 0) {
-			conditions = conditions.and(comment.commentId.gt(lastCommentId));
+		if (lastSharingId != 0) {
+			conditions = conditions.and(sharing.sharingId.lt(lastSharingId));
 		}
 
 		// Query 실행
-		List<Comment> results = jpaQueryFactory
-			.selectFrom(comment)
+		List<Sharing> results = jpaQueryFactory
+			.selectFrom(sharing)
 			.where(conditions)
-			.orderBy(comment.commentId.asc())
+			.orderBy(sharing.sharingId.desc())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 

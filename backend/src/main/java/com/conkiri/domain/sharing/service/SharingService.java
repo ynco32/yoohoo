@@ -1,7 +1,5 @@
 package com.conkiri.domain.sharing.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -95,11 +93,12 @@ public class SharingService {
 	 * @param concertId
 	 * @return
 	 */
-	public SharingResponseDTO getSharingList(Long concertId) {
+	public SharingResponseDTO getSharingList(Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
 
 		Concert concert = findConcertByIdOrElseThrow(concertId);
 
-		List<Sharing> sharings = sharingRepository.findByConcert(concert);
+		Slice<Sharing> sharings = sharingRepository.findSharings(concert, lastSharingId, pageable);
 		return SharingResponseDTO.from(sharings);
 	}
 

@@ -1,7 +1,8 @@
 package com.conkiri.domain.sharing.dto.response;
 
-import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Slice;
 
 import com.conkiri.domain.sharing.entity.Sharing;
 
@@ -16,13 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SharingResponseDTO {
 
-	private List<SharingDetailResponseDTO> sharings;
+	private Slice<SharingDetailResponseDTO> sharings;
+	private boolean hasNext;
 
-	public static SharingResponseDTO from(List<Sharing> sharings) {
+	public static SharingResponseDTO from(Slice<Sharing> sharings) {
 		return SharingResponseDTO.builder()
-			.sharings(sharings.stream()
-				.map(SharingDetailResponseDTO::from)
-				.collect(Collectors.toList()))
+			.sharings(sharings
+				.map(SharingDetailResponseDTO::from))
+			.hasNext(sharings.hasNext())
 			.build();
 	}
 }

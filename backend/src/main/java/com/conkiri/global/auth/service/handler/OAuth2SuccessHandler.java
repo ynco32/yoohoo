@@ -35,6 +35,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
+		log.info("OAuth2 Success Handler 진입");
+		log.info("Authentication Principal: {}", authentication.getPrincipal());
+		log.info("Received State: {}", request.getParameter("state"));
+		log.info("Received Code: {}", request.getParameter("code"));
 		log.info("OAuth2 Success: {}", authentication);
 		CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();

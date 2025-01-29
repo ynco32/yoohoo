@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.conkiri.domain.sharing.entity.Comment;
 import com.conkiri.domain.sharing.entity.Sharing;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
 	List<Comment> findCommentsBySharing(Sharing sharing);
 

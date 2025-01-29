@@ -60,7 +60,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 
 		boolean isNewUser = oAuth2User.getNickname() == null;
-		String targetUrl = isNewUser ? frontendUrl + "/nick" : frontendUrl + "/";
+		String targetUrl = isNewUser ? frontendUrl + "/login/nick" : frontendUrl + "/main";
 		log.info("Redirecting to: {}", targetUrl);  // 로그 추가
 		response.sendRedirect(targetUrl);
 

@@ -2,6 +2,8 @@ package com.conkiri.domain.sharing.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,10 +118,13 @@ public class SharingService {
 	 * @param sharingId
 	 * @return
 	 */
-	public CommentResponseDTO getSharingCommentList(Long sharingId) {
+	public CommentResponseDTO getSharingCommentList(Long sharingId, Long lastCommentId) {
+		Pageable pageable = Pageable.ofSize(10);
+
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
-		List<Comment> comments = commentRepository.findCommentsBySharing(sharing);
+		Slice<Comment> comments = commentRepository.findComments(sharing, lastCommentId, pageable);
+
 		return CommentResponseDTO.from(comments);
 	}
 

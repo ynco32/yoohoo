@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { ContentCard } from '@/components/ui/ContentCard';
-import { SharingPost, SharingStatus, STATUS_INFO } from '@/types/sharing';
+import { SharingPost, STATUS_INFO } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
 
 interface SharingCardProps extends SharingPost {
@@ -20,32 +20,6 @@ export const SharingCard = ({
   image,
   wrapperClassName = 'border-0', // 스타일 기본값
 }: SharingCardProps) => {
-  const getStatusText = (status: SharingStatus) => {
-    switch (status) {
-      case 'ONGOING':
-        return '진행중';
-      case 'UPCOMING':
-        return '준비중';
-      case 'CLOSED':
-        return '마감';
-      default:
-        return '';
-    }
-  };
-
-  const getStatusColor = (status: SharingStatus) => {
-    switch (status) {
-      case 'ONGOING':
-        return 'bg-status-success';
-      case 'UPCOMING':
-        return 'bg-status-caution';
-      case 'CLOSED':
-        return 'bg-gray-400';
-      default:
-        return 'bg-gray-400';
-    }
-  };
-
   // 제목 길이에 따른 말줄임표 처리
   const maxTitleLength = 30;
   const truncatedTitle =

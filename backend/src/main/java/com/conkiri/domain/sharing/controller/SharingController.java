@@ -57,8 +57,7 @@ public class SharingController {
 	public SharingResponseDTO getSharingList(
 		@PathVariable("concertId") Long concertId,
 		@PathVariable("lastSharingId") Long lastSharingId
-		)
-	{
+	) {
 		return sharingService.getSharingList(concertId, lastSharingId);
 	}
 
@@ -70,8 +69,8 @@ public class SharingController {
 	@GetMapping("/{sharingId}/comment/{lastCommentId}")
 	public CommentResponseDTO getSharingCommentList(
 		@PathVariable("sharingId") Long sharingId,
-		@PathVariable(value = "lastCommentId", required = false) Long lastCommentId)
-	{
+		@PathVariable(value = "lastCommentId", required = false) Long lastCommentId
+	) {
 		return sharingService.getSharingCommentList(sharingId, lastCommentId);
 	}
 
@@ -100,6 +99,15 @@ public class SharingController {
 	@DeleteMapping("/comment/{commentId}")
 	public void deleteComment(@PathVariable("commentId") Long commentId) {
 		sharingService.deleteComment(commentId);
+	}
+
+	@GetMapping("/{userId}/{concertId}/{lastSharingId}")
+	public SharingResponseDTO getWroteSharing(
+		@PathVariable("userId") Long userId,
+		@PathVariable("concertId") Long concertId,
+		@PathVariable("lastSharingId") Long lastSharingId
+	) {
+		return sharingService.getWroteSharingList(userId, concertId, lastSharingId);
 	}
 
 }

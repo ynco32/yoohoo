@@ -191,6 +191,23 @@ public class SharingService {
 		commentRepository.delete(comment);
 	}
 
+	/**
+	 * 회원이 등록한 해당 공연의 나눔 게시글 조회
+	 * @param concertId
+	 * @param userId
+	 * @param lastSharingId
+	 * @return
+	 */
+	public SharingResponseDTO getWroteSharingList(Long userId, Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
+
+		User user = findUserByIdOrElseThrow(userId);
+		Concert concert = findConcertByIdOrElseThrow(concertId);
+
+		Slice<Sharing> sharings = sharingRepository.findWroteSharings(user, concert, lastSharingId, pageable);
+		return SharingResponseDTO.from(sharings);
+	}
+
 	// ===============================================내부 메서드===================================================== //
 
 	/**

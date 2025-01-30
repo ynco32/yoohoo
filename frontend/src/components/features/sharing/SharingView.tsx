@@ -14,7 +14,7 @@ type ViewMode = 'list' | 'map';
 
 const MOCK_POSTS: SharingPost[] = [
   {
-    id: '1',
+    id: 1,
     title: '베몬 포카 나눔합니다',
     nickname: '닉네임',
     status: 'ONGOING',
@@ -24,7 +24,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.127244,
   },
   {
-    id: '2',
+    id: 2,
     title: '포카 나눔합니다22',
     nickname: '닉네임',
     status: 'UPCOMING',
@@ -34,7 +34,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.125405,
   },
   {
-    id: '3',
+    id: 3,
     title: '떴다 팔찌 나눔',
     nickname: '닉네임',
     status: 'CLOSED',
@@ -44,7 +44,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.128242,
   },
   {
-    id: '4',
+    id: 4,
     title: '포토카드 세트 나눔합니다',
     nickname: '닉네임',
     status: 'ONGOING',
@@ -54,7 +54,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.128111,
   },
   {
-    id: '5',
+    id: 5,
     title: '부채 나눔합니다',
     nickname: '닉네임',
     status: 'UPCOMING',
@@ -64,7 +64,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.126744,
   },
   {
-    id: '6',
+    id: 6,
     title: '부채 나눔합니다22',
     nickname: '닉네임',
     status: 'UPCOMING',

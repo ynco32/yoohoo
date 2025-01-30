@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 
 const MOCK_POSTS: SharingPost[] = [
   {
-    id: '1',
+    id: 1,
     title: 'KSPO DOME 앞 포카 나눔',
     nickname: '닉네임1',
     status: 'ONGOING',
@@ -30,7 +30,7 @@ const MOCK_POSTS: SharingPost[] = [
     longitude: 127.1243,
   },
   {
-    id: '2',
+    id: 2,
     title: '올림픽공원역 부채 나눔',
     nickname: '닉네임2',
     status: 'UPCOMING',

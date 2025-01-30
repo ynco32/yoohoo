@@ -88,9 +88,9 @@ export const SharingView = () => {
     }
   }, []);
 
-  // URL 파라미터에서 공연 ID 추출 -> 추후 사용 예정
+  // URL 파라미터에서 공연 ID 추출
   const params = useParams();
-  const concertId = params.concertId;
+  const concertId = params.concertId ? Number(params.concertId) : 0;
 
   // 뷰 모드 상태 관리 (지도/목록)
   const [viewMode, setViewMode] = useState<ViewMode>('map');
@@ -119,12 +119,17 @@ export const SharingView = () => {
         className={`${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
       >
         {viewMode === 'list' && (
-          <SharingList posts={posts} onMount={resetScroll} />
+          <SharingList
+            posts={posts}
+            onMount={resetScroll}
+            concertId={concertId}
+          />
         )}
         {viewMode === 'map' && (
           <SharingMap
             posts={posts}
             venueLocation={VENUE_COORDINATES.KSPO_DOME}
+            concertId={concertId}
           />
         )}
       </div>

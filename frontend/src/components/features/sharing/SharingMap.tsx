@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { SharingCard } from './SharingCard';
-import ReactDOMServer from 'react-dom/server';
 import { SharingPost } from '@/types/sharing';
+import { useRouter } from 'next/navigation';
+import { createRoot } from 'react-dom/client';
 
 // 카카오맵 타입 선언
 declare global {
@@ -18,57 +19,85 @@ interface SharingMapProps {
     latitude: number;
     longitude: number;
   };
+  concertId: number;
 }
 
-export const SharingMap = ({ posts, venueLocation }: SharingMapProps) => {
+export const SharingMap = ({
+  posts,
+  venueLocation,
+  concertId,
+}: SharingMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  // 현재 열린 오버레이를 추적하기 위한 ref
   const currentOverlayRef = useRef<any>(null);
+  const router = useRouter();
 
-  // 커스텀 오버레이 생성 함수
-  // SharingCard를 오버레이 컨텐츠로 사용
+  /**
+   * React로 동적 오버레이 생성
+   * - 실제 DOM 요소를 생성하여 카카오맵 오버레이에 추가
+   * - 클릭 이벤트를 React에서 관리
+   */
   const createOverlay = (post: SharingPost, map: any, position: any) => {
-    const overlayContent = ReactDOMServer.renderToString(
-      <div className="w-[320px]">
+    const overlayContainer = document.createElement('div');
+    overlayContainer.className = 'p-4 z-50 overlay-content';
+    overlayContainer.style.pointerEvents = 'auto'; // 클릭 이벤트 허용
+
+    // React로 동적 렌더링 (DOM에 직접 추가)
+    createRoot(overlayContainer).render(
+      <div
+        className="w-[320px] cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation(); // 지도 클릭 이벤트 차단
+          setTimeout(() => {
+            router.push(`/sharing/${concertId}/${post.id}`);
+          }, 0); // 카카오맵의 click 이벤트 처리가 끝난 후 router.push() 실행
+        }}
+      >
         <SharingCard
           {...post}
-          wrapperClassName="bg-white shadow-lg border-0 rounded-lg"
+          concertId={concertId}
+          wrapperClassName="bg-white shadow-lg border-0 rounded-lg cursor-pointer"
         />
       </div>
     );
 
     return new window.kakao.maps.CustomOverlay({
-      content: overlayContent,
+      content: overlayContainer,
       position: position,
-      xAnchor: 0.5,
-      yAnchor: 1.5,
+      xAnchor: 5.5,
+      yAnchor: 5.5,
       map: map,
     });
   };
 
-  // 마커 클릭 이벤트 핸들러
+  /**
+   * 마커 클릭 시 오버레이 표시
+   * - 클릭한 마커 위치에 `createOverlay()`를 생성하여 추가
+   * - 기존 오버레이가 존재하면 먼저 제거
+   */
   const handleMarkerClick = (map: any, marker: any, post: SharingPost) => {
     return () => {
-      // 기존 오버레이 닫기
+      // 기존 오버레이 제거
       if (currentOverlayRef.current) {
         currentOverlayRef.current.setMap(null);
       }
-
-      // 마커 위치로 지도 이동
+      // 지도 이동
       map.panTo(marker.getPosition());
 
-      // 새 오버레이 생성 및 표시
+      // 오버레이 생성 후 지도에 추가
       const overlay = createOverlay(post, map, marker.getPosition());
       currentOverlayRef.current = overlay;
+      overlay.setMap(map);
     };
   };
 
   useEffect(() => {
-    // 카카오맵 초기화 함수
+    /**
+     * 카카오맵 초기화
+     * - 맵 객체 생성 후 마커 & 이벤트 등록
+     */
     const initializeMap = () => {
       if (!window.kakao?.maps || !mapContainerRef.current) return;
 
-      // 지도 생성
       const map = new window.kakao.maps.Map(mapContainerRef.current, {
         center: new window.kakao.maps.LatLng(
           venueLocation.latitude,
@@ -85,13 +114,9 @@ export const SharingMap = ({ posts, venueLocation }: SharingMapProps) => {
           post.latitude,
           post.longitude
         );
+        const marker = new window.kakao.maps.Marker({ position, map });
 
-        const marker = new window.kakao.maps.Marker({
-          position,
-          map,
-        });
-
-        // 마커 클릭 이벤트 등록
+        // 마커 클릭 시 오버레이 표시
         window.kakao.maps.event.addListener(
           marker,
           'click',
@@ -99,16 +124,25 @@ export const SharingMap = ({ posts, venueLocation }: SharingMapProps) => {
         );
       });
 
-      // 지도 클릭 시 오버레이 닫기
-      window.kakao.maps.event.addListener(map, 'click', () => {
+      /**
+       * 지도 클릭 시 오버레이 닫기
+       * - `setTimeout`을 활용하여 `click` 이벤트 후 실행되도록 조정
+       * - `currentOverlayRef.current.getContent()`를 사용해 실제 오버레이 DOM을 가져와 비교
+       */
+      window.kakao.maps.event.addListener(map, 'click', (e: any) => {
         if (currentOverlayRef.current) {
-          currentOverlayRef.current.setMap(null);
-          currentOverlayRef.current = null;
+          setTimeout(() => {
+            const overlayElement = currentOverlayRef.current.getContent();
+            if (!overlayElement.contains(e.target)) {
+              currentOverlayRef.current.setMap(null);
+              currentOverlayRef.current = null;
+            }
+          }, 10);
         }
       });
     };
 
-    // 카카오맵 스크립트 로드
+    // 카카오맵 스크립트
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`;
     script.onload = () => window.kakao.maps.load(initializeMap);

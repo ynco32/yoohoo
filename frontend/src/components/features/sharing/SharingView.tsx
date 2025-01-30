@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { ViewModeToggle } from './ViewModeToggle';
 import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
@@ -60,7 +60,7 @@ const MOCK_POSTS: SharingPost[] = [
     status: 'UPCOMING',
     start_time: '17:30',
     image: '/images/card.png',
-    latitude: 37.51795, // 편의점앞
+    latitude: 37.51795, // 편의점 앞
     longitude: 127.126744,
   },
   {
@@ -80,6 +80,14 @@ const MOCK_POSTS: SharingPost[] = [
  * @description 나눔 게시글을 지도 또는 목록 형태로 보여주는 메인 컴포넌트
  */
 export const SharingView = () => {
+  // 목록 뷰에서 스크롤 복구
+  const containerRef = useRef<HTMLDivElement>(null);
+  const resetScroll = useCallback(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+  }, []);
+
   // URL 파라미터에서 공연 ID 추출 -> 추후 사용 예정
   const params = useParams();
   const concertId = params.concertId;
@@ -107,9 +115,12 @@ export const SharingView = () => {
 
       {/* 컨텐츠 영역 */}
       <div
+        ref={containerRef}
         className={`${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
       >
-        {viewMode === 'list' && <SharingList posts={posts} />}
+        {viewMode === 'list' && (
+          <SharingList posts={posts} onMount={resetScroll} />
+        )}
         {viewMode === 'map' && (
           <SharingMap
             posts={posts}

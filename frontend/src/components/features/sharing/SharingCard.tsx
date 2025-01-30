@@ -4,6 +4,10 @@ import { ContentCard } from '@/components/ui/ContentCard';
 import { SharingPost, SharingStatus, STATUS_INFO } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
 
+interface SharingCardProps extends SharingPost {
+  wrapperClassName?: string; // 지도에서만 스타일 적용하기 위함
+}
+
 /**
  * 나눔 게시글 카드 컴포넌트
  * @description 나눔 게시글의 기본 정보를 카드 형태로 보여주는 컴포넌트
@@ -14,7 +18,8 @@ export const SharingCard = ({
   status,
   start_time,
   image,
-}: SharingPost) => {
+  wrapperClassName = 'border-0', // 스타일 기본값
+}: SharingCardProps) => {
   const getStatusText = (status: SharingStatus) => {
     switch (status) {
       case 'ONGOING':
@@ -49,14 +54,16 @@ export const SharingCard = ({
       : title;
 
   return (
-    <ContentCard className="border-0">
-      <div className="flex-1 min-w-0">
+    <ContentCard className={wrapperClassName}>
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium max-w-[calc(100%-80px)] truncate">{truncatedTitle}</h3>
+          <h3 className="max-w-[calc(100%-80px)] truncate font-medium">
+            {truncatedTitle}
+          </h3>
           <span
-            className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+            className={`rounded-md px-2 py-1 text-xs text-white ${STATUS_INFO[status].color}`}
           >
-            {getStatusText(status)}
+            {STATUS_INFO[status].text}
           </span>
         </div>
         <div className="mt-1 text-sm text-gray-600">{nickname}</div>

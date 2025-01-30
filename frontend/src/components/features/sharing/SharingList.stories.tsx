@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SharingList } from '@/components/features/sharing/SharingList';
 import { SharingPost } from '@/types/sharing';
+import { fn } from '@storybook/test';
 
 const meta: Meta<typeof SharingList> = {
   title: 'Features/Sharing/SharingList',
@@ -46,6 +47,7 @@ const MOCK_POSTS: SharingPost[] = [
 export const Default: Story = {
   args: {
     posts: MOCK_POSTS,
+    onMount: fn(),
   },
   decorators: [
     (Story) => (

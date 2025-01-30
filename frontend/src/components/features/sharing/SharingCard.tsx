@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { ContentCard } from '@/components/ui/ContentCard';
-import { SharingPost, STATUS_INFO } from '@/types/sharing';
+import { SharingPost, SharingStatus } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -31,6 +31,32 @@ export const SharingCard = ({
       ? `${title.slice(0, maxTitleLength - 3)}...`
       : title;
 
+      const getStatusText = (status: SharingStatus) => {
+        switch (status) {
+          case 'ONGOING':
+            return '진행중';
+          case 'UPCOMING':
+            return '준비중';
+          case 'CLOSED':
+            return '마감';
+          default:
+            return '';
+        }
+      };
+    
+      const getStatusColor = (status: SharingStatus) => {
+        switch (status) {
+          case 'ONGOING':
+            return 'bg-status-success';
+          case 'UPCOMING':
+            return 'bg-status-caution';
+          case 'CLOSED':
+            return 'bg-gray-400';
+          default:
+            return 'bg-gray-400';
+        }
+      };
+
   return (
     <Link href={`/sharing/${concertId}/${id}`} passHref>
       <ContentCard className={wrapperClassName}>
@@ -40,9 +66,9 @@ export const SharingCard = ({
               {truncatedTitle}
             </h3>
             <span
-              className={`rounded-md px-2 py-1 text-xs text-white ${STATUS_INFO[status].color}`}
+              className={`group rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
             >
-              {STATUS_INFO[status].text}
+              {getStatusText(status)}
             </span>
           </div>
           <div className="mt-1 text-sm text-gray-600">{nickname}</div>

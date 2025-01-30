@@ -48,6 +48,7 @@ export const Default: Story = {
       latitude: VENUE_COORDINATES.KSPO_DOME.latitude,
       longitude: VENUE_COORDINATES.KSPO_DOME.longitude,
     },
+    concertId: 123, // 테스트용 concertId 추가
   },
   decorators: [
     (Story) => (
@@ -65,6 +66,7 @@ export const Empty: Story = {
       latitude: VENUE_COORDINATES.KSPO_DOME.latitude,
       longitude: VENUE_COORDINATES.KSPO_DOME.longitude,
     },
+    concertId: 123, // 테스트용 concertId 추가 (빈 경우도 체크)
   },
   decorators: [
     (Story) => (

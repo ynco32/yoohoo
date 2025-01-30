@@ -208,6 +208,23 @@ public class SharingService {
 		return SharingResponseDTO.from(sharings);
 	}
 
+	/**
+	 * 회원이 스크랩한 해당 공연의 나눔 게시글 조회
+	 * @param userId
+	 * @param concertId
+	 * @param lastSharingId
+	 * @return
+	 */
+	public SharingResponseDTO getScrappedSharingList(Long userId, Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
+
+		User user = findUserByIdOrElseThrow(userId);
+		Concert concert = findConcertByIdOrElseThrow(concertId);
+
+		Slice<Sharing> sharings = sharingRepository.findScrappedSharings(user, concert, lastSharingId, pageable);
+		return SharingResponseDTO.from(sharings);
+	}
+
 	// ===============================================내부 메서드===================================================== //
 
 	/**

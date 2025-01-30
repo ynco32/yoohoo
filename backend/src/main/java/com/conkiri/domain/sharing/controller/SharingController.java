@@ -110,4 +110,13 @@ public class SharingController {
 		return sharingService.getWroteSharingList(userId, concertId, lastSharingId);
 	}
 
+	@GetMapping("/scrap/{userId}/{concertId}/{lastSharingId}")
+	public SharingResponseDTO getScrapedSharing(
+		@PathVariable("userId") Long userId,
+		@PathVariable("concertId") Long concertId,
+		@PathVariable("lastSharingId") Long lastSharingId
+	) {
+		return sharingService.getScrappedSharingList(userId, concertId, lastSharingId);
+	}
+
 }

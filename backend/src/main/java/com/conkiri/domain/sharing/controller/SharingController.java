@@ -1,6 +1,7 @@
 package com.conkiri.domain.sharing.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +22,7 @@ import com.conkiri.domain.sharing.dto.response.CommentResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingDetailResponseDTO;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.service.SharingService;
+import com.conkiri.global.auth.token.CustomOAuth2User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -76,13 +78,19 @@ public class SharingController {
 
 	@PostMapping("/{sharingId}/scrap/{userId}")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void scrapSharing(@PathVariable("sharingId") Long sharingId, @PathVariable("userId") Long userId) {
-		sharingService.scrapSharing(sharingId, userId);
+	public void scrapSharing(
+		@PathVariable("sharingId") Long sharingId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal
+	) {
+		sharingService.scrapSharing(sharingId, userPrincipal.getUserId());
 	}
 
-	@DeleteMapping("/{sharingId}/scrap/{userId}")
-	public void cancelScrapSharing(@PathVariable("sharingId") Long sharingId, @PathVariable("userId") Long userId) {
-		sharingService.cancelScrapSharing(sharingId, userId);
+	@DeleteMapping("/{sharingId}/scrap")
+	public void cancelScrapSharing(
+		@PathVariable("sharingId") Long sharingId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal
+	) {
+		sharingService.cancelScrapSharing(sharingId, userPrincipal.getUserId());
 	}
 
 	@PostMapping("/comment")
@@ -101,22 +109,22 @@ public class SharingController {
 		sharingService.deleteComment(commentId);
 	}
 
-	@GetMapping("/{userId}/{concertId}/{lastSharingId}")
+	@GetMapping("/wrote/{concertId}/{lastSharingId}")
 	public SharingResponseDTO getWroteSharing(
-		@PathVariable("userId") Long userId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal,
 		@PathVariable("concertId") Long concertId,
 		@PathVariable("lastSharingId") Long lastSharingId
 	) {
-		return sharingService.getWroteSharingList(userId, concertId, lastSharingId);
+		return sharingService.getWroteSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 
-	@GetMapping("/scrap/{userId}/{concertId}/{lastSharingId}")
+	@GetMapping("/scrap/{concertId}/{lastSharingId}")
 	public SharingResponseDTO getScrapedSharing(
-		@PathVariable("userId") Long userId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal,
 		@PathVariable("concertId") Long concertId,
 		@PathVariable("lastSharingId") Long lastSharingId
 	) {
-		return sharingService.getScrappedSharingList(userId, concertId, lastSharingId);
+		return sharingService.getScrappedSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 
 }

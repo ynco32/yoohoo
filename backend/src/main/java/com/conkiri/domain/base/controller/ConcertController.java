@@ -17,9 +17,15 @@ public class ConcertController {
 
 	private final ConcertService concertService;
 
+	/**
+	 * 콘서트 목록 조회
+	 * @param concertSearch
+	 * @param lastConcertId
+	 * @return
+	 */
 	@GetMapping
 	public ConcertResponseDTO getConcertList(
-		@RequestParam(required = false, value = "search") String concertSearch,
+		@RequestParam(value = "search", required = false) String concertSearch,
 		@RequestParam(value = "last", required = false) Long lastConcertId)
 	{
 		return concertService.getConcertList(concertSearch, lastConcertId);

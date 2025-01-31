@@ -8,6 +8,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.QConcert;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -25,7 +26,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 	}
 
 	@Override
-	public Slice<Concert> findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId, Pageable pageable) {
+	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId, Pageable pageable) {
 		QConcert concert = QConcert.concert;
 
 		BooleanExpression conditions = concert.startTime.after(now); // 기본 조건: 시작 시간이 now이후
@@ -46,12 +47,12 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		// Slice 생성
 		boolean hasNext = results.size() > pageable.getPageSize();
 		if (hasNext) {
 			results.remove(results.size() - 1); // 초과된 한 개 제거
 		}
 
-		return new SliceImpl<>(results, pageable, hasNext);
+		return ConcertResponseDTO.from(results, hasNext);
+
 	}
 }

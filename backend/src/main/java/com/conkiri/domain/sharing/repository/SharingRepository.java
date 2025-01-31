@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.sharing.entity.Sharing;
 
-public interface SharingRepository extends JpaRepository<Sharing, Long> {
+public interface SharingRepository extends JpaRepository<Sharing, Long>, SharingRepositoryCustom {
 
 	List<Sharing> findByConcert(Concert concert);
 }

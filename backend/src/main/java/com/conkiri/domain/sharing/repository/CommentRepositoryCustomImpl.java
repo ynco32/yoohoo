@@ -32,7 +32,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 		BooleanExpression conditions = comment.sharing.sharingId.eq(sharing.getSharingId());
 
 		// 첫 조회가 아닐 때
-		if (lastCommentId != null) {
+		if (lastCommentId != 0) {
 			conditions = conditions.and(comment.commentId.gt(lastCommentId));
 		}
 

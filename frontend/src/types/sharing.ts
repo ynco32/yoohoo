@@ -12,14 +12,15 @@ export type ViewMode = 'list' | 'map';
  * 나눔 게시글 정보
  */
 export interface SharingPost {
-  id: number;
+  sharingId: number;      
   title: string;
+  content?: string;      
   nickname: string;
   status: SharingStatus;
-  start_time: string;
-  image: string;
-  latitude?: number;  // 위도
-  longitude?: number; // 경도
+  startTime: string;      
+  photoUrl: string | null; 
+  latitude?: number;
+  longitude?: number;
 }
 
 /**

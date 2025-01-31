@@ -23,8 +23,8 @@ export const Ongoing: Story = {
     title: '베몬 포카 나눔합니다',
     nickname: '닉네임',
     status: 'ONGOING' as SharingStatus,
-    start_time: '13:30',
-    image: '/images/card.png',
+    startTime: '13:30',
+    photoUrl: '/images/card.png',
   },
 };
 
@@ -33,8 +33,8 @@ export const Upcoming: Story = {
     title: '베몬 포카 나눔합니다',
     nickname: '닉네임',
     status: 'UPCOMING' as SharingStatus,
-    start_time: '14:00',
-    image: '/images/card.png',
+    startTime: '14:00',
+    photoUrl: '/images/card.png',
   },
 };
 
@@ -43,7 +43,7 @@ export const Closed: Story = {
     title: '베몬 포카 나눔합니다',
     nickname: '닉네임',
     status: 'CLOSED' as SharingStatus,
-    start_time: '13:00',
-    image: '/images/card.png',
+    startTime: '13:00',
+    photoUrl: '/images/card.png',
   },
 };

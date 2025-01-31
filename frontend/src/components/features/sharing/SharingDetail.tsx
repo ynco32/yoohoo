@@ -7,14 +7,15 @@ interface SharingDetailProps {
 export const SharingDetail = ({ id }: SharingDetailProps) => {
   // 더미 데이터
   const detailData = {
+    sharingId: id,                          
     title: "포카 나눔합니다~~~",
-    nickname: "닉네임",
-    status: "ONGOING" as const,
-    start_time: "15:00",
-    images: ['/images/card.png'],
     content: "편의점 앞에서 포카 나눔합니다\n1인당 한 장씩 드려요 선착순",
-    latitude: 37.5204,
-    longitude: 127.1243,
+    photoUrl: '/images/card.png',         
+    status: "UPCOMING",                   
+    startTime: "2025-02-12T15:38",         
+    nickname: "닉네임",
+    latitude: 37.51924,
+    longitude: 127.127343,
   };
 
   return (

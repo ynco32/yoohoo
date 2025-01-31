@@ -15,12 +15,12 @@ interface SharingCardProps extends SharingPost {
  * @description 나눔 게시글의 기본 정보를 카드 형태로 보여주는 컴포넌트
  */
 export const SharingCard = ({
-  id,
+  sharingId,
   title,
   nickname,
   status,
-  start_time,
-  image,
+  startTime,
+  photoUrl,
   concertId,
   wrapperClassName = 'border-0', // 스타일 기본값
 }: SharingCardProps) => {
@@ -58,7 +58,7 @@ export const SharingCard = ({
       };
 
   return (
-    <Link href={`/sharing/${concertId}/${id}`} passHref>
+    <Link href={`/sharing/${concertId}/${sharingId}`} passHref>
       <ContentCard className={wrapperClassName}>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -74,13 +74,13 @@ export const SharingCard = ({
           <div className="mt-1 text-sm text-gray-600">{nickname}</div>
           <div className="mt-1 flex items-center gap-1 text-sm text-gray-900">
             <ClockIcon className="h-4 w-4" />
-            {start_time}
+            {startTime}
           </div>
         </div>
 
         <div className="relative h-20 w-20">
           <Image
-            src={image}
+            src={photoUrl || '/images/card.png'}
             alt={title}
             fill
             sizes="(max-width: 80px) 100vw, 80px"

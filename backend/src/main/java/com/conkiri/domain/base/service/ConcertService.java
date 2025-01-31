@@ -26,6 +26,6 @@ public class ConcertService {
 	public ConcertResponseDTO getConcertList(String concertSearch, Long lastConcertId) {
 		Pageable pageable = Pageable.ofSize(10);
 
-		return concertRepository.findConcerts(LocalDateTime.now(), concertSearch, lastConcertId, pageable);
+		return concertRepository.findConcerts(LocalDateTime.now().toLocalDate().atStartOfDay(), concertSearch, lastConcertId, pageable);
 	}
 }

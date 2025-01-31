@@ -24,4 +24,9 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 	
 	// No-Offset 방식(2번째 부터 조회 시)
 	Slice<Concert> findByStartTimeAfterAndConcertIdGreaterThan(LocalDateTime now, Long concertId, Pageable pageable);
+
+	// 가수 이름으로 공연 찾기
+	List<Concert> findByArtist(String artist);
+
+	List<Concert> findByArtistContaining(String artist);
 }

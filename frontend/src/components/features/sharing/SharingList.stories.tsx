@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SharingList } from '@/components/features/sharing/SharingList';
 import { SharingPost } from '@/types/sharing';
+import { fn } from '@storybook/test';
 
 const meta: Meta<typeof SharingList> = {
   title: 'Features/Sharing/SharingList',
@@ -17,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 // 더미 데이터
 const MOCK_POSTS: SharingPost[] = [
   {
-    id: '1',
+    id: 1,
     title: '베몬 포카 나눔합니다',
     nickname: '닉네임',
     status: 'ONGOING',
@@ -25,7 +26,7 @@ const MOCK_POSTS: SharingPost[] = [
     image: '/images/card.png',
   },
   {
-    id: '2',
+    id: 2,
     title: '포카 나눔합니다22',
     nickname: '닉네임',
     status: 'UPCOMING',
@@ -33,7 +34,7 @@ const MOCK_POSTS: SharingPost[] = [
     image: '/images/card.png',
   },
   {
-    id: '3',
+    id: 3,
     title: '떴다 팔찌 나눔',
     nickname: '닉네임',
     status: 'CLOSED',
@@ -46,6 +47,7 @@ const MOCK_POSTS: SharingPost[] = [
 export const Default: Story = {
   args: {
     posts: MOCK_POSTS,
+    onMount: fn(),
   },
   decorators: [
     (Story) => (

@@ -11,6 +11,7 @@ import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -22,8 +23,8 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/refresh")
-	public TokenDTO refreshToken(@RequestBody RefreshTokenRequestDTO request) {
-		return authService.refreshToken(request.getRefreshToken());
+	public TokenDTO refreshToken(@Valid @RequestBody RefreshTokenRequestDTO request) {
+		return authService.refreshToken(request.getRefreshToken().trim());
 	}
 
 	@PostMapping("/logout")

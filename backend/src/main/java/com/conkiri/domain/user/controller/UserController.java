@@ -14,6 +14,7 @@ import com.conkiri.domain.user.service.UserService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
 import com.conkiri.global.exception.dto.ExceptionMessage;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -27,7 +28,7 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/nickname")
-	public void setNickname(@RequestBody NicknameRequestDTO request,
+	public void setNickname(@Valid @RequestBody NicknameRequestDTO request,
 		@AuthenticationPrincipal CustomOAuth2User user) {
 
 		userService.updateNickname(user.getEmail(), request.getNickname());

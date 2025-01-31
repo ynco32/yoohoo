@@ -14,4 +14,8 @@ public interface SharingRepositoryCustom {
 	Slice<Sharing> findWroteSharings(User user, Concert concert, Long lastSharingId, Pageable pageable);
 
 	Slice<Sharing> findScrappedSharings(User user, Concert concert, Long lastSharingId, Pageable pageable);
+
+	Slice<Sharing> findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable);
+
+	Slice<Sharing> findScrappedSharingsInMyPage(User user, Long lastSharingId, Pageable pageable);
 }

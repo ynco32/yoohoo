@@ -17,6 +17,11 @@ public final class ExceptionMessage {
 	public static final String PASSWORD_NOT_EMPTY = "비밀번호는 필수값 입니다.";
 	public static final String DUPLICATE_NICKNAME = "중복된 닉네임입니다."; //CONFLICT
 	public static final String INVALID_NICKNAME = "사용할 수 없는 닉네임입니다.";
+	public static final String NICKNAME_NOT_EMPTY = "닉네임은 필수값 입니다.";
+	public static final String ERROR_NICKNAME_LENGTH = "닉네임은 2자 이상 10자 이하여야 합니다.";
+	public static final String ERROR_NICKNAME_FORMAT = "닉네임은 공백 없이 한글, 영문, 숫자만 가능합니다.";
+
+
 
 	// Auth
 	public static final String INVALID_TOKEN = "유효하지 않는 토큰입니다.";

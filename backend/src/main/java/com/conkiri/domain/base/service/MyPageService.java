@@ -20,12 +20,28 @@ public class MyPageService {
 	private final SharingRepository sharingRepository;
 	private final UserRepository userRepository;
 
+	/**
+	 * 마이페이지에서 회원이 작성한 전체 나눔게시글 목록 조회
+	 * @param lastSharingId
+	 * @param userId
+	 * @return
+	 */
 	public SharingResponseDTO getWroteList(Long lastSharingId, Long userId) {
 		Pageable pageable = Pageable.ofSize(10);
 
 		User user = findUserByIdOrElseThrow(userId);
 
 		Slice<Sharing> sharings = sharingRepository.findWroteSharingsInMyPage(user, lastSharingId, pageable);
+
+		return SharingResponseDTO.from(sharings);
+	}
+
+	public SharingResponseDTO getScrappedList(Long lastSharingId, Long userId) {
+		Pageable pageable = Pageable.ofSize(10);
+
+		User user = findUserByIdOrElseThrow(userId);
+
+		Slice<Sharing> sharings = sharingRepository.findScrappedSharingsInMyPage(user, lastSharingId, pageable);
 
 		return SharingResponseDTO.from(sharings);
 	}

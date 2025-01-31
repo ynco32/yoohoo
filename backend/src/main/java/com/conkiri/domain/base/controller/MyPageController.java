@@ -26,4 +26,12 @@ public class MyPageController {
 	) {
 		return myPageService.getWroteList(lastSharingId, customOAuth2User.getUserId());
 	}
+
+	@GetMapping("/scrap/{lastSharingId}")
+	public SharingResponseDTO getScrappedList(
+		@PathVariable("lastSharingId") Long lastSharingId,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		return myPageService.getScrappedList(lastSharingId, customOAuth2User.getUserId());
+	}
 }

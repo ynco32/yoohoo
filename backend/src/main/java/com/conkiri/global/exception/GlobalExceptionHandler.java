@@ -6,23 +6,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
-import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
-import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.auth.ExpiredTokenException;
 import com.conkiri.global.exception.auth.InvalidTokenException;
 import com.conkiri.global.exception.auth.UnAuthorizedException;
 import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.dto.ExceptionResponse;
-
 import com.conkiri.global.exception.oauth.OAuthProcessingException;
+import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
+import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.sharing.StatusInvalidException;
 import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
 import com.conkiri.global.exception.user.UserNotFoundException;
+import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.view.DuplicateScrapSeatException;
 import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
@@ -137,5 +137,19 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse scrapSeatNotFoundExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse handleValidationException(HandlerMethodValidationException e) {
+		String errorMessage = e.getAllValidationResults()
+			.stream()
+			.findFirst()
+			.flatMap(result -> result.getResolvableErrors()
+				.stream()
+				.findFirst()
+				.map(error -> error.getDefaultMessage()))
+			.orElse("Validation error occurred");
+		return new ExceptionResponse(errorMessage, HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

@@ -17,12 +17,14 @@ import lombok.NoArgsConstructor;
 public class SharingResponseDTO {
 
 	private List<SharingDetailResponseDTO> sharings;
+	private boolean isLastPage;
 
-	public static SharingResponseDTO from(List<Sharing> sharings) {
+	public static SharingResponseDTO from(List<Sharing> sharings, boolean hasNext) {
 		return SharingResponseDTO.builder()
 			.sharings(sharings.stream()
 				.map(SharingDetailResponseDTO::from)
 				.collect(Collectors.toList()))
+			.isLastPage(!hasNext)
 			.build();
 	}
 }

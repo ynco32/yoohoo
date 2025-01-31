@@ -22,6 +22,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('요청 헤더:', config.headers); // 헤더에 토큰이 포함되어 있는지 확인  
   }
   return config;
 });

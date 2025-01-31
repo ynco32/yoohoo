@@ -28,6 +28,10 @@ const NickNameModal = () => {
   };
 
   const handleCheckNickName = async () => {
+     // 요청 직전에 config와 헤더 확인
+    console.log('API 요청 설정:', api.defaults);
+    console.log('Authorization 헤더:', api.defaults.headers.common['Authorization']);
+    
     if (!state.value.trim()) {
       setMessage('닉네임을 입력해주세요.', 'error');
       return;
@@ -50,6 +54,10 @@ const NickNameModal = () => {
   };
 
   const handleSubmit = async () => {
+     // 요청 직전에 config와 헤더 확인
+     console.log('API 요청 설정:', api.defaults);
+     console.log('Authorization 헤더:', api.defaults.headers.common['Authorization']);
+ 
     if (!state.isChecked) {
       setMessage('닉네임 중복 확인을 해주세요.', 'error');
       return;

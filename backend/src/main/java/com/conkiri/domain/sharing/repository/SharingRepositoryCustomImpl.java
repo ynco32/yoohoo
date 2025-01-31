@@ -111,6 +111,31 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 		return createSliceFromResults(pageable, results);
 	}
 
+	/**
+	 * 마이페이지에서 회원이 작성한 나눔 게시글 전체를 조회하는 쿼리
+	 * @param user
+	 * @param lastSharingId
+	 * @param pageable
+	 * @return
+	 */
+	@Override
+	public Slice<Sharing> findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
+		QSharing sharing = QSharing.sharing;
+
+		BooleanExpression conditions = sharing.user.userId.eq(user.getUserId());
+
+		conditions = applyLastSharingId(lastSharingId, conditions, sharing);
+
+		List<Sharing> results = jpaQueryFactory
+			.selectFrom(sharing)
+			.where(conditions)
+			.orderBy(sharing.sharingId.desc())
+			.limit(pageable.getPageSize() + 1)
+			.fetch();
+
+		return createSliceFromResults(pageable, results);
+	}
+
 	// ========================= 내부 메서드 =========================== //
 
 	/**

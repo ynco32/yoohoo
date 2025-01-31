@@ -24,6 +24,9 @@ public class UserService {
 		user.updateNickname(nickname);
 	}
 
+	public boolean checkNicknameExists(String nickname) {
+		return !userRepository.existsByNickname(nickname);
+	}
 
 	private User findUserByEmailOrElseThrow(String email) {
 

@@ -1,15 +1,22 @@
 package com.conkiri.domain.user.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.user.dto.request.NicknameRequestDTO;
 import com.conkiri.domain.user.service.UserService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.exception.dto.ExceptionMessage;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,4 +33,14 @@ public class UserController {
 		userService.updateNickname(user.getEmail(), request.getNickname());
 	}
 
+	@GetMapping("/nickname/check")
+	@Validated
+	public boolean checkNicknameDuplicate(
+		@NotBlank(message = ExceptionMessage.NICKNAME_NOT_EMPTY)
+		@Size(min = 2, max = 10, message = ExceptionMessage.ERROR_NICKNAME_LENGTH)
+		@Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$", message = ExceptionMessage.ERROR_NICKNAME_FORMAT)
+		@RequestParam String nickname) {
+
+		return userService.checkNicknameExists(nickname);
+	}
 }

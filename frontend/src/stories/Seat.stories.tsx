@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Seat } from './Seat';
+import  Seat  from '@/components/ui/Seat';
 
 const meta: Meta<typeof Seat> = {
-  title: 'Components/Seat',
+  title: 'ui/Seat',
   component: Seat,
   parameters: {
     layout: 'centered',

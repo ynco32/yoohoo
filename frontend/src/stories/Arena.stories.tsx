@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Arena } from './Arena';
+import { Arena } from '@/components/ui/Arena';
 
 const meta = {
-  title: 'Components/Arena',
+  title: 'ui/Arena',
   component: Arena,
   parameters: {
     layout: 'centered',

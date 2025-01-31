@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SightReviewCard } from './SightReviewCard';
+import { SightReviewCard } from '../components/features/sight/SightReviewCard';
 
 const meta = {
-  title: 'Features/Review/SightReviewCard',
+  title: 'Features/Sight/SightReviewCard',
   component: SightReviewCard,
   parameters: {
     layout: 'centered',

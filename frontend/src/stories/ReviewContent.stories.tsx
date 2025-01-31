@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReviewContent } from './ReviewContent';
+import { ReviewContent } from '../components/features/sight/ReviewContent';
 
 const meta = {
-  title: 'Components/ReviewContent',
+  title: 'Features/Sight/ReviewContent',
   component: ReviewContent,
   parameters: {
     layout: 'centered',

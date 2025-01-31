@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SharingCard } from './SharingCard';
+import { SharingCard } from '../components/features/sharing/SharingCard';
 import { SharingStatus } from '@/types/sharing';
 
 const meta: Meta<typeof SharingCard> = {

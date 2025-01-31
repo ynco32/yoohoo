@@ -3,7 +3,7 @@ import { ReviewHeader } from '@/components/features/sight/ReviewHeader';
 import catImage from '@/public/images/cat.png';
 
 const meta = {
-  title: 'Components/Features/Review/ReviewHeader',
+  title: 'Features/Sight/ReviewHeader',
   component: ReviewHeader,
   parameters: {
     layout: 'centered',

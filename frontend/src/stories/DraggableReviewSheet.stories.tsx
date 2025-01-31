@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { DraggableReviewSheet } from './DraggableReviewSheet';
+import { DraggableReviewSheet } from '../components/features/sight/DraggableReviewSheet';
 
 const meta = {
-  title: 'Features/Review/DraggableReviewSheet',
+  title: 'Features/Sight/DraggableReviewSheet',
   component: DraggableReviewSheet,
   parameters: {
     layout: 'fullscreen',

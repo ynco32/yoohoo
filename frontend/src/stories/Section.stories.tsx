@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Section } from './Section';
+import { Section } from '@/components/ui/Section';
 
 const meta: Meta<typeof Section> = {
-  title: 'Components/Section',
+  title: 'ui/Section',
   component: Section,
   parameters: {
     layout: 'centered',

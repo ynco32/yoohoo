@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ConcertList } from './ConcertList';
+import { ConcertList } from '../components/features/sharing/ConcertList';
 
 const meta: Meta<typeof ConcertList> = {
   title: 'Features/Sharing/ConcertList',

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { StarButton } from './StarButton';
+import { StarButton } from '@/components/ui/StarButton';
 
 const meta = {
-  title: 'Components/StarButton',
+  title: 'ui/StarButton',
   component: StarButton,
   parameters: {
     layout: 'centered',

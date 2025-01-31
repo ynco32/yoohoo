@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReviewImages } from './ReviewImages';
+import { ReviewImages } from '../components/features/sight/ReviewImages';
 
 const meta: Meta<typeof ReviewImages> = {
   title: 'Features/Sight/ReviewImages',

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SectionList } from './SectionList';
+import { SectionList } from '../components/features/sight/SectionList';
 
 const meta = {
-  title: 'Components/SectionList',
+  title: 'Features/Sight/SectionList',
   component: SectionList,
   parameters: {
     layout: 'centered',

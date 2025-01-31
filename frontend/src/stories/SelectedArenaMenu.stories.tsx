@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectedArenaMenu } from './SelectedArenaMenu';
+import { SelectedArenaMenu } from '../components/features/sight/SelectedArenaMenu';
 
 const meta = {
-  title: 'Components/SelectedArenaMenu',
+  title: 'Features/Sight/SelectedArenaMenu',
   component: SelectedArenaMenu,
   parameters: {
     layout: 'padded',

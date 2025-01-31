@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import TextBox from './TextBox';
+import TextBox from '@/components/ui/TextBox';
 
 const meta = {
-  title: 'Components/TextBox',
+  title: 'ui/TextBox',
   component: TextBox,
   parameters: {
     layout: 'centered',

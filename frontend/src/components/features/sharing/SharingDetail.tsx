@@ -2,6 +2,7 @@
 
 import { SharingDetailHeader } from './SharingDetailHeader';
 import { SharingStatus } from '@/types/sharing';
+import { SharingDetailImages } from './SharingDetailImages';
 
 interface SharingDetailProps {
   id: number;
@@ -34,6 +35,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
 
       {/* 2. 이미지 그리드 */}
       <div className="grid grid-cols-2 gap-1 p-4">
+      <SharingDetailImages images={detailData.photoUrl} />
         {/* 이미지 컴포넌트들 */}
       </div>
 

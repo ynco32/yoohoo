@@ -1,6 +1,6 @@
 'use client';
 
-import { MenuItem } from '@/components/common/Navigation/MenuItem';
+import { MenuItem } from '@/components/features/main/MenuItem';
 
 export default function MainMenu() {
   // DUMMY_DATA: menu items - TO BE REMOVED

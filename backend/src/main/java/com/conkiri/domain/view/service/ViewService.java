@@ -6,15 +6,18 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.conkiri.domain.base.entity.Arena;
+import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.base.entity.Section;
 import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.base.repository.ArenaRepository;
+import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.base.repository.SeatRepository;
 import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
@@ -44,6 +47,7 @@ public class ViewService {
 	private final SeatRepository seatRepository;
 	private final UserRepository userRepository;
 	private final ScrapSeatRepository scrapSeatRepository;
+	private final ConcertRepository concertRepository;
 
 	public ArenaResponseDTO getArenas() {
 		List<Arena> arenas = arenaRepository.findAll();
@@ -145,6 +149,11 @@ public class ViewService {
 			.orElseThrow(ScrapSeatNotFoundException::new);
 
 		scrapSeatRepository.delete(scrapSeat);
+	}
+
+	public ViewConcertResponseDTO getConcerts(String artist) {
+		List<Concert> concerts = concertRepository.findByArtistContaining(artist);
+		return ViewConcertResponseDTO.from(concerts);
 	}
 
 	// ---------- 내부 메서드 ----------

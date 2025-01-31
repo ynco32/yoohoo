@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
@@ -86,5 +87,11 @@ public class ViewController {
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
 		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
+	}
+
+	// 리뷰 작성 시 검색한 가수에 대한 공연 목록 전체 조회 API
+	@GetMapping("/concerts")
+	public ViewConcertResponseDTO getConcerts(@RequestParam(name = "artist") String artist) {
+		return viewService.getConcerts(artist);
 	}
 }

@@ -27,6 +27,8 @@ public final class ExceptionMessage {
 	public static final String INVALID_TOKEN = "유효하지 않는 토큰입니다.";
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String UNAUTHORIZED = "권한없는 접근입니다.";
+	public static final String REFRESH_TOKEN_NOT_EMPTY = "refresh token은 필수값 입니다.";
+
 
 	// OAuth
 	public static final String OAUTH_PROCESSING_ERROR = "OAuth 오류입니다."; //HttpStatus.INTERNAL_SERVER_ERROR

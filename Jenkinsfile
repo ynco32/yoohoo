@@ -29,7 +29,6 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Backend') {  // Backend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            expression { env.BRANCH_NAME == 'dev-be' }
                             expression { env.BRANCH_NAME == 'dev' }
                             expression { env.BRANCH_NAME == 'master' }
                         }
@@ -45,7 +44,6 @@ pipeline {  // 파이프라인 정의 시작
                 stage('Frontend') {  // Frontend 처리 단계
                     when {  // 조건 설정
                         anyOf {  // 아래 브랜치에서만 실행
-                            expression { env.BRANCH_NAME == 'dev-fe' }
                             expression { env.BRANCH_NAME == 'dev' }
                             expression { env.BRANCH_NAME == 'master' }
                         }
@@ -63,8 +61,6 @@ pipeline {  // 파이프라인 정의 시작
         stage('Docker Build and Deploy') {  // Docker 빌드 및 배포 단계
             when {  // 조건 설정
                 anyOf {  // 아래 브랜치에서만 실행
-                    expression { env.BRANCH_NAME == 'dev-be' }
-                    expression { env.BRANCH_NAME == 'dev-fe' }
                     expression { env.BRANCH_NAME == 'dev' }
                     expression { env.BRANCH_NAME == 'master' }
                 }
@@ -83,7 +79,8 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
                         string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
                         string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
-                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL')
+                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
+                        string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY')
                     ]) {
                         sh '''
                             docker-compose down
@@ -99,7 +96,8 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
                                 --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
                                 --build-arg FRONTEND_URL=$FRONTEND_URL \
-                                --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL
+                                --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
+                                --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY
                             docker-compose up -d
                         '''
                     }

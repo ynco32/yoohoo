@@ -150,7 +150,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 
 		BooleanExpression conditions = scrapSharing.user.userId.eq(user.getUserId());
 
-		applyLastSharingId(lastSharingId, conditions, sharing);
+		conditions = applyLastSharingId(lastSharingId, conditions, sharing);
 
 		List<Sharing> results = jpaQueryFactory
 			.selectFrom(sharing)

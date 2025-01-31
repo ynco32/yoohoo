@@ -3,11 +3,10 @@ package com.conkiri.domain.sharing.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.sharing.entity.QScrapSharing;
 import com.conkiri.domain.sharing.entity.QSharing;
 import com.conkiri.domain.sharing.entity.Sharing;
@@ -34,7 +33,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	@Override
-	public Slice<Sharing> findSharings(Concert concert, Long lastSharingId, Pageable pageable) {
+	public SharingResponseDTO findSharings(Concert concert, Long lastSharingId, Pageable pageable) {
 		QSharing sharing = QSharing.sharing;
 
 		// 기본조건 : 해당 공연의 나눔 게시글만 조회
@@ -50,7 +49,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		return createSliceFromResults(pageable, results);
+		return createSharingResponseDTO(pageable, results);
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	@Override
-	public Slice<Sharing> findWroteSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
+	public SharingResponseDTO findWroteSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
 		QSharing sharing = QSharing.sharing;
 
 		// 기본 조건 : 회원이 작성한 해당 공연의 게시물을 조회
@@ -78,7 +77,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		return createSliceFromResults(pageable, results);
+		return createSharingResponseDTO(pageable, results);
 	}
 
 	/**
@@ -90,7 +89,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	@Override
-	public Slice<Sharing> findScrappedSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
+	public SharingResponseDTO findScrappedSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
 		QSharing sharing = QSharing.sharing;
 		QScrapSharing scrapSharing = QScrapSharing.scrapSharing;
 
@@ -108,7 +107,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		return createSliceFromResults(pageable, results);
+		return createSharingResponseDTO(pageable, results);
 	}
 
 	/**
@@ -119,7 +118,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	@Override
-	public Slice<Sharing> findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
+	public SharingResponseDTO findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
 		QSharing sharing = QSharing.sharing;
 
 		BooleanExpression conditions = sharing.user.userId.eq(user.getUserId());
@@ -133,7 +132,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		return createSliceFromResults(pageable, results);
+		return createSharingResponseDTO(pageable, results);
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	@Override
-	public Slice<Sharing> findScrappedSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
+	public SharingResponseDTO findScrappedSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
 		QSharing sharing = QSharing.sharing;
 		QScrapSharing scrapSharing = QScrapSharing.scrapSharing;
 
@@ -160,25 +159,25 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
-		return createSliceFromResults(pageable, results);
+		return createSharingResponseDTO(pageable, results);
 	}
 
 	// ========================= 내부 메서드 =========================== //
 
 	/**
-	 * List를 Slice로 변환해서 반환하는 내부 메서드
+	 * SharingResponseDTO 생성하는 내부 메서드
 	 * @param pageable
 	 * @param results
 	 * @return
 	 */
-	private static SliceImpl<Sharing> createSliceFromResults(Pageable pageable, List<Sharing> results) {
+	private static SharingResponseDTO createSharingResponseDTO(Pageable pageable, List<Sharing> results) {
 		boolean hasNext = results.size() > pageable.getPageSize();
 
 		if (hasNext) {
 			results.remove(results.size() - 1);
 		}
 
-		return new SliceImpl<>(results, pageable, hasNext);
+		return SharingResponseDTO.from(results, hasNext);
 	}
 
 	/**

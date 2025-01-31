@@ -19,6 +19,12 @@ public class MyPageController {
 
 	private final MyPageService myPageService;
 
+	/**
+	 * 마이페이지에서 회원이 등록한 나눔 게시글 조회
+	 * @param lastSharingId
+	 * @param customOAuth2User
+	 * @return
+	 */
 	@GetMapping("/wrote/{lastSharingId}")
 	public SharingResponseDTO getWroteList(
 		@PathVariable("lastSharingId") Long lastSharingId,
@@ -27,6 +33,12 @@ public class MyPageController {
 		return myPageService.getWroteList(lastSharingId, customOAuth2User.getUserId());
 	}
 
+	/**
+	 * 마이페이지에서 회원이 스크랩한 나눔 게시글 조회
+	 * @param lastSharingId
+	 * @param customOAuth2User
+	 * @return
+	 */
 	@GetMapping("/scrap/{lastSharingId}")
 	public SharingResponseDTO getScrappedList(
 		@PathVariable("lastSharingId") Long lastSharingId,

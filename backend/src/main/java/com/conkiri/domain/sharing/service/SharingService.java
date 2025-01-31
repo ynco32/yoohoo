@@ -1,7 +1,6 @@
 package com.conkiri.domain.sharing.service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,8 +97,7 @@ public class SharingService {
 
 		Concert concert = findConcertByIdOrElseThrow(concertId);
 
-		Slice<Sharing> sharings = sharingRepository.findSharings(concert, lastSharingId, pageable);
-		return SharingResponseDTO.from(sharings);
+		return sharingRepository.findSharings(concert, lastSharingId, pageable);
 	}
 
 	/**
@@ -122,9 +120,7 @@ public class SharingService {
 
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
-		Slice<Comment> comments = commentRepository.findComments(sharing, lastCommentId, pageable);
-
-		return CommentResponseDTO.from(comments);
+		return commentRepository.findComments(sharing, lastCommentId, pageable);
 	}
 
 	/**
@@ -204,8 +200,7 @@ public class SharingService {
 		User user = findUserByIdOrElseThrow(userId);
 		Concert concert = findConcertByIdOrElseThrow(concertId);
 
-		Slice<Sharing> sharings = sharingRepository.findWroteSharings(user, concert, lastSharingId, pageable);
-		return SharingResponseDTO.from(sharings);
+		return sharingRepository.findWroteSharings(user, concert, lastSharingId, pageable);
 	}
 
 	/**
@@ -221,8 +216,7 @@ public class SharingService {
 		User user = findUserByIdOrElseThrow(userId);
 		Concert concert = findConcertByIdOrElseThrow(concertId);
 
-		Slice<Sharing> sharings = sharingRepository.findScrappedSharings(user, concert, lastSharingId, pageable);
-		return SharingResponseDTO.from(sharings);
+		return sharingRepository.findScrappedSharings(user, concert, lastSharingId, pageable);
 	}
 
 	// ===============================================내부 메서드===================================================== //

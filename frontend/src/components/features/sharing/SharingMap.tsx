@@ -46,6 +46,7 @@ export const SharingMap = ({
       <div
         className="w-[320px] cursor-pointer"
         onClick={(e) => {
+          e.preventDefault(); // 새로고침 방지
           e.stopPropagation(); // 지도 클릭 이벤트 차단
           setTimeout(() => {
             router.push(`/sharing/${concertId}/${post.id}`);

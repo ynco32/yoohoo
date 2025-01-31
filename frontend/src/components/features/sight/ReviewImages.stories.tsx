@@ -1,19 +1,38 @@
-interface ReviewImagesProps {
-  images: string[];
-}
+import type { Meta, StoryObj } from '@storybook/react';
+import { ReviewImages } from './ReviewImages';
 
-export const ReviewImages = ({ images }: ReviewImagesProps) => (
-  <div className="scrollbar-hide relative mb-4 w-full overflow-x-auto">
-    <div className="flex gap-2 pb-4">
-      {images.map((image, index) => (
-        <div key={index} className="w-64 flex-none first:pl-4 last:pr-4">
-          <img
-            src={image}
-            alt={`Review image ${index + 1}`}
-            className="h-48 w-full rounded-lg object-cover"
-          />
-        </div>
-      ))}
-    </div>
-  </div>
-);
+const meta: Meta<typeof ReviewImages> = {
+  title: 'Features/Sight/ReviewImages',
+  component: ReviewImages,
+  tags: ['autodocs'],
+};
+
+export default meta;
+
+type Story = StoryObj<typeof ReviewImages>;
+
+// 예시 이미지 URL들
+const sampleImages = [
+  '/images/sight.png',
+  '/images/sight.png',
+  '/images/sight.png',
+  '/images/sight.png',
+];
+
+export const Default: Story = {
+  args: {
+    images: sampleImages,
+  },
+};
+
+export const SingleImage: Story = {
+  args: {
+    images: [sampleImages[0]],
+  },
+};
+
+export const MultipleImages: Story = {
+  args: {
+    images: sampleImages,
+  },
+};

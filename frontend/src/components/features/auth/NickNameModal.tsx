@@ -1,9 +1,11 @@
 //  api 요청 추가해야 함.
 
 import React from 'react';
+import axios from 'axios';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 
 const NickNameModal = () => {
+  console.log(axios.defaults.headers);
   return (
     <div className="w-80 rounded-3xl bg-primary-sub1 p-6">
       <h2 className="mb-2 text-center text-xl font-medium">닉네임 만들기</h2>

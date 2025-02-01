@@ -1,3 +1,4 @@
+import { WriteButton } from '@/components/common/WriteButton';
 import { ScrapMode } from '@/components/features/sight/ScrapMode';
 
 export default function Page() {
@@ -6,6 +7,7 @@ export default function Page() {
       <div className="pt-16"></div>
       <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-8">
         <ScrapMode />
+        <WriteButton path="/sight/write" />
       </div>
     </div>
   );

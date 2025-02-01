@@ -49,29 +49,32 @@ export const ImageUpload = ({
         accept="image/*"
         onChange={handleImageChange}
       />
-      <button
-        type="button"
-        onClick={handleClick}
-        className="relative flex h-24 w-32 items-center justify-center rounded-lg bg-gray-50 transition-colors hover:bg-gray-100"
-      >
-        {preview ? (
-          <>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={handleClick}
+          className="relative flex h-24 w-32 items-center justify-center rounded-lg bg-gray-50 transition-colors hover:bg-gray-100"
+        >
+          {preview ? (
             <img
               src={preview}
               alt="Preview"
               className="h-full w-full rounded-lg object-cover"
             />
-            <button
-              onClick={handleRemove}
-              className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 bg-opacity-50 text-white hover:bg-opacity-70"
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </button>
-          </>
-        ) : (
-          <CameraIcon className="h-6 w-6 text-gray-400" />
+          ) : (
+            <CameraIcon className="h-6 w-6 text-gray-400" />
+          )}
+        </button>
+        {preview && (
+          <div
+            role="button"
+            onClick={handleRemove}
+            className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-gray-900 bg-opacity-50 text-white hover:bg-opacity-70"
+          >
+            <XMarkIcon className="h-4 w-4" />
+          </div>
         )}
-      </button>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { WriteButton } from '@/components/common/WriteButton';
 import ArenaList from '@/components/features/sight/ArenaList';
 
 export default function Sight() {
@@ -5,6 +6,7 @@ export default function Sight() {
     <div className="pt-16">
       {/* 헤더 높이만큼 상단 여백 추가 */}
       <ArenaList />
+      <WriteButton path="/sight/write" />
     </div>
   );
 }

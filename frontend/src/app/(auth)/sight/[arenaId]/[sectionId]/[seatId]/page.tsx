@@ -1,5 +1,6 @@
 import { SightReviewList } from '@/components/features/sight/SightReviewList';
 import ScrapMode from '@/components/features/sight/ScrapMode';
+import { WriteButton } from '@/components/common/WriteButton';
 
 export default function Page() {
   return (
@@ -10,6 +11,7 @@ export default function Page() {
       <div className="z-20">
         <SightReviewList />
       </div>
+      <WriteButton path="/sight/write" />
     </div>
   );
 }

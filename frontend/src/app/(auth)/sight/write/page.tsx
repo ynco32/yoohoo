@@ -1,11 +1,13 @@
-export default function WritePage() {
+import { WriteButton } from '@/components/common/WriteButton';
+import ArenaList from '@/components/features/sight/ArenaList';
+import SightReviewForm from '@/components/features/sight/SightReviewForm';
+import { SightReviewFormContainer } from '@/components/features/sight/SightReviewFormContainer';
+import FormContainer from '@/components/ui/FormContainer';
+
+export default function ReviewFormPage() {
   return (
-    <main className="h-[calc(100vh-64px)] bg-background-default">
-      <div className="h-full overflow-y-auto">
-        <div className="p-4">
-          <h1>writePage</h1>
-        </div>
-      </div>
-    </main>
+    <FormContainer>
+      <SightReviewFormContainer />
+    </FormContainer>
   );
 }

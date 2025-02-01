@@ -1,9 +1,9 @@
 // src/components/ui/form-section-header.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { FormSectionHeader } from '@/components/ui/FormSectionHeader';
+import { FormSectionHeader } from '@/components/features/sight/FormSectionHeader';
 
 const meta = {
-  title: 'UI/FormSectionHeader',
+  title: 'Features/sight/FormSectionHeader',
   component: FormSectionHeader,
   parameters: {
     layout: 'centered',

@@ -29,30 +29,26 @@ const NickNameModal = () => {
   };
 
   const handleCheckNickName = async () => {
-    // 요청 직전에 config와 헤더 확인
-    console.log('handleCheckNickName API 요청 설정:', api.defaults);
-    console.log(
-      'Authorization 헤더:',
-      api.defaults.headers.common['Authorization']
-    );
-
     if (!state.value.trim()) {
       setMessage('닉네임을 입력해주세요.', 'error');
       return;
     }
 
+    if (state.value.includes(' ')) {
+      setMessage('공백을 제거해주세요.', 'error');
+      return;
+    }
     setState((prev) => ({ ...prev, isLoading: true }));
+    // 요청 직전에 config와 헤더 확인
+    console.log('API 요청 설정:', api.defaults);
+    console.log(
+      'Authorization 헤더:',
+      api.defaults.headers.common['Authorization']
+    );
     try {
-      // 1. 요청 전 토큰과 닉네임 값만 확인
-      console.log('handleCheckNickName 전송할 닉네임:', state.value);
-      console.log('인증 토큰:', api.defaults.headers.common['Authorization']);
-
       const response = await api.get<boolean>(
         `/api/v1/login/nickname/check?nickname=${state.value}`
       );
-      // 응답 데이터 확인
-      console.log('서버 응답:', response.data); // true/false만 간단히 확인
-
       if (response.data) {
         setState((prev) => ({ ...prev, isChecked: true }));
         setMessage('사용 가능한 닉네임입니다.', 'success');

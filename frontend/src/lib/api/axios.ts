@@ -4,12 +4,9 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios';
-import { useRouter } from 'next/navigation';
-
-const router = useRouter();
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080',
   withCredentials: true, // 모든 요청에 브라우저가 자동으로 액세스, 리프레시 토큰을 포함하여 전송하도록 함.
 });
 
@@ -42,7 +39,8 @@ api.interceptors.response.use(
         return api(error.config);
       } catch (e) {
         // 이것마저 실패하면 로그인 창으로 다시 가기
-        router.push('/login');
+        console.log('토큰 갱신 실패');
+        window.location.href = '/login'; // 설정 파일에서는 라우터를 사용하지 못함. 그래서 window.location.href로 대체
         return Promise.reject(error);
       }
     }

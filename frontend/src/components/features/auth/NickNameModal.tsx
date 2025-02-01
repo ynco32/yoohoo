@@ -30,7 +30,7 @@ const NickNameModal = () => {
 
   const handleCheckNickName = async () => {
     // 요청 직전에 config와 헤더 확인
-    console.log('API 요청 설정:', api.defaults);
+    console.log('handleCheckNickName API 요청 설정:', api.defaults);
     console.log(
       'Authorization 헤더:',
       api.defaults.headers.common['Authorization']
@@ -43,22 +43,15 @@ const NickNameModal = () => {
 
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      // 요청 전에 설정 확인
-      console.log('handleCheckNickName 요청 전 설정값들:', {
-        baseURL: api.defaults.baseURL,
-        headers: api.defaults.headers,
-        nickname: state.value,
-      });
+      // 1. 요청 전 토큰과 닉네임 값만 확인
+      console.log('handleCheckNickName 전송할 닉네임:', state.value);
+      console.log('인증 토큰:', api.defaults.headers.common['Authorization']);
 
       const response = await api.get<boolean>(
         `/api/v1/login/nickname/check?nickname=${state.value}`
       );
       // 응답 데이터 확인
-      console.log('서버 응답:', {
-        status: response.status,
-        data: response.data,
-        headers: response.headers,
-      });
+      console.log('서버 응답:', response.data); // true/false만 간단히 확인
 
       if (response.data) {
         setState((prev) => ({ ...prev, isChecked: true }));
@@ -68,13 +61,12 @@ const NickNameModal = () => {
       }
     } catch (error) {
       setMessage('닉네임 중복 확인에 실패했습니다.', 'error');
-      // 4. 에러 상세 확인
+      // 에러의 기본 정보만 출력
       if (axios.isAxiosError(error)) {
-        // typeGaurd 사용
-        console.error('API 에러 발생:', {
-          message: error.message,
-          response: error.response?.data,
+        console.error('handleCheckNickName API Error:', {
           status: error.response?.status,
+          url: error.config?.url,
+          message: error.message,
         });
       }
     } finally {
@@ -102,23 +94,19 @@ const NickNameModal = () => {
 
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      // 요청 전에 설정 확인
-      console.log('handleSubmit 요청 전 설정값들:', {
-        baseURL: api.defaults.baseURL,
-        headers: api.defaults.headers,
-        nickname: state.value,
-      });
+      // API 요청 전 설정 확인
+      console.log('handleSubmit으로 전송할 닉네임:', state.value);
+      console.log(
+        'Authorization:',
+        api.defaults.headers.common['Authorization']
+      );
 
       const response = await api.post('/api/v1/login/nickname', {
         nickname: state.value,
       });
 
       // 응답 데이터 확인
-      console.log('서버 응답:', {
-        status: response.status,
-        data: response.data,
-        headers: response.headers,
-      });
+      console.log('handleSubmit에 대한 서버 응답:', response.data);
 
       if (response.status === 200) {
         setMessage('닉네임이 설정되었습니다.', 'success');
@@ -127,12 +115,12 @@ const NickNameModal = () => {
     } catch (error) {
       setMessage('닉네임 설정 중 오류가 발생했습니다.', 'error');
 
+      // 에러의 기본 정보만 출력
       if (axios.isAxiosError(error)) {
-        // typeGaurd 사용
-        console.error('API 에러 발생:', {
-          message: error.message,
-          response: error.response?.data,
+        console.error('handleSubmit API Error:', {
           status: error.response?.status,
+          url: error.config?.url,
+          message: error.message,
         });
       }
     } finally {
@@ -170,14 +158,11 @@ const NickNameModal = () => {
         <SubmitButton
           onClick={handleCheckNickName}
           disabled={state.isLoading}
-          className="bg-secondary hover:bg-secondary/80"
+          // className="bg-secondary hover:bg-secondary/80"
         >
           중복확인
         </SubmitButton>
-        <SubmitButton
-          onClick={handleSubmit}
-          disabled={state.isLoading || !state.isChecked}
-        >
+        <SubmitButton onClick={handleSubmit} disabled={state.isLoading}>
           {state.isLoading ? '처리중...' : '설정'}
         </SubmitButton>
       </div>

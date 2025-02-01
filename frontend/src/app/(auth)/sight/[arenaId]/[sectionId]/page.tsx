@@ -4,13 +4,11 @@ import { SeatList } from '@/components/features/sight/SeatList';
 
 export default function Page() {
   return (
-    <div className="relative min-h-screen bg-gray-50">
-      <div className="container mx-auto flex min-h-screen justify-center">
+    <main className="h-[calc(100vh-64px)] bg-background-default">
+      <div className="relative z-20 flex h-full flex-col items-center">
         <ScrapMode />
-      </div>
-      <div className="z-20">
         <SightReviewList />
       </div>
-    </div>
+    </main>
   );
 }

@@ -2,11 +2,10 @@ import { ScrapMode } from '@/components/features/sight/ScrapMode';
 
 export default function Page() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="pt-16"></div>
-      <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-8">
+    <main className="h-[calc(100vh-64px)] bg-background-default">
+      <div className="container mx-auto flex h-full items-center justify-center px-4 py-8">
         <ScrapMode />
       </div>
-    </div>
+    </main>
   );
 }

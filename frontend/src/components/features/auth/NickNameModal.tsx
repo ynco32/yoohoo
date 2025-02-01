@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 import api from '@/lib/api/axios';
+import axios, { AxiosError } from 'axios';
 
 interface NickNameState {
   value: string;
@@ -56,6 +57,14 @@ const NickNameModal = () => {
       }
     } catch (error) {
       setMessage('닉네임 중복 확인에 실패했습니다.', 'error');
+      // 에러의 기본 정보만 출력
+      if (axios.isAxiosError(error)) {
+        console.error('handleCheckNickName API Error:', {
+          status: error.response?.status,
+          url: error.config?.url,
+          message: error.message,
+        });
+      }
     } finally {
       setState((prev) => ({ ...prev, isLoading: false }));
     }
@@ -81,15 +90,35 @@ const NickNameModal = () => {
 
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
+      // API 요청 전 설정 확인
+      console.log('handleSubmit으로 전송할 닉네임:', state.value);
+      console.log(
+        'Authorization:',
+        api.defaults.headers.common['Authorization']
+      );
+
       const response = await api.post('/api/v1/login/nickname', {
         nickname: state.value,
       });
+
+      // 응답 데이터 확인
+      console.log('handleSubmit에 대한 서버 응답:', response.data);
+
       if (response.status === 200) {
         setMessage('닉네임이 설정되었습니다.', 'success');
         router.push('/main');
       }
     } catch (error) {
       setMessage('닉네임 설정 중 오류가 발생했습니다.', 'error');
+
+      // 에러의 기본 정보만 출력
+      if (axios.isAxiosError(error)) {
+        console.error('handleSubmit API Error:', {
+          status: error.response?.status,
+          url: error.config?.url,
+          message: error.message,
+        });
+      }
     } finally {
       setState((prev) => ({ ...prev, isLoading: false }));
     }
@@ -125,14 +154,11 @@ const NickNameModal = () => {
         <SubmitButton
           onClick={handleCheckNickName}
           disabled={state.isLoading}
-          className="bg-secondary hover:bg-secondary/80"
+          // className="bg-secondary hover:bg-secondary/80"
         >
           중복확인
         </SubmitButton>
-        <SubmitButton
-          onClick={handleSubmit}
-          disabled={state.isLoading || !state.isChecked}
-        >
+        <SubmitButton onClick={handleSubmit} disabled={state.isLoading}>
           {state.isLoading ? '처리중...' : '설정'}
         </SubmitButton>
       </div>

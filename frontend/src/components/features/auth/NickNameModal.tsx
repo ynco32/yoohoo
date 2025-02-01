@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitButton } from '@/components/ui/SubmitButton';
@@ -24,24 +24,32 @@ const NickNameModal = () => {
   });
 
   const setMessage = (text: string, type: 'success' | 'error' | 'none') => {
-    setState(prev => ({ ...prev, message: { text, type } }));
+    setState((prev) => ({ ...prev, message: { text, type } }));
   };
 
   const handleCheckNickName = async () => {
-     // 요청 직전에 config와 헤더 확인
-    console.log('API 요청 설정:', api.defaults);
-    console.log('Authorization 헤더:', api.defaults.headers.common['Authorization']);
-    
     if (!state.value.trim()) {
       setMessage('닉네임을 입력해주세요.', 'error');
       return;
     }
 
-    setState(prev => ({ ...prev, isLoading: true }));
+    if (state.value.includes(' ')) {
+      setMessage('공백을 제거해주세요.', 'error');
+      return;
+    }
+    setState((prev) => ({ ...prev, isLoading: true }));
+    // 요청 직전에 config와 헤더 확인
+    console.log('API 요청 설정:', api.defaults);
+    console.log(
+      'Authorization 헤더:',
+      api.defaults.headers.common['Authorization']
+    );
     try {
-      const response = await api.get<boolean>(`/api/v1/login/nickname/check?nickname=${state.value}`);
+      const response = await api.get<boolean>(
+        `/api/v1/login/nickname/check?nickname=${state.value}`
+      );
       if (response.data) {
-        setState(prev => ({ ...prev, isChecked: true }));
+        setState((prev) => ({ ...prev, isChecked: true }));
         setMessage('사용 가능한 닉네임입니다.', 'success');
       } else {
         setMessage('이미 사용중인 닉네임입니다.', 'error');
@@ -49,15 +57,18 @@ const NickNameModal = () => {
     } catch (error) {
       setMessage('닉네임 중복 확인에 실패했습니다.', 'error');
     } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
   const handleSubmit = async () => {
-     // 요청 직전에 config와 헤더 확인
-     console.log('API 요청 설정:', api.defaults);
-     console.log('Authorization 헤더:', api.defaults.headers.common['Authorization']);
- 
+    // 요청 직전에 config와 헤더 확인
+    console.log('API 요청 설정:', api.defaults);
+    console.log(
+      'Authorization 헤더:',
+      api.defaults.headers.common['Authorization']
+    );
+
     if (!state.isChecked) {
       setMessage('닉네임 중복 확인을 해주세요.', 'error');
       return;
@@ -68,9 +79,11 @@ const NickNameModal = () => {
       return;
     }
 
-    setState(prev => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      const response = await api.post('/api/v1/login/nickname', { nickname: state.value });
+      const response = await api.post('/api/v1/login/nickname', {
+        nickname: state.value,
+      });
       if (response.status === 200) {
         setMessage('닉네임이 설정되었습니다.', 'success');
         router.push('/main');
@@ -78,7 +91,7 @@ const NickNameModal = () => {
     } catch (error) {
       setMessage('닉네임 설정 중 오류가 발생했습니다.', 'error');
     } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -95,10 +108,10 @@ const NickNameModal = () => {
             type="text"
             value={state.value}
             onChange={(e) => {
-              setState(prev => ({
+              setState((prev) => ({
                 ...prev,
                 value: e.target.value,
-                isChecked: false
+                isChecked: false,
               }));
             }}
             placeholder="닉네임을 입력하세요"
@@ -108,16 +121,16 @@ const NickNameModal = () => {
         </div>
       </div>
 
-      <div className="flex gap-2 justify-end">
-        <SubmitButton 
+      <div className="flex justify-end gap-2">
+        <SubmitButton
           onClick={handleCheckNickName}
           disabled={state.isLoading}
           className="bg-secondary hover:bg-secondary/80"
         >
           중복확인
         </SubmitButton>
-        <SubmitButton 
-          onClick={handleSubmit} 
+        <SubmitButton
+          onClick={handleSubmit}
           disabled={state.isLoading || !state.isChecked}
         >
           {state.isLoading ? '처리중...' : '설정'}
@@ -125,9 +138,11 @@ const NickNameModal = () => {
       </div>
 
       {state.message.text && (
-        <p className={`mt-2 text-center text-sm ${
-          state.message.type === 'success' ? 'text-green-500' : 'text-red-500'
-        }`}>
+        <p
+          className={`mt-2 text-center text-sm ${
+            state.message.type === 'success' ? 'text-green-500' : 'text-red-500'
+          }`}
+        >
           {state.message.text}
         </p>
       )}

@@ -183,7 +183,7 @@ export const SightReviewForm = ({
           description="시야를 촬영한 사진을 업로드해주세요"
         />
         <div className="flex gap-4">
-          {[0, 1, 2].map((index) => (
+          {[0].map((index) => (
             <ImageUpload
               key={index}
               value={formData.images[index]}

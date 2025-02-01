@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 
 		if (shouldNotFilter(request)) {
+			System.out.println("필터 X");
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -107,6 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getServletPath();
+		System.out.println("필터 검증");
 		System.out.println(path);
 		return path.startsWith("/oauth2") ||
 			path.startsWith("/login") ||

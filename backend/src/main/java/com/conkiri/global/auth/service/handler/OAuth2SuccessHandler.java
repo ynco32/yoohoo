@@ -35,7 +35,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
-
+		log.info("OAuth2 Success Handler 진입");
+		log.info("Authentication Principal: {}", authentication.getPrincipal());
+		log.info("Received State: {}", request.getParameter("state"));
+		log.info("Received Code: {}", request.getParameter("code"));
+		log.info("OAuth2 Success: {}", authentication);
 		CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();
 
@@ -56,7 +60,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 
 		boolean isNewUser = oAuth2User.getNickname() == null;
-		String targetUrl = isNewUser ? frontendUrl + "/nick" : frontendUrl + "/";
+		String targetUrl = isNewUser ? frontendUrl + "/login/nick" : frontendUrl + "/main";
 		log.info("Redirecting to: {}", targetUrl);  // 로그 추가
 		response.sendRedirect(targetUrl);
 
@@ -64,7 +68,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private void addAccessTokenCookie(HttpServletResponse response, String accessToken) {
 		Cookie cookie = new Cookie("access_token", accessToken);
-		cookie.setSecure(true);
+		cookie.setSecure(false);
 		cookie.setPath("/");
 		cookie.setDomain(serverDomain);
 		cookie.setMaxAge(3600); // 1시간
@@ -74,7 +78,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
 		Cookie cookie = new Cookie("refresh_token", refreshToken);
 		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
+		cookie.setSecure(false);
 		cookie.setPath("/");
 		cookie.setMaxAge(14 * 24 * 60 * 60); // 14일
 		cookie.setDomain(serverDomain); // 도메인 설정 추가

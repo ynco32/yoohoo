@@ -55,8 +55,8 @@ public class Sharing extends BaseTime {
 
 	@Column(name = "status")
 	@Enumerated(EnumType.STRING)
-	@ColumnDefault("'BEFORE'")
-	private Status status = Status.BEFORE;
+	@ColumnDefault("'UPCOMING'")
+	private Status status = Status.UPCOMING;
 
 	@Column(name = "start_time")
 	private LocalDateTime startTime;

@@ -1,5 +1,8 @@
 package com.conkiri.domain.base.dto.response;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Slice;
 
 import com.conkiri.domain.base.entity.Concert;
@@ -15,13 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConcertResponseDTO {
 
-	private Slice<ConcertDetailResponseDTO> concerts;
+	private List<ConcertDetailResponseDTO> concerts;
 	private boolean isLastPage;
 
-	public static ConcertResponseDTO from(Slice<Concert> concerts) {
+	public static ConcertResponseDTO from(List<Concert> concerts, boolean hasNext) {
 		return ConcertResponseDTO.builder()
-			.concerts(concerts.map(ConcertDetailResponseDTO::from))
-			.isLastPage(!concerts.hasNext())
+			.concerts(concerts.stream()
+				.map(ConcertDetailResponseDTO::from)
+				.collect(Collectors.toList()))
+			.isLastPage(!hasNext)
 			.build();
 	}
 }

@@ -17,12 +17,14 @@ import lombok.NoArgsConstructor;
 public class CommentResponseDTO {
 
 	private List<CommentDetailResponseDTO> comments;
+	private boolean isLastPage;
 
-	public static CommentResponseDTO from(List<Comment> comments) {
-		return CommentResponseDTO.builder()
+	public static CommentResponseDTO from(List<Comment> comments, boolean hasNext) {
+        return CommentResponseDTO.builder()
 			.comments(comments.stream()
 				.map(CommentDetailResponseDTO::from)
 				.collect(Collectors.toList()))
+			.isLastPage(!hasNext)
 			.build();
 	}
 }

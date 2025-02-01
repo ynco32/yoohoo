@@ -14,14 +14,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.conkiri.global.auth.service.handler.OAuth2SuccessHandler;
 import com.conkiri.global.auth.oauth.service.OAuth2UserService;
+import com.conkiri.global.auth.service.handler.OAuth2SuccessHandler;
 import com.conkiri.global.auth.token.JwtAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-// global/config/auth/SecurityConfig.java
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -47,12 +48,30 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
+				.authorizationEndpoint(endpoint ->
+					endpoint.baseUri("/oauth2/authorization")
+				)
 				.userInfoEndpoint(userInfo ->
 					userInfo.userService(oAuth2UserService)
 				)
 				.successHandler(oAuth2SuccessHandler)
 				.failureHandler((request, response, exception) -> {
-					// OAuth 실패 시 401 반환
+					// OAuth 실패 시 상세 로깅
+					log.error("OAuth2 failure: {}", exception.getMessage());
+					log.info("Original State: {}", request.getSession().getAttribute("OAUTH2_STATE"));
+					log.info("Received State: {}", request.getParameter("state"));
+					log.info(request.getRequestURI());
+					log.info("Code: {}", request.getParameter("code"));
+					log.info("Error: {}", request.getParameter("error"));
+					log.info("Error Description: {}", request.getParameter("error_description"));
+
+					// 인증 코드 유효성 관련 에러 체크
+					if (exception.getMessage().contains("invalid_grant")) {
+						log.error("인증 코드가 만료되었거나 이미 사용됨");
+					}
+					if (request.getParameter("state") == null) {
+						log.error("state 파라미터가 누락됨");
+					}
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				})
 			)

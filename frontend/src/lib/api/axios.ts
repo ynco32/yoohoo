@@ -4,9 +4,6 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios';
-import { useRouter } from 'next/navigation';
-
-const router = useRouter();
 
 const api = axios.create({
   // baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
@@ -23,6 +20,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('요청 헤더:', config.headers); // 헤더에 토큰이 포함되어 있는지 확인
   }
   return config;
 });
@@ -42,7 +40,8 @@ api.interceptors.response.use(
         return api(error.config);
       } catch (e) {
         // 이것마저 실패하면 로그인 창으로 다시 가기
-        router.push('/login');
+        console.log('토큰 갱신 실패');
+        window.location.href = '/login'; // 설정 파일에서는 라우터를 사용하지 못함. 그래서 window.location.href로 대체
         return Promise.reject(error);
       }
     }

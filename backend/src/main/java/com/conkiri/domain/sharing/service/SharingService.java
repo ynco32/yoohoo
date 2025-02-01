@@ -1,7 +1,6 @@
 package com.conkiri.domain.sharing.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,12 +92,12 @@ public class SharingService {
 	 * @param concertId
 	 * @return
 	 */
-	public SharingResponseDTO getSharingList(Long concertId) {
+	public SharingResponseDTO getSharingList(Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
 
 		Concert concert = findConcertByIdOrElseThrow(concertId);
 
-		List<Sharing> sharings = sharingRepository.findByConcert(concert);
-		return SharingResponseDTO.from(sharings);
+		return sharingRepository.findSharings(concert, lastSharingId, pageable);
 	}
 
 	/**
@@ -116,11 +115,12 @@ public class SharingService {
 	 * @param sharingId
 	 * @return
 	 */
-	public CommentResponseDTO getSharingCommentList(Long sharingId) {
+	public CommentResponseDTO getSharingCommentList(Long sharingId, Long lastCommentId) {
+		Pageable pageable = Pageable.ofSize(10);
+
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
-		List<Comment> comments = commentRepository.findCommentsBySharing(sharing);
-		return CommentResponseDTO.from(comments);
+		return commentRepository.findComments(sharing, lastCommentId, pageable);
 	}
 
 	/**
@@ -185,6 +185,38 @@ public class SharingService {
 		Comment comment = findCommentByIdOrElseThrow(commentId);
 
 		commentRepository.delete(comment);
+	}
+
+	/**
+	 * 회원이 등록한 해당 공연의 나눔 게시글 조회
+	 * @param concertId
+	 * @param userId
+	 * @param lastSharingId
+	 * @return
+	 */
+	public SharingResponseDTO getWroteSharingList(Long userId, Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
+
+		User user = findUserByIdOrElseThrow(userId);
+		Concert concert = findConcertByIdOrElseThrow(concertId);
+
+		return sharingRepository.findWroteSharings(user, concert, lastSharingId, pageable);
+	}
+
+	/**
+	 * 회원이 스크랩한 해당 공연의 나눔 게시글 조회
+	 * @param userId
+	 * @param concertId
+	 * @param lastSharingId
+	 * @return
+	 */
+	public SharingResponseDTO getScrappedSharingList(Long userId, Long concertId, Long lastSharingId) {
+		Pageable pageable = Pageable.ofSize(10);
+
+		User user = findUserByIdOrElseThrow(userId);
+		Concert concert = findConcertByIdOrElseThrow(concertId);
+
+		return sharingRepository.findScrappedSharings(user, concert, lastSharingId, pageable);
 	}
 
 	// ===============================================내부 메서드===================================================== //

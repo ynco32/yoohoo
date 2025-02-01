@@ -12,14 +12,15 @@ const api = axios.create({
 
 // 모든 요청 보내기 전에 실행
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  console.log('axios api 요청 전 확인 출력');
   const token = document.cookie
     .split('; ')
-    .find((row) => row.startsWith('accessToken='))
+    .find((row) => row.startsWith('access_token='))
     ?.split('=')[1];
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('요청 헤더:', config.headers); // 헤더에 토큰이 포함되어 있는지 확인  
+    console.log('요청 헤더:', config.headers); // 헤더에 토큰이 포함되어 있는지 확인
   }
   return config;
 });

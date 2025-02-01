@@ -9,7 +9,8 @@ import { useRouter } from 'next/navigation';
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  // baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
+  baseURL: 'http://i12b207.p.ssafy.io:8080',
   withCredentials: true, // 모든 요청에 브라우저가 자동으로 액세스, 리프레시 토큰을 포함하여 전송하도록 함.
 });
 

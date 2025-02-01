@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { SeatSelect } from '@/components/features/sight/SeatSelect';
 
 const meta = {
-  title: 'Feature/sight/SeatSelect',
+  title: 'Features/sight/SeatSelect',
   component: SeatSelect,
   parameters: {
     layout: 'centered',
@@ -73,25 +73,5 @@ export const Playground: Story = {
     onChange: (value: any) => {
       console.log('Seat info changed:', value);
     },
-  },
-};
-
-// Interactive 데모를 위한 스토리
-export const Interactive: Story = {
-  render: () => {
-    const [seatInfo, setSeatInfo] = React.useState({
-      section: '',
-      row: '',
-      number: '',
-    });
-
-    return (
-      <div className="space-y-4">
-        <SeatSelect value={seatInfo} onChange={setSeatInfo} />
-        <div className="mt-4 rounded-lg bg-gray-50 p-4">
-          <pre className="text-sm">{JSON.stringify(seatInfo, null, 2)}</pre>
-        </div>
-      </div>
-    );
   },
 };

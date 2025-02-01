@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ImageUpload } from '@/components/features/sight/ImageUpload';
 
 const meta = {
-  title: 'Feature/sight/ImageUpload',
+  title: 'Features/sight/ImageUpload',
   component: ImageUpload,
   parameters: {
     layout: 'centered',

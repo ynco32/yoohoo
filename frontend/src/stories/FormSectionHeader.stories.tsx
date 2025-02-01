@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { FormSectionHeader } from '@/components/features/sight/FormSectionHeader';
 
 const meta = {
-  title: 'Feature/sight/FormSectionHeader',
+  title: 'Features/sight/FormSectionHeader',
   component: FormSectionHeader,
   parameters: {
     layout: 'centered',

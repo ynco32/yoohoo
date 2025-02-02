@@ -1,5 +1,6 @@
+// ConcertSelect.tsx
 import React, { useMemo } from 'react';
-import { FormSectionHeader } from '@/components/ui/FormSectionHeader';
+import { FormSectionHeader } from '@/components/features/sight/FormSectionHeader';
 
 interface Concert {
   concertId: string;
@@ -62,11 +63,15 @@ const Select = ({
 
 interface ConcertSelectProps {
   artist?: string;
+  value?: string;
+  onChange?: (value: string) => void;
   className?: string;
 }
 
 export const ConcertSelect = ({
   artist,
+  value,
+  onChange,
   className = '',
 }: ConcertSelectProps) => {
   // 실제 사용시에는 API나 props로 받아올 데이터
@@ -96,6 +101,8 @@ export const ConcertSelect = ({
       />
       <Select
         options={filteredConcerts}
+        value={value}
+        onChange={onChange}
         placeholder={
           artist ? `${artist}의 콘서트를 선택해주세요` : '콘서트를 선택해주세요'
         }

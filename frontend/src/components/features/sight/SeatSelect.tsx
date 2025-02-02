@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormSectionHeader } from '@/components/ui/FormSectionHeader';
+import { FormSectionHeader } from '@/components/features/sight/FormSectionHeader';
 
 interface SeatInfo {
   section: string;

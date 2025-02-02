@@ -31,12 +31,13 @@ services:
       - backend
 
   mysql:
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     image: mysql:8.0.4     # MySQL 이미지
+    healthcheck:
+      test: ["CMD", "mysql", "--user=${MYSQL_USER}", "--password=${MYSQL_PASSWORD}", "-e", "SELECT 1"]
+      interval: 5s    # 5초마다 체크
+      timeout: 3s     # 체크 타임아웃 3초
+      retries: 3      # 3번 재시도
+      start_period: 15s  # 초기 시작 대기 시간 15초
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=conkiri

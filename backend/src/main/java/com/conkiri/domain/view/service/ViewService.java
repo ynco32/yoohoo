@@ -16,6 +16,7 @@ import com.conkiri.domain.base.repository.SeatRepository;
 import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
+import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
@@ -26,8 +27,10 @@ import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.domain.view.repository.ScrapSeatRepository;
+import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
+import com.conkiri.global.exception.view.DuplicateReviewException;
 import com.conkiri.global.exception.view.DuplicateScrapSeatException;
 import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
@@ -60,7 +63,7 @@ public class ViewService {
 		return SectionResponseDTO.of(sections, stageType);
 	}
 
-	public ReviewResponseDTO getReviews(Long arenaId, Long sectionId, Integer stageType, Integer rowLine, Integer columnLine) {
+	public ReviewResponseDTO getReviews(Long arenaId, Long sectionId, Integer stageType, Long rowLine, Long columnLine) {
 		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
 
@@ -156,6 +159,38 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
+	@Transactional
+	public void createReview(ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
+
+		User user = findUserByUserIdOrElseThrow(userId);
+		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
+		Section section = sectionRepository.findSecctionBySectionId(reviewRequestDTO.getSectionId());
+
+		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
+			reviewRequestDTO.getRowLine(),
+			reviewRequestDTO.getColumnLine(),
+			section
+		);
+
+		if(reviewRepository.existsByUserAndSeatAndConcert(user, seat, concert)) {
+			throw new DuplicateReviewException();
+		}
+
+		Review review = Review.builder()
+			.content(reviewRequestDTO.getContent())
+			.viewScore(reviewRequestDTO.getViewScore())
+			.seatDistance(reviewRequestDTO.getSeatDistance())
+			.sound(reviewRequestDTO.getSound())
+			.photoUrl(photoUrl)
+			.stageType(reviewRequestDTO.getStageType())
+			.user(user)
+			.seat(seat)
+			.concert(concert)
+			.build();
+
+		reviewRepository.save(review);
+	}
+
 	// ---------- 내부 메서드 ----------
 
 	private User findUserByUserIdOrElseThrow(Long userId) {
@@ -174,7 +209,7 @@ public class ViewService {
 
 	}
 
-	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Integer rowLine, Integer columnLine, Section section) {
+	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Long rowLine, Long columnLine, Section section) {
 		return seatRepository.findByRowLineAndColumnLineAndSection(rowLine, columnLine, section)
 			.orElseThrow(SeatNotFoundException::new);
 	}
@@ -182,5 +217,10 @@ public class ViewService {
 	private Seat findSeatBySeatIdOrElseThrow(Long seatId) {
 		return seatRepository.findById(seatId)
 			.orElseThrow(SeatNotFoundException::new);
+	}
+
+	private Concert findConcertByConcertIdOrElseThrow(Long concertId) {
+		return concertRepository.findConcertByConcertId(concertId)
+			.orElseThrow(ConcertNotFoundException::new);
 	}
 }

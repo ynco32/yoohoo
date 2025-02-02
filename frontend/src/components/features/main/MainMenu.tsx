@@ -6,11 +6,12 @@ import { SVGIcons } from '@/assets/svgs';
 export default function MainMenu() {
   const menuItems: MenuItemProps[] = [
     {
-      icon: 'SightIcon', // string으로 변경
+      icon: 'SightIcon',
       label: '시야 보기',
       description: '시야 후기 보기',
       layout: 'large',
       href: '/sight',
+      className: 'bg-sight-menu rounded-menu shadow-menu',
     },
     {
       icon: 'SharingIcon',
@@ -18,6 +19,7 @@ export default function MainMenu() {
       href: '/sharing',
       description: '시야 후기 보기',
       layout: 'default',
+      className: 'bg-sharing-menu rounded-menu shadow-menu',
     },
     {
       icon: 'TicketIcon',
@@ -25,6 +27,7 @@ export default function MainMenu() {
       href: '/ticketing',
       description: '시야 후기 보기',
       layout: 'default',
+      className: 'bg-ticket-menu rounded-menu shadow-menu',
     },
     {
       icon: 'CongestionIcon',
@@ -32,6 +35,7 @@ export default function MainMenu() {
       href: '/congestion',
       description: '시야 후기 보기',
       layout: 'wide',
+      className: 'bg-congestion-menu rounded-menu shadow-menu',
     },
   ];
 
@@ -46,6 +50,7 @@ export default function MainMenu() {
             description={item.description}
             layout={item.layout}
             href={item.href}
+            className={item.className}
           />
         ))}
       </div>

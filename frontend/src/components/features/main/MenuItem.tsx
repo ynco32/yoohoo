@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { IconWrapper } from '../../ui/IconWrapper';
 import { MenuCard } from '../../ui/MenuCard';
 import { SVGIconName } from '@/assets/svgs';
-// MenuItem.tsx
 export interface MenuItemProps {
   icon: SVGIconName;
   label: string;
@@ -32,9 +31,9 @@ export const MenuItem = ({
   return (
     <MenuCard
       onClick={() => router.push(href)}
-      className={`${className} ${layoutClasses[layout]}`}
+      className={`relative flex flex-col justify-between overflow-hidden p-4 ${className} ${layoutClasses[layout]}`}
     >
-      <IconWrapper icon={icon} label={label} />
+      <IconWrapper icon={icon} label={label} description={description} />
     </MenuCard>
   );
 };

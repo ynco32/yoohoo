@@ -1,6 +1,28 @@
 version: '3.8'           # docker-compose 버전
 
 services:
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - frontend
+      - backend
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email gksmfthsus35@naver.com -d i12b207.p.ssafy.io --agree-tos
+    depends_on:
+      - nginx
+
   backend:
     build: ./backend     # backend Dockerfile 위치
     ports:

@@ -45,9 +45,8 @@ export const SharingDetailHeader = ({
     }
   };
 
-  // startTime 포맷팅 함수 추가
+  // startTime 포맷팅 함수
   const formatTime = (timeString: string) => {
-    // T를 기준으로 분리하고 뒷부분 사용
     return timeString.split('T')[1];
   };
 
@@ -57,13 +56,13 @@ export const SharingDetailHeader = ({
         <div className="flex items-center justify-between gap-2">
           <div className="relative h-10 w-10">
             {' '}
-            {/* 원형 프로필 이미지를 위한 컨테이너 */}
+            {/* 원형 프로필 */}
             <Image
               src={profileImage}
               alt="프로필"
               fill
               sizes="40px"
-              className="rounded-full object-cover" // 원형과 이미지 비율 조정
+              className="rounded-full object-cover"
             />
           </div>
           <div>

@@ -14,19 +14,32 @@ module.exports = {
       'desktop-l': '1440px',
     },
     extend: {
+      backgroundImage: {
+        'congestion-menu':
+          'radial-gradient(50% 100% at 50% 0%, #DEFFE8 0%, #FFF 100%)',
+        'ticket-menu':
+          'radial-gradient(81.04% 94.42% at 0% 0%, #F8EDFF 0%, #FFF 100%)',
+        'sharing-menu':
+          'radial-gradient(71.76% 83.6% at 0% 100%, #FAFFD7 0%, #FFF 100%)',
+        'sight-menu':
+          'radial-gradient(50% 100% at 100% 50%, #E0F5FF 0%, #FFF 93.5%)',
+      },
+      borderRadius: {
+        menu: '12.273px',
+        card: '15px',
+        layout: '20px',
+      },
+      boxShadow: {
+        menu: '3.068px 3.068px 20.455px 0px rgba(106, 160, 205, 0.25)',
+        card: '0px 4px 10px 0px rgba(0,0,0,0.25)',
+      },
       minHeight: {
         screen: ['100vh', '100dvh'],
       },
       height: {
         card: '140px',
       },
-      borderRadius: {
-        card: '15px',
-        layout: '20px',
-      },
-      boxShadow: {
-        card: '0px 4px 10px 0px rgba(0,0,0,0.25)',
-      },
+
       fontSize: {
         body: ['16px', { fontWeight: '400', lineHeight: '24px' }],
         'body-bold': ['16px', { fontWeight: '500', lineHeight: '20px' }],

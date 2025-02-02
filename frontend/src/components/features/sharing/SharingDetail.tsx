@@ -3,6 +3,7 @@
 import { SharingDetailHeader } from './SharingDetailHeader';
 import { SharingStatus } from '@/types/sharing';
 import { SharingDetailImages } from './SharingDetailImages';
+import { SharingDetailContent } from './SharingDetailContent';
 
 interface SharingDetailProps {
   id: number;
@@ -35,12 +36,17 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
 
       {/* 2. 이미지 그리드 */}
       <div className="grid grid-cols-2 gap-1 p-4">
-      <SharingDetailImages images={detailData.photoUrl} />
+      <SharingDetailImages image={detailData.photoUrl} />
         {/* 이미지 컴포넌트들 */}
       </div>
 
       {/* 3. 상세 정보 */}
-      <div className="bg-gray-100 p-4">{/* 날짜, 수량 등 정보 */}</div>
+      <div className="bg-gray-100 p-4">{/* 날짜, 수량 등 정보 */}
+      <SharingDetailContent 
+        content={detailData.content}
+        startTime={detailData.startTime}
+      />
+      </div>
 
       {/* 4. 지도 */}
       <div className="h-[200px] p-4">{/* 카카오맵 컴포넌트 */}</div>

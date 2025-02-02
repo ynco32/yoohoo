@@ -1,4 +1,3 @@
-// tailwind.config.js
 module.exports = {
   content: [
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -41,6 +40,8 @@ module.exports = {
       },
 
       fontSize: {
+        menu: ['20px', { fontWeight: '700', lineHeight: '25px' }],
+        'menu-description': ['12px', { fontWeight: '700', lineHeight: '16px' }],
         body: ['16px', { fontWeight: '400', lineHeight: '24px' }],
         'body-bold': ['16px', { fontWeight: '500', lineHeight: '20px' }],
         caption1: ['14px', { fontWeight: '400', lineHeight: '20px' }],
@@ -137,6 +138,10 @@ module.exports = {
           200: '#BFC0CB',
           100: '#DBDBE1',
           50: '#F7F7F8',
+        },
+        text: {
+          menu: '#515151',
+          description: '#919191',
         },
       },
     },

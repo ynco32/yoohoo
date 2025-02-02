@@ -171,8 +171,7 @@ public class ViewService {
 			throw new DuplicateReviewException();
 		}
 
-		Review review = Review.createReview(reviewRequestDTO, photoUrl, user, seat, concert);
-		reviewRepository.save(review);
+		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
 	}
 
 	// ---------- 내부 메서드 ----------

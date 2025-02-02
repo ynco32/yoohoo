@@ -69,7 +69,7 @@ public class Review extends BaseTime {
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
 
-	public static Review createReview(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
+	public static Review of(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
 		return Review.builder()
 			.content(reviewRequestDTO.getContent())
 			.viewScore(reviewRequestDTO.getViewScore())

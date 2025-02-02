@@ -133,12 +133,7 @@ public class ViewService {
 			throw new DuplicateScrapSeatException();
 		}
 
-		ScrapSeat scrapSeat = ScrapSeat.builder()
-			.user(user)
-			.seat(seat)
-			.stageType(selectedType)
-			.build();
-
+		ScrapSeat scrapSeat = ScrapSeat.createScrapSeat(user, seat, selectedType);
 		scrapSeatRepository.save(scrapSeat);
 	}
 
@@ -176,18 +171,7 @@ public class ViewService {
 			throw new DuplicateReviewException();
 		}
 
-		Review review = Review.builder()
-			.content(reviewRequestDTO.getContent())
-			.viewScore(reviewRequestDTO.getViewScore())
-			.seatDistance(reviewRequestDTO.getSeatDistance())
-			.sound(reviewRequestDTO.getSound())
-			.photoUrl(photoUrl)
-			.stageType(reviewRequestDTO.getStageType())
-			.user(user)
-			.seat(seat)
-			.concert(concert)
-			.build();
-
+		Review review = Review.createReview(reviewRequestDTO, photoUrl, user, seat, concert);
 		reviewRepository.save(review);
 	}
 

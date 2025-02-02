@@ -25,6 +25,7 @@ module.exports = {
       },
       borderRadius: {
         menu: '12.273px',
+        userProfile: '30px',
         card: '15px',
         layout: '20px',
       },
@@ -115,7 +116,7 @@ module.exports = {
         },
         secondary: {
           400: '#99D7FF',
-          300: '#D0EEF9',
+          300: '#C2E9FF',
         },
         background: {
           default: '#FCFCFC',

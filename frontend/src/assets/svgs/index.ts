@@ -6,7 +6,7 @@ export type SVGIconComponent = FunctionComponent<SVGIconProps>;
 
 export const SVGIcons = {
   Artwork: '/svgs/Artwork.svg',
-  BG: '/svgs/BG.svg',
+  ProfileBg: '/svgs/main/ProfileBg.svg',
   Conkiri: '/svgs/conkiri.svg',
   Logo: '/svgs/logo.svg',
   SharingIcon: '/svgs/main/SharingIcon.svg',
@@ -21,7 +21,7 @@ export const SVGIcons = {
 
 // Individual exports
 export const Artwork = '/svgs/Artwork.svg';
-export const BG = '/svgs/BG.svg';
+export const ProfileBg = '/svgs/main/ProfileBg.svg';
 export const CongestionIcon = '/svgs/main/CongestionIcon.svg';
 export const Conkiri = '/svgs/conkiri.svg';
 export const Logo = '/svgs/logo.svg';

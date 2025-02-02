@@ -82,4 +82,15 @@ public class Review extends BaseTime {
 			.concert(concert)
 			.build();
 	}
+
+	public void update(ReviewRequestDTO reviewRequestDTO, String photoUrl, Seat seat, Concert concert) {
+		this.content = reviewRequestDTO.getContent();
+		this.viewScore = reviewRequestDTO.getViewScore();
+		this.seatDistance = reviewRequestDTO.getSeatDistance();
+		this.sound = reviewRequestDTO.getSound();
+		this.stageType = reviewRequestDTO.getStageType();
+		this.photoUrl = photoUrl;
+		this.seat = seat;
+		this.concert = concert;
+	}
 }

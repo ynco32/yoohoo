@@ -27,21 +27,24 @@ import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.domain.view.repository.ScrapSeatRepository;
+import com.conkiri.global.exception.auth.UnAuthorizedException;
 import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.view.DuplicateReviewException;
 import com.conkiri.global.exception.view.DuplicateScrapSeatException;
+import com.conkiri.global.exception.view.ReviewNotFoundException;
 import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
+import com.conkiri.global.exception.view.UnauthorizedAccessException;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ViewService {
 
 	private final ArenaRepository arenaRepository;
@@ -123,7 +126,6 @@ public class ViewService {
 		return ScrapSeatResponseDTO.from(scraps);
 	}
 
-	@Transactional
 	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 		StageType selectedType = StageType.values()[stageType];
@@ -137,7 +139,6 @@ public class ViewService {
 		scrapSeatRepository.save(scrapSeat);
 	}
 
-	@Transactional
 	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 		StageType selectedType = StageType.values()[stageType];
@@ -154,7 +155,6 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
-	@Transactional
 	public void createReview(ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
 
 		User user = findUserByUserIdOrElseThrow(userId);
@@ -172,6 +172,36 @@ public class ViewService {
 		}
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
+	}
+
+	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
+		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+
+		// 작성자 본인 여부 확인
+		if(!review.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+
+		Section section = sectionRepository.findSecctionBySectionId(reviewRequestDTO.getSectionId());
+		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
+			reviewRequestDTO.getRowLine(),
+			reviewRequestDTO.getColumnLine(),
+			section
+		);
+
+		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
+
+		review.update(reviewRequestDTO, photoUrl, seat, concert);
+	}
+
+	public void deleteReview(Long reviewId, Long userId) {
+		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+
+		if(!review.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+
+		reviewRepository.deleteById(reviewId);
 	}
 
 	// ---------- 내부 메서드 ----------
@@ -205,5 +235,10 @@ public class ViewService {
 	private Concert findConcertByConcertIdOrElseThrow(Long concertId) {
 		return concertRepository.findConcertByConcertId(concertId)
 			.orElseThrow(ConcertNotFoundException::new);
+	}
+
+	private Review findReviewByReviewIdOrElseThrow(Long reviewId) {
+		return reviewRepository.findReviewByReviewId(reviewId)
+			.orElseThrow(ReviewNotFoundException::new);
 	}
 }

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -107,5 +108,22 @@ public class ViewController {
 		@Valid @RequestBody ReviewRequestDTO reviewRequestDTO,
 		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
 		viewService.createReview(reviewRequestDTO, null, userPrincipal.getUserId());
+	}
+
+	// 후기 수정 API
+	@PutMapping("/reviews/{reviewId}")
+	public void updateReview(
+		@PathVariable Long reviewId,
+		@Valid @RequestBody ReviewRequestDTO reviewRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.updateReview(reviewId, reviewRequestDTO, null, userPrincipal.getUserId());
+	}
+
+	// 후기 삭제 API
+	@DeleteMapping("/reviews/{reviewId}")
+	public void deleteReview(
+		@PathVariable Long reviewId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.deleteReview(reviewId, userPrincipal.getUserId());
 	}
 }

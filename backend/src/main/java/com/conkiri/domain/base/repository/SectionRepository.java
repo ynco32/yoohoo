@@ -11,4 +11,6 @@ import com.conkiri.domain.base.entity.Section;
 public interface SectionRepository extends JpaRepository<Section, Long> {
 	List<Section> findByArena(Arena arena);
 	Optional<Section> findSectionByArenaAndSectionId(Arena arena, Long sectionId);
+
+	Section findSecctionBySectionId(Long sectionId);
 }

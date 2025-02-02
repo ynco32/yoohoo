@@ -2,6 +2,7 @@ package com.conkiri.domain.base.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -29,4 +30,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 	List<Concert> findByArtist(String artist);
 
 	List<Concert> findByArtistContaining(String artist);
+
+	Optional<Concert> findConcertByConcertId(Long concertId);
 }

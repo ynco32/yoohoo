@@ -24,6 +24,7 @@ import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
+import com.conkiri.global.exception.view.DuplicateReviewException;
 import com.conkiri.global.exception.view.DuplicateScrapSeatException;
 import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
@@ -138,6 +139,12 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse scrapSeatNotFoundExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(DuplicateReviewException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public ExceptionResponse duplicateReviewExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.CONFLICT, LocalDateTime.now());
 	}
 
 	@ExceptionHandler(HandlerMethodValidationException.class)

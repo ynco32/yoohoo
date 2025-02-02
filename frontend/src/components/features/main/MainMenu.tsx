@@ -1,17 +1,40 @@
 'use client';
 
-import { MenuItem } from '@/components/features/main/MenuItem';
+import { MenuItem, MenuItemProps } from '@/components/features/main/MenuItem';
+import { SVGIcons } from '@/assets/svgs';
 
 export default function MainMenu() {
-  // DUMMY_DATA: menu items - TO BE REMOVED
-  // TODO: Replace with real API data
-  const menuItems = [
-    { icon: '🎭', label: '시야 보기', href: '/sight' },
-    { icon: '🗺️', label: '나눔 지도', href: '/sharing' },
-    { icon: '🎟️', label: '티켓팅 연습', href: '/ticketing' },
-    { icon: '📊', label: '혼잡도 보기', href: '/congestion' },
+  const menuItems: MenuItemProps[] = [
+    {
+      icon: 'SightIcon', // string으로 변경
+      label: '시야 보기',
+      description: '시야 후기 보기',
+      layout: 'large',
+      href: '/sight',
+    },
+    {
+      icon: 'SharingIcon',
+      label: '나눔 지도',
+      href: '/sharing',
+      description: '시야 후기 보기',
+      layout: 'default',
+    },
+    {
+      icon: 'TicketIcon',
+      label: '티켓팅 연습',
+      href: '/ticketing',
+      description: '시야 후기 보기',
+      layout: 'default',
+    },
+    {
+      icon: 'CongestionIcon',
+      label: '혼잡도 보기',
+      href: '/congestion',
+      description: '시야 후기 보기',
+      layout: 'wide',
+    },
   ];
-  // DUMMY_DATA END
+
   return (
     <div className="absolute bottom-0 left-0 right-0 h-[50vh] w-full mobile:h-[65vh] tablet:h-[60vh]">
       <div className="grid h-full grid-cols-2 gap-sm rounded-t-layout bg-white p-sm tablet:gap-md tablet:p-md">
@@ -20,6 +43,8 @@ export default function MainMenu() {
             key={item.href}
             icon={item.icon}
             label={item.label}
+            description={item.description}
+            layout={item.layout}
             href={item.href}
           />
         ))}

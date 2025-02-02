@@ -26,49 +26,41 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
   };
 
   return (
-    
-    <div className="fixed top-[56px] bottom-0 mx-auto max-w-[430px] w-full">
-    {/* 내부 컨테이너: 스크롤 가능 */}
-    <div className="h-full overflow-y-auto">
-      {/* 1. 헤더 정보 (제목, 닉네임, 상태, 시작시간) */}
-      <SharingDetailHeader {...detailData} />
-      <div className="p-4">
-        <div className="flex items-center justify-between">
-          {/* 북마크 버튼 추가 예정 */}
+    <div className="fixed bottom-0 top-[56px] mx-auto w-full max-w-[430px]">
+      {/* 내부 컨테이너 */}
+      <div className="h-full overflow-y-auto">
+        {/* 헤더 */}
+        <SharingDetailHeader {...detailData} />
+        <div className="p-4">
+          <div className="flex items-center justify-between"></div>
         </div>
-        {/* SharingCard의 나머지 헤더 정보와 동일한 스타일 */}
-      </div>
 
-      {/* 2. 이미지 그리드 */}
-      <div className="grid grid-cols-2 gap-1 p-4">
-        <SharingDetailImages image={detailData.photoUrl} />
-        {/* 이미지 컴포넌트들 */}
-      </div>
+        {/* 이미지 */}
+        <div className="grid grid-cols-2 gap-1 p-4">
+          <SharingDetailImages image={detailData.photoUrl} />
+        </div>
 
-      {/* 3. 상세 정보 */}
-      <div className="bg-gray-100 p-4">
-        {/* 날짜, 수량 등 정보 */}
-        <SharingDetailContent
-          content={detailData.content}
-          startTime={detailData.startTime}
-        />
-      </div>
+        {/* 상세 정보 */}
+        <div className="bg-gray-100 p-4">
+          <SharingDetailContent
+            content={detailData.content}
+            startTime={detailData.startTime}
+          />
+        </div>
 
-      {/* 4. 지도 */}
-      <div className="h-[200px] p-4">
-        {/* 카카오맵 컴포넌트 */}
-        <SharingDetailMap
-          latitude={detailData.latitude}
-          longitude={detailData.longitude}
-        />
-      </div>
+        {/* 지도 */}
+        <div className="h-[200px] p-4">
+          <SharingDetailMap
+            latitude={detailData.latitude}
+            longitude={detailData.longitude}
+          />
+        </div>
 
-      {/* 5. 댓글 섹션 */}
-      <div className="mt-4 p-4">
-        {/* 댓글 컴포넌트 */}
-        <SharingDetailComments />
+        {/* 댓글 */}
+        <div className="mt-4 p-4">
+          <SharingDetailComments />
+        </div>
       </div>
-    </div>
     </div>
   );
 };

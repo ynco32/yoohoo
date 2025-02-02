@@ -4,6 +4,7 @@ import { SharingDetailHeader } from './SharingDetailHeader';
 import { SharingStatus } from '@/types/sharing';
 import { SharingDetailImages } from './SharingDetailImages';
 import { SharingDetailContent } from './SharingDetailContent';
+import { SharingDetailMap } from './SharingDetailMap';
 
 interface SharingDetailProps {
   id: number;
@@ -16,7 +17,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
     title: '포카 나눔합니다~~~',
     content: '편의점 앞에서 포카 나눔합니다\n1인당 한 장씩 드려요 선착순',
     photoUrl: '/images/card.png',
-    status: 'UPCOMING'as SharingStatus,
+    status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T15:38',
     nickname: '닉네임',
     latitude: 37.51924,
@@ -36,20 +37,27 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
 
       {/* 2. 이미지 그리드 */}
       <div className="grid grid-cols-2 gap-1 p-4">
-      <SharingDetailImages image={detailData.photoUrl} />
+        <SharingDetailImages image={detailData.photoUrl} />
         {/* 이미지 컴포넌트들 */}
       </div>
 
       {/* 3. 상세 정보 */}
-      <div className="bg-gray-100 p-4">{/* 날짜, 수량 등 정보 */}
-      <SharingDetailContent 
-        content={detailData.content}
-        startTime={detailData.startTime}
-      />
+      <div className="bg-gray-100 p-4">
+        {/* 날짜, 수량 등 정보 */}
+        <SharingDetailContent
+          content={detailData.content}
+          startTime={detailData.startTime}
+        />
       </div>
 
       {/* 4. 지도 */}
-      <div className="h-[200px] p-4">{/* 카카오맵 컴포넌트 */}</div>
+      <div className="h-[200px] p-4">
+        {/* 카카오맵 컴포넌트 */}
+        <SharingDetailMap
+          latitude={detailData.latitude}
+          longitude={detailData.longitude}
+        />
+      </div>
 
       {/* 5. 댓글 섹션 */}
       <div className="mt-4 p-4">{/* 댓글 컴포넌트 */}</div>

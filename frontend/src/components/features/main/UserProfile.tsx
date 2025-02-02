@@ -4,13 +4,21 @@ import Image from 'next/image';
 import { Artwork, ProfileBg } from '@/assets/svgs';
 import { MenuCard } from '@/components/ui/MenuCard';
 import { useRouter } from 'next/navigation';
+import { UserInfo } from './UserInfo';
 
 interface UserProfileProps {
   nickname: string;
+  level: string;
+  steps: number;
   onClick?: () => void;
 }
 
-export const UserProfile = ({ nickname, onClick }: UserProfileProps) => {
+export const UserProfile = ({
+  nickname,
+  level,
+  steps,
+  onClick,
+}: UserProfileProps) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -45,6 +53,10 @@ export const UserProfile = ({ nickname, onClick }: UserProfileProps) => {
             className="object-contain"
             priority
           />
+        </div>
+        {/* 유저 정보 섹션 */}
+        <div className="absolute bottom-sm left-md z-10">
+          <UserInfo nickname={nickname} level={level} steps={steps} />
         </div>
       </MenuCard>
     </div>

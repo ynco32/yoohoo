@@ -43,13 +43,15 @@ module.exports = {
       fontSize: {
         menu: ['20px', { fontWeight: '700', lineHeight: '25px' }],
         'menu-description': ['12px', { fontWeight: '700', lineHeight: '16px' }],
+        profile: ['16px,', { fontWeight: '700', lineHeight: '24px' }],
         body: ['16px', { fontWeight: '400', lineHeight: '24px' }],
         'body-bold': ['16px', { fontWeight: '500', lineHeight: '20px' }],
         caption1: ['14px', { fontWeight: '400', lineHeight: '20px' }],
         'caption1-bold': ['14px', { fontWeight: '500', lineHeight: '20px' }],
         caption2: ['12px', { fontWeight: '400', lineHeight: '18px' }],
         'caption2-bold': ['12px', { fontWeight: '600', lineHeight: '18px' }],
-        caption3: ['11px', { fontWeight: '400', lineHeight: '14px' }],
+        caption3: ['11px', { fontWeight: '400', lineHeight: '10px' }],
+        'caption3-bold': ['12px', { fontWeight: '600', lineHeight: '18px' }],
         head: ['24px', { fontWeight: '500', lineHeight: '33px' }],
         'head-bold': ['24px', { fontWeight: '700', lineHeight: '33px' }],
         number: ['18px', { fontWeight: '400', lineHeight: '20px' }],
@@ -113,6 +115,7 @@ module.exports = {
           sub1: '#A2ACE1',
           100: '#C9CEEE',
           50: '#F0F1FA',
+          text: '#4c81e5',
         },
         secondary: {
           400: '#99D7FF',
@@ -143,6 +146,7 @@ module.exports = {
         text: {
           menu: '#515151',
           description: '#919191',
+          nickname: '#444444',
         },
       },
     },

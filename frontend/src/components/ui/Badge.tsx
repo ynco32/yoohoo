@@ -6,12 +6,14 @@ interface BadgeProps {
 const Badge = ({ children, type }: BadgeProps) => {
   const colors = {
     grey: 'bg-gray-100 text-gray-800',
-    green: 'bg-green-100 text-green-800',
-    pink: 'bg-pink-100 text-pink-800',
+    green: 'bg-[#00C73C] text-white',
+    pink: 'bg-[#FF4B93] text-white',
   };
 
   return (
-    <span className={`rounded-md px-2 py-1 text-sm ${colors[type]}`}>
+    <span
+      className={`inline-block rounded-sm px-3 py-0.5 text-xs font-medium ${colors[type]}`}
+    >
       {children}
     </span>
   );

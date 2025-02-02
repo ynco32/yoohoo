@@ -55,13 +55,14 @@ export const SharingDetailHeader = ({
     <div className="flex flex-col p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between gap-2">
-          <div className="relative h-12 w-12">
+          <div className="relative h-10 w-10">
             {' '}
             {/* 원형 프로필 이미지를 위한 컨테이너 */}
             <Image
               src={profileImage}
               alt="프로필"
               fill
+              sizes="40px"
               className="rounded-full object-cover" // 원형과 이미지 비율 조정
             />
           </div>
@@ -70,14 +71,14 @@ export const SharingDetailHeader = ({
             <p className="text-sm text-gray-600">{nickname}</p>
             <div className="mt-1">
               <div className="flex items-center gap-1 text-sm text-gray-900">
-                <ClockIcon className="h-4 w-4" />
+                <ClockIcon className="h-6 w-6" />
                 {formatTime(startTime)}
               </div>
             </div>
           </div>
         </div>
-        <div className="flex-end flex flex-col items-end  gap-2">
-          <BookmarkIcon className="h-6 w-6 text-gray-400" />
+        <div className="flex-end flex flex-col items-end gap-2">
+          <BookmarkIcon className="h-6 w-6" />
           <span
             className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
           >

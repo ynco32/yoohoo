@@ -2,68 +2,89 @@
 import Image from 'next/image';
 import { BookmarkIcon } from '@heroicons/react/24/outline';
 import { SharingStatus } from '@/types/sharing';
+import { ClockIcon } from '@heroicons/react/24/outline';
 
 interface SharingDetailHeaderProps {
- title: string;
- nickname: string;
- status: SharingStatus;
- profileImage?: string;
+  title: string;
+  nickname: string;
+  status: SharingStatus;
+  profileImage?: string;
+  startTime: string;
 }
 
 export const SharingDetailHeader = ({
- title,
- nickname,
- status,
- profileImage = '/images/profile.png',
+  title,
+  nickname,
+  status,
+  startTime,
+  profileImage = '/images/profile.png',
 }: SharingDetailHeaderProps) => {
+  const getStatusText = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return '진행중';
+      case 'UPCOMING':
+        return '준비중';
+      case 'CLOSED':
+        return '마감';
+      default:
+        return '';
+    }
+  };
 
- const getStatusText = (status: SharingStatus) => {
-   switch (status) {
-     case 'ONGOING':
-       return '진행중';
-     case 'UPCOMING':
-       return '준비중';
-     case 'CLOSED':
-       return '마감';
-     default:
-       return '';
-   }
- };
+  const getStatusColor = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return 'bg-status-success';
+      case 'UPCOMING':
+        return 'bg-status-caution';
+      case 'CLOSED':
+        return 'bg-gray-400';
+      default:
+        return 'bg-gray-400';
+    }
+  };
 
- const getStatusColor = (status: SharingStatus) => {
-   switch (status) {
-     case 'ONGOING':
-       return 'bg-status-success';
-     case 'UPCOMING':
-       return 'bg-status-caution';
-     case 'CLOSED':
-       return 'bg-gray-400';
-     default:
-       return 'bg-gray-400';
-   }
- };
+  // startTime 포맷팅 함수 추가
+  const formatTime = (timeString: string) => {
+    // T를 기준으로 분리하고 뒷부분 사용
+    return timeString.split('T')[1];
+  };
 
- return (
-   <div className="flex items-center justify-between p-4">
-     <div className="flex items-center gap-2">
-       <Image
-         src={profileImage}
-         alt="프로필"
-         width={40}
-         height={40}
-         className="rounded-full"
-       />
-       <div>
-         <h1 className="font-medium">{title}</h1>
-         <p className="text-sm text-gray-600">{nickname}</p>
-       </div>
-     </div>
-     <div className="flex items-center gap-2">
-       <span className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}>
-         {getStatusText(status)}
-       </span>
-       <BookmarkIcon className="h-6 w-6 text-gray-400" />
-     </div>
-   </div>
- );
+  return (
+    <div className="flex flex-col p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
+          <div className="relative h-12 w-12">
+            {' '}
+            {/* 원형 프로필 이미지를 위한 컨테이너 */}
+            <Image
+              src={profileImage}
+              alt="프로필"
+              fill
+              className="rounded-full object-cover" // 원형과 이미지 비율 조정
+            />
+          </div>
+          <div>
+            <h1 className="font-medium">{title}</h1>
+            <p className="text-sm text-gray-600">{nickname}</p>
+            <div className="mt-1">
+              <div className="flex items-center gap-1 text-sm text-gray-900">
+                <ClockIcon className="h-4 w-4" />
+                {formatTime(startTime)}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex-end flex flex-col items-end  gap-2">
+          <BookmarkIcon className="h-6 w-6 text-gray-400" />
+          <span
+            className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+          >
+            {getStatusText(status)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 };

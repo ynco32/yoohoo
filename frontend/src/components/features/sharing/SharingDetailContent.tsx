@@ -3,12 +3,9 @@ interface SharingDetailContentProps {
     startTime: string;
   }
   
-  export const SharingDetailContent = ({ content, startTime }: SharingDetailContentProps) => {
+  export const SharingDetailContent = ({ content }: SharingDetailContentProps) => {
     return (
-      <div className="bg-gray-100 p-4 space-y-2">
-        <div className="flex justify-end">
-          <span>• {startTime} 시작</span>
-        </div>
+      <div className="bg-gray-100 p-4">
         <p className="whitespace-pre-line">{content}</p>
       </div>
     );

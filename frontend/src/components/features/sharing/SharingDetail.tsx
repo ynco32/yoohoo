@@ -5,6 +5,7 @@ import { SharingStatus } from '@/types/sharing';
 import { SharingDetailImages } from './SharingDetailImages';
 import { SharingDetailContent } from './SharingDetailContent';
 import { SharingDetailMap } from './SharingDetailMap';
+import { SharingDetailComments } from './SharingDetailComments';
 
 interface SharingDetailProps {
   id: number;
@@ -25,7 +26,10 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
   };
 
   return (
-    <div className="flex flex-col">
+    
+    <div className="fixed top-[56px] bottom-0 mx-auto max-w-[430px] w-full">
+    {/* 내부 컨테이너: 스크롤 가능 */}
+    <div className="h-full overflow-y-auto">
       {/* 1. 헤더 정보 (제목, 닉네임, 상태, 시작시간) */}
       <SharingDetailHeader {...detailData} />
       <div className="p-4">
@@ -60,7 +64,11 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
       </div>
 
       {/* 5. 댓글 섹션 */}
-      <div className="mt-4 p-4">{/* 댓글 컴포넌트 */}</div>
+      <div className="mt-4 p-4">
+        {/* 댓글 컴포넌트 */}
+        <SharingDetailComments />
+      </div>
+    </div>
     </div>
   );
 };

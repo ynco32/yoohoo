@@ -142,9 +142,9 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(DuplicateReviewException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.CONFLICT)
 	public ExceptionResponse duplicateReviewExceptionHandler(Exception e) {
-		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+		return new ExceptionResponse(e.getMessage(), HttpStatus.CONFLICT, LocalDateTime.now());
 	}
 
 	@ExceptionHandler(HandlerMethodValidationException.class)

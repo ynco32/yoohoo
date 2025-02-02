@@ -20,6 +20,7 @@ const MOCK_POSTS: SharingPost[] = [
   {
     sharingId: 1,
     title: '베몬 포카 나눔합니다',
+    content: '나눔 내용입니다',
     nickname: '닉네임',
     status: 'ONGOING',
     startTime: '14:00',
@@ -28,6 +29,7 @@ const MOCK_POSTS: SharingPost[] = [
   {
     sharingId: 2,
     title: '포카 나눔합니다22',
+    content: '나눔 내용입니다',
     nickname: '닉네임',
     status: 'UPCOMING',
     startTime: '15:30',
@@ -36,6 +38,7 @@ const MOCK_POSTS: SharingPost[] = [
   {
     sharingId: 3,
     title: '떴다 팔찌 나눔',
+    content: '나눔 내용입니다',
     nickname: '닉네임',
     status: 'CLOSED',
     startTime: '13:00',

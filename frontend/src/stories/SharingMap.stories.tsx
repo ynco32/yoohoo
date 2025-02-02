@@ -22,6 +22,7 @@ const MOCK_POSTS: SharingPost[] = [
   {
     sharingId: 1,
     title: 'KSPO DOME 앞 포카 나눔',
+    content: '나눔 내용입니다',
     nickname: '닉네임1',
     status: 'ONGOING',
     startTime: '15:00',
@@ -32,6 +33,7 @@ const MOCK_POSTS: SharingPost[] = [
   {
     sharingId: 2,
     title: '올림픽공원역 부채 나눔',
+    content: '나눔 내용입니다',
     nickname: '닉네임2',
     status: 'UPCOMING',
     startTime: '16:00',

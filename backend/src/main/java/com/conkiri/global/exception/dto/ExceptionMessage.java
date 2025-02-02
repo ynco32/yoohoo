@@ -50,4 +50,5 @@ public final class ExceptionMessage {
 	public static final String SEAT_NOT_FOUND = "좌석을 찾을 수 없습니다.";
 	public static final String DUPLICATE_SCRAP_SEAT = "이미 스크랩한 좌석입니다.";
 	public static final String SCRAP_SEAT_NOT_FOUND = "스크랩하지 않은 좌석입니다.";
+	public static final String DUPLICATE_REVIEW = "이미 해당 공연, 좌석에 대한 리뷰를 남겼습니다.";
 }

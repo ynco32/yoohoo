@@ -68,6 +68,8 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                      sh '''
+                        mkdir -p nginx/conf
+                        cp nginx/nginx.conf nginx/conf/default.conf
                         mkdir -p certbot/conf
                         mkdir -p certbot/www
                     '''

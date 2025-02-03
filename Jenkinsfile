@@ -70,7 +70,7 @@ pipeline {  // 파이프라인 정의 시작
                      sh '''
                         rm -rf nginx
                         mkdir -p nginx
-                        cp nginx.conf nginx/
+                        cp ./nginx/conf/default.conf ./nginx/nginx.conf
                         chmod 644 nginx/nginx.conf
                 
                         mkdir -p certbot/conf

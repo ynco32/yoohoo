@@ -135,3 +135,11 @@ export const MOCK_COMMENTS: Comment[] = [
 export const getMockSharingDetail = (id: number) => {
   return MOCK_POSTS.find((post) => post.sharingId === id) || MOCK_POSTS[0];
 };
+
+// 등록 폼 인터페이스
+export interface SharingFormData {
+  title: string;
+  startTime: string;
+  count: string;
+  content: string;
+}

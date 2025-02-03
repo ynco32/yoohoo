@@ -7,16 +7,25 @@ interface SharingLocationSelectProps {
     latitude: number;
     longitude: number;
   };
+  // 초기 위치
+  initialLocation?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export const SharingLocationSelect = ({
   onLocationSelect,
   venueLocation,
+  initialLocation,
 }: SharingLocationSelectProps) => {
-  const [selectedLocation, setSelectedLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<
+    | {
+        latitude: number;
+        longitude: number;
+      }
+    | undefined
+  >(initialLocation);
 
   const handleLocationSelect = (location: {
     latitude: number;
@@ -31,6 +40,7 @@ export const SharingLocationSelect = ({
         <SharingLocationMap
           venueLocation={venueLocation}
           onLocationSelect={handleLocationSelect}
+          initialLocation={selectedLocation}
         />
       </div>
       <div className="absolute bottom-0 left-0 right-0 z-10 p-4">

@@ -6,6 +6,7 @@ import { SharingLocationSelect } from '@/components/features/sharing/SharingLoca
 import { SharingWriteForm } from '@/components/features/sharing/SharingWriteForm';
 import { SharingCompleteModal } from '@/components/features/sharing/SharingCompleteModal';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { SharingFormData } from '@/types/sharing';
 
 interface LocationInfo {
   latitude: number;
@@ -15,6 +16,13 @@ interface LocationInfo {
 export default function SharingWritePage() {
   const [step, setStep] = useState<'location' | 'form'>('location');
   const [location, setLocation] = useState<LocationInfo | null>(null);
+
+  const [formData, setFormData] = useState<SharingFormData>({
+    title: '',
+    startTime: '',
+    count: '',
+    content: '',
+  });
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 
   // URL에서 공연 ID 추출
@@ -24,6 +32,10 @@ export default function SharingWritePage() {
   const handleLocationSelect = (locationInfo: LocationInfo) => {
     setLocation(locationInfo);
     setStep('form');
+  };
+
+  const handleLocationReset = () => {
+    setStep('location');
   };
 
   const handleSubmitComplete = () => {
@@ -36,12 +48,16 @@ export default function SharingWritePage() {
         <SharingLocationSelect
           onLocationSelect={handleLocationSelect}
           venueLocation={VENUE_COORDINATES.KSPO_DOME}
+          initialLocation={location || VENUE_COORDINATES.KSPO_DOME}
         />
       )}
       {step === 'form' && location && (
         <SharingWriteForm
           location={location}
+          formData={formData} // 폼 데이터 전달
+          onFormChange={setFormData} // 폼 데이터 변경 핸들러
           onSubmitComplete={handleSubmitComplete}
+          onLocationReset={handleLocationReset}
           concertId={concertId}
         />
       )}

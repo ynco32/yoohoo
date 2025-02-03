@@ -49,7 +49,7 @@ export const SharingMap = ({
           e.preventDefault(); // 새로고침 방지
           e.stopPropagation(); // 지도 클릭 이벤트 차단
           setTimeout(() => {
-            router.push(`/sharing/${concertId}/${post.id}`);
+            router.push(`/sharing/${concertId}/${post.sharingId}`);
           }, 0); // 카카오맵의 click 이벤트 처리가 끝난 후 router.push() 실행
         }}
       >

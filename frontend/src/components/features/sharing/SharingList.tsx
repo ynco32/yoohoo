@@ -27,7 +27,7 @@ export const SharingList = ({
   return (
     <div className="flex flex-col gap-3 p-4">
       {posts.map((post) => (
-        <SharingCard key={post.id} {...post} concertId={concertId} />
+        <SharingCard key={post.sharingId} {...post} concertId={concertId} />
       ))}
     </div>
   );

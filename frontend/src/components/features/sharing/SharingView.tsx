@@ -7,73 +7,9 @@ import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { MOCK_POSTS } from '@/types/sharing';
 
 type ViewMode = 'list' | 'map';
-
-//DUMMY DATA
-
-const MOCK_POSTS: SharingPost[] = [
-  {
-    id: 1,
-    title: '베몬 포카 나눔합니다',
-    nickname: '닉네임',
-    status: 'ONGOING',
-    start_time: '14:00',
-    image: '/images/card.png',
-    latitude: 37.518073, // 한얼광장
-    longitude: 127.127244,
-  },
-  {
-    id: 2,
-    title: '포카 나눔합니다22',
-    nickname: '닉네임',
-    status: 'UPCOMING',
-    start_time: '15:30',
-    image: '/images/card.png',
-    latitude: 37.518851, // 88잔디마당
-    longitude: 127.125405,
-  },
-  {
-    id: 3,
-    title: '떴다 팔찌 나눔',
-    nickname: '닉네임',
-    status: 'CLOSED',
-    start_time: '13:00',
-    image: '/images/card.png',
-    latitude: 37.520402, // 꿈나무다리
-    longitude: 127.128242,
-  },
-  {
-    id: 4,
-    title: '포토카드 세트 나눔합니다',
-    nickname: '닉네임',
-    status: 'ONGOING',
-    start_time: '16:00',
-    image: '/images/card.png',
-    latitude: 37.518843, // 올림픽공원 주차장
-    longitude: 127.128111,
-  },
-  {
-    id: 5,
-    title: '부채 나눔합니다',
-    nickname: '닉네임',
-    status: 'UPCOMING',
-    start_time: '17:30',
-    image: '/images/card.png',
-    latitude: 37.51795, // 편의점 앞
-    longitude: 127.126744,
-  },
-  {
-    id: 6,
-    title: '부채 나눔합니다22',
-    nickname: '닉네임',
-    status: 'UPCOMING',
-    start_time: '17:30',
-    image: '/images/card.png',
-    latitude: 37.517201, // 만남의 광장
-    longitude: 127.129205,
-  },
-];
 
 /**
  * 나눔 게시글 뷰 컴포넌트
@@ -98,6 +34,17 @@ export const SharingView = () => {
   // 나눔 게시글 데이터 상태 관리
   const [posts, setPosts] = React.useState<SharingPost[]>(MOCK_POSTS);
 
+  // startTime 포맷팅 함수
+  const formatTime = (timeString: string) => {
+    return timeString.split('T')[1];
+  };
+
+  // 포맷팅된 게시글 데이터 생성
+  const formattedPosts = posts.map((post) => ({
+    ...post,
+    startTime: formatTime(post.startTime),
+  }));
+
   return (
     <div
       className={`${
@@ -120,14 +67,14 @@ export const SharingView = () => {
       >
         {viewMode === 'list' && (
           <SharingList
-            posts={posts}
+            posts={formattedPosts}
             onMount={resetScroll}
             concertId={concertId}
           />
         )}
         {viewMode === 'map' && (
           <SharingMap
-            posts={posts}
+            posts={formattedPosts}
             venueLocation={VENUE_COORDINATES.KSPO_DOME}
             concertId={concertId}
           />

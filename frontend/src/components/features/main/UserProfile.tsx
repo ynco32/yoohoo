@@ -1,14 +1,24 @@
 'use client';
 
+import Image from 'next/image';
+import { Artwork, ProfileBg } from '@/assets/svgs';
 import { MenuCard } from '@/components/ui/MenuCard';
 import { useRouter } from 'next/navigation';
+import { UserInfo } from './UserInfo';
 
 interface UserProfileProps {
   nickname: string;
+  level: string;
+  steps: number;
   onClick?: () => void;
 }
 
-export const UserProfile = ({ nickname, onClick }: UserProfileProps) => {
+export const UserProfile = ({
+  nickname,
+  level,
+  steps,
+  onClick,
+}: UserProfileProps) => {
   const router = useRouter();
 
   const handleClick = () => {
@@ -21,12 +31,33 @@ export const UserProfile = ({ nickname, onClick }: UserProfileProps) => {
 
   return (
     <div
-      className="flex flex-col items-center pb-lg pt-xl"
+      className="flex flex-col items-center pb-0 pt-2xl"
       onClick={handleClick}
     >
-      <h1 className="mb-md text-head-bold text-white">{nickname}</h1>
-      <MenuCard className="mb-2xl h-24 w-24 overflow-hidden rounded-full bg-secondary-300 mobile:h-28 mobile:w-28 tablet:h-32 tablet:w-32">
-        🐘
+      <MenuCard className="rounded-userProfile relative mx-auto h-60 w-full max-w-sm overflow-hidden bg-secondary-300 px-sm tablet:px-md">
+        {/* 배경 이미지 */}
+        <Image
+          src={ProfileBg}
+          alt="background pattern"
+          fill
+          className="z-0 object-cover"
+          priority
+        />
+        {/* 프로필 이미지 */}
+        <div className="relative z-10">
+          <Image
+            src={Artwork}
+            alt={nickname}
+            width={224}
+            height={160}
+            className="object-contain"
+            priority
+          />
+        </div>
+        {/* 유저 정보 섹션 */}
+        <div className="absolute bottom-sm left-md z-10">
+          <UserInfo nickname={nickname} level={level} steps={steps} />
+        </div>
       </MenuCard>
     </div>
   );

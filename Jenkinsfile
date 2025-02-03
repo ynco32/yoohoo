@@ -68,11 +68,6 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                      sh '''
-                        rm -rf nginx
-                        mkdir -p nginx
-                        cp ./nginx/conf/default.conf ./nginx/nginx.conf
-                        chmod 644 nginx/nginx.conf
-                
                         mkdir -p certbot/conf
                         mkdir -p certbot/www
                     '''

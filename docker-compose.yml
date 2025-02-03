@@ -5,8 +5,6 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
-    volumes:
-      - ./proxy/default.conf:/etc/nginx/nginx.conf 
     depends_on:
       - frontend
       - backend

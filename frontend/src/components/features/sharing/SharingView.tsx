@@ -8,6 +8,7 @@ import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
 import { MOCK_POSTS } from '@/types/sharing';
+import { WriteButton } from '@/components/common/WriteButton';
 
 type ViewMode = 'list' | 'map';
 
@@ -80,6 +81,7 @@ export const SharingView = () => {
           />
         )}
       </div>
+      <WriteButton path={`/sharing/${concertId}/write`} />
     </div>
   );
 };

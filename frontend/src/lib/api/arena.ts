@@ -29,12 +29,16 @@ export const arenaAPI = {
   getArenas: async (): Promise<ArenaResponse> => {
     try {
       // axios 인스턴스의 baseURL이 설정되어 있으므로, 경로만 지정
-      const response = await api.get<ArenaResponse>('/v1/view/arenas');
+      const response = await api.get<ArenaResponse>('api/v1/view/arenas');
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
         // HTTP 에러인 경우
         const status = error.response?.status ?? 500;
+        // 401 에러일 경우 처리를 위해 상세 로깅 추가
+        if (status === 401) {
+          console.error('Authentication error:', error.response?.data);
+        }
         const message =
           error.response?.data?.message ??
           '공연장 정보를 불러오는데 실패했습니다.';

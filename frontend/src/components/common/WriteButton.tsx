@@ -14,8 +14,7 @@ export const WriteButton = ({ path }: WriteButtonProps) => {
   return (
     <button
       onClick={() => router.push(path)}
-      className="absolute bottom-6 right-4 z-50 w-[60px] h-[60px] flex items-center justify-center rounded-full 
-            bg-white p-3 shadow-lg hover:bg-gray-50 md:right-4"
+      className="md:right-4 absolute bottom-6 right-4 z-50 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white p-3 shadow-lg hover:bg-gray-50"
     >
       <PencilIcon className="h-8 w-8" aria-label="Write Review" />
     </button>

@@ -142,4 +142,5 @@ export interface SharingFormData {
   startTime: string;
   count: string;
   content: string;
+  image?: File;
 }

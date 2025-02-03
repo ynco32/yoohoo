@@ -1,13 +1,27 @@
+'use client';
+
+import React from 'react';
 import { SharingFormData } from '@/types/sharing';
+import { TitleInput } from './TitleInput';
+import { TimeInput } from './TimeInput';
+import { PhotoUpload } from './PhotoUpload';
+import { ContentInput } from './ContentInput';
 
 interface SharingWriteFormProps {
   location: { latitude: number; longitude: number };
   onSubmitComplete: () => void;
   formData: SharingFormData;
   onFormChange: (data: SharingFormData) => void;
-  onLocationReset: () => void; // 위치 다시 선택하기 위한 콜백
+  onLocationReset: () => void;
   concertId: number;
 }
+
+type FormErrors = {
+  title?: string;
+  startTime?: string;
+  content?: string;
+  submit?: string;
+};
 
 export const SharingWriteForm = ({
   location,
@@ -15,36 +29,79 @@ export const SharingWriteForm = ({
   onFormChange,
   onSubmitComplete,
   onLocationReset,
+  concertId,
 }: SharingWriteFormProps) => {
+  const [errors, setErrors] = React.useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.title?.trim()) {
+      newErrors.title = '나눔할 물건을 입력해주세요';
+    }
+    if (!formData.startTime) {
+      newErrors.startTime = '시작 시간을 선택해주세요';
+    }
+    if (!formData.content?.trim()) {
+      newErrors.content = '상세 내용을 입력해주세요';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      try {
+        setIsSubmitting(true);
+        await onSubmitComplete();
+      } catch (error) {
+        setErrors(prev => ({
+          ...prev,
+          submit: '나눔 등록에 실패했습니다. 다시 시도해주세요.'
+        }));
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
+
   return (
-    <div className="flex h-full flex-col p-4">
-      <div className="flex-1 space-y-4">
-        <input
-          type="text"
-          value={formData.title}
-          onChange={(e) => onFormChange({ ...formData, title: e.target.value })}
-          placeholder="나눔할 물건을 입력해주세요"
-          className="w-full rounded-lg border p-3"
-        />
-        <input
-          type="time"
-          value={formData.startTime}
-          onChange={(e) =>
-            onFormChange({ ...formData, startTime: e.target.value })
-          }
-          className="w-full rounded-lg border p-3"
-        />
-        <textarea
-          value={formData.content}
-          onChange={(e) =>
-            onFormChange({ ...formData, content: e.target.value })
-          }
-          placeholder="상세 내용을 입력해주세요"
-          className="h-32 w-full rounded-lg border p-3"
-        />
+    <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-56px)] flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="h-full">
+          <div className="p-4 space-y-4">
+            <TitleInput
+              value={formData.title || ''}
+              onChange={(title) => onFormChange({ ...formData, title })}
+              error={errors.title}
+            />
+            <TimeInput
+              value={formData.startTime || ''}
+              onChange={(startTime) => onFormChange({ ...formData, startTime })}
+              error={errors.startTime}
+            />
+            <PhotoUpload
+              value={formData.image}
+              onChange={(image) => onFormChange({ ...formData, image })}
+            />
+            <ContentInput
+              value={formData.content || ''}
+              onChange={(content) => onFormChange({ ...formData, content })}
+              error={errors.content}
+            />
+          </div>
+        </form>
       </div>
-      {/* 버튼 그룹 */}
-      <div className="space-y-2">
+
+      {errors.submit && (
+        <p className="text-sm text-status-warning px-4">{errors.submit}</p>
+      )}
+
+      <div className="p-4 space-y-2">
         <button
           type="button"
           onClick={onLocationReset}
@@ -53,12 +110,15 @@ export const SharingWriteForm = ({
           위치 다시 선택하기
         </button>
         <button
-          className="w-full rounded-lg bg-primary-main py-4 text-white"
-          onClick={onSubmitComplete}
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="w-full rounded-lg bg-primary-main py-4 text-white transition-colors disabled:bg-gray-300"
         >
-          나눔 등록하기
+          {isSubmitting ? '등록 중...' : '나눔 등록하기'}
         </button>
       </div>
     </div>
   );
 };
+
+export default SharingWriteForm;

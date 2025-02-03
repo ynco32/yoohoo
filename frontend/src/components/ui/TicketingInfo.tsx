@@ -1,5 +1,6 @@
 import PerformanceInfo from './PerformanceInfo';
 import TicketingDetails from './TicketingDetails';
+import SeatType from './SeatType';
 
 const TicketingInfo = () => {
   return (
@@ -21,6 +22,12 @@ const TicketingInfo = () => {
         \n 토 오후 6시/ 일 오후 5시`}
       />
       <TicketingDetails title="가격정보" info="기본가" />
+      <div className="flex justify-center gap-9 px-4 py-4">
+        <SeatType seat_color="VIP" seat_name="VIP석" />
+        <span>198,000원</span>
+        <SeatType seat_color="normal" seat_name="일반석" />
+        <span>154,000원</span>
+      </div>
     </div>
   );
 };

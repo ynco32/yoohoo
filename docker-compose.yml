@@ -6,7 +6,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf 
+      - ./nginx.conf:/etc/nginx/nginx.conf 
       - ./error.log:/var/log/nginx/error.log
     depends_on:
       - frontend

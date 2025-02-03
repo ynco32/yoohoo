@@ -1,14 +1,19 @@
 package com.conkiri.domain.view.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
@@ -18,6 +23,7 @@ import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.CustomOAuth2User;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -47,8 +53,8 @@ public class ViewController {
 		@PathVariable Long arenaId,
 		@PathVariable Long sectionId,
 		@RequestParam(name = "stageType") Integer stageType,
-		@RequestParam(name = "row", required = false) Integer rowLine,
-		@RequestParam(name = "column", required = false) Integer columnLine) {
+		@RequestParam(name = "row", required = false) Long rowLine,
+		@RequestParam(name = "column", required = false) Long columnLine) {
 		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
 	}
 
@@ -89,9 +95,35 @@ public class ViewController {
 		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 
-	// 리뷰 작성 시 검색한 가수에 대한 공연 목록 전체 조회 API
+	// 후기 작성 시 검색한 가수에 대한 공연 목록 전체 조회 API
 	@GetMapping("/concerts")
 	public ViewConcertResponseDTO getConcerts(@RequestParam(name = "artist") String artist) {
 		return viewService.getConcerts(artist);
+	}
+
+	// 후기 작성 API
+	@PostMapping("/reviews")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void createReview(
+		@Valid @RequestBody ReviewRequestDTO reviewRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.createReview(reviewRequestDTO, null, userPrincipal.getUserId());
+	}
+
+	// 후기 수정 API
+	@PutMapping("/reviews/{reviewId}")
+	public void updateReview(
+		@PathVariable Long reviewId,
+		@Valid @RequestBody ReviewRequestDTO reviewRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.updateReview(reviewId, reviewRequestDTO, null, userPrincipal.getUserId());
+	}
+
+	// 후기 삭제 API
+	@DeleteMapping("/reviews/{reviewId}")
+	public void deleteReview(
+		@PathVariable Long reviewId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		viewService.deleteReview(reviewId, userPrincipal.getUserId());
 	}
 }

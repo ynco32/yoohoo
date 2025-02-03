@@ -6,6 +6,7 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.global.domain.BaseTime;
 
 import jakarta.persistence.Column;
@@ -67,4 +68,29 @@ public class Review extends BaseTime {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
+
+	public static Review of(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
+		return Review.builder()
+			.content(reviewRequestDTO.getContent())
+			.viewScore(reviewRequestDTO.getViewScore())
+			.seatDistance(reviewRequestDTO.getSeatDistance())
+			.sound(reviewRequestDTO.getSound())
+			.photoUrl(photoUrl)
+			.user(user)
+			.seat(seat)
+			.concert(concert)
+			.stageType(concert.getStageType())
+			.build();
+	}
+
+	public void update(ReviewRequestDTO reviewRequestDTO, String photoUrl, Seat seat, Concert concert) {
+		this.content = reviewRequestDTO.getContent();
+		this.viewScore = reviewRequestDTO.getViewScore();
+		this.seatDistance = reviewRequestDTO.getSeatDistance();
+		this.sound = reviewRequestDTO.getSound();
+		this.photoUrl = photoUrl;
+		this.seat = seat;
+		this.concert = concert;
+		this.stageType = concert.getStageType();
+	}
 }

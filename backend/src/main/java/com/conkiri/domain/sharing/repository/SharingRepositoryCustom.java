@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.repository;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Pageable;
 
 import com.conkiri.domain.base.entity.Concert;
@@ -17,4 +19,8 @@ public interface SharingRepositoryCustom {
 	SharingResponseDTO findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable);
 
 	SharingResponseDTO findScrappedSharingsInMyPage(User user, Long lastSharingId, Pageable pageable);
+
+	void updateStatusToClosedForConcert(Concert concert);
+
+	void updateStatusToOngoingForUpcomingSharings(LocalDateTime now);
 }

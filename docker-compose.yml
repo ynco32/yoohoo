@@ -2,14 +2,25 @@ version: '3.8'           # docker-compose 버전
 
 services:
   nginx:
-    build: ./nginx
+    build: ./nginx # Dockerfile 위치
     ports:
-      - "80:80"
+      - "80:80"    # HTTP 포트
+      - "443:443"  # HTTPS 포트 추가
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt  # 인증서 볼륨
+      - ./certbot/www:/var/www/certbot   # 인증 확인용 볼륨
     depends_on:
       - frontend
       - backend
-    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload"
-    
+    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload" # nginx 설정 재로드 컨테이너 시작 시 자동으로 하도록
+  
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email gksmfthsus35@naver.com -d i12b207.p.ssafy.io --agree-tos
+
   backend:
     build: ./backend     # backend Dockerfile 위치
     ports:

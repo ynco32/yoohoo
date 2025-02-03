@@ -67,6 +67,10 @@ pipeline {  // 파이프라인 정의 시작
             }
             steps {
                 script {
+                    sh '''
+                        mkdir -p certbot/conf
+                        mkdir -p certbot/www
+                    '''
                     withCredentials([
                         string(credentialsId: 'DB_URL', variable: 'DB_URL'),
                         string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),

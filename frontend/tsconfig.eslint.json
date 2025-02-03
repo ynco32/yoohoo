@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*", ".storybook/**/*"], // 와일드카드 추가
+  "exclude": ["node_modules", "dist", ".next"]
+}

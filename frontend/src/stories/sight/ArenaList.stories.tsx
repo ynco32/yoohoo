@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ArenaList from '../components/features/sight/ArenaList';
+import ArenaList from '../../components/features/sight/ArenaList';
 
 const meta = {
   title: 'Features/Sight/ArenaList',

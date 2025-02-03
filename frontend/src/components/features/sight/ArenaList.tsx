@@ -18,26 +18,40 @@ export default function ArenaList() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('ArenaList - Component mounted, starting data fetch');
+
     const fetchArenas = async () => {
+      console.log('ArenaList - Fetching arenas data');
       try {
         setIsLoading(true);
+        console.log('ArenaList - Calling arenaAPI.getArenas()');
         const { arenas: fetchedArenas } = await arenaAPI.getArenas();
+        console.log('ArenaList - Received arenas data:', fetchedArenas);
+
         setArenas(fetchedArenas);
 
         // 첫 번째 아레나를 기본 선택
         if (fetchedArenas.length > 0) {
+          console.log(
+            'ArenaList - Setting initial selected arena:',
+            fetchedArenas[0].arenaId
+          );
           setSelectedArenaId(fetchedArenas[0].arenaId);
         }
       } catch (err) {
+        console.error('ArenaList - Error details:', err);
         if (err instanceof ApiError) {
+          console.log('ArenaList - ApiError occurred:', err.message);
           setError(err.message);
         } else {
+          console.log('ArenaList - Unknown error occurred');
           setError(
             '예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
           );
         }
         console.error('Failed to fetch arenas:', err);
       } finally {
+        console.log('ArenaList - Fetch completed, setting loading to false');
         setIsLoading(false);
       }
     };
@@ -45,7 +59,15 @@ export default function ArenaList() {
     fetchArenas();
   }, []);
 
+  console.log('ArenaList - Current state:', {
+    isLoading,
+    error,
+    selectedArenaId,
+    arenasCount: arenas.length,
+  });
+
   if (isLoading) {
+    console.log('ArenaList - Rendering loading state');
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-gray-500">로딩 중...</div>
@@ -54,6 +76,7 @@ export default function ArenaList() {
   }
 
   if (error) {
+    console.log('ArenaList - Rendering error state:', error);
     return (
       <div className="p-4">
         <div className="rounded-lg bg-red-50 p-4 text-red-500">{error}</div>
@@ -61,6 +84,7 @@ export default function ArenaList() {
     );
   }
 
+  console.log('ArenaList - Rendering main content');
   return (
     <div className="flex h-full flex-col">
       <div className="bg-white">
@@ -74,7 +98,10 @@ export default function ArenaList() {
                 engName={arena.arenaName} // API에서 영문 이름이 없어서 한글 이름으로 대체
                 imageSrc={arena.photoUrl}
                 imageAlt={arena.arenaName}
-                onClick={() => setSelectedArenaId(arena.arenaId)}
+                onClick={() => {
+                  console.log('ArenaList - Arena selected:', arena.arenaId);
+                  setSelectedArenaId(arena.arenaId);
+                }}
               />
             ))}
           </div>

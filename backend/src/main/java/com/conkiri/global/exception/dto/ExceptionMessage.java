@@ -51,4 +51,6 @@ public final class ExceptionMessage {
 	public static final String DUPLICATE_SCRAP_SEAT = "이미 스크랩한 좌석입니다.";
 	public static final String SCRAP_SEAT_NOT_FOUND = "스크랩하지 않은 좌석입니다.";
 	public static final String DUPLICATE_REVIEW = "이미 해당 공연, 좌석에 대한 리뷰를 남겼습니다.";
+	public static final String REVIEW_NOT_FOUND = "리뷰를 찾을 수 없습니다.";
+	public static final String UNAUTHORIZED_ACCESS = "해당 사용자에게 권한이 없습니다.";
 }

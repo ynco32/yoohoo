@@ -76,10 +76,21 @@ public class Review extends BaseTime {
 			.seatDistance(reviewRequestDTO.getSeatDistance())
 			.sound(reviewRequestDTO.getSound())
 			.photoUrl(photoUrl)
-			.stageType(reviewRequestDTO.getStageType())
 			.user(user)
 			.seat(seat)
 			.concert(concert)
+			.stageType(concert.getStageType())
 			.build();
+	}
+
+	public void update(ReviewRequestDTO reviewRequestDTO, String photoUrl, Seat seat, Concert concert) {
+		this.content = reviewRequestDTO.getContent();
+		this.viewScore = reviewRequestDTO.getViewScore();
+		this.seatDistance = reviewRequestDTO.getSeatDistance();
+		this.sound = reviewRequestDTO.getSound();
+		this.photoUrl = photoUrl;
+		this.seat = seat;
+		this.concert = concert;
+		this.stageType = concert.getStageType();
 	}
 }

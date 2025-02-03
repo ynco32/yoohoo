@@ -31,5 +31,8 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 
 	List<Concert> findByArtistContaining(String artist);
 
+	// 특정 시간 범위 내의 startTime을 가지는 Concert조회
+	List<Concert> findByStartTimeBetween(LocalDateTime now, LocalDateTime end);
+	
 	Optional<Concert> findConcertByConcertId(Long concertId);
 }

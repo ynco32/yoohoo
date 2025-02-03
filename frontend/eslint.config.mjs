@@ -21,7 +21,7 @@ const config = [
       // [TypeScript] 타입 정보를 사용하도록 파서 옵션 설정
       parser: typescriptParser,
       parserOptions: {
-        project: './tsconfig.json', // TypeScript 설정 파일 경로
+        project: './tsconfig.eslint.json', // ESLint 전용 TypeScript 설정 파일로 변경
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
       },

@@ -1,7 +1,6 @@
 'use client';
 
 import { Arena } from '@/components/ui/Arena';
-import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { SelectedArenaMenu } from '../sight/SelectedArenaMenu';
 import { arenaAPI, type ArenaData, ApiError } from '@/lib/api/arena';
@@ -15,7 +14,6 @@ export default function ArenaList() {
   const [arenas, setArenas] = useState<ArenaData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     console.log('ArenaList - Component mounted, starting data fetch');
@@ -75,7 +73,7 @@ export default function ArenaList() {
     );
   }
 
-  if (error) {
+  if (error != null) {
     console.log('ArenaList - Rendering error state:', error);
     return (
       <div className="p-4">
@@ -95,7 +93,6 @@ export default function ArenaList() {
                 key={arena.arenaId}
                 arenaId={arena.arenaId}
                 arenaName={arena.arenaName}
-                engName={arena.arenaName} // API에서 영문 이름이 없어서 한글 이름으로 대체
                 imageSrc={arena.photoUrl}
                 imageAlt={arena.arenaName}
                 onClick={() => {
@@ -108,7 +105,9 @@ export default function ArenaList() {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {selectedArenaId && <SelectedArenaMenu arenaId={selectedArenaId} />}
+        {selectedArenaId != null && (
+          <SelectedArenaMenu arenaId={selectedArenaId} />
+        )}
       </div>
     </div>
   );

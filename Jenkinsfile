@@ -10,6 +10,7 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                     echo "Current Branch: ${env.BRANCH_NAME}"
+                    sh 'ls -al'
                 }
             }
         }

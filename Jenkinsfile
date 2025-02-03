@@ -24,7 +24,15 @@ pipeline {  // 파이프라인 정의 시작
                 }
             }
         }
-        
+        stage('Update nginx.conf') {
+            steps {
+                script {
+                    // 빌드된 nginx.conf 파일을 EC2 내 nginx.conf로 복사
+                    sh 'cp ./nginx.conf /var/jenkins_home/workspace/CONKIRI/nginx.conf'
+                }
+            }
+        }
+
         stage('Build') {  // 두 번째 단계: 빌드
             failFast true  // 하나라도 실패하면 전체 중단
             parallel {  // 병렬로 Backend와 Frontend 작업 수행

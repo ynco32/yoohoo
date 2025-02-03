@@ -176,6 +176,7 @@ public class ViewService {
 
 	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+		User user = findUserByUserIdOrElseThrow(userId);
 
 		// 작성자 본인 여부 확인
 		if(!review.getUser().getUserId().equals(userId)) {
@@ -190,6 +191,10 @@ public class ViewService {
 		);
 
 		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
+
+		if (reviewRepository.existsByUserAndSeatAndConcertAndReviewIdNot(user, seat, concert, reviewId)) {
+			throw new DuplicateReviewException();
+		}
 
 		review.update(reviewRequestDTO, photoUrl, seat, concert);
 	}

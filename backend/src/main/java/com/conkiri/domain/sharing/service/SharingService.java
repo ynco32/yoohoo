@@ -161,9 +161,9 @@ public class SharingService {
 	 * 댓글 작성
 	 * @param commentRequestDTO
 	 */
-	public void writeComment(CommentRequestDTO commentRequestDTO) {
+	public void writeComment(CommentRequestDTO commentRequestDTO, Long userId) {
 		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.getSharingId());
-		User user = findUserByIdOrElseThrow(commentRequestDTO.getUserId());
+		User user = findUserByIdOrElseThrow(userId);
 
 		Comment comment = Comment.of(commentRequestDTO, sharing, user);
 		commentRepository.save(comment);

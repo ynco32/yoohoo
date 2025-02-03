@@ -11,6 +11,7 @@ pipeline {  // 파이프라인 정의 시작
                 script {
                     echo "Current Branch: ${env.BRANCH_NAME}"
                     sh 'ls -al'
+                    sh 'cat nginx.conf'
                 }
             }
         }

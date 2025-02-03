@@ -6,7 +6,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf 
+      - ./proxy/default.conf:/etc/nginx/nginx.conf 
     depends_on:
       - frontend
       - backend

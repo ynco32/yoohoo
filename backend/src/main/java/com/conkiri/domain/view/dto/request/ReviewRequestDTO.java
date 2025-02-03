@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 public class ReviewRequestDTO {
 
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
+	private Long concertId;
+
+	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	private Long sectionId;
 
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
@@ -25,9 +28,6 @@ public class ReviewRequestDTO {
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	private Long columnLine;
 
-	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
-	private Long concertId;
-
 	@NotBlank(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	private String content;
 
@@ -35,9 +35,6 @@ public class ReviewRequestDTO {
 	@Min(value = 1)
 	@Max(value = 10)
 	private Integer viewScore;
-
-	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
-	private StageType stageType;
 
 	private SeatDistance seatDistance;
 	private Sound sound;

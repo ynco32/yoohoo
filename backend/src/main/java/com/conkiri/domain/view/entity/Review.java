@@ -76,10 +76,10 @@ public class Review extends BaseTime {
 			.seatDistance(reviewRequestDTO.getSeatDistance())
 			.sound(reviewRequestDTO.getSound())
 			.photoUrl(photoUrl)
-			.stageType(reviewRequestDTO.getStageType())
 			.user(user)
 			.seat(seat)
 			.concert(concert)
+			.stageType(concert.getStageType())
 			.build();
 	}
 
@@ -88,9 +88,9 @@ public class Review extends BaseTime {
 		this.viewScore = reviewRequestDTO.getViewScore();
 		this.seatDistance = reviewRequestDTO.getSeatDistance();
 		this.sound = reviewRequestDTO.getSound();
-		this.stageType = reviewRequestDTO.getStageType();
 		this.photoUrl = photoUrl;
 		this.seat = seat;
 		this.concert = concert;
+		this.stageType = concert.getStageType();
 	}
 }

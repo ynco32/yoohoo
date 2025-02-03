@@ -27,8 +27,7 @@ pipeline {  // 파이프라인 정의 시작
         stage('Update nginx.conf') {
             steps {
                 script {
-                    // 빌드된 nginx.conf 파일을 EC2 내 nginx.conf로 복사
-                    sh 'cp ./nginx.conf /var/jenkins_home/workspace/CONKIRI/nginx.conf'
+                    sh 'cat /var/jenkins_home/workspace/CONKIRI/nginx.conf'
                 }
             }
         }

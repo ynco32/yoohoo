@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.base.service.MyPageService;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.global.auth.token.CustomOAuth2User;
 
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,11 @@ public class MyPageController {
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
 	) {
 		return myPageService.getScrappedList(lastSharingId, customOAuth2User.getUserId());
+	}
+
+	// 마이페이지에서 회원이 작성한 후기 게시글 조회
+	@GetMapping("/reviews")
+	public ReviewResponseDTO getReviews(@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		return myPageService.getReviews(userPrincipal.getUserId());
 	}
 }

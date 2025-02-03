@@ -13,6 +13,7 @@ import com.conkiri.domain.view.entity.Review;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 	List<Review> findBySeatIn(List<Seat> seats);
 	List<Review> findBySeat(Seat seat);
+	List<Review> findByUser(User user);
 	boolean existsByUserAndSeatAndConcert(User user, Seat seat, Concert concert);
 	boolean existsByUserAndSeatAndConcertAndReviewIdNot(User user, Seat seat, Concert concert, Long reviewId);
 	Optional<Review> findReviewByReviewId(Long reviewId);

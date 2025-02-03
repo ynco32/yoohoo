@@ -6,7 +6,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/conf:/etc/nginx/conf.d
+      volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf # 여기서 오타나서 굉장히 삽질함ㅠ
+      - ./error.log:/var/log/nginx/error.log
     depends_on:
       - frontend
       - backend

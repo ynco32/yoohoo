@@ -28,10 +28,15 @@ public class UserService {
 		return !userRepository.existsByNickname(nickname);
 	}
 
+	public User findUserByUserIdOrElseThrow(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
+	}
+
 	private User findUserByEmailOrElseThrow(String email) {
 
 		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new UserNotFoundException());
+			.orElseThrow(UserNotFoundException::new);
 	}
 
 	private void validateNicknameDuplicate(String nickname) {

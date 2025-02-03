@@ -18,6 +18,7 @@ services:
     image: certbot/certbot
     volumes:
       - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     command: certonly --webroot -w /var/www/certbot -d i12b207.p.ssafy.io
 
   backend:

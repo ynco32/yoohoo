@@ -208,8 +208,6 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.where(sharing.concert.eq(persistanceConcert)
 				.and(sharing.status.ne(Status.CLOSED)))
 			.execute();
-
-		entityManager.close();
 	}
 
 	// ========================= 내부 메서드 =========================== //

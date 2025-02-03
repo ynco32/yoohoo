@@ -8,7 +8,8 @@ services:
     depends_on:
       - frontend
       - backend
-
+    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload"
+    
   backend:
     build: ./backend     # backend Dockerfile 위치
     ports:

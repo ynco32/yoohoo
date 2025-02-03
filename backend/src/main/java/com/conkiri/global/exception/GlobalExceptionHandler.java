@@ -156,9 +156,9 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(UnauthorizedAccessException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ExceptionResponse unauthorizedAccessExceptionHandler(Exception e) {
-		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+		return new ExceptionResponse(e.getMessage(), HttpStatus.UNAUTHORIZED, LocalDateTime.now());
 	}
 
 	@ExceptionHandler(HandlerMethodValidationException.class)

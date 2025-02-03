@@ -17,7 +17,6 @@ export const Default: Story = {
   args: {
     arenaId: 1,
     arenaName: '올림픽체조경기장',
-    engName: 'KSPO DOME',
     imageSrc: '/images/kspo.png',
     imageAlt: '올림픽 체조 경기장',
     onClick: () => console.log('Arena clicked'),

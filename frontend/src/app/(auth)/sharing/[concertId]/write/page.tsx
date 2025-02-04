@@ -27,7 +27,7 @@ export default function SharingWritePage() {
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 
   const params = useParams();
-  const concertId = params.concertId ? Number(params.concertId) : 0;
+  const concertId = params.concertId !== undefined ? Number(params.concertId) : 0;
 
   const handleLocationSelect = (locationInfo: LocationInfo) => {
     setLocation(locationInfo);

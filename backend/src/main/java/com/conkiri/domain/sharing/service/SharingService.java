@@ -1,7 +1,10 @@
 package com.conkiri.domain.sharing.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.entity.Concert;
@@ -35,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class SharingService {
 
+	private static final Logger log = LoggerFactory.getLogger(SharingService.class);
 	private final SharingRepository sharingRepository;
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
@@ -157,9 +161,9 @@ public class SharingService {
 	 * 댓글 작성
 	 * @param commentRequestDTO
 	 */
-	public void writeComment(CommentRequestDTO commentRequestDTO) {
+	public void writeComment(CommentRequestDTO commentRequestDTO, Long userId) {
 		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.getSharingId());
-		User user = findUserByIdOrElseThrow(commentRequestDTO.getUserId());
+		User user = findUserByIdOrElseThrow(userId);
 
 		Comment comment = Comment.of(commentRequestDTO, sharing, user);
 		commentRepository.save(comment);
@@ -289,6 +293,15 @@ public class SharingService {
 	private Comment findCommentByIdOrElseThrow(Long commentId) {
 		return commentRepository.findById(commentId)
 			.orElseThrow(CommentNotFoundException::new);
+	}
+
+	/**
+	 * 시간이 지난 나눔 게시글의 나눔 상태를 CLOSED로 변환하는 내부 메서드
+	 * @param concert
+	 */
+	@Transactional
+	public void updateSharingStatusToCloesd(Concert concert) {
+		sharingRepository.updateStatusToClosedForConcert(concert);
 	}
 }
 

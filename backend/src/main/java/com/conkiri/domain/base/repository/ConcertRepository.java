@@ -2,6 +2,7 @@ package com.conkiri.domain.base.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,4 +25,14 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 	
 	// No-Offset 방식(2번째 부터 조회 시)
 	Slice<Concert> findByStartTimeAfterAndConcertIdGreaterThan(LocalDateTime now, Long concertId, Pageable pageable);
+
+	// 가수 이름으로 공연 찾기
+	List<Concert> findByArtist(String artist);
+
+	List<Concert> findByArtistContaining(String artist);
+
+	// 특정 시간 범위 내의 startTime을 가지는 Concert조회
+	List<Concert> findByStartTimeBetween(LocalDateTime now, LocalDateTime end);
+	
+	Optional<Concert> findConcertByConcertId(Long concertId);
 }

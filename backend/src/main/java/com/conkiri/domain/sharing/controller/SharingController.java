@@ -145,8 +145,11 @@ public class SharingController {
 	 */
 	@PostMapping("/comment")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void writeComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
-		sharingService.writeComment(commentRequestDTO);
+	public void writeComment(
+		@Valid @RequestBody CommentRequestDTO commentRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.writeComment(commentRequestDTO, customOAuth2User.getUserId());
 	}
 
 	/**

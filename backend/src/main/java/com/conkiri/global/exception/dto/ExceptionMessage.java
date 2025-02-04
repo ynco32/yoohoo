@@ -27,6 +27,8 @@ public final class ExceptionMessage {
 	public static final String INVALID_TOKEN = "유효하지 않는 토큰입니다.";
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String UNAUTHORIZED = "권한없는 접근입니다.";
+	public static final String REFRESH_TOKEN_NOT_EMPTY = "refresh token은 필수값 입니다.";
+
 
 	// OAuth
 	public static final String OAUTH_PROCESSING_ERROR = "OAuth 오류입니다."; //HttpStatus.INTERNAL_SERVER_ERROR
@@ -48,4 +50,7 @@ public final class ExceptionMessage {
 	public static final String SEAT_NOT_FOUND = "좌석을 찾을 수 없습니다.";
 	public static final String DUPLICATE_SCRAP_SEAT = "이미 스크랩한 좌석입니다.";
 	public static final String SCRAP_SEAT_NOT_FOUND = "스크랩하지 않은 좌석입니다.";
+	public static final String DUPLICATE_REVIEW = "이미 해당 공연, 좌석에 대한 리뷰를 남겼습니다.";
+	public static final String REVIEW_NOT_FOUND = "리뷰를 찾을 수 없습니다.";
+	public static final String UNAUTHORIZED_ACCESS = "해당 사용자에게 권한이 없습니다.";
 }

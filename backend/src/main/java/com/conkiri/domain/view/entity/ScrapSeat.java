@@ -42,4 +42,12 @@ public class ScrapSeat {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seat_id", nullable = false)
 	private Seat seat;
+
+	public static ScrapSeat createScrapSeat(User user, Seat seat, StageType stageType) {
+		return ScrapSeat.builder()
+			.user(user)
+			.seat(seat)
+			.stageType(stageType)
+			.build();
+	}
 }

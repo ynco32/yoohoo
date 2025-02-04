@@ -1,6 +1,26 @@
 version: '3.8'           # docker-compose 버전
 
 services:
+  nginx:
+    build: ./nginx # Dockerfile 위치
+    ports:
+      - "80:80"    # HTTP 포트
+      - "443:443"  # HTTPS 포트 추가
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot   # 인증 확인용 볼륨
+    depends_on:
+      - frontend
+      - backend
+    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload" # nginx 설정 재로드, 컨테이너 시작 시 자동으로 하도록
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    command: certonly --standalone -d i12b207.p.ssafy.io
+
   backend:
     build: ./backend     # backend Dockerfile 위치
     ports:
@@ -16,8 +36,13 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - FRONTEND_URL=${FRONTEND_URL}
       - SERVER_DOMAIN=${SERVER_DOMAIN}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET=${S3_BUCKET}
     depends_on:          # 의존성 설정
-      - mysql
+      mysql:
+        condition: service_healthy
 
   frontend:
     build: ./frontend    # frontend Dockerfile 위치
@@ -25,11 +50,18 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - NEXT_PUBLIC_KAKAO_MAP_API_KEY=${NEXT_PUBLIC_KAKAO_MAP_API_KEY}
     depends_on:
       - backend
 
   mysql:
     image: mysql:8.0.4     # MySQL 이미지
+    healthcheck:
+      test: ["CMD", "mysql", "--user=${MYSQL_USER}", "--password=${MYSQL_PASSWORD}", "-e", "SELECT 1"]
+      interval: 5s    # 5초마다 체크
+      timeout: 3s     # 체크 타임아웃 3초
+      retries: 3      # 3번 재시도
+      start_period: 15s  # 초기 시작 대기 시간 15초
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=conkiri

@@ -8,16 +8,17 @@ interface IconWrapperProps {
   icon: SVGIconName;
   label: string;
   description: string;
+  className?: string;
 }
 export const IconWrapper = ({ icon, label, description }: IconWrapperProps) => {
   return (
     <div className="relative flex h-full w-full flex-col items-start gap-[1.023px]">
       <div className="flex flex-col">
         {/* Pretendard 폰트 적용 */}
-        <span className="text-menu text-text-menu font-pretendard">
+        <span className="font-pretendard text-menu text-text-menu">
           {label}
         </span>
-        <span className="text-menu-description text-text-description font-pretendard">
+        <span className="font-pretendard text-menu-description text-text-description">
           {description}
         </span>
       </div>

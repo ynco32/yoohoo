@@ -4,13 +4,23 @@ import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 interface PhotoUploadProps {
   value?: File;
   onChange: (file?: File) => void;
+  label?: string;
+  placeholder?: string;
+  className?: string;
+  error?: string;
 }
 
-export const PhotoUpload = ({ value, onChange }: PhotoUploadProps) => {
+export const PhotoUpload = ({
+  value,
+  onChange,
+  label = '사진',
+  placeholder = '사진을 업로드해주세요',
+  className = '',
+  error,
+}: PhotoUploadProps) => {
   const [preview, setPreview] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 이미지가 변경될 때마다 미리보기 업데이트
   React.useEffect(() => {
     if (value) {
       const reader = new FileReader();
@@ -48,11 +58,9 @@ export const PhotoUpload = ({ value, onChange }: PhotoUploadProps) => {
   };
 
   return (
-    <div className="w-full">
-      <label className="block text-sm mb-1">사진</label>
-      <div
-        className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden"
-      >
+    <div className={`w-full ${className}`}>
+      {label && <label className="mb-1 block text-sm">{label}</label>}
+      <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-gray-100">
         <input
           type="file"
           ref={inputRef}
@@ -63,20 +71,18 @@ export const PhotoUpload = ({ value, onChange }: PhotoUploadProps) => {
         <button
           type="button"
           onClick={handleClick}
-          className="w-full h-full flex items-center justify-center"
+          className="flex h-full w-full items-center justify-center"
         >
           {preview ? (
             <img
               src={preview}
               alt="Preview"
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <CameraIcon className="w-6 h-6 text-gray-400" />
-              <span className="text-sm text-gray-400">
-                사진을 업로드해주세요
-              </span>
+              <CameraIcon className="h-6 w-6 text-gray-400" />
+              <span className="text-sm text-gray-400">{placeholder}</span>
             </div>
           )}
         </button>
@@ -90,6 +96,7 @@ export const PhotoUpload = ({ value, onChange }: PhotoUploadProps) => {
           </button>
         )}
       </div>
+      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
     </div>
   );
 };

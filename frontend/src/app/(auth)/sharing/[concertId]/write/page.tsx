@@ -19,7 +19,7 @@ export default function SharingWritePage() {
 
   const [formData, setFormData] = useState<SharingFormData>({
     title: '',
-    startTime: '', // 시간 상태 초기화
+    startTime: '',
     count: '',
     content: '',
   });
@@ -53,8 +53,8 @@ export default function SharingWritePage() {
       {step === 'form' && location && (
         <SharingWriteForm
           location={location}
-          formData={formData} // 시간 포함한 폼 데이터 전달
-          onFormChange={setFormData} // 폼 데이터 변경 핸들러
+          formData={formData}
+          onFormChange={setFormData}
           onSubmitComplete={handleSubmitComplete}
           onLocationReset={handleLocationReset}
           concertId={concertId}

@@ -4,8 +4,8 @@ import React from 'react';
 import { SharingFormData } from '@/types/sharing';
 import { TitleInput } from './TitleInput';
 import { TimeInput } from './TimeInput';
-import { PhotoUpload } from './PhotoUpload';
-import { ContentInput } from './ContentInput';
+import { PhotoUpload } from '@/components/common/PhotoUpload';
+import { TextArea } from '@/components/common/TextArea';
 
 interface SharingWriteFormProps {
   location: { latitude: number; longitude: number };
@@ -20,6 +20,7 @@ type FormErrors = {
   title?: string;
   startTime?: string;
   content?: string;
+  image?: string;
   submit?: string;
 };
 
@@ -43,6 +44,9 @@ export const SharingWriteForm = ({
     if (!formData.startTime) {
       newErrors.startTime = '시작 시간을 선택해주세요';
     }
+    if (!formData.image) {
+        newErrors.image = '사진을 업로드해주세요';
+      }
     if (!formData.content?.trim()) {
       newErrors.content = '상세 내용을 입력해주세요';
     }
@@ -53,15 +57,15 @@ export const SharingWriteForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       try {
         setIsSubmitting(true);
         await onSubmitComplete();
       } catch (error) {
-        setErrors(prev => ({
+        setErrors((prev) => ({
           ...prev,
-          submit: '나눔 등록에 실패했습니다. 다시 시도해주세요.'
+          submit: '나눔 등록에 실패했습니다. 다시 시도해주세요.',
         }));
       } finally {
         setIsSubmitting(false);
@@ -70,10 +74,10 @@ export const SharingWriteForm = ({
   };
 
   return (
-    <div className="w-full max-w-[430px] mx-auto h-[calc(100vh-56px)] flex flex-col">
-      <div className="flex-1 overflow-y-auto">
-        <form onSubmit={handleSubmit} className="h-full">
-          <div className="p-4 space-y-4">
+    <div className="flex h-[calc(100vh-56px)] w-full max-w-[430px] flex-col">
+      <div className="h-full overflow-y-auto">
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4 p-4">
             <TitleInput
               value={formData.title || ''}
               onChange={(title) => onFormChange({ ...formData, title })}
@@ -87,21 +91,26 @@ export const SharingWriteForm = ({
             <PhotoUpload
               value={formData.image}
               onChange={(image) => onFormChange({ ...formData, image })}
+              error={errors.image}
+              label="사진"
+              placeholder="사진을 업로드해주세요"
             />
-            <ContentInput
-              value={formData.content || ''}
+            <TextArea
+              value={formData.content}
               onChange={(content) => onFormChange({ ...formData, content })}
               error={errors.content}
+              label="상세 내용"
+              placeholder="상세 내용을 입력해주세요"
             />
           </div>
         </form>
       </div>
 
       {errors.submit && (
-        <p className="text-sm text-status-warning px-4">{errors.submit}</p>
+        <p className="px-4 text-sm text-status-warning">{errors.submit}</p>
       )}
 
-      <div className="p-4 space-y-2">
+      <div className="space-y-2 p-4">
         <button
           type="button"
           onClick={onLocationReset}

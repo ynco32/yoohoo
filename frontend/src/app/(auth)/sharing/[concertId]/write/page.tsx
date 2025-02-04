@@ -42,15 +42,18 @@ export default function SharingWritePage() {
   };
 
   return (
-    <div className="h-screen">
-      {step === 'location' && (
+  <>
+    {step === 'location' && (
+      <div className="h-screen">
         <SharingLocationSelect
           onLocationSelect={handleLocationSelect}
           venueLocation={VENUE_COORDINATES.KSPO_DOME}
           initialLocation={location || VENUE_COORDINATES.KSPO_DOME}
         />
-      )}
-      {step === 'form' && location && (
+      </div>
+    )}
+    {step === 'form' && location && (
+      <div className="h-full">
         <SharingWriteForm
           location={location}
           formData={formData}
@@ -59,11 +62,12 @@ export default function SharingWritePage() {
           onLocationReset={handleLocationReset}
           concertId={concertId}
         />
-      )}
-      <SharingCompleteModal
-        isOpen={isCompleteModalOpen}
-        onClose={() => setIsCompleteModalOpen(false)}
-      />
-    </div>
-  );
+      </div>
+    )}
+    <SharingCompleteModal
+      isOpen={isCompleteModalOpen}
+      onClose={() => setIsCompleteModalOpen(false)}
+    />
+  </>
+);
 }

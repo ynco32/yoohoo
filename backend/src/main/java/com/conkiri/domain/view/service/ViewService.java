@@ -27,7 +27,6 @@ import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.domain.view.repository.ScrapSeatRepository;
-import com.conkiri.global.exception.auth.UnAuthorizedException;
 import com.conkiri.global.exception.concert.ConcertNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
@@ -66,9 +65,9 @@ public class ViewService {
 		return SectionResponseDTO.of(sections, stageType);
 	}
 
-	public ReviewResponseDTO getReviews(Long arenaId, Long sectionId, Integer stageType, Long rowLine, Long columnLine) {
+	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long rowLine, Long columnLine) {
 		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
-		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
 
 		if (rowLine != null && columnLine != null) {
 			Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
@@ -116,11 +115,11 @@ public class ViewService {
 		return ScrapSectionResponseDTO.from(sections);
 	}
 
-	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Long sectionId, Integer stageType, Long userId) {
+	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
 		Arena arena = findArenaByAreaIdOrElseThrow(arenaId);
-		Section section = findSectionByArenaAndSectionIdOrElseThrow(arena, sectionId);
-		User user = findUserByUserIdOrElseThrow(userId);
 		StageType selectedType = StageType.values()[stageType];
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
+		User user = findUserByUserIdOrElseThrow(userId);
 
 		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section(user, selectedType, section);
 		return ScrapSeatResponseDTO.from(scraps);
@@ -159,7 +158,8 @@ public class ViewService {
 
 		User user = findUserByUserIdOrElseThrow(userId);
 		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
-		Section section = sectionRepository.findSecctionBySectionId(reviewRequestDTO.getSectionId());
+		Arena arena = concert.getArena();
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
 			reviewRequestDTO.getRowLine(),
@@ -183,14 +183,15 @@ public class ViewService {
 			throw new UnauthorizedAccessException();
 		}
 
-		Section section = sectionRepository.findSecctionBySectionId(reviewRequestDTO.getSectionId());
+		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
+		Arena arena = concert.getArena();
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
+
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
 			reviewRequestDTO.getRowLine(),
 			reviewRequestDTO.getColumnLine(),
 			section
 		);
-
-		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
 
 		if (reviewRepository.existsByUserAndSeatAndConcertAndReviewIdNot(user, seat, concert, reviewId)) {
 			throw new DuplicateReviewException();
@@ -221,10 +222,9 @@ public class ViewService {
 			.orElseThrow(ArenaNotFoundException::new);
 	}
 
-	private Section findSectionByArenaAndSectionIdOrElseThrow(Arena arena, Long sectionId) {
-		return sectionRepository.findSectionByArenaAndSectionId(arena, sectionId)
+	private Section findSectionByArenaAndSectionNumberOrElseThrow(Arena arena, Long sectionNumber) {
+		return sectionRepository.findSectionByArenaAndSectionNumber(arena, sectionNumber)
 			.orElseThrow(SectionNotFoundException::new);
-
 	}
 
 	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Long rowLine, Long columnLine, Section section) {

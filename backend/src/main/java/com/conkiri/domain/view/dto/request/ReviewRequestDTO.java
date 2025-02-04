@@ -20,7 +20,7 @@ public class ReviewRequestDTO {
 	private Long concertId;
 
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
-	private Long sectionId;
+	private Long sectionNumber;
 
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	private Long rowLine;

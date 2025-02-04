@@ -33,33 +33,22 @@ public class ViewController {
 
 	private final ViewService viewService;
 
-	// 공연장 목록 전체 조회 API
+	// 공연장 목록 조회 API
 	@GetMapping("/arenas")
 	public ArenaResponseDTO getArenas(){
 		return viewService.getArenas();
 	}
 
-	// 무대 유형에 따른 구역 정보 전체 조회 API
-	@GetMapping("/arenas/{arenaId}")
+	// 무대 유형에 따른 구역 정보 조회 API
+	@GetMapping("/arenas/{arenaId}/sections")
 	public SectionResponseDTO getSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType) {
 		return viewService.getSectionsByStageType(arenaId, stageType);
 	}
 
-	// 후기 조회 API (구역 전체 / 좌석 전체)
-	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/reviews")
-	public ReviewResponseDTO getReviews(
-		@PathVariable Long arenaId,
-		@PathVariable Long sectionId,
-		@RequestParam(name = "stageType") Integer stageType,
-		@RequestParam(name = "row", required = false) Long rowLine,
-		@RequestParam(name = "column", required = false) Long columnLine) {
-		return viewService.getReviews(arenaId, sectionId, stageType, rowLine, columnLine);
-	}
-
-	// 구역 조회 시 스크랩한 좌석이 존재하는 구역 전체 조회 API
-	@GetMapping("/arenas/{arenaId}/scraps")
+	// 스크랩한 구역 전체 조회 API
+	@GetMapping("/arenas/{arenaId}/scrapped-sections")
 	public ScrapSectionResponseDTO getScrapedSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
@@ -67,14 +56,14 @@ public class ViewController {
 		return viewService.getScrapedSections(arenaId, stageType, userPrincipal.getUserId());
 	}
 
-	// 좌석 조회 시 스크랩한 좌석 전제 조회 API
-	@GetMapping("/arenas/{arenaId}/sections/{sectionId}/scraps")
+	// 선택한 구역에서 스크랩한 좌석 전체 조회 API
+	@GetMapping("/arenas/{arenaId}/scraps")
 	public ScrapSeatResponseDTO getScraps(
 		@PathVariable Long arenaId,
-		@PathVariable Long sectionId,
 		@RequestParam(name = "stageType") Integer stageType,
+		@RequestParam(name = "section") Long sectionNumber,
 		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
-		return viewService.getScrapsBySeat(arenaId, sectionId, stageType, userPrincipal.getUserId());
+		return viewService.getScrapsBySeat(arenaId, stageType, sectionNumber, userPrincipal.getUserId());
 	}
 
 	// 좌석 스크랩 등록 API
@@ -95,7 +84,18 @@ public class ViewController {
 		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 
-	// 후기 작성 시 검색한 가수에 대한 공연 목록 전체 조회 API
+	// 해당 영역의 전체 후기 조회 API (구역 / 좌석)
+	@GetMapping("/arenas/{arenaId}/reviews")
+	public ReviewResponseDTO getReviews(
+		@PathVariable Long arenaId,
+		@RequestParam(name = "stageType") Integer stageType,
+		@RequestParam(name = "section") Long sectionNumber,
+		@RequestParam(name = "row", required = false) Long rowLine,
+		@RequestParam(name = "column", required = false) Long columnLine) {
+		return viewService.getReviews(arenaId, stageType, sectionNumber, rowLine, columnLine);
+	}
+
+	// 가수로 검색된 공연 전체 조회 API
 	@GetMapping("/concerts")
 	public ViewConcertResponseDTO getConcerts(@RequestParam(name = "artist") String artist) {
 		return viewService.getConcerts(artist);

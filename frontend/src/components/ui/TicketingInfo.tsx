@@ -3,14 +3,30 @@
 import PerformanceInfo from './PerformanceInfo';
 import TicketingDetails from './TicketingDetails';
 import SeatType from './SeatType';
-import TicketingButton from '../features/ticketing/TicketingButton';
-import { useRouter } from 'next/navigation';
+// import TicketingButton from '../features/ticketing/TicketingButton';
+// import { useRouter } from 'next/navigation';
 import FixedButton from './FixedButton';
+import { useState } from 'react';
+import SchedulePopup from './SchedulePopup';
+import ConcertScheduleButton from './ConcertScheduleButton';
+import QueuePopup from './QueuePopup';
 
 const TicketingInfo = () => {
-  const router = useRouter();
-  const reservationStart = () => {
-    router.push('/real/2');
+  const [isSchedulePopupOpen, setisSchedulePopupOpen] = useState(false);
+  const [isQueuePopupOpen, setisQueuePopupOpen] = useState(false);
+
+  ////// 더미 데이터 :
+  const ranNum: number = 2343;
+  const ranNum2: number = 1122;
+  const ranTime: string = '1시간 23분 33초';
+  //////
+
+  const handleQueuePopupOpen = () => {
+    setisSchedulePopupOpen(false);
+    setTimeout(() => {
+      // 스케줄 팝업이 완전히 닫힌 후 큐 팝업 열기
+      setisQueuePopupOpen(true);
+    }, 100);
   };
 
   return (
@@ -40,9 +56,35 @@ const TicketingInfo = () => {
       </div>
       {/* <TicketingButton onReservationStart={reservationStart} />
        */}
-      <FixedButton onClick={reservationStart} disabled={false}>
+      <FixedButton
+        onClick={() => setisSchedulePopupOpen(true)}
+        disabled={false}
+      >
         예매하기
       </FixedButton>
+      <SchedulePopup
+        isOpen={isSchedulePopupOpen}
+        onClose={() => setisSchedulePopupOpen(false)}
+        title="공연 회차를 고르세요."
+        width="md"
+      >
+        <div>
+          <ConcertScheduleButton onClick={handleQueuePopupOpen}>
+            2024.2.21(토) 20시 00분
+          </ConcertScheduleButton>
+          <ConcertScheduleButton onClick={handleQueuePopupOpen}>
+            2024.2.22(일) 18시 00분
+          </ConcertScheduleButton>
+        </div>
+      </SchedulePopup>
+      <QueuePopup
+        title="ASIA TOUR LOG in SEOUL"
+        queueNumber={ranNum}
+        behindMe={ranNum2}
+        expectedTime={ranTime}
+        onClose={() => setisQueuePopupOpen(false)}
+        isOpen={isQueuePopupOpen}
+      ></QueuePopup>
     </div>
   );
 };

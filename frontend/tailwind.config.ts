@@ -131,6 +131,9 @@ module.exports = {
           caution: '#F7C859',
           warning: '#EB674C',
         },
+        sight: {
+          arenaType: '#ECF7FF',
+        },
         gray: {
           900: '#101014',
           800: '#272830',

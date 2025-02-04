@@ -50,7 +50,13 @@ const config = [
     plugins: {
       '@typescript-eslint': typescriptPlugin,
     },
-    ignores: ['src/**/*.test.ts', 'src/**/*.d.ts', '.next/**/*', 'out/**/*'],
+    ignores: [
+      'src/**/*.test.ts',
+      'src/**/*.d.ts',
+      '.next/**/*',
+      'out/**/*',
+      'tailwind.config.ts', // 테일윈드 추가
+    ],
   },
 ];
 

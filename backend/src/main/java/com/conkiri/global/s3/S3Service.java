@@ -1,6 +1,8 @@
 package com.conkiri.global.s3;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +29,12 @@ public class S3Service {
 
 	// 이미지 업로드
 	public String uploadImage(MultipartFile file, String dirName) {
-		String fileName = dirName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+		if (file == null) { return null; }
+
+		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH");
+		String subDir = sdf.format(new Date());
+
+		String fileName = dirName + subDir + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
 		try {
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()

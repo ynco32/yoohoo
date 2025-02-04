@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.sharing.dto.request.CommentRequestDTO;
 import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
@@ -40,8 +42,12 @@ public class SharingController {
 	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void writeSharing(@Valid @RequestBody SharingRequestDTO sharingRequestDTO) {
-		sharingService.writeSharing(sharingRequestDTO, null);
+	public void writeSharing(
+		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
+		@RequestPart(required = false) MultipartFile file,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.writeSharing(sharingRequestDTO, customOAuth2User.getUserId(), file);
 	}
 
 	/**
@@ -49,8 +55,11 @@ public class SharingController {
 	 * @param sharingId
 	 */
 	@DeleteMapping("/{sharingId}")
-	public void deleteSharing(@PathVariable("sharingId") Long sharingId) {
-		sharingService.deleteSharing(sharingId);
+	public void deleteSharing(
+		@PathVariable("sharingId") Long sharingId,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.deleteSharing(sharingId, customOAuth2User.getUserId());
 	}
 
 	/**
@@ -59,8 +68,13 @@ public class SharingController {
 	 * @param sharingUpdateRequestDTO
 	 */
 	@PutMapping("/{sharingId}")
-	public void updateSharing(@PathVariable("sharingId") Long sharingId, @Valid @RequestBody SharingUpdateRequestDTO sharingUpdateRequestDTO) {
-		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO);
+	public void updateSharing(
+		@PathVariable("sharingId") Long sharingId,
+		@Valid @RequestPart SharingUpdateRequestDTO sharingUpdateRequestDTO,
+		@RequestPart(required = false) MultipartFile file,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO, file, customOAuth2User.getUserId());
 	}
 
 	/**
@@ -69,9 +83,12 @@ public class SharingController {
 	 * @param sharingStatusUpdateRequestDTO
 	 */
 	@PatchMapping("/{sharingId}/status")
-	public void updateSharingStatus(@PathVariable("sharingId") Long sharingId, @Valid @RequestBody SharingStatusUpdateRequestDTO sharingStatusUpdateRequestDTO) {
-		String status = sharingStatusUpdateRequestDTO.getStatus();
-		sharingService.updateSharingStatus(sharingId, status);
+	public void updateSharingStatus(
+		@PathVariable("sharingId") Long sharingId,
+		@Valid @RequestBody SharingStatusUpdateRequestDTO sharingStatusUpdateRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.updateSharingStatus(sharingId, sharingStatusUpdateRequestDTO.getStatus(), customOAuth2User.getUserId());
 	}
 
 	/**
@@ -115,15 +132,15 @@ public class SharingController {
 	/**
 	 * 나눔 게시글 스크랩
 	 * @param sharingId
-	 * @param userPrincipal
+	 * @param customOAuth2User
 	 */
 	@PostMapping("/{sharingId}/scrap/{userId}")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void scrapSharing(
 		@PathVariable("sharingId") Long sharingId,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
 	) {
-		sharingService.scrapSharing(sharingId, userPrincipal.getUserId());
+		sharingService.scrapSharing(sharingId, customOAuth2User.getUserId());
 	}
 
 	/**
@@ -158,8 +175,12 @@ public class SharingController {
 	 * @param commentUpdateRequestDTO
 	 */
 	@PutMapping("/comment/{commentId}")
-	public void updateComment(@PathVariable("commentId") Long commentId, @Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
-		sharingService.updateComment(commentId, commentUpdateRequestDTO);
+	public void updateComment(
+		@PathVariable("commentId") Long commentId,
+		@Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.updateComment(commentId, commentUpdateRequestDTO, customOAuth2User.getUserId());
 	}
 
 	/**
@@ -167,8 +188,11 @@ public class SharingController {
 	 * @param commentId
 	 */
 	@DeleteMapping("/comment/{commentId}")
-	public void deleteComment(@PathVariable("commentId") Long commentId) {
-		sharingService.deleteComment(commentId);
+	public void deleteComment(
+		@PathVariable("commentId") Long commentId,
+		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
+	) {
+		sharingService.deleteComment(commentId, customOAuth2User.getUserId());
 	}
 
 	/**
@@ -180,10 +204,10 @@ public class SharingController {
 	 */
 	@GetMapping("/wrote/{concertId}/{lastSharingId}")
 	public SharingResponseDTO getWroteSharing(
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal,
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId
-	) {
+		@PathVariable("lastSharingId") Long lastSharingId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal
+		) {
 		return sharingService.getWroteSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 
@@ -196,10 +220,10 @@ public class SharingController {
 	 */
 	@GetMapping("/scrap/{concertId}/{lastSharingId}")
 	public SharingResponseDTO getScrapedSharing(
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal,
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId
-	) {
+		@PathVariable("lastSharingId") Long lastSharingId,
+		@AuthenticationPrincipal CustomOAuth2User userPrincipal
+		) {
 		return sharingService.getScrappedSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 

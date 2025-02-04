@@ -1,8 +1,18 @@
+'use client';
+
 import PerformanceInfo from './PerformanceInfo';
 import TicketingDetails from './TicketingDetails';
 import SeatType from './SeatType';
+import TicketingButton from '../features/ticketing/TicketingButton';
+import { useRouter } from 'next/navigation';
+import FixedButton from './FixedButton';
 
 const TicketingInfo = () => {
+  const router = useRouter();
+  const reservationStart = () => {
+    router.push('/real/2');
+  };
+
   return (
     <div>
       <div className="px-4 py-6">
@@ -22,12 +32,17 @@ const TicketingInfo = () => {
         \n 토 오후 6시/ 일 오후 5시`}
       />
       <TicketingDetails title="가격정보" info="기본가" />
-      <div className="flex justify-center gap-9 px-4 py-4">
+      <div className="flex justify-center gap-9 bg-white px-4 py-4">
         <SeatType seat_color="VIP" seat_name="VIP석" />
         <span>198,000원</span>
         <SeatType seat_color="normal" seat_name="일반석" />
         <span>154,000원</span>
       </div>
+      {/* <TicketingButton onReservationStart={reservationStart} />
+       */}
+      <FixedButton onClick={reservationStart} disabled={false}>
+        예매하기
+      </FixedButton>
     </div>
   );
 };

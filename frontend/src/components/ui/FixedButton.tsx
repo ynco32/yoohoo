@@ -10,21 +10,20 @@ export default function FixedButton({
   disabled = false, // 기본값 비활성화된 걸로로
 }: FixedButtonProps) {
   const ButtonType = disabled
-    ? 'bg-[#00C73C] text-white'
-    : 'bg-gray-300 text-white disabled';
+    ? 'bg-gray-300 text-white disabled'
+    : 'bg-[#00C73C] text-white';
 
-  const fixedBottom = 'fixed bottom-0 w-full rounded-none py-4 text-center';
+  const fixedBottom =
+    'fixed max-w-[430px] bottom-0 w-full rounded-none py-4 text-center ';
 
   return (
-    <div>
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        className={fixedBottom}
-      >
-        {children}
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`${fixedBottom} ${ButtonType}`}
+    >
+      {children}
+    </button>
   );
 }

@@ -6,6 +6,7 @@ import { TitleInput } from './TitleInput';
 import { TimeInput } from './TimeInput';
 import { PhotoUpload } from '@/components/common/PhotoUpload';
 import { TextArea } from '@/components/common/TextArea';
+import { TextButton } from '@/components/ui/TextButton';
 
 interface SharingWriteFormProps {
   location: { latitude: number; longitude: number };
@@ -45,8 +46,8 @@ export const SharingWriteForm = ({
       newErrors.startTime = '시작 시간을 선택해주세요';
     }
     if (!formData.image) {
-        newErrors.image = '사진을 업로드해주세요';
-      }
+      newErrors.image = '사진을 업로드해주세요';
+    }
     if (!formData.content?.trim()) {
       newErrors.content = '상세 내용을 입력해주세요';
     }
@@ -111,20 +112,16 @@ export const SharingWriteForm = ({
       )}
 
       <div className="space-y-2 p-4">
-        <button
-          type="button"
-          onClick={onLocationReset}
-          className="w-full rounded-lg border border-primary-main py-4 text-primary-main"
-        >
+        <TextButton variant="outline" onClick={onLocationReset}>
           위치 다시 선택하기
-        </button>
-        <button
+        </TextButton>
+        <TextButton
           onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full rounded-lg bg-primary-main py-4 text-white transition-colors disabled:bg-gray-300"
+          isLoading={isSubmitting}
+          loadingText="등록 중..."
         >
-          {isSubmitting ? '등록 중...' : '나눔 등록하기'}
-        </button>
+          나눔 등록하기
+        </TextButton>
       </div>
     </div>
   );

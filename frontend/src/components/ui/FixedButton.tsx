@@ -1,5 +1,5 @@
 interface FixedButtonProps {
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   children: React.ReactNode; // 백엔드에서 뭘로 넘겨줄지 모르니 일단 다 들어가게 하기
   disabled?: boolean; // 활성화 유무
 }

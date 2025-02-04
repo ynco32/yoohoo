@@ -140,7 +140,6 @@ export const getMockSharingDetail = (id: number) => {
 export interface SharingFormData {
   title: string;
   startTime: string;
-  count: string;
   content: string;
   image?: File;
 }

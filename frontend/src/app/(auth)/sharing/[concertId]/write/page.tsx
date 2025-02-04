@@ -22,7 +22,6 @@ export default function SharingWritePage() {
   const [formData, setFormData] = useState<SharingFormData>({
     title: '',
     startTime: '',
-    count: '',
     content: '',
   });
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);

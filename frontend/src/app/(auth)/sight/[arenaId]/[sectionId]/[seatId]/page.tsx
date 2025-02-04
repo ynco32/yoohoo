@@ -1,4 +1,4 @@
-import { SightReviewList } from '@/components/features/sight/SightReviewList';
+import { SightReviewList } from '@/components/features/sight/review/SightReviewList';
 import ScrapMode from '@/components/features/sight/ScrapMode';
 import { WriteButton } from '@/components/common/WriteButton';
 

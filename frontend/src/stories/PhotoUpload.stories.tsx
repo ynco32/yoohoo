@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { PhotoUpload } from '@/components/common/PhotoUpload';
 
 const meta: Meta<typeof PhotoUpload> = {
-  title: 'Components/PhotoUpload',
+  title: 'common/PhotoUpload',
   component: PhotoUpload,
   tags: ['autodocs'],
   parameters: {

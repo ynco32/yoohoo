@@ -19,9 +19,13 @@ export const SharingDetailComments = ({
               <div className="flex items-center gap-2">
                 <span className="font-medium">사용자 {comment.writer}</span>
                 <span className="text-xs text-gray-500">
-                  {new Date(comment.modifyTime).toLocaleTimeString('ko-KR', {
+                  {new Date(comment.modifyTime).toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
                     hour: '2-digit',
                     minute: '2-digit',
+                    hour12: false,
                   })}
                 </span>
               </div>

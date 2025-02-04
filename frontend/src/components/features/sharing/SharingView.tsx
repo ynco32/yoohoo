@@ -8,6 +8,7 @@ import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
 import { MOCK_POSTS } from '@/types/sharing';
+import { formatDateTime } from '@/lib/utils/dateFormat';
 
 type ViewMode = 'list' | 'map';
 
@@ -26,23 +27,19 @@ export const SharingView = () => {
 
   // URL 파라미터에서 공연 ID 추출
   const params = useParams();
-  const concertId = params.concertId ? Number(params.concertId) : 0;
+  const concertId =
+    params.concertId !== undefined ? Number(params.concertId) : 0;
 
   // 뷰 모드 상태 관리 (지도/목록)
   const [viewMode, setViewMode] = useState<ViewMode>('map');
 
   // 나눔 게시글 데이터 상태 관리
-  const [posts, setPosts] = React.useState<SharingPost[]>(MOCK_POSTS);
-
-  // startTime 포맷팅 함수
-  const formatTime = (timeString: string) => {
-    return timeString.split('T')[1];
-  };
+  const [posts] = React.useState<SharingPost[]>(MOCK_POSTS);
 
   // 포맷팅된 게시글 데이터 생성
   const formattedPosts = posts.map((post) => ({
     ...post,
-    startTime: formatTime(post.startTime),
+    startTime: formatDateTime(post.startTime),
   }));
 
   return (

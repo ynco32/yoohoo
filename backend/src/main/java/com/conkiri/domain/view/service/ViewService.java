@@ -1,5 +1,6 @@
 package com.conkiri.domain.view.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,11 @@ import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 import com.conkiri.global.exception.view.UnauthorizedAccessException;
+import com.conkiri.global.s3.S3Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -53,6 +57,7 @@ public class ViewService {
 	private final UserRepository userRepository;
 	private final ScrapSeatRepository scrapSeatRepository;
 	private final ConcertRepository concertRepository;
+	private final S3Service s3Service;
 
 	public ArenaResponseDTO getArenas() {
 		List<Arena> arenas = arenaRepository.findAll();
@@ -154,12 +159,13 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
-	public void createReview(ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
+	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		User user = findUserByUserIdOrElseThrow(userId);
 		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
 		Arena arena = concert.getArena();
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
+		String photoUrl = s3Service.uploadImage(file, "reviews");
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
 			reviewRequestDTO.getRowLine(),
@@ -174,18 +180,18 @@ public class ViewService {
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
 	}
 
-	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, String photoUrl, Long userId) {
+	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
 		User user = findUserByUserIdOrElseThrow(userId);
+		String photoUrl = s3Service.uploadImage(file, "reviews");
+		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
+		Arena arena = concert.getArena();
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
 
 		// 작성자 본인 여부 확인
 		if(!review.getUser().getUserId().equals(userId)) {
 			throw new UnauthorizedAccessException();
 		}
-
-		Concert concert = findConcertByConcertIdOrElseThrow(reviewRequestDTO.getConcertId());
-		Arena arena = concert.getArena();
-		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
 			reviewRequestDTO.getRowLine(),

@@ -36,6 +36,10 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - FRONTEND_URL=${FRONTEND_URL}
       - SERVER_DOMAIN=${SERVER_DOMAIN}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET=${S3_BUCKET}
     depends_on:          # 의존성 설정
       mysql:
         condition: service_healthy

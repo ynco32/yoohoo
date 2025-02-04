@@ -84,7 +84,11 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
                         string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
                         string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
-                        string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY')
+                        string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
+                        string(credentialsId: 'AWS_ACCESS_KEY', variable: 'AWS_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
+                        string(credentialsId: 'AWS_REGION', variable: 'AWS_REGION'),
+                        string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET')
                     ]) {
                         sh '''
                             docker-compose down
@@ -101,7 +105,11 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
                                 --build-arg FRONTEND_URL=$FRONTEND_URL \
                                 --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
-                                --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY
+                                --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
+                                --build-arg AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+                                --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \
+                                --build-arg AWS_REGION=$AWS_REGION \
+                                --build-arg S3_BUCKET=$S3_BUCKET
                             docker-compose up -d
                         '''
                     }

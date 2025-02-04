@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { BookmarkIcon } from '@heroicons/react/24/outline';
 import { SharingStatus } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
+import { formatDateTime } from '@/lib/utils/dateFormat';
 
 interface SharingDetailHeaderProps {
   title: string;
@@ -45,11 +46,6 @@ export const SharingDetailHeader = ({
     }
   };
 
-  // startTime 포맷팅 함수
-  const formatTime = (timeString: string) => {
-    return timeString.split('T')[1];
-  };
-
   return (
     <div className="flex flex-col p-4">
       <div className="flex items-center justify-between">
@@ -71,7 +67,7 @@ export const SharingDetailHeader = ({
             <div className="mt-1">
               <div className="flex items-center gap-1 text-sm text-gray-900">
                 <ClockIcon className="h-6 w-6" />
-                {formatTime(startTime)}
+                {formatDateTime(startTime)}
               </div>
             </div>
           </div>

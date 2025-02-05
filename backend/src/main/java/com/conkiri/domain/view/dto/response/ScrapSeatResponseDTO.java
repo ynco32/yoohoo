@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScrapSeatResponseDTO {
+
 	private List<ScrapSeatDetailResponseDTO> scraps;
 
 	public static ScrapSeatResponseDTO from(List<ScrapSeat> scraps) {

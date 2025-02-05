@@ -49,6 +49,6 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 			results.remove(results.size() - 1);
 		}
 
-		return CommentResponseDTO.from(results, hasNext);
+		return CommentResponseDTO.of(results, hasNext);
 	}
 }

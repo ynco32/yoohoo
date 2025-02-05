@@ -12,5 +12,6 @@ public class CommentRequestDTO {
 
 	@NotBlank(message = ExceptionMessage.BLANK_IS_NOT_ALLOWED)
 	private String content;
+
 	private Long sharingId;
 }

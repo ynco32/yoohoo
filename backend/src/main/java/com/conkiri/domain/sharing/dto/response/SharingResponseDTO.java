@@ -19,7 +19,7 @@ public class SharingResponseDTO {
 	private List<SharingDetailResponseDTO> sharings;
 	private boolean isLastPage;
 
-	public static SharingResponseDTO from(List<Sharing> sharings, boolean hasNext) {
+	public static SharingResponseDTO of(List<Sharing> sharings, boolean hasNext) {
 		return SharingResponseDTO.builder()
 			.sharings(sharings.stream()
 				.map(SharingDetailResponseDTO::from)

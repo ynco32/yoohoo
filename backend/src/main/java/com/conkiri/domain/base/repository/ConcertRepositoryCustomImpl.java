@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
@@ -52,7 +50,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 			results.remove(results.size() - 1); // 초과된 한 개 제거
 		}
 
-		return ConcertResponseDTO.from(results, hasNext);
+		return ConcertResponseDTO.of(results, hasNext);
 
 	}
 }

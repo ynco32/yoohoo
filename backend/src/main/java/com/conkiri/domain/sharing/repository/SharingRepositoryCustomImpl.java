@@ -225,7 +225,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			results.remove(results.size() - 1);
 		}
 
-		return SharingResponseDTO.from(results, hasNext);
+		return SharingResponseDTO.of(results, hasNext);
 	}
 
 	/**

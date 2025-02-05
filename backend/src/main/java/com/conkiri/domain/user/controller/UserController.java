@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.user.dto.request.NicknameRequestDTO;
 import com.conkiri.domain.user.service.UserService;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 import com.conkiri.global.exception.dto.ExceptionMessage;
 
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class UserController {
 
 	@PostMapping("/nickname")
 	public void setNickname(@Valid @RequestBody NicknameRequestDTO request,
-		@AuthenticationPrincipal CustomOAuth2User user) {
+		@AuthenticationPrincipal UserPrincipal user) {
 
 		userService.updateNickname(user.getEmail(), request.getNickname());
 	}

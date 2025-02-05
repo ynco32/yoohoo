@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 import com.conkiri.global.util.JwtUtil;
 
 import jakarta.servlet.http.Cookie;
@@ -40,7 +40,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		log.info("Received State: {}", request.getParameter("state"));
 		log.info("Received Code: {}", request.getParameter("code"));
 		log.info("OAuth2 Success: {}", authentication);
-		CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+		UserPrincipal oAuth2User = (UserPrincipal) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();
 
 		// 토큰 생성

@@ -20,7 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +28,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 @Getter
-@Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sharing extends BaseTime {
 

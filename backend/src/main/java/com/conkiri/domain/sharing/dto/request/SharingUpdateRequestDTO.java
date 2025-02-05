@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import com.conkiri.global.exception.dto.ExceptionMessage;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +14,7 @@ public class SharingUpdateRequestDTO {
 
 	@NotBlank(message = ExceptionMessage.BLANK_IS_NOT_ALLOWED)
 	private String title;
+
 	private String content;
 	private Double latitude;
 	private Double longitude;

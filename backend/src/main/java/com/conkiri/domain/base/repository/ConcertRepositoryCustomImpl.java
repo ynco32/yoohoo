@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
@@ -26,11 +24,13 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 	}
 
 	@Override
-	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId, Pageable pageable) {
+	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId,
+		Pageable pageable) {
+
 		QConcert concert = QConcert.concert;
 
 		BooleanExpression conditions = concert.startTime.after(now); // 기본 조건: 시작 시간이 now이후
-		
+
 		if (concertSearch != null && !concertSearch.isEmpty()) {
 			conditions = conditions.and(concert.concertName.containsIgnoreCase(concertSearch)); // 검색어 조건
 		}
@@ -52,7 +52,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 			results.remove(results.size() - 1); // 초과된 한 개 제거
 		}
 
-		return ConcertResponseDTO.from(results, hasNext);
+		return ConcertResponseDTO.of(results, hasNext);
 
 	}
 }

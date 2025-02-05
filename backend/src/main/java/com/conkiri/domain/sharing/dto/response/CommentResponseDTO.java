@@ -19,7 +19,7 @@ public class CommentResponseDTO {
 	private List<CommentDetailResponseDTO> comments;
 	private boolean isLastPage;
 
-	public static CommentResponseDTO from(List<Comment> comments, boolean hasNext) {
+	public static CommentResponseDTO of(List<Comment> comments, boolean hasNext) {
         return CommentResponseDTO.builder()
 			.comments(comments.stream()
 				.map(CommentDetailResponseDTO::from)

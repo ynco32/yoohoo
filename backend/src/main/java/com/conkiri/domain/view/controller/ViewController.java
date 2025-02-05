@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -17,14 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
-import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
+import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
-import com.conkiri.global.auth.token.CustomOAuth2User;
-import com.conkiri.global.s3.S3Service;
+import com.conkiri.global.auth.token.UserPrincipal;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +33,10 @@ import lombok.RequiredArgsConstructor;
 public class ViewController {
 
 	private final ViewService viewService;
-	private final S3Service s3Service;
 
 	// 공연장 목록 조회 API
 	@GetMapping("/arenas")
-	public ArenaResponseDTO getArenas(){
+	public ArenaResponseDTO getArenas() {
 		return viewService.getArenas();
 	}
 
@@ -56,7 +53,7 @@ public class ViewController {
 	public ScrapSectionResponseDTO getScrapedSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return viewService.getScrapedSections(arenaId, stageType, userPrincipal.getUserId());
 	}
 
@@ -66,7 +63,7 @@ public class ViewController {
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return viewService.getScrapsBySeat(arenaId, stageType, sectionNumber, userPrincipal.getUserId());
 	}
 
@@ -75,7 +72,7 @@ public class ViewController {
 	public void createScrapSeat(
 		@PathVariable Long seatId,
 		@RequestParam(name = "stageType") Integer stageType,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.createScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 
@@ -84,7 +81,7 @@ public class ViewController {
 	public void deleteScrapSeat(
 		@PathVariable Long seatId,
 		@RequestParam(name = "stageType") Integer stageType,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
 	}
 
@@ -111,7 +108,7 @@ public class ViewController {
 	public void createReview(
 		@Valid @RequestPart ReviewRequestDTO reviewRequestDTO,
 		@RequestPart("file") MultipartFile file,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.createReview(reviewRequestDTO, file, userPrincipal.getUserId());
 	}
 
@@ -121,7 +118,7 @@ public class ViewController {
 		@PathVariable Long reviewId,
 		@Valid @RequestPart ReviewRequestDTO reviewRequestDTO,
 		@RequestPart("file") MultipartFile file,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.updateReview(reviewId, reviewRequestDTO, file, userPrincipal.getUserId());
 	}
 
@@ -129,7 +126,7 @@ public class ViewController {
 	@DeleteMapping("/reviews/{reviewId}")
 	public void deleteReview(
 		@PathVariable Long reviewId,
-		@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.deleteReview(reviewId, userPrincipal.getUserId());
 	}
 }

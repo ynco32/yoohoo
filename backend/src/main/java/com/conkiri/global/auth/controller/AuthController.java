@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.global.auth.dto.RefreshTokenRequestDTO;
 import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -28,7 +27,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public void logout(@AuthenticationPrincipal CustomOAuth2User user) {
+	public void logout(@AuthenticationPrincipal UserPrincipal user) {
 		authService.logout(user.getEmail());
 	}
 

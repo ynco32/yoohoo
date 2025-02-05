@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScrapSeatDetailResponseDTO {
+
 	private Long seatId;
 	private Long rowLine;
 	private Long columnLine;

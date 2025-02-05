@@ -14,17 +14,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Getter
-@Builder
-@Table
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Auth {
@@ -37,7 +35,7 @@ public class Auth {
 	@Column(unique = true)
 	private String refreshToken;
 
-	@Column()
+	@Column
 	private LocalDateTime expiryDate;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -55,7 +53,5 @@ public class Auth {
 		this.refreshToken = refreshToken;
 		this.expiryDate = expiryDate;
 	}
-
-
 
 }

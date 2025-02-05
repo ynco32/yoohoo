@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.base.service.MyPageService;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,34 +23,32 @@ public class MyPageController {
 	/**
 	 * 마이페이지에서 회원이 등록한 나눔 게시글 조회
 	 * @param lastSharingId
-	 * @param customOAuth2User
+	 * @param userPrincipal
 	 * @return
 	 */
 	@GetMapping("/wrote/{lastSharingId}")
 	public SharingResponseDTO getWroteList(
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
-	) {
-		return myPageService.getWroteList(lastSharingId, customOAuth2User.getUserId());
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return myPageService.getWroteList(lastSharingId, userPrincipal.getUserId());
 	}
 
 	/**
 	 * 마이페이지에서 회원이 스크랩한 나눔 게시글 조회
 	 * @param lastSharingId
-	 * @param customOAuth2User
+	 * @param userPrincipal
 	 * @return
 	 */
 	@GetMapping("/scrap/{lastSharingId}")
 	public SharingResponseDTO getScrappedList(
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
-	) {
-		return myPageService.getScrappedList(lastSharingId, customOAuth2User.getUserId());
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return myPageService.getScrappedList(lastSharingId, userPrincipal.getUserId());
 	}
 
 	// 마이페이지에서 회원이 작성한 후기 게시글 조회
 	@GetMapping("/reviews")
-	public ReviewResponseDTO getReviews(@AuthenticationPrincipal CustomOAuth2User userPrincipal) {
+	public ReviewResponseDTO getReviews(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return myPageService.getReviews(userPrincipal.getUserId());
 	}
 }

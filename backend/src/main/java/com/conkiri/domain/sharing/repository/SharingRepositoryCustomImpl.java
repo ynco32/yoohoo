@@ -3,8 +3,6 @@ package com.conkiri.domain.sharing.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +22,6 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 
-	private static final Logger log = LoggerFactory.getLogger(SharingRepositoryCustomImpl.class);
 	private final JPAQueryFactory jpaQueryFactory;
 	private final EntityManager entityManager;
 
@@ -42,6 +39,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public SharingResponseDTO findSharings(Concert concert, Long lastSharingId, Pageable pageable) {
+
 		QSharing sharing = QSharing.sharing;
 
 		// 기본조건 : 해당 공연의 나눔 게시글만 조회
@@ -70,6 +68,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public SharingResponseDTO findWroteSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
+
 		QSharing sharing = QSharing.sharing;
 
 		// 기본 조건 : 회원이 작성한 해당 공연의 게시물을 조회
@@ -98,6 +97,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public SharingResponseDTO findScrappedSharings(User user, Concert concert, Long lastSharingId, Pageable pageable) {
+
 		QSharing sharing = QSharing.sharing;
 		QScrapSharing scrapSharing = QScrapSharing.scrapSharing;
 
@@ -127,6 +127,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public SharingResponseDTO findWroteSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
+
 		QSharing sharing = QSharing.sharing;
 
 		BooleanExpression conditions = sharing.user.userId.eq(user.getUserId());
@@ -152,6 +153,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public SharingResponseDTO findScrappedSharingsInMyPage(User user, Long lastSharingId, Pageable pageable) {
+
 		QSharing sharing = QSharing.sharing;
 		QScrapSharing scrapSharing = QScrapSharing.scrapSharing;
 
@@ -176,6 +178,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public void updateStatusToOngoingForUpcomingSharings(LocalDateTime now) {
+
 		QSharing sharing = QSharing.sharing;
 
 		jpaQueryFactory.update(sharing)
@@ -191,6 +194,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	@Override
 	public void updateStatusToClosedForConcert(Concert concert) {
+
 		QSharing sharing = QSharing.sharing;
 
 		if (concert == null || concert.getConcertId() == null) {
@@ -219,13 +223,14 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 * @return
 	 */
 	private static SharingResponseDTO createSharingResponseDTO(Pageable pageable, List<Sharing> results) {
+
 		boolean hasNext = results.size() > pageable.getPageSize();
 
 		if (hasNext) {
 			results.remove(results.size() - 1);
 		}
 
-		return SharingResponseDTO.from(results, hasNext);
+		return SharingResponseDTO.of(results, hasNext);
 	}
 
 	/**
@@ -237,6 +242,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	 */
 	private static BooleanExpression applyLastSharingId(Long lastSharingId, BooleanExpression conditions,
 		QSharing sharing) {
+
 		if (lastSharingId != 0) {
 			conditions = conditions.and(sharing.sharingId.lt(lastSharingId));
 		}

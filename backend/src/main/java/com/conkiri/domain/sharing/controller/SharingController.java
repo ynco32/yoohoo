@@ -44,7 +44,7 @@ public class SharingController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void writeSharing(
 		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
-		@RequestPart(required = false) MultipartFile file,
+		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
 	) {
 		sharingService.writeSharing(sharingRequestDTO, customOAuth2User.getUserId(), file);
@@ -71,7 +71,7 @@ public class SharingController {
 	public void updateSharing(
 		@PathVariable("sharingId") Long sharingId,
 		@Valid @RequestPart SharingUpdateRequestDTO sharingUpdateRequestDTO,
-		@RequestPart(required = false) MultipartFile file,
+		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal CustomOAuth2User customOAuth2User
 	) {
 		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO, file, customOAuth2User.getUserId());

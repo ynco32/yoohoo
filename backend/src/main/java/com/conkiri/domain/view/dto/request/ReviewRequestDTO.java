@@ -1,6 +1,5 @@
 package com.conkiri.domain.view.dto.request;
 
-import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.view.entity.SeatDistance;
 import com.conkiri.domain.view.entity.Sound;
 import com.conkiri.global.exception.dto.ExceptionMessage;

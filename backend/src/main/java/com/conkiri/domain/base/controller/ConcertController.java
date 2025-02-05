@@ -24,10 +24,8 @@ public class ConcertController {
 	 * @return
 	 */
 	@GetMapping
-	public ConcertResponseDTO getConcertList(
-		@RequestParam(value = "search", required = false) String concertSearch,
-		@RequestParam(value = "last", required = false) Long lastConcertId)
-	{
+	public ConcertResponseDTO getConcertList(@RequestParam(value = "search", required = false) String concertSearch,
+		@RequestParam(value = "last", required = false) Long lastConcertId) {
 		return concertService.getConcertList(concertSearch, lastConcertId);
 	}
 }

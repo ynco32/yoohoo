@@ -12,21 +12,21 @@ import com.conkiri.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter
-public class CustomOAuth2User implements OAuth2User {
+public class UserPrincipal implements OAuth2User {
 
 	private final User user;
 	private final Collection<? extends GrantedAuthority> authorities;
 	private final OAuth2User oauth2User;
 
 	// JWT 인증용 생성자
-	public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities, User user) {
+	public UserPrincipal(Collection<? extends GrantedAuthority> authorities, User user) {
 		this.authorities = authorities;
 		this.user = user;
 		this.oauth2User = null;
 	}
 
 	// OAuth2 인증용 생성자
-	public CustomOAuth2User(OAuth2User oauth2User, User user) {
+	public UserPrincipal(OAuth2User oauth2User, User user) {
 		this.oauth2User = oauth2User;
 		this.user = user;
 		this.authorities = oauth2User.getAuthorities();

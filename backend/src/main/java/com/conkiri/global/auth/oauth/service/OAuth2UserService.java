@@ -13,7 +13,7 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.auth.entity.Auth;
 import com.conkiri.global.auth.repository.AuthRepository;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
 		User user = findOrCreateUser(email, nickname, profileImageUrl);
 		findOrCreateAuth(user, provider, providerId);
-		return new CustomOAuth2User(oauth2User, user);
+		return new UserPrincipal(oauth2User, user);
 	}
 
 	private User findOrCreateUser(String email, String nickname, String profileImageUrl) {

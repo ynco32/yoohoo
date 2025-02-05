@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.domain.user.repository.UserRepository;
+import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.entity.Auth;
 import com.conkiri.global.auth.repository.AuthRepository;
 import com.conkiri.global.exception.auth.InvalidTokenException;
-import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class AuthService {
 
 	private final JwtUtil jwtUtil;
 	private final AuthRepository authRepository;
-	private final UserRepository userRepository;
+	private final UserReadService userReadService;
 
 	public TokenDTO refreshToken(String refreshToken) {
 		if (!jwtUtil.validateToken(refreshToken)) {
@@ -31,7 +30,7 @@ public class AuthService {
 		}
 
 		String email = jwtUtil.getEmailFromToken(refreshToken);
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+		User user = userReadService.findUserByEmailOrElseThrow(email);
 		Auth savedAuth = authRepository.findByUser(user)
 			.orElseThrow(() -> new InvalidTokenException());
 
@@ -49,9 +48,8 @@ public class AuthService {
 	}
 
 	public void saveRefreshToken(String email, String refreshToken) {
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("User not found"));
 
+		User user = userReadService.findUserByEmailOrElseThrow(email);
 		Auth token = authRepository.findByUser(user)
 			.map(existingToken -> {
 				existingToken.updateToken(

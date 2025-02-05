@@ -16,14 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
-import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
+import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.UserPrincipal;
-import com.conkiri.global.s3.S3Service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +33,10 @@ import lombok.RequiredArgsConstructor;
 public class ViewController {
 
 	private final ViewService viewService;
-	private final S3Service s3Service;
 
 	// 공연장 목록 조회 API
 	@GetMapping("/arenas")
-	public ArenaResponseDTO getArenas(){
+	public ArenaResponseDTO getArenas() {
 		return viewService.getArenas();
 	}
 

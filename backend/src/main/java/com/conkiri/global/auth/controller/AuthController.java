@@ -14,7 +14,6 @@ import com.conkiri.global.auth.token.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor

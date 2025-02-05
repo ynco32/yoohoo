@@ -29,8 +29,7 @@ public class MyPageController {
 	@GetMapping("/wrote/{lastSharingId}")
 	public SharingResponseDTO getWroteList(
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return myPageService.getWroteList(lastSharingId, userPrincipal.getUserId());
 	}
 
@@ -43,8 +42,7 @@ public class MyPageController {
 	@GetMapping("/scrap/{lastSharingId}")
 	public SharingResponseDTO getScrappedList(
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return myPageService.getScrappedList(lastSharingId, userPrincipal.getUserId());
 	}
 

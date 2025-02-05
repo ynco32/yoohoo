@@ -22,7 +22,6 @@ public class MainPageController {
 	@GetMapping("/user-info")
 	public UserResponseDTO getUserInformation(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		User user = userService.findUserByUserIdOrElseThrow(userPrincipal.getUserId());
-
 		return UserResponseDTO.from(user);
 	}
 }

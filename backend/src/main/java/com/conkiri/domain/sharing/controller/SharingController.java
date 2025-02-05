@@ -45,8 +45,7 @@ public class SharingController {
 	public void writeSharing(
 		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
 		@RequestPart MultipartFile file,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
 	}
 
@@ -57,8 +56,7 @@ public class SharingController {
 	@DeleteMapping("/{sharingId}")
 	public void deleteSharing(
 		@PathVariable("sharingId") Long sharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.deleteSharing(sharingId, userPrincipal.getUserId());
 	}
 
@@ -72,8 +70,7 @@ public class SharingController {
 		@PathVariable("sharingId") Long sharingId,
 		@Valid @RequestPart SharingUpdateRequestDTO sharingUpdateRequestDTO,
 		@RequestPart MultipartFile file,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.updateSharing(sharingId, sharingUpdateRequestDTO, file, userPrincipal.getUserId());
 	}
 
@@ -86,8 +83,7 @@ public class SharingController {
 	public void updateSharingStatus(
 		@PathVariable("sharingId") Long sharingId,
 		@Valid @RequestBody SharingStatusUpdateRequestDTO sharingStatusUpdateRequestDTO,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.updateSharingStatus(sharingId, sharingStatusUpdateRequestDTO.getStatus(), userPrincipal.getUserId());
 	}
 
@@ -100,8 +96,7 @@ public class SharingController {
 	@GetMapping("/{concertId}/{lastSharingId}")
 	public SharingResponseDTO getSharingList(
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId
-	) {
+		@PathVariable("lastSharingId") Long lastSharingId) {
 		return sharingService.getSharingList(concertId, lastSharingId);
 	}
 
@@ -124,8 +119,7 @@ public class SharingController {
 	@GetMapping("/{sharingId}/comment/{lastCommentId}")
 	public CommentResponseDTO getSharingCommentList(
 		@PathVariable("sharingId") Long sharingId,
-		@PathVariable(value = "lastCommentId", required = false) Long lastCommentId
-	) {
+		@PathVariable(value = "lastCommentId") Long lastCommentId) {
 		return sharingService.getSharingCommentList(sharingId, lastCommentId);
 	}
 
@@ -134,12 +128,11 @@ public class SharingController {
 	 * @param sharingId
 	 * @param userPrincipal
 	 */
-	@PostMapping("/{sharingId}/scrap/{userId}")
+	@PostMapping("/{sharingId}/scrap")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void scrapSharing(
 		@PathVariable("sharingId") Long sharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.scrapSharing(sharingId, userPrincipal.getUserId());
 	}
 
@@ -151,8 +144,7 @@ public class SharingController {
 	@DeleteMapping("/{sharingId}/scrap")
 	public void cancelScrapSharing(
 		@PathVariable("sharingId") Long sharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.cancelScrapSharing(sharingId, userPrincipal.getUserId());
 	}
 
@@ -164,8 +156,7 @@ public class SharingController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void writeComment(
 		@Valid @RequestBody CommentRequestDTO commentRequestDTO,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.writeComment(commentRequestDTO, userPrincipal.getUserId());
 	}
 
@@ -178,8 +169,7 @@ public class SharingController {
 	public void updateComment(
 		@PathVariable("commentId") Long commentId,
 		@Valid @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.updateComment(commentId, commentUpdateRequestDTO, userPrincipal.getUserId());
 	}
 
@@ -190,8 +180,7 @@ public class SharingController {
 	@DeleteMapping("/comment/{commentId}")
 	public void deleteComment(
 		@PathVariable("commentId") Long commentId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-	) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		sharingService.deleteComment(commentId, userPrincipal.getUserId());
 	}
 
@@ -206,8 +195,7 @@ public class SharingController {
 	public SharingResponseDTO getWroteSharing(
 		@PathVariable("concertId") Long concertId,
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-		) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return sharingService.getWroteSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 
@@ -222,8 +210,7 @@ public class SharingController {
 	public SharingResponseDTO getScrapedSharing(
 		@PathVariable("concertId") Long concertId,
 		@PathVariable("lastSharingId") Long lastSharingId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal
-		) {
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return sharingService.getScrappedSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
 

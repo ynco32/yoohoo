@@ -28,20 +28,19 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/nickname")
-	public void setNickname(@Valid @RequestBody NicknameRequestDTO request,
+	public void setNickname(
+		@Valid @RequestBody NicknameRequestDTO request,
 		@AuthenticationPrincipal UserPrincipal user) {
-
 		userService.updateNickname(user.getEmail(), request.getNickname());
 	}
 
-	@GetMapping("/nickname/check")
 	@Validated
+	@GetMapping("/nickname/check")
 	public boolean checkNicknameDuplicate(
 		@NotBlank(message = ExceptionMessage.NICKNAME_NOT_EMPTY)
 		@Size(min = 2, max = 10, message = ExceptionMessage.ERROR_NICKNAME_LENGTH)
 		@Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$", message = ExceptionMessage.ERROR_NICKNAME_FORMAT)
 		@RequestParam String nickname) {
-
 		return userService.checkNicknameExists(nickname);
 	}
 }

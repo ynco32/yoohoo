@@ -24,11 +24,13 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 	}
 
 	@Override
-	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId, Pageable pageable) {
+	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId,
+		Pageable pageable) {
+
 		QConcert concert = QConcert.concert;
 
 		BooleanExpression conditions = concert.startTime.after(now); // 기본 조건: 시작 시간이 now이후
-		
+
 		if (concertSearch != null && !concertSearch.isEmpty()) {
 			conditions = conditions.and(concert.concertName.containsIgnoreCase(concertSearch)); // 검색어 조건
 		}

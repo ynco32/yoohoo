@@ -1,11 +1,9 @@
 package com.conkiri.domain.sharing.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
@@ -30,6 +28,8 @@ import com.conkiri.global.exception.sharing.CommentNotFoundException;
 import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.user.UserNotFoundException;
+import com.conkiri.global.exception.view.UnauthorizedAccessException;
+import com.conkiri.global.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,23 +38,25 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class SharingService {
 
-	private static final Logger log = LoggerFactory.getLogger(SharingService.class);
 	private final SharingRepository sharingRepository;
 	private final UserRepository userRepository;
 	private final ConcertRepository concertRepository;
 	private final CommentRepository commentRepository;
 	private final ScrapSharingRepository scrapSharingRepository;
+	private final S3Service s3Service;
 
 	/**
 	 * 나눔 게시글 작성
 	 * @param sharingRequestDTO
-	 * @param photoUrl
+	 * @param file
 	 */
-	public void writeSharing(SharingRequestDTO sharingRequestDTO, String photoUrl) {
+	public void writeSharing(SharingRequestDTO sharingRequestDTO, Long userId, MultipartFile file) {
 
-		User user = findUserByIdOrElseThrow(sharingRequestDTO.getUserId());
+		User user = findUserByIdOrElseThrow(userId);
 
 		Concert concert = findConcertByIdOrElseThrow(sharingRequestDTO.getConcertId());
+
+		String photoUrl = s3Service.uploadImage(file, "sharing");
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
 		sharingRepository.save(sharing);
@@ -64,7 +66,11 @@ public class SharingService {
 	 * 나눔 게시글 삭제
 	 * @param sharingId
 	 */
-	public void deleteSharing(Long sharingId) {
+	public void deleteSharing(Long sharingId, Long userId) {
+		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+
+		validateAuthorizedAccessToSharing(sharing, userId);
+
 		validateSharingExistByIdOrElseThrow(sharingId);
 		sharingRepository.deleteById(sharingId);
 	}
@@ -74,10 +80,16 @@ public class SharingService {
 	 * @param sharingId
 	 * @param sharingUpdateRequestDTO
 	 */
-	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO) {
+	public void updateSharing(Long sharingId, SharingUpdateRequestDTO sharingUpdateRequestDTO, MultipartFile file, Long userId) {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 
-		sharing.update(sharingUpdateRequestDTO, null);
+		validateAuthorizedAccessToSharing(sharing, userId);
+
+		s3Service.deleteImage(sharing.getPhotoUrl());
+
+		String photoUrl = s3Service.uploadImage(file, "sharing");
+
+		sharing.update(sharingUpdateRequestDTO, photoUrl);
 	}
 
 	/**
@@ -85,8 +97,10 @@ public class SharingService {
 	 * @param sharingId
 	 * @param status
 	 */
-	public void updateSharingStatus(Long sharingId, String status) {
+	public void updateSharingStatus(Long sharingId, String status, Long userId) {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
+
+		validateAuthorizedAccessToSharing(sharing, userId);
 
 		sharing.updateStatus(status);
 	}
@@ -175,8 +189,10 @@ public class SharingService {
 	 * @param commentId
 	 * @param commentUpdateRequestDTO
 	 */
-	public void updateComment(Long commentId, CommentUpdateRequestDTO commentUpdateRequestDTO) {
+	public void updateComment(Long commentId, CommentUpdateRequestDTO commentUpdateRequestDTO, Long userId) {
 		Comment comment = findCommentByIdOrElseThrow(commentId);
+
+		validateAuthorizedAccessToComment(comment, userId);
 
 		comment.update(commentUpdateRequestDTO);
 	}
@@ -185,8 +201,10 @@ public class SharingService {
 	 * 댓글 삭제
 	 * @param commentId
 	 */
-	public void deleteComment(Long commentId) {
+	public void deleteComment(Long commentId, Long userId) {
 		Comment comment = findCommentByIdOrElseThrow(commentId);
+		
+		validateAuthorizedAccessToComment(comment, userId);
 
 		commentRepository.delete(comment);
 	}
@@ -293,6 +311,28 @@ public class SharingService {
 	private Comment findCommentByIdOrElseThrow(Long commentId) {
 		return commentRepository.findById(commentId)
 			.orElseThrow(CommentNotFoundException::new);
+	}
+
+	/**
+	 * 나눔 게시글의 작성자인지 여부 확인하는 내부 메서드
+	 * @param sharing
+	 * @param userId
+	 */
+	private void validateAuthorizedAccessToSharing(Sharing sharing, Long userId) {
+		if (!sharing.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+	}
+
+	/**
+	 * 댓글의 작성자인지 여부 확인하는 내부 메서드
+	 * @param comment
+	 * @param userId
+	 */
+	private void validateAuthorizedAccessToComment(Comment comment, Long userId) {
+		if (!comment.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
 	}
 
 	/**

@@ -1,10 +1,11 @@
 package com.conkiri.domain.view.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.Concert;
@@ -19,11 +20,11 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
-import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
+import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
@@ -39,9 +40,6 @@ import com.conkiri.global.exception.view.SeatNotFoundException;
 import com.conkiri.global.exception.view.SectionNotFoundException;
 import com.conkiri.global.exception.view.UnauthorizedAccessException;
 import com.conkiri.global.s3.S3Service;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -139,7 +137,7 @@ public class ViewService {
 			throw new DuplicateScrapSeatException();
 		}
 
-		ScrapSeat scrapSeat = ScrapSeat.createScrapSeat(user, seat, selectedType);
+		ScrapSeat scrapSeat = ScrapSeat.of(user, seat, selectedType);
 		scrapSeatRepository.save(scrapSeat);
 	}
 

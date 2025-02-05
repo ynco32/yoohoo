@@ -1,7 +1,5 @@
 package com.conkiri.domain.view.entity;
 
-import java.time.LocalDateTime;
-
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.base.entity.StageType;
@@ -19,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,18 +66,20 @@ public class Review extends BaseTime {
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
 
+	private Review(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
+		this.content = reviewRequestDTO.getContent();
+		this.viewScore = reviewRequestDTO.getViewScore();
+		this.seatDistance = reviewRequestDTO.getSeatDistance();
+		this.sound = reviewRequestDTO.getSound();
+		this.photoUrl = photoUrl;
+		this.user = user;
+		this.seat = seat;
+		this.concert = concert;
+		this.stageType = concert.getStageType();
+	}
+
 	public static Review of(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
-		return Review.builder()
-			.content(reviewRequestDTO.getContent())
-			.viewScore(reviewRequestDTO.getViewScore())
-			.seatDistance(reviewRequestDTO.getSeatDistance())
-			.sound(reviewRequestDTO.getSound())
-			.photoUrl(photoUrl)
-			.user(user)
-			.seat(seat)
-			.concert(concert)
-			.stageType(concert.getStageType())
-			.build();
+		return new Review(reviewRequestDTO, photoUrl, user, seat, concert);
 	}
 
 	public void update(ReviewRequestDTO reviewRequestDTO, String photoUrl, Seat seat, Concert concert) {

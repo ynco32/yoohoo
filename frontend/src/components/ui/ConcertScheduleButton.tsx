@@ -8,7 +8,7 @@ export default function ConcertScheduleButton({
   onClick,
 }: ConcertScheduleButtonProps) {
   return (
-    <button className="w-fill px-4 py-3" onClick={onClick}>
+    <button className="w-full px-4 py-3" onClick={onClick}>
       <p>{children}</p>
     </button>
   );

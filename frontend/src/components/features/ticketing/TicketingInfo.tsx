@@ -1,15 +1,16 @@
 'use client';
 
-import PerformanceInfo from './PerformanceInfo';
-import TicketingDetails from './TicketingDetails';
-import SeatType from './SeatType';
+import PerformanceInfo from '../../ui/PerformanceInfo';
+import TicketingDetails from '../../ui/TicketingDetails';
+import SeatType from '../../ui/SeatType';
 // import TicketingButton from '../features/ticketing/TicketingButton';
 // import { useRouter } from 'next/navigation';
-import FixedButton from './FixedButton';
+import FixedButton from '../../ui/FixedButton';
 import { useState } from 'react';
-import SchedulePopup from './SchedulePopup';
-import ConcertScheduleButton from './ConcertScheduleButton';
-import QueuePopup from './QueuePopup';
+import SchedulePopup from '../../ui/SchedulePopup';
+import ConcertScheduleButton from '../../ui/ConcertScheduleButton';
+import QueuePopup from '../../ui/QueuePopup';
+import { useEffect } from 'react';
 
 const TicketingInfo = () => {
   const [isSchedulePopupOpen, setisSchedulePopupOpen] = useState(false);
@@ -23,11 +24,15 @@ const TicketingInfo = () => {
 
   const handleQueuePopupOpen = () => {
     setisSchedulePopupOpen(false);
-    setTimeout(() => {
-      // 스케줄 팝업이 완전히 닫힌 후 큐 팝업 열기
-      setisQueuePopupOpen(true);
-    }, 100);
+    setisQueuePopupOpen(true);
   };
+
+  useEffect(() => {
+    if (isSchedulePopupOpen && isQueuePopupOpen) {
+      // 두 팝업이 동시에 열리는 것을 방지
+      setisSchedulePopupOpen(false);
+    }
+  }, [isQueuePopupOpen, isSchedulePopupOpen]);
 
   return (
     <div>

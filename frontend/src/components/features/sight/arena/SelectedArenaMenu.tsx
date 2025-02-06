@@ -71,8 +71,8 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
   const menuItems = getMenuByArenaId(arenaId);
 
   return (
-    <div className="mt-4 px-4">
-      <div className="container mx-auto max-w-6xl p-6">
+    <div className="mt-4">
+      <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-2 gap-8">
           {menuItems.map((item) => (
             <StageMenuItem

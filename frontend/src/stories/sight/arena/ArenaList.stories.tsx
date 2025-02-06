@@ -1,6 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import ArenaList from '@/components/features/sight/arena/ArenaList';
-import { http, HttpResponse } from 'msw';
+import { rest } from 'msw'; // msw v1에서는 rest 사용
 
 const sampleArenas = [
   {
@@ -20,7 +19,7 @@ const sampleArenas = [
   },
 ];
 
-const meta = {
+const meta: Meta<typeof ArenaList> = {
   title: 'Features/Sight/Arena/ArenaList',
   component: ArenaList,
   parameters: {
@@ -30,10 +29,13 @@ const meta = {
     },
     msw: {
       handlers: [
-        http.get(/.*\/api\/v1\/view\/arenas/, () => {
-          return HttpResponse.json({
-            arenas: sampleArenas, // data 객체 제거
-          });
+        rest.get(/.*\/api\/v1\/view\/arenas/, (req, res, ctx) => {
+          return res(
+            ctx.delay(100), // 응답 지연 추가 (100ms)
+            ctx.json({
+              arenas: sampleArenas,
+            })
+          );
         }),
       ],
     },
@@ -45,7 +47,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof ArenaList>;
+};
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -54,11 +56,13 @@ export const Loading: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(/.*\/api\/v1\/view\/arenas/, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return HttpResponse.json({
-            arenas: sampleArenas,
-          });
+        rest.get(/.*\/api\/v1\/view\/arenas/, async (req, res, ctx) => {
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // 기존 1초 유지
+          return res(
+            ctx.json({
+              arenas: sampleArenas,
+            })
+          );
         }),
       ],
     },
@@ -69,18 +73,13 @@ export const Error: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(/.*\/api\/v1\/view\/arenas/, () => {
-          return new HttpResponse(
-            JSON.stringify({
+        rest.get(/.*\/api\/v1\/view\/arenas/, (req, res, ctx) => {
+          return res(
+            // ctx.delay(100), // 지연 추가
+            ctx.status(500),
+            ctx.json({
               message: '공연장 정보를 불러오는데 실패했습니다.',
-            }),
-            {
-              status: 500,
-              headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-              },
-            }
+            })
           );
         }),
       ],
@@ -92,10 +91,13 @@ export const Empty: Story = {
   parameters: {
     msw: {
       handlers: [
-        http.get(/.*\/api\/v1\/view\/arenas/, () => {
-          return HttpResponse.json({
-            arenas: [], // data 객체 제거
-          });
+        rest.get(/.*\/api\/v1\/view\/arenas/, (req, res, ctx) => {
+          return res(
+            ctx.delay(100), // 지연 추가
+            ctx.json({
+              arenas: [],
+            })
+          );
         }),
       ],
     },
@@ -109,10 +111,13 @@ export const Mobile: Story = {
     },
     msw: {
       handlers: [
-        http.get(/.*\/api\/v1\/view\/arenas/, () => {
-          return HttpResponse.json({
-            arenas: sampleArenas,
-          });
+        rest.get(/.*\/api\/v1\/view\/arenas/, (req, res, ctx) => {
+          return res(
+            ctx.delay(100), // 지연 추가
+            ctx.json({
+              arenas: sampleArenas,
+            })
+          );
         }),
       ],
     },

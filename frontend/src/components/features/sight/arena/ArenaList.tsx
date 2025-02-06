@@ -89,7 +89,7 @@ export default function ArenaList() {
     <div className="flex h-full flex-col">
       <div className="bg-white">
         <div className="scrollbar-hide overflow-x-auto">
-          <div className="flex gap-4 p-4">
+          <div className="flex gap-8 px-2xl py-sm">
             {arenas.map((arena) => (
               <Arena
                 key={arena.arenaId}
@@ -102,10 +102,11 @@ export default function ArenaList() {
                 }}
               />
             ))}
+            <div className="w-xl flex-none"></div>
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 px-2xl">
         {selectedArenaId != null && (
           <SelectedArenaMenu arenaId={selectedArenaId} />
         )}

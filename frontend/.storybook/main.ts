@@ -4,18 +4,15 @@ const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 
   addons: [
-    '@storybook/addon-onboarding',
     '@storybook/addon-essentials',
     '@chromatic-com/storybook',
     '@storybook/addon-interactions',
+    'msw-storybook-addon', // MSW addon 추가
   ],
   framework: {
     name: '@storybook/nextjs',
     options: {},
   },
-  staticDirs: [
-    '../public',
-    './public', // MSW Service Worker를 위해 추가
-  ],
+  staticDirs: ['../public'], // MSW v1에서는 프로젝트 root의 public 디렉토리만 필요
 };
 export default config;

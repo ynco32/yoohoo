@@ -87,7 +87,7 @@ export default function ArenaList() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="bg-white">
+      <div>
         <div className="scrollbar-hide overflow-x-auto">
           <div className="flex gap-8 px-2xl py-sm">
             {arenas.map((arena) => (

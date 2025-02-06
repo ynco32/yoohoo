@@ -40,6 +40,7 @@ services:
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET=${S3_BUCKET}
+      - REDIS_HOST=${REDIS_HOST}
     depends_on:          # 의존성 설정
       mysql:
         condition: service_healthy

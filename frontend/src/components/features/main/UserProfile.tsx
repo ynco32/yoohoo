@@ -31,10 +31,10 @@ export const UserProfile = ({
 
   return (
     <div
-      className="flex flex-col items-center pb-0 pt-2xl"
+      className="flex flex-col items-center pb-0 pt-sm"
       onClick={handleClick}
     >
-      <MenuCard className="rounded-userProfile relative mx-auto h-60 w-full max-w-sm overflow-hidden bg-secondary-300 px-sm tablet:px-md">
+      <MenuCard className="rounded-userProfile relative mx-auto h-55 w-full max-w-sm overflow-hidden bg-secondary-300 px-sm tablet:px-md">
         {/* 배경 이미지 */}
         <Image
           src={ProfileBg}

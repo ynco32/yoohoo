@@ -18,7 +18,7 @@ export default function Captcha({
 }: CaptchaProps) {
   return (
     <div>
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex items-center justify-center gap-2">
         <div
           className="w-full select-none rounded border px-10 py-6 text-center text-2xl font-bold tracking-wider"
           style={{ fontFamily: 'monospace', letterSpacing: '0.25em' }}

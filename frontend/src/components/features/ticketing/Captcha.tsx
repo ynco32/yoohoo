@@ -36,7 +36,7 @@ export default function Captcha({
         value={inputText}
         onChange={handleInputChange}
         placeholder="대소문자 구분없이 문자입력"
-        maxLength={6}
+        maxLength={8}
         className="mt-2 w-full rounded border p-2 tracking-wider"
       />
     </div>

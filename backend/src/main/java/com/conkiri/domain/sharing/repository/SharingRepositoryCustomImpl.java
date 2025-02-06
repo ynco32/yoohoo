@@ -243,7 +243,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 	private static BooleanExpression applyLastSharingId(Long lastSharingId, BooleanExpression conditions,
 		QSharing sharing) {
 
-		if (lastSharingId != 0) {
+		if (lastSharingId != null) {
 			conditions = conditions.and(sharing.sharingId.lt(lastSharingId));
 		}
 		return conditions;

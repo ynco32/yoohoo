@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +47,7 @@ public class SharingController {
 		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
 		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		System.out.println(file.getSize());
 		sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
 	}
 
@@ -93,10 +95,10 @@ public class SharingController {
 	 * @param lastSharingId
 	 * @return
 	 */
-	@GetMapping("/{concertId}/{lastSharingId}")
+	@GetMapping("/{concertId}")
 	public SharingResponseDTO getSharingList(
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId) {
+		@RequestParam(value = "last", required = false) Long lastSharingId) {
 		return sharingService.getSharingList(concertId, lastSharingId);
 	}
 
@@ -116,10 +118,10 @@ public class SharingController {
 	 * @param lastCommentId
 	 * @return
 	 */
-	@GetMapping("/{sharingId}/comment/{lastCommentId}")
+	@GetMapping("/{sharingId}/comment")
 	public CommentResponseDTO getSharingCommentList(
 		@PathVariable("sharingId") Long sharingId,
-		@PathVariable(value = "lastCommentId") Long lastCommentId) {
+		@RequestParam(value = "last", required = false) Long lastCommentId) {
 		return sharingService.getSharingCommentList(sharingId, lastCommentId);
 	}
 
@@ -191,10 +193,10 @@ public class SharingController {
 	 * @param lastSharingId
 	 * @return
 	 */
-	@GetMapping("/wrote/{concertId}/{lastSharingId}")
+	@GetMapping("/wrote/{concertId}")
 	public SharingResponseDTO getWroteSharing(
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId,
+		@RequestParam(value = "last", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return sharingService.getWroteSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}
@@ -206,10 +208,10 @@ public class SharingController {
 	 * @param lastSharingId
 	 * @return
 	 */
-	@GetMapping("/scrap/{concertId}/{lastSharingId}")
+	@GetMapping("/scrap/{concertId}")
 	public SharingResponseDTO getScrapedSharing(
 		@PathVariable("concertId") Long concertId,
-		@PathVariable("lastSharingId") Long lastSharingId,
+		@RequestParam(value = "last", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return sharingService.getScrappedSharingList(userPrincipal.getUserId(), concertId, lastSharingId);
 	}

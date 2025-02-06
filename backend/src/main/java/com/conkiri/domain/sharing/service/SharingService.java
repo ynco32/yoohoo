@@ -68,6 +68,7 @@ public class SharingService {
 		validateAuthorizedAccessToSharing(sharing, userId);
 
 		validateSharingExistByIdOrElseThrow(sharingId);
+		s3Service.deleteImage(sharing.getPhotoUrl());
 		sharingRepository.deleteById(sharingId);
 	}
 

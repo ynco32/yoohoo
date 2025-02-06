@@ -3,7 +3,7 @@ import ArenaList from '@/components/features/sight/arena/ArenaList';
 
 export default function SightMainPage() {
   return (
-    <main className="bg-sight-bg flex-1">
+    <main className="bg-sight-main-gra flex-1">
       <ArenaList />
       <WriteButton path="/sight/write" />
     </main>

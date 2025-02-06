@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { StarButton } from '@/components/ui/StarButton';
-import { SectionList } from './SectionList';
-import { SeatList } from './SeatList';
+import { SectionList } from './section/SectionList';
+import { SeatList } from './seat/SeatList';
 import { useParams } from 'next/navigation';
 
 export const ScrapMode = () => {

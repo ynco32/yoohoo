@@ -9,7 +9,7 @@ export default function HeaderWrapper({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const pagesWithoutHeader = ['/', '/login', '/main'];
+  const pagesWithoutHeader = ['/', '/login'];
   const hasHeader = !pagesWithoutHeader.includes(pathname);
 
   return (

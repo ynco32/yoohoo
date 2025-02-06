@@ -22,6 +22,8 @@ module.exports = {
           'radial-gradient(71.76% 83.6% at 0% 100%, #FAFFD7 0%, #FFF 100%)',
         'sight-menu':
           'radial-gradient(50% 100% at 100% 50%, #E0F5FF 0%, #FFF 93.5%)',
+        'sight-main-gra':
+          'linear-gradient(180deg, #FFF 33.04%, #DBEEFD 52.81%, #BAE4FD 88.73%)',
       },
       borderRadius: {
         menu: '12.273px',
@@ -130,6 +132,11 @@ module.exports = {
           success: '#6AD08D',
           caution: '#F7C859',
           warning: '#EB674C',
+        },
+        sight: {
+          arenaType: '#ECF7FF',
+          badge: '#0077FF',
+          bg: '#DFF3FF',
         },
         gray: {
           900: '#101014',

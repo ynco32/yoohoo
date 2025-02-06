@@ -3,12 +3,16 @@ import axios, {
   AxiosError,
   AxiosResponse,
   InternalAxiosRequestConfig,
+  AxiosInstance,
 } from 'axios';
 
-const api = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080',
-  baseURL: 'http://i12b207.p.ssafy.io:8080',
-  withCredentials: true, // 모든 요청에 브라우저가 자동으로 액세스, 리프레시 토큰을 포함하여 전송하도록 함.
+const BASE_URL: string =
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://i12b207.p.ssafy.io:8080';
+const USE_MSW: boolean = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+
+const api: AxiosInstance = axios.create({
+  baseURL: USE_MSW ? '/' : BASE_URL,
+  withCredentials: !USE_MSW,
 });
 
 // 모든 요청 보내기 전에 실행
@@ -19,7 +23,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     .find((row) => row.startsWith('access_token='))
     ?.split('=')[1];
 
-  if (token) {
+  if (token != null) {
     config.headers.Authorization = `Bearer ${token}`;
     console.log('요청 헤더:', config.headers); // 헤더에 토큰이 포함되어 있는지 확인
   }
@@ -42,6 +46,7 @@ api.interceptors.response.use(
       } catch (e) {
         // 이것마저 실패하면 로그인 창으로 다시 가기
         console.log('토큰 갱신 실패');
+        console.log(e);
         window.location.href = '/login'; // 설정 파일에서는 라우터를 사용하지 못함. 그래서 window.location.href로 대체
         return Promise.reject(error);
       }

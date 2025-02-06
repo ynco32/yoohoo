@@ -80,7 +80,7 @@ export const SharingCard = ({
 
         <div className="relative h-20 w-20">
           <Image
-            src={photoUrl || '/images/card.png'}
+            src={photoUrl ?? '/images/card.png'}
             alt={title}
             fill
             sizes="(max-width: 80px) 100vw, 80px"

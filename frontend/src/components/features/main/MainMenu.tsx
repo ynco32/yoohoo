@@ -1,7 +1,22 @@
 'use client';
 
 import { MenuItem, MenuItemProps } from '@/components/features/main/MenuItem';
-import { SVGIcons } from '@/assets/svgs';
+
+/**
+ * @component MainMenu
+ * @description 메인 화면의 네비게이션 메뉴를 표시하는 컴포넌트입니다.
+ * 주요 서비스(시야 보기, 나눔 지도, 티켓팅 연습, 혼잡도 보기)로 이동할 수 있는
+ * 2x2 그리드 메뉴를 제공합니다.
+ *
+ * @props {MenuItemProps[]} menuItems - 메뉴 아이템 배열
+ * @typedef {Object} MenuItemProps
+ * @property {string} icon - 메뉴에 표시될 아이콘 컴포넌트명
+ * @property {string} label - 메뉴 제목
+ * @property {string} description - 메뉴 설명
+ * @property {'large' | 'default' | 'wide'} layout - 메뉴 아이템의 크기
+ * @property {string} href - 클릭 시 이동할 경로
+ * @property {string} className - 메뉴 아이템의 스타일링 클래스
+ */
 
 export default function MainMenu() {
   const menuItems: MenuItemProps[] = [

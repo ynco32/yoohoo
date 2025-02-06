@@ -6,19 +6,19 @@ import { ContentCard } from '../../ui/ContentCard';
 import Link from 'next/link';
 
 interface ConcertItemProps {
-  id: number; // 공연 ID
-  title: string; // 공연 제목
-  artist: string; // 공연 아티스트
-  start_time: string; // 공연 날짜
-  image: string; // 공연 포스터 이미지
+  concertId: number;
+  concertName: string;
+  artist: string;
+  startTime: string;
+  stageType: string;
+  arena: string;
 }
-
 export const ConcertItem = ({
-  id,
-  title,
+  concertId,
+  concertName,
   artist,
-  start_time,
-  image,
+  startTime,
+  arena,
 }: ConcertItemProps) => {
   // 이미지와 겹치지 않는 최대 텍스트 길이 계산
   const maxWidth = 380;
@@ -27,19 +27,20 @@ export const ConcertItem = ({
 
   // 최대 길이를 초과하는 경우 말줄임표(...) 처리
   const truncatedTitle =
-    title.length > charsToFit ? title.slice(0, charsToFit - 3) + '...' : title;
+    concertName.length > charsToFit
+      ? concertName.slice(0, charsToFit - 3) + '...'
+      : concertName;
 
   return (
-    <Link href={`/sharing/${id}`} className="block">
+    <Link href={`/sharing/${concertId}`} className="block">
       <ContentCard>
         {/* 왼쪽: 공연 정보 */}
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-bold">{truncatedTitle}</h3>
           <p className="text-sm text-gray-600">{artist}</p>
-          <p className="mt-2 text-sm text-gray-500">{start_time}</p>
+          <p className="mt-2 text-sm text-gray-500">{startTime}</p>
+          <p className="text-sm text-gray-500">{arena}</p>
         </div>
-        {/* 오른쪽: 공연 포스터 */}
-        <img src={image} alt={title} className="ml-4 h-24 w-16 object-cover" />
       </ContentCard>
     </Link>
   );

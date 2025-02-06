@@ -1,4 +1,5 @@
 import ArenaList from '@/components/features/sight/arena/ArenaList';
+import { Meta, StoryObj } from '@storybook/react';
 import { rest } from 'msw'; // msw v1에서는 rest 사용
 
 const sampleArenas = [

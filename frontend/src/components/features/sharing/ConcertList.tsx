@@ -1,93 +1,174 @@
 'use client';
 
-/**
- * 공연 목록을 표시하는 컴포넌트
- * 무한 스크롤 기능 구현: 스크롤이 마지막 항목에 도달하면 추가 데이터를 자동으로 로드
- */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ConcertItem } from './ConcertItem';
 import { Concert, concertAPI } from '@/lib/api/concert';
 
 export const ConcertList = () => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true); // 더 불러올 데이터가 있는지 여부
+  const [hasMore, setHasMore] = useState(true);
   const [lastConcertId, setLastConcertId] = useState<number | undefined>(
     undefined
-  ); // 마지막으로 불러온 공연의 ID
+  );
+  const [mswInitialized, setMswInitialized] = useState(false);
 
-  // Intersection Observer 인스턴스를 저장할 ref
   const observer = useRef<IntersectionObserver | null>(null);
+  const isFetching = useRef(false);
+  const isInitialized = useRef(false);
+  const lastElementRef = useRef<HTMLDivElement | null>(null);
+
+  /**
+   * MSW 초기화 상태 확인
+   */
+  useEffect(() => {
+    if (window.mswInitialized) {
+      setMswInitialized(true);
+    } else {
+      const interval = setInterval(() => {
+        if (window.mswInitialized) {
+          setMswInitialized(true);
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   /**
    * 공연 데이터를 불러오는 함수
-   * - 초기 로드: lastConcertId가 undefined일 때 처음부터 데이터를 가져옴
-   * - 추가 로드: lastConcertId 이후의 데이터를 가져와 기존 목록에 추가
-   * - 데이터 상태 관리: 로딩 상태, 에러 처리, 추가 데이터 존재 여부를 관리
    */
   const fetchConcerts = useCallback(async () => {
+    if (!hasMore || !mswInitialized || isFetching.current) {
+      console.log('fetchConcerts 실행 중단: 조건 미충족', {
+        mswInitialized,
+        isFetching: isFetching.current,
+        hasMore,
+        reason: !hasMore ? '더 이상 불러올 데이터 없음' : '기타 조건',
+      });
+      return;
+    }
+
+    isFetching.current = true;
     setIsLoading(true);
+
     try {
-      // lastConcertId를 기준으로 다음 페이지 데이터 요청
       const response = await concertAPI.getConcerts(undefined, lastConcertId);
+      console.log('ConcertList - API Response:', response);
 
-      // 새로운 데이터를 기존 배열에 추가
-      setConcerts((prev) => [...prev, ...response.concerts]);
-      // lastPage가 true면 hasMore를 false로 설정하여 추가 요청 중단
-      setHasMore(!response.lastPage);
+      // 마지막 페이지 상태를 먼저 업데이트
+      const isLastPage = response.lastPage;
+      setHasMore(!isLastPage);
 
-      // 다음 요청을 위해 마지막 공연의 ID 저장
       if (response.concerts.length > 0) {
         setLastConcertId(
           response.concerts[response.concerts.length - 1].concertId
         );
       }
+
+      setConcerts((prev) => {
+        const merged = [...prev, ...response.concerts];
+        const uniqueConcerts = Array.from(
+          new Map(merged.map((item) => [item.concertId, item])).values()
+        );
+        return uniqueConcerts;
+      });
+
+      // 마지막 페이지일 경우 명시적 로그 추가
+      if (isLastPage) {
+        console.log('마지막 페이지에 도달했습니다.');
+      }
     } catch (err) {
+      console.error('ConcertList - Error fetching concerts:', err);
       setError(
         err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.'
       );
     } finally {
       setIsLoading(false);
+      isFetching.current = false;
     }
-  }, [lastConcertId]); // lastConcertId를 의존성으로 추가
+  }, [lastConcertId, hasMore, mswInitialized]);
 
-  // 마지막 아이템이 화면에 보일 때 호출될 콜백
-  // isLoading 중이거나 더 불러올 데이터가 없으면(hasMore가 false) 실행하지 않음
-  const lastConcertElementRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (isLoading) return;
+  /**
+   * Intersection Observer 설정
+   */
+  const setupIntersectionObserver = useCallback(() => {
+    // 기존 옵저버 해제
+    if (observer.current) {
+      observer.current.disconnect();
+    }
 
-      if (observer.current) observer.current.disconnect();
+    // 마지막 요소가 없으면 중단
+    if (!lastElementRef.current) return;
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+    // 새 옵저버 생성
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        // 마지막 요소가 뷰포트에 들어오고, 현재 fetching 중이 아니며, 더 불러올 데이터가 있을 때
+        if (entries[0].isIntersecting && !isFetching.current && hasMore) {
+          console.log('Intersection Observer triggered');
           fetchConcerts();
         }
-      });
-
-      if (node !== null && node !== undefined) {
-        observer.current.observe(node);
+      },
+      {
+        rootMargin: '0px 0px 200px 0px',
       }
+    );
+
+    // 마지막 요소 관찰 시작
+    observer.current.observe(lastElementRef.current);
+  }, [fetchConcerts, hasMore]);
+
+  /**
+   * 마지막 요소 ref 콜백
+   */
+  const lastConcertElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      lastElementRef.current = node;
+      setupIntersectionObserver();
     },
-    [isLoading, hasMore, fetchConcerts]
+    [setupIntersectionObserver]
   );
 
-  // 컴포넌트 마운트 시 초기 데이터 로드
+  /**
+   * 초기 데이터 로드
+   */
   useEffect(() => {
-    fetchConcerts();
-  }, [fetchConcerts]);
+    if (!isInitialized.current && mswInitialized) {
+      isInitialized.current = true;
+      console.log('ConcertList - Component mounted, starting data fetch');
+      fetchConcerts();
+    }
+  }, [fetchConcerts, mswInitialized]);
 
+  /**
+   * Cleanup: 컴포넌트 언마운트 시 Observer 해제
+   */
+  useEffect(() => {
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+    };
+  }, []);
+
+  /**
+   * 에러 처리
+   */
   if (typeof error === 'string' && error.length > 0) {
     return <div className="py-4 text-center text-red-500">{error}</div>;
   }
 
+  /**
+   * 렌더링
+   */
   return (
     <div className="space-y-4">
       {concerts.map((concert, index) => (
         <div
           key={concert.concertId}
-          // 마지막 아이템에 ref 설정하여 화면에 보이는지 감지
           ref={
             index === concerts.length - 1 ? lastConcertElementRef : undefined
           }

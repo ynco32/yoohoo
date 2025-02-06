@@ -15,12 +15,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,4 +39,14 @@ public class ScrapSeat {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "seat_id", nullable = false)
 	private Seat seat;
+
+	public static ScrapSeat of(User user, Seat seat, StageType stageType) {
+		return new ScrapSeat(user, seat, stageType);
+	}
+
+	private ScrapSeat(User user, Seat seat, StageType stageType) {
+		this.stageType = stageType;
+		this.user = user;
+		this.seat = seat;
+	}
 }

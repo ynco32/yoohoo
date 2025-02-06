@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TestController {
 
 	@GetMapping("/test")
-	public String test(){
+	public String test() {
 		return "test";
 	}
 

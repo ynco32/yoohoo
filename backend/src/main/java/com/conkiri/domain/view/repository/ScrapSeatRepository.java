@@ -13,8 +13,12 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.entity.ScrapSeat;
 
 public interface ScrapSeatRepository extends JpaRepository<ScrapSeat, Long> {
+
 	boolean existsByUserAndSeatAndStageType(User user, Seat seat, StageType stageType);
+
 	Optional<ScrapSeat> findByUserAndSeatAndStageType(User user, Seat seat, StageType stageType);
+
 	List<ScrapSeat> findByUserAndStageTypeAndSeat_Section(User user, StageType stageType, Section section);
+
 	List<ScrapSeat> findByUserAndStageTypeAndSeat_Section_Arena(User user, StageType stageType, Arena arena);
 }

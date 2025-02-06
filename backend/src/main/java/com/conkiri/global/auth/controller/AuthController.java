@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.global.auth.dto.RefreshTokenRequestDTO;
 import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
-import com.conkiri.global.auth.token.CustomOAuth2User;
+import com.conkiri.global.auth.token.UserPrincipal;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -22,12 +22,12 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/refresh")
-	public TokenDTO refreshToken(@RequestBody RefreshTokenRequestDTO request) {
-		return authService.refreshToken(request.getRefreshToken());
+	public TokenDTO refreshToken(@Valid @RequestBody RefreshTokenRequestDTO request) {
+		return authService.refreshToken(request.getRefreshToken().trim());
 	}
 
 	@PostMapping("/logout")
-	public void logout(@AuthenticationPrincipal CustomOAuth2User user) {
+	public void logout(@AuthenticationPrincipal UserPrincipal user) {
 		authService.logout(user.getEmail());
 	}
 

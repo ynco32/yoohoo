@@ -3,8 +3,6 @@ package com.conkiri.domain.base.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Slice;
-
 import com.conkiri.domain.base.entity.Concert;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +19,7 @@ public class ConcertResponseDTO {
 	private List<ConcertDetailResponseDTO> concerts;
 	private boolean isLastPage;
 
-	public static ConcertResponseDTO from(List<Concert> concerts, boolean hasNext) {
+	public static ConcertResponseDTO of(List<Concert> concerts, boolean hasNext) {
 		return ConcertResponseDTO.builder()
 			.concerts(concerts.stream()
 				.map(ConcertDetailResponseDTO::from)

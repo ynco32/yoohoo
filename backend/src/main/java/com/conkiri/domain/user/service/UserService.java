@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
-import com.conkiri.global.exception.user.UserNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,22 +15,17 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final UserReadService userReadService;
 
 	public void updateNickname(String email, String nickname) {
 
-		User user = findUserByEmailOrElseThrow(email);
+		User user = userReadService.findUserByEmailOrElseThrow(email);
 		validateNicknameDuplicate(nickname);
 		user.updateNickname(nickname);
 	}
 
 	public boolean checkNicknameExists(String nickname) {
 		return !userRepository.existsByNickname(nickname);
-	}
-
-	private User findUserByEmailOrElseThrow(String email) {
-
-		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new UserNotFoundException());
 	}
 
 	private void validateNicknameDuplicate(String nickname) {

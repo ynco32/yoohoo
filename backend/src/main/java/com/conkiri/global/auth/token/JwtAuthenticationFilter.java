@@ -56,16 +56,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 						.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 					// CustomOAuth2User 생성
-					CustomOAuth2User customOAuth2User = new CustomOAuth2User(
+					UserPrincipal userPrincipal = new UserPrincipal(
 						Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")),
 						user
 					);
 
 					UsernamePasswordAuthenticationToken authentication =
 						new UsernamePasswordAuthenticationToken(
-							customOAuth2User,
+							userPrincipal,
 							null,
-							customOAuth2User.getAuthorities()
+							userPrincipal.getAuthorities()
 						);
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

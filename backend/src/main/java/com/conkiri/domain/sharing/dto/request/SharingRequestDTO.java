@@ -17,9 +17,6 @@ public class SharingRequestDTO {
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	private Long concertId;
 
-	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
-	private Long userId;
-
 	@NotBlank(message = ExceptionMessage.BLANK_IS_NOT_ALLOWED)
 	private String title;
 

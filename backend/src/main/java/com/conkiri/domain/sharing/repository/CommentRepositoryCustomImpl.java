@@ -25,13 +25,14 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
 	@Override
 	public CommentResponseDTO findComments(Sharing sharing, Long lastCommentId, Pageable pageable) {
+
 		QComment comment = QComment.comment;
 
 		// 기본 조건 : 해당 나눔 게시글의 댓글만 조회
 		BooleanExpression conditions = comment.sharing.sharingId.eq(sharing.getSharingId());
 
 		// 첫 조회가 아닐 때
-		if (lastCommentId != 0) {
+		if (lastCommentId != null) {
 			conditions = conditions.and(comment.commentId.gt(lastCommentId));
 		}
 
@@ -49,6 +50,6 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 			results.remove(results.size() - 1);
 		}
 
-		return CommentResponseDTO.from(results, hasNext);
+		return CommentResponseDTO.of(results, hasNext);
 	}
 }

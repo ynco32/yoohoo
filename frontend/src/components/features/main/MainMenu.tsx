@@ -55,7 +55,7 @@ export default function MainMenu() {
   ];
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[50vh] w-full mobile:h-[65vh] tablet:h-[60vh]">
+    <div className="h-[50vh] w-full flex-grow mobile:h-[65vh] tablet:h-[60vh]">
       <div className="grid h-full grid-cols-2 gap-sm bg-white p-sm tablet:gap-md tablet:p-md">
         {menuItems.map((item) => (
           <MenuItem

@@ -84,7 +84,7 @@ export default function SecurityMessagePopup({
           </button>
         </div>
         <button
-          className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline [&>span]:active:bg-gray-200"
+          className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline [&>span]:active:bg-status-warning"
           onClick={onPostpone}
         >
           <span>좌석 먼저 확인하고 나중에 입력하기</span>

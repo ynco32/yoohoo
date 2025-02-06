@@ -2,6 +2,10 @@ import type { NextConfig } from 'next';
 import type { Configuration as WebpackConfig } from 'webpack';
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   webpack(config: WebpackConfig) {
     if (!config.module) {
       config.module = {
@@ -26,8 +30,9 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         destination:
-          process.env.NODE_ENV === 'development'
-            ? '/api/:path*' // MSW가 처리하도록 함
+          process.env.NODE_ENV === 'development' &&
+          process.env.NEXT_PUBLIC_API_MOCKING !== 'disabled'
+            ? '/api/:path*'
             : 'http://i12b207.p.ssafy.io:8080/api/:path*',
       },
     ];

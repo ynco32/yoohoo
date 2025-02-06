@@ -19,10 +19,9 @@ export const Default: Story = {
     ),
   ],
   args: {
-    id: 1,
-    title: '2025 TREASURE FAN CONCERT',
+    concertId: 1,
+    concertName: '2025 TREASURE FAN CONCERT',
     artist: 'TREASURE',
-    start_time: '2025.01.25',
-    image: '/images/poster.png',
+    startTime: '2025.01.25',
   },
 };

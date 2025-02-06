@@ -27,6 +27,7 @@ import com.conkiri.global.exception.user.UserNotFoundException;
 import com.conkiri.global.exception.view.ArenaNotFoundException;
 import com.conkiri.global.exception.view.DuplicateReviewException;
 import com.conkiri.global.exception.view.DuplicateScrapSeatException;
+import com.conkiri.global.exception.view.InvalidStageTypeException;
 import com.conkiri.global.exception.view.ReviewNotFoundException;
 import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
 import com.conkiri.global.exception.view.SeatNotFoundException;
@@ -160,6 +161,12 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ExceptionResponse unauthorizedAccessExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(InvalidStageTypeException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse invalidStageTypeExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 
 	@ExceptionHandler(HandlerMethodValidationException.class)

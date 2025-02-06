@@ -90,7 +90,7 @@ public class ViewService {
 		List<Review> reviews = reviewRepository.findBySeatIn(seats);
 
 		if (stageType != 0) { // '전체'가 아닐 경우 stageType으로 필터링
-			StageType selectedType = StageType.values()[stageType];
+			StageType selectedType = StageType.fromValue(stageType);
 			reviews = reviews.stream()
 				.filter(review -> review.getStageType() == selectedType)
 				.collect(Collectors.toList());
@@ -103,7 +103,7 @@ public class ViewService {
 		List<Review> reviews = reviewRepository.findBySeat(seat);
 
 		if (stageType != 0) {
-			StageType selectedType = StageType.values()[stageType];
+			StageType selectedType = StageType.fromValue(stageType);
 			reviews = reviews.stream()
 				.filter(review -> review.getStageType() == selectedType)
 				.collect(Collectors.toList());
@@ -114,7 +114,7 @@ public class ViewService {
 	public ScrapSectionResponseDTO getScrapedSections(Long arenaID, Integer stageType, Long userId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaID);
-		StageType selectedType = StageType.values()[stageType];
+		StageType selectedType = StageType.fromValue(stageType);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section_Arena(user, selectedType, arena);
@@ -129,7 +129,7 @@ public class ViewService {
 	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		StageType selectedType = StageType.values()[stageType];
+		StageType selectedType = StageType.fromValue(stageType);
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
@@ -140,7 +140,7 @@ public class ViewService {
 	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
 
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
-		StageType selectedType = StageType.values()[stageType];
+		StageType selectedType = StageType.fromValue(stageType);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
@@ -154,7 +154,7 @@ public class ViewService {
 	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
 
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
-		StageType selectedType = StageType.values()[stageType];
+		StageType selectedType = StageType.fromValue(stageType);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
@@ -194,7 +194,6 @@ public class ViewService {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
-		String photoUrl = s3Service.uploadImage(file, "reviews");
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.getConcertId());
 		Arena arena = concert.getArena();
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
@@ -214,7 +213,14 @@ public class ViewService {
 			throw new DuplicateReviewException();
 		}
 
-		review.update(reviewRequestDTO, photoUrl, seat, concert);
+		String oldPhotoUrl = review.getPhotoUrl();
+		String newPhotoUrl = s3Service.uploadImage(file, "reviews");
+
+		review.update(reviewRequestDTO, newPhotoUrl, seat, concert);
+
+		if (oldPhotoUrl != null) {
+			s3Service.deleteImage(oldPhotoUrl);
+		}
 	}
 
 	public void deleteReview(Long reviewId, Long userId) {
@@ -225,7 +231,13 @@ public class ViewService {
 			throw new UnauthorizedAccessException();
 		}
 
+		String photoUrl = review.getPhotoUrl();
+
 		reviewRepository.deleteById(reviewId);
+
+		if (photoUrl != null) {
+			s3Service.deleteImage(photoUrl);
+		}
 	}
 
 	// ---------- 내부 메서드 ----------

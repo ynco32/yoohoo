@@ -1,5 +1,5 @@
 import { WriteButton } from '@/components/common/WriteButton';
-import ArenaList from '@/components/features/sight/ArenaList';
+import ArenaList from '@/components/features/sight/arena/ArenaList';
 
 export default function SightMainPage() {
   return (

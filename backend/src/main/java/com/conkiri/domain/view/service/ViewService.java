@@ -231,7 +231,13 @@ public class ViewService {
 			throw new UnauthorizedAccessException();
 		}
 
+		String photoUrl = review.getPhotoUrl();
+
 		reviewRepository.deleteById(reviewId);
+
+		if (photoUrl != null) {
+			s3Service.deleteImage(photoUrl);
+		}
 	}
 
 	// ---------- 내부 메서드 ----------

@@ -31,6 +31,7 @@ public class S3Service {
 
 	// 이미지 업로드
 	public String uploadImage(MultipartFile file, String dirName) {
+
 		if (file.getSize() == 0) { throw new FileNotEmptyException(); }
 
 		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH");
@@ -62,7 +63,7 @@ public class S3Service {
 
 	// 이미지 삭제
 	public void deleteImage(String imageUrl) {
-		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+		String fileName = imageUrl.substring(imageUrl.indexOf("com/") + 4);
 
 		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
 			.bucket(bucket)

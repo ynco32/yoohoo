@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
           process.env.NODE_ENV === 'development' &&
           process.env.NEXT_PUBLIC_API_MOCKING !== 'disabled'
             ? '/api/:path*'
-            : 'http://i12b207.p.ssafy.io:8080/api/:path*',
+            : 'https://i12b207.p.ssafy.io/api/:path*',
       },
     ];
   },

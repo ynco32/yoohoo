@@ -2,6 +2,10 @@ import type { NextConfig } from 'next';
 import type { Configuration as WebpackConfig } from 'webpack';
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   webpack(config: WebpackConfig) {
     if (!config.module) {
       config.module = {

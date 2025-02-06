@@ -41,6 +41,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SightReviewCard } from './SightReviewCard';
 import type { SightReviewData } from '@/types/sightReviews';
+import { useParams } from 'next/navigation';
 
 // 드래그 가능한 리뷰 시트의 Props 인터페이스 정의
 interface DraggableReviewSheetProps {
@@ -62,6 +63,11 @@ export const DraggableReviewSheet = ({
   const [currentTranslate, setCurrentTranslate] = useState(50);
   // 시트 요소에 대한 ref
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  // URL 파라미터에서 현재 선택된 경기장/섹션/좌석 ID 추출
+  const params = useParams();
+  const currentSectionId = Number(params.sectionId); // 현재 섹션 ID
+  const currentSeatId = Number(params.seatId); // 현재 좌석 ID (선택적)
 
   // 터치 시작 시 호출되는 핸들러
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -124,7 +130,7 @@ export const DraggableReviewSheet = ({
       <div className="relative h-full w-full max-w-md">
         {/* 드래그 가능한 시트 */}
         <div
-          className="pointer-events-auto absolute bottom-0 w-full transform transition-transform duration-300 ease-out"
+          className="pointer-events-auto absolute bottom-0 w-full transform px-4 transition-transform duration-300 ease-out"
           style={{
             transform: `translateY(${currentTranslate}%)`,
             touchAction: 'none', // 기본 터치 동작 비활성화
@@ -136,13 +142,31 @@ export const DraggableReviewSheet = ({
         >
           <div className="bg-sight-bg relative w-full rounded-t-3xl shadow-lg">
             {/* 드래그 핸들 (상단 바) */}
-            <div className="pt-4">
+            <div className="py-2 pt-4">
               <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
+            </div>
+
+            {/* 리뷰 헤더 */}
+            <div className="">
+              <div className="flex items-center gap-2 px-6 py-2">
+                <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
+                <span className="text-body-bold text-primary-main">
+                  {currentSectionId}구역
+                </span>
+                {currentSeatId !== 0 && (
+                  <>
+                    <div className="h-1 w-1 rounded-full bg-gray-300" />
+                    <span className="text-body text-gray-600">
+                      {currentSeatId}열
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* 리뷰 카드 컨테이너 */}
             <div className="h-[90vh] overflow-y-auto">
-              <div className="space-y-4 p-4">
+              <div className="space-y-4 px-4">
                 {reviewDataList.map((reviewData, index) => (
                   <div
                     key={index}

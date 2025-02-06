@@ -7,9 +7,11 @@ spring:
         - oauth
         - db-local
         - cloud
+        - redis
       dev:
         - oauth
         - db-dev
         - cloud
-    include: oauth, db, cloud
+        - redis
+    include: oauth, db, cloud, redis
 

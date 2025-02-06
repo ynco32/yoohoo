@@ -16,6 +16,14 @@ export default function SecurityMessagePopup({
   const [inputText, setInputText] = useState('');
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      generateCaptcha();
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null; // 닫혀있으면 null 리턴해서 팝업 닫기
+
   //텍스트 생성
   const generateCaptcha = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -40,21 +48,15 @@ export default function SecurityMessagePopup({
 
   const handleSubmit = () => {
     if (captchaText === inputText) {
-      return onSuccess;
+      return onSuccess();
     } else {
       return setError(true);
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      generateCaptcha();
-    }
-  }, [isOpen]);
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-[425px] rounded-lg bg-white p-6">
+      <div className="w-full max-w-[300px] rounded-lg bg-white p-6">
         <div className="text-center">
           <h2 className="text-xl font-bold text-primary-main">인증예매</h2>
         </div>

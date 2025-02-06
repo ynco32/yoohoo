@@ -1,4 +1,3 @@
-// src/assets/svgs/index.ts
 import { FunctionComponent, SVGProps } from 'react';
 
 export type SVGIconProps = SVGProps<SVGSVGElement>;

@@ -43,7 +43,8 @@ export function SightReviewList() {
     const isSectionMatch = review.sectionId === currentSectionId;
 
     // 좌석 ID가 params에 있는 경우에만 좌석 일치 여부 확인
-    const isSeatMatch = currentSeatId ? review.seatId === currentSeatId : true;
+    const isSeatMatch =
+      currentSeatId !== 0 ? review.seatId === currentSeatId : true;
 
     return isArenaMatch && isSectionMatch && isSeatMatch;
   });

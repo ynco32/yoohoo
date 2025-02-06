@@ -72,7 +72,7 @@ export const SightReviewCard = ({
 }: SightReviewCardProps) => {
   return (
     // 리뷰 카드 컨테이너
-    <div className="w-full rounded-lg bg-white p-4 shadow-md">
+    <div className="w-full rounded-lg p-4">
       {/* 리뷰 헤더 섹션: 공연 정보 및 작성자 정보 */}
       <ReviewHeader
         concertTitle={concertTitle}
@@ -85,10 +85,15 @@ export const SightReviewCard = ({
       <ReviewImages images={images} />
 
       {/* 좌석 평가 정보 섹션 */}
-      <div className="mb-4 flex gap-4 text-sm text-gray-600">
-        <span>{viewQuality}</span>
-        <span>{soundQuality}</span>
-        <span>{seatQuality}</span>
+      <div className="0 mb-4 flex gap-2 font-pretendard text-sm">
+        <span className="text-caption1-bold">하나님석</span>
+        <span className="text-gray-600">{viewQuality}</span>
+        <span className="text-caption1-bold">|</span>
+        <span className="text-sight-badge text-caption1-bold">음향</span>
+        <span className="text-gray-600">{soundQuality}</span>
+        <span className="text-caption1-bold">|</span>
+        <span className="text-sight-badge text-caption1-bold">좌석</span>
+        <span className="text-gray-600">{seatQuality}</span>
       </div>
 
       {/* 리뷰 본문 내용 섹션 */}

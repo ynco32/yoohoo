@@ -41,6 +41,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SightReviewCard } from './SightReviewCard';
 import type { SightReviewData } from '@/types/sightReviews';
+import { useParams } from 'next/navigation';
 
 // 드래그 가능한 리뷰 시트의 Props 인터페이스 정의
 interface DraggableReviewSheetProps {
@@ -55,13 +56,18 @@ export const DraggableReviewSheet = ({
   reviewDataList,
 }: DraggableReviewSheetProps) => {
   // 시트의 위치 상태 관리 (closed, half, full)
-  const [position, setPosition] = useState('closed');
+  const [position, setPosition] = useState('half');
   // 드래그 시작 위치 저장
   const [dragStart, setDragStart] = useState<number | null>(null);
   // 현재 시트의 Y축 변환값 (0-100%)
-  const [currentTranslate, setCurrentTranslate] = useState(100);
+  const [currentTranslate, setCurrentTranslate] = useState(50);
   // 시트 요소에 대한 ref
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  // URL 파라미터에서 현재 선택된 경기장/섹션/좌석 ID 추출
+  const params = useParams();
+  const currentSectionId = Number(params.sectionId); // 현재 섹션 ID
+  const currentSeatId = Number(params.seatId); // 현재 좌석 ID (선택적)
 
   // 터치 시작 시 호출되는 핸들러
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -81,7 +87,7 @@ export const DraggableReviewSheet = ({
 
     // 새로운 변환값 계산 (0-100% 범위 내로 제한)
     let newTranslate = currentTranslate + percentage;
-    newTranslate = Math.max(0, Math.min(100, newTranslate));
+    newTranslate = Math.max(0, Math.min(90, newTranslate));
 
     setCurrentTranslate(newTranslate);
   };
@@ -99,7 +105,7 @@ export const DraggableReviewSheet = ({
       setCurrentTranslate(50);
     } else {
       setPosition('closed'); // 닫힌 상태
-      setCurrentTranslate(100);
+      setCurrentTranslate(90);
       onClose();
     }
   };
@@ -111,12 +117,12 @@ export const DraggableReviewSheet = ({
       setCurrentTranslate(50);
     } else {
       setPosition('closed');
-      setCurrentTranslate(100);
+      setCurrentTranslate(90);
     }
   }, [isOpen]);
 
-  // 시트가 닫혀있을 때는 아무것도 렌더링하지 않음
-  if (!isOpen) return null;
+  // // 시트가 닫혀있을 때는 아무것도 렌더링하지 않음
+  // if (!isOpen) return null;
 
   return (
     // 시트 컨테이너
@@ -124,7 +130,7 @@ export const DraggableReviewSheet = ({
       <div className="relative h-full w-full max-w-md">
         {/* 드래그 가능한 시트 */}
         <div
-          className="pointer-events-auto absolute bottom-0 w-full transform transition-transform duration-300 ease-out"
+          className="pointer-events-auto absolute bottom-0 w-full transform px-4 transition-transform duration-300 ease-out"
           style={{
             transform: `translateY(${currentTranslate}%)`,
             touchAction: 'none', // 기본 터치 동작 비활성화
@@ -134,16 +140,43 @@ export const DraggableReviewSheet = ({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="relative w-full rounded-t-xl bg-white shadow-lg">
+          <div className="bg-sight-bg relative w-full rounded-t-3xl shadow-lg">
             {/* 드래그 핸들 (상단 바) */}
-            <div className="absolute -top-4 left-1/2 h-1 w-12 -translate-x-1/2 rounded-full bg-gray-300" />
+            <div className="py-2 pt-4">
+              <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
+            </div>
+
+            {/* 리뷰 헤더 */}
+            <div className="">
+              <div className="flex items-center gap-2 px-6 py-2">
+                <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
+                <span className="text-body-bold text-primary-main">
+                  {currentSectionId}구역
+                </span>
+                {currentSeatId !== 0 && (
+                  <>
+                    <div className="h-1 w-1 rounded-full bg-gray-300" />
+                    <span className="text-body text-gray-600">
+                      {currentSeatId}열
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
 
             {/* 리뷰 카드 컨테이너 */}
             <div className="h-[90vh] overflow-y-auto">
-              <div className="space-y-4 p-4">
-                {/* 리뷰 데이터를 순회하며 카드 컴포넌트 렌더링 */}
+              <div className="space-y-4 px-4">
                 {reviewDataList.map((reviewData, index) => (
-                  <SightReviewCard key={index} {...reviewData} />
+                  <div
+                    key={index}
+                    className="flex flex-col rounded-t-3xl bg-white"
+                  >
+                    <SightReviewCard {...reviewData} />
+                    {index < reviewDataList.length - 1 && (
+                      <hr className="my-4 border-t border-gray-100" />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

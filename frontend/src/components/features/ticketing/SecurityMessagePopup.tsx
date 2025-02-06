@@ -14,7 +14,6 @@ export default function SecurityMessagePopup({
 }: SecurityMessagePopupProps) {
   const [captchaText, setCaptchatext] = useState('');
   const [inputText, setInputText] = useState('');
-  const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState(false);
 
   //텍스트 생성
@@ -26,7 +25,6 @@ export default function SecurityMessagePopup({
     }
     setCaptchatext(result);
     setInputText('');
-    setIsValid(false);
   };
 
   // 음성 읽기 기능
@@ -36,10 +34,15 @@ export default function SecurityMessagePopup({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
+    const inputValue = e.target.value.toUpperCase();
     setInputText(inputValue);
-    if (inputValue === captchaText) {
-      setIsValid(true);
+  };
+
+  const handleSubmit = () => {
+    if (captchaText === inputText) {
+      return onSuccess;
+    } else {
+      return setError(true);
     }
   };
 
@@ -73,7 +76,7 @@ export default function SecurityMessagePopup({
           <div className="flex justify-center">
             <button
               className="rounded-full bg-primary-main px-12 py-2 text-white"
-              onClick={isValid ? onSuccess : () => setError(true)}
+              onClick={handleSubmit}
             >
               입력 완료
             </button>

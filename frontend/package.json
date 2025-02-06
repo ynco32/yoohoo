@@ -55,6 +55,10 @@
     ]
   },
   "msw": {
-    "workerDirectory": "public"
+    "workerDirectory": [
+      "public",
+      ".next\\static",
+      ".storybook\\public"
+    ]
   }
 }

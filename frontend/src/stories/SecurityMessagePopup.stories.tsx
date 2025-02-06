@@ -3,7 +3,7 @@ import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessag
 
 // [Storybook] 메타데이터 설정
 const meta = {
-  title: 'features/ticketing/SecurityMessagePopup',
+  title: 'features/Ticketing/SecurityMessagePopup',
   component: SecurityMessagePopup,
   parameters: {
     layout: 'padded',

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Captcha from './Captcha';
+import Popup from '@/components/ui/Popup';
 
 interface SecurityMessagePopupProps {
   isOpen: boolean;
@@ -55,42 +56,40 @@ export default function SecurityMessagePopup({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-full max-w-[300px] rounded-lg bg-white p-6">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-primary-main">인증예매</h2>
-        </div>
+    <Popup>
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-primary-main">인증예매</h2>
+      </div>
 
-        <div className="mt-4 space-y-4">
-          <p className="text-center text-gray-600">
-            부정예매 방지를 위해 보안문자를 정확히 입력해주세요.
-          </p>
-          <Captcha
-            captchaText={captchaText}
-            generateCaptcha={generateCaptcha}
-            handleInputChange={handleInputChange}
-            inputText={inputText}
-            speakCaptcha={speakCaptcha}
-          />
-          {error && (
-            <p className="text-status-warning">문자를 정확히 입력하세요</p>
-          )}
-          <div className="flex justify-center">
-            <button
-              className="rounded-full bg-primary-main px-12 py-2 text-white"
-              onClick={handleSubmit}
-            >
-              입력 완료
-            </button>
-          </div>
+      <div className="mt-4 space-y-4">
+        <p className="text-center text-gray-600">
+          부정예매 방지를 위해 보안문자를 정확히 입력해주세요.
+        </p>
+        <Captcha
+          captchaText={captchaText}
+          generateCaptcha={generateCaptcha}
+          handleInputChange={handleInputChange}
+          inputText={inputText}
+          speakCaptcha={speakCaptcha}
+        />
+        {error && (
+          <p className="text-status-warning">문자를 정확히 입력하세요</p>
+        )}
+        <div className="flex justify-center">
           <button
-            className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline [&>span]:active:bg-gray-200"
-            onClick={onPostpone}
+            className="rounded-full bg-primary-main px-12 py-2 text-white"
+            onClick={handleSubmit}
           >
-            <span>좌석 먼저 확인하고 나중에 입력하기</span>
+            입력 완료
           </button>
         </div>
+        <button
+          className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline [&>span]:active:bg-gray-200"
+          onClick={onPostpone}
+        >
+          <span>좌석 먼저 확인하고 나중에 입력하기</span>
+        </button>
       </div>
-    </div>
+    </Popup>
   );
 }

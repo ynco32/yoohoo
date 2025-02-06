@@ -2,11 +2,17 @@ interface UserInfoProps {
   nickname: string;
   level: string;
   steps: number;
+  className?: string;
 }
 
-export const UserInfo = ({ nickname, level, steps }: UserInfoProps) => {
+export const UserInfo = ({
+  nickname,
+  level,
+  steps,
+  className,
+}: UserInfoProps) => {
   return (
-    <div className="flex flex-col gap-xs">
+    <div className={`flex flex-col gap-xs ${className != null || ''}`}>
       <div className="flex items-center gap-xs">
         <div className="inline-flex h-3.5 min-w-8 items-center justify-center rounded-3xl border border-primary-500 px-1">
           <span className="text-caption3 text-primary-500">{level}</span>

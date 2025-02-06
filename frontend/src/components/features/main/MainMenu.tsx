@@ -1,7 +1,6 @@
 'use client';
 
 import { MenuItem, MenuItemProps } from '@/components/features/main/MenuItem';
-import { SVGIcons } from '@/assets/svgs';
 
 export default function MainMenu() {
   const menuItems: MenuItemProps[] = [

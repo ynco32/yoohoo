@@ -1,5 +1,9 @@
 package com.conkiri.domain.base.entity;
 
+import java.util.Arrays;
+
+import com.conkiri.global.exception.view.InvalidStageTypeException;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,4 +19,11 @@ public enum StageType {
 	private final Integer value;
 	private final String code;
 	private final String description;
+
+	public static StageType fromValue(Integer value) {
+		return Arrays.stream(StageType.values())
+			.filter(type -> type.getValue().equals(value))
+			.findFirst()
+			.orElseThrow(() -> new InvalidStageTypeException());
+	}
 }

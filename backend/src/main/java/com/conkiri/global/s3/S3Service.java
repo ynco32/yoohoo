@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.conkiri.global.exception.sharing.FileNotEmptyException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -29,7 +31,8 @@ public class S3Service {
 
 	// 이미지 업로드
 	public String uploadImage(MultipartFile file, String dirName) {
-		if (file == null) { return null; }
+
+		if (file.getSize() == 0) { throw new FileNotEmptyException(); }
 
 		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH");
 		String subDir = sdf.format(new Date());
@@ -60,7 +63,7 @@ public class S3Service {
 
 	// 이미지 삭제
 	public void deleteImage(String imageUrl) {
-		String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+		String fileName = imageUrl.substring(imageUrl.indexOf("com/") + 4);
 
 		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
 			.bucket(bucket)

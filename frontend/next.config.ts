@@ -3,14 +3,12 @@ import type { Configuration as WebpackConfig } from 'webpack';
 
 const nextConfig: NextConfig = {
   webpack(config: WebpackConfig) {
-    // module이 정의되어 있지 않다면 생성
     if (!config.module) {
       config.module = {
         rules: [],
       };
     }
 
-    // rules가 정의되어 있지 않다면 생성
     if (!config.module.rules) {
       config.module.rules = [];
     }
@@ -21,6 +19,18 @@ const nextConfig: NextConfig = {
     });
 
     return config;
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination:
+          process.env.NODE_ENV === 'development'
+            ? '/api/:path*' // MSW가 처리하도록 함
+            : 'http://i12b207.p.ssafy.io:8080/api/:path*',
+      },
+    ];
   },
 };
 

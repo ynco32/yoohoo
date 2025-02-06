@@ -27,9 +27,14 @@ export const arenaAPI = {
    * @throws {ApiError} API 요청 실패 시 발생
    */
   getArenas: async (): Promise<ArenaResponse> => {
+    // MSW 초기화가 완료된 후에만 요청을 보내도록 하기 위한 코드
+    if (!window.mswInitialized) {
+      return Promise.reject('MSW not initialized yet');
+    }
+
     try {
       // axios 인스턴스의 baseURL이 설정되어 있으므로, 경로만 지정
-      const response = await api.get<ArenaResponse>('api/v1/view/arenas');
+      const response = await api.get<ArenaResponse>('/api/v1/view/arenas');
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {

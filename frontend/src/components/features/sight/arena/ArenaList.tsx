@@ -5,17 +5,30 @@ import { useState, useEffect } from 'react';
 import { SelectedArenaMenu } from './SelectedArenaMenu';
 import { arenaAPI, type ArenaData, ApiError } from '@/lib/api/arena';
 
-/**
- * @component ArenaList
- * @description 공연장 목록을 표시하고 선택된 공연장의 좌석 메뉴를 관리하는 컴포넌트
- */
 export default function ArenaList() {
   const [selectedArenaId, setSelectedArenaId] = useState<number | null>(null);
   const [arenas, setArenas] = useState<ArenaData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mswInitialized, setMswInitialized] = useState(false); // MSW 상태 추가
 
   useEffect(() => {
+    // MSW가 초기화되었는지 확인
+    if (window.mswInitialized) {
+      setMswInitialized(true);
+    } else {
+      const interval = setInterval(() => {
+        if (window.mswInitialized) {
+          setMswInitialized(true);
+          clearInterval(interval);
+        }
+      }, 100); // 100ms마다 MSW 상태를 체크
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mswInitialized) return; // MSW가 초기화되지 않으면 API 호출하지 않음
+
     console.log('ArenaList - Component mounted, starting data fetch');
 
     const fetchArenas = async () => {
@@ -28,7 +41,6 @@ export default function ArenaList() {
 
         setArenas(fetchedArenas);
 
-        // 첫 번째 아레나를 기본 선택
         if (fetchedArenas.length > 0) {
           console.log(
             'ArenaList - Setting initial selected arena:',
@@ -55,17 +67,9 @@ export default function ArenaList() {
     };
 
     fetchArenas();
-  }, []);
-
-  console.log('ArenaList - Current state:', {
-    isLoading,
-    error,
-    selectedArenaId,
-    arenasCount: arenas.length,
-  });
+  }, [mswInitialized]); // mswInitialized 상태에 의존
 
   if (isLoading) {
-    console.log('ArenaList - Rendering loading state');
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-gray-500">로딩 중...</div>
@@ -74,7 +78,6 @@ export default function ArenaList() {
   }
 
   if (error != null) {
-    console.log('ArenaList - Rendering error state:', error);
     return (
       <div className="p-4">
         <div className="rounded-lg bg-red-50 p-4 text-red-500">{error}</div>
@@ -82,7 +85,6 @@ export default function ArenaList() {
     );
   }
 
-  console.log('ArenaList - Rendering main content');
   return (
     <div className="flex h-full flex-col">
       <div className="bg-white">
@@ -96,7 +98,6 @@ export default function ArenaList() {
                 imageSrc={arena.photoUrl}
                 imageAlt={arena.arenaName}
                 onClick={() => {
-                  console.log('ArenaList - Arena selected:', arena.arenaId);
                   setSelectedArenaId(arena.arenaId);
                 }}
               />

@@ -1,5 +1,13 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["src/**/*", ".storybook/**/*"], // 와일드카드 추가
+  "include": [
+    "src/**/*",
+    ".storybook/**/*",
+    "**/*.ts",
+    "**/*.tsx",
+    ".eslintrc.js",
+    "next.config.js",
+    "public/mockServiceWorker.js"
+  ], // 와일드카드 추가
   "exclude": ["node_modules", "dist", ".next"]
 }

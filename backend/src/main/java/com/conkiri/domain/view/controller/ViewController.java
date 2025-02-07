@@ -91,7 +91,7 @@ public class ViewController {
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
-		@RequestParam(name = "row", required = false) Long seatId) {
+		@RequestParam(name = "seatId", required = false) Long seatId) {
 		return viewService.getReviews(arenaId, stageType, sectionNumber, seatId);
 	}
 

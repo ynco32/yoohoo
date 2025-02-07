@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface SeatInfo {
@@ -23,10 +23,12 @@ const SeatNumberInput = ({
   label,
   value,
   onChange,
+  onBlur,
 }: {
   label: string;
   value?: string;
   onChange?: (value: string) => void;
+  onBlur?: () => void;
 }) => (
   <div className="w-20">
     <input
@@ -38,6 +40,7 @@ const SeatNumberInput = ({
           onChange?.(newValue);
         }
       }}
+      onBlur={onBlur}
       placeholder=""
       min={0}
       className="w-full rounded border-b border-gray-200 bg-transparent p-2 text-center focus:border-primary-main focus:outline-none"
@@ -52,6 +55,8 @@ export const SeatSelect = ({
   onValidation,
   className = '',
 }: SeatSelectProps) => {
+  const [touched, setTouched] = useState(false);
+
   const validate = (): ValidationResult => {
     console.log('=== SeatSelect validation 실행 ===');
     if (value.section == null || value.section === 0) {
@@ -86,14 +91,19 @@ export const SeatSelect = ({
     return { isValid: true };
   };
 
-  // 값이 변경될 때마다 validation 실행
   useEffect(() => {
-    const validationResult = validate();
-    if (!validationResult.isValid) {
-      console.log('Validation Error:', validationResult.error);
+    if (touched) {
+      const validationResult = validate();
+      if (!validationResult.isValid) {
+        console.log('Validation Error:', validationResult.error);
+      }
+      onValidation(validationResult);
     }
-    onValidation(validationResult);
-  }, [value]);
+  }, [value, touched]);
+
+  const handleBlur = () => {
+    setTouched(true);
+  };
 
   const handleSectionChange = (section: string) => {
     onChange?.({
@@ -124,19 +134,22 @@ export const SeatSelect = ({
           label="구역"
           value={value.section?.toString()}
           onChange={handleSectionChange}
+          onBlur={handleBlur}
         />
         <SeatNumberInput
           label="열"
           value={value.rowLine?.toString()}
           onChange={handleRowChange}
+          onBlur={handleBlur}
         />
         <SeatNumberInput
           label="번"
           value={value.columnLine?.toString()}
           onChange={handleNumberChange}
+          onBlur={handleBlur}
         />
       </div>
-      {!validate().isValid && (
+      {touched && !validate().isValid && (
         <p className="mt-1 text-sm text-status-warning">{validate().error}</p>
       )}
     </div>

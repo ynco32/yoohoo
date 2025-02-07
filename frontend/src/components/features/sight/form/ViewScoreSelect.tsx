@@ -1,17 +1,17 @@
 import React from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
-interface VisibilitySelectProps {
+interface ViewScoreSelectProps {
   value?: number;
   onChange?: (value: number) => void;
   className?: string;
 }
 
-const VisibilitySelect = ({
+const ViewScoreSelect = ({
   value = 0,
   onChange,
   className = '',
-}: VisibilitySelectProps) => {
+}: ViewScoreSelectProps) => {
   // Array of circle sizes from smallest to largest
   const circles = [
     { size: 'w-4 h-4', value: 0 },
@@ -48,4 +48,4 @@ const VisibilitySelect = ({
   );
 };
 
-export default VisibilitySelect;
+export default ViewScoreSelect;

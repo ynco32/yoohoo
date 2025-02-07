@@ -102,7 +102,7 @@ export default function ArenaList() {
     };
 
     fetchArenas();
-  }, [arenas.length, isLoading, mswInitialized]); // mswInitialized 상태에 의존
+  }, [mswInitialized]);
   // 렌더링 시점 확인을 위한 로그
   console.log('ArenaList 렌더링:', {
     isLoading,

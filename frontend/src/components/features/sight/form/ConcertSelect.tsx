@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface Concert {
-  concertId: string;
+  concertId: number;
   label: string;
   artist: string;
 }
@@ -14,8 +14,8 @@ interface ValidationResult {
 
 interface SelectProps {
   options: Concert[];
-  value?: string;
-  onChange?: (value: string) => void;
+  value: number | null;
+  onChange?: (value: number) => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -33,13 +33,16 @@ const Select = ({
     <div className="relative">
       <select
         value={value ?? ''}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={(e) => {
+          const selectedValue = e.target.value;
+          if (selectedValue.length > 0) {
+            onChange?.(Number(selectedValue));
+          }
+        }}
         disabled={disabled}
         className={`w-full appearance-none rounded-lg border border-gray-200 bg-background-default p-3 text-gray-900 focus:border-primary-main focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
       >
-        <option value="" disabled>
-          {placeholder}
-        </option>
+        <option value="">{placeholder}</option>
         {options.map((option) => (
           <option key={option.concertId} value={option.concertId}>
             {option.label}
@@ -67,40 +70,51 @@ const Select = ({
 
 interface ConcertSelectProps {
   artist?: string;
-  value: string;
-  onChange: (value: string) => void;
+  value: number | null;
+  onChange: (value: number) => void;
   onValidation: (result: ValidationResult) => void;
   className?: string;
 }
 
 export const ConcertSelect = ({
   artist,
-  value,
+  value = null,
   onChange,
   onValidation,
   className = '',
 }: ConcertSelectProps) => {
   const validate = (): ValidationResult => {
-    if (value.length === 0 || value.length === 0) {
+    console.log('=== ConcertSelect validation 실행 ===');
+    if (value === null) {
+      console.log('❌ 콘서트 선택 누락');
       return {
         isValid: false,
         error: '콘서트를 선택해주세요',
       };
     }
+    console.log('✅ validation 성공');
     return { isValid: true };
   };
 
-  const handleChange = (newValue: string) => {
+  // 값이 변경될 때마다 validation 실행
+  useEffect(() => {
+    const validationResult = validate();
+    if (!validationResult.isValid) {
+      console.log('Validation Error:', validationResult.error);
+    }
+    onValidation(validationResult);
+  }, [value]);
+
+  const handleChange = (newValue: number) => {
     onChange(newValue);
-    onValidation(validate());
   };
 
   const concerts: Concert[] = [
-    { concertId: '1', label: 'WORLD TOUR [BORN PINK]', artist: 'BLACKPINK' },
-    { concertId: '2', label: '5TH WORLD TOUR', artist: 'TWICE' },
-    { concertId: '3', label: 'TOUR THE DREAM SHOW2', artist: 'NCT DREAM' },
-    { concertId: '4', label: 'WORLD TOUR [SYNK]', artist: 'BLACKPINK' },
-    { concertId: '5', label: 'READY TO BE', artist: 'TWICE' },
+    { concertId: 1, label: 'WORLD TOUR [BORN PINK]', artist: 'BLACKPINK' },
+    { concertId: 2, label: '5TH WORLD TOUR', artist: 'TWICE' },
+    { concertId: 3, label: 'TOUR THE DREAM SHOW2', artist: 'NCT DREAM' },
+    { concertId: 4, label: 'WORLD TOUR [SYNK]', artist: 'BLACKPINK' },
+    { concertId: 5, label: 'READY TO BE', artist: 'TWICE' },
   ];
 
   const filteredConcerts = useMemo(() => {
@@ -128,6 +142,9 @@ export const ConcertSelect = ({
             : '콘서트를 선택해주세요'
         }
       />
+      {!validate().isValid && (
+        <p className="mt-1 text-sm text-status-warning">{validate().error}</p>
+      )}
     </div>
   );
 };

@@ -4,6 +4,9 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { ConcertItem } from './ConcertItem';
 import { Concert, concertAPI } from '@/lib/api/concert';
 
+// 개발 중 MSW 체크를 건너뛰기 위한 플래그
+const SKIP_MSW_CHECK = true;
+
 export const ConcertList = () => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,11 +26,22 @@ export const ConcertList = () => {
    * MSW 초기화 상태 확인
    */
   useEffect(() => {
+    console.log('MSW 초기화 상태 체크 시작');
+
+    if (SKIP_MSW_CHECK) {
+      console.log('MSW 체크 스킵 모드 활성화');
+      setMswInitialized(true);
+      return;
+    }
+
     if (window.mswInitialized) {
+      console.log('MSW 이미 초기화됨');
       setMswInitialized(true);
     } else {
+      console.log('MSW 초기화 대기 시작');
       const interval = setInterval(() => {
         if (window.mswInitialized) {
+          console.log('MSW 초기화 완료 감지');
           setMswInitialized(true);
           clearInterval(interval);
         }
@@ -41,9 +55,15 @@ export const ConcertList = () => {
    * 공연 데이터를 불러오는 함수
    */
   const fetchConcerts = useCallback(async () => {
-    if (!hasMore || !mswInitialized || isFetching.current) {
+    // MSW 체크는 별도로 진행
+    if (!SKIP_MSW_CHECK && !mswInitialized) {
+      console.log('MSW 초기화 대기 중 - API 호출 스킵');
+      return;
+    }
+
+    // 일반적인 fetch 조건 체크
+    if (!hasMore || isFetching.current) {
       console.log('fetchConcerts 실행 중단: 조건 미충족', {
-        mswInitialized,
         isFetching: isFetching.current,
         hasMore,
         reason: !hasMore ? '더 이상 불러올 데이터 없음' : '기타 조건',
@@ -55,6 +75,7 @@ export const ConcertList = () => {
     setIsLoading(true);
 
     try {
+      console.log('API 호출 시작');
       const response = await concertAPI.getConcerts(undefined, lastConcertId);
       console.log('ConcertList - API Response:', response);
 
@@ -86,6 +107,7 @@ export const ConcertList = () => {
         err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.'
       );
     } finally {
+      console.log('API 호출 완료, 로딩 상태 해제');
       setIsLoading(false);
       isFetching.current = false;
     }
@@ -136,7 +158,13 @@ export const ConcertList = () => {
    * 초기 데이터 로드
    */
   useEffect(() => {
-    if (!isInitialized.current && mswInitialized) {
+    if (!isInitialized.current) {
+      // MSW 체크 별도 진행
+      if (!SKIP_MSW_CHECK && !mswInitialized) {
+        console.log('MSW 초기화 대기 중 - 초기 데이터 로드 스킵');
+        return;
+      }
+
       isInitialized.current = true;
       console.log('ConcertList - Component mounted, starting data fetch');
       fetchConcerts();

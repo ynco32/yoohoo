@@ -1,23 +1,7 @@
 // store/useSightReviewStore.ts
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-
-type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-type SoundStatus = '나쁨' | '보통' | '좋음';
-
-interface SightReviewFormData {
-  section: number;
-  rowLine: number;
-  columnLine: number;
-  concertId: number;
-  images: File[];
-  content: string;
-  viewScore: number;
-  seatDistance: SeatDistanceStatus;
-  sound: SoundStatus;
-}
-
-type FormErrors = Partial<Record<keyof SightReviewFormData | 'submit', string>>;
+import { SightReviewFormData, FormErrors } from '@/types/sightReviews';
 
 interface SightReviewState {
   formData: SightReviewFormData;

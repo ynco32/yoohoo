@@ -7,6 +7,7 @@ export const SVGIcons = {
   Artwork: '/svgs/Artwork.svg',
   ProfileBg: '/svgs/main/ProfileBg.svg',
   Conkiri: '/svgs/conkiri.svg',
+  ConkiriVer1: '/svgs/conkiri_ver1.svg',
   Logo: '/svgs/logo.svg',
   SharingIcon: '/svgs/main/SharingIcon.svg',
   SightIcon: '/svgs/main/SightIcon.svg',

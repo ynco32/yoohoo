@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import AreaPopup from '@/components/features/ticketing/AreaPopup';
+
 // [Storybook] 메타데이터 설정
 const meta = {
-  title: 'Features/Ticketing/AreaPopup',
+  title: 'features/Ticketing/AreaPopup',
   component: AreaPopup,
   parameters: {
     layout: 'padded',
     docs: {
       story: {
-        height: '500px',
+        height: '500px', // 스토리 높이 지정
       },
     },
   },
@@ -16,18 +17,15 @@ const meta = {
 
   // [TypeScript] ArgTypes 정의
   argTypes: {
-    area: {
-      description: '선택된 구역 정보',
-      control: 'text',
-      defaultValue: '2층 E 구역',
-    },
     onClose: {
       description: '팝업 닫기 핸들러',
-      action: 'clicked',
     },
     onMove: {
-      description: '이동 버튼 핸들러',
-      action: 'clicked',
+      description: '구역 이동 핸들러',
+    },
+    isOpen: {
+      description: '팝업 표시 여부',
+      control: 'boolean',
     },
   },
 } satisfies Meta<typeof AreaPopup>;
@@ -38,25 +36,26 @@ type Story = StoryObj<typeof meta>;
 // [Storybook] 기본 스토리 정의
 export const Default: Story = {
   args: {
-    area: '2층 E 구역',
+    isOpen: true,
+    onClose: () => console.log('닫기 클릭'),
+    onMove: () => console.log('이동 클릭'),
   },
 };
 
-// [Storybook] 다른 구역 예시
-export const DifferentArea: Story = {
+// [Storybook] 팝업 닫힘 상태 스토리
+export const Closed: Story = {
   args: {
-    area: '1층 A 구역',
+    isOpen: false,
+    onClose: () => console.log('닫기 클릭'),
+    onMove: () => console.log('이동 클릭'),
   },
 };
 
-// [Storybook] 모바일 뷰 스토리
-export const Mobile: Story = {
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-  },
+// [Storybook] 대화형 동작 스토리
+export const Interactive: Story = {
   args: {
-    area: '2층 E 구역',
+    isOpen: true,
+    onClose: () => alert('팝업이 닫힙니다'),
+    onMove: () => alert('선택한 구역으로 이동합니다'),
   },
 };

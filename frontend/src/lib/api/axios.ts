@@ -15,6 +15,15 @@ const api: AxiosInstance = axios.create({
   withCredentials: !USE_MSW,
 });
 
+// 환경 변수 체크 로직 추가
+if (process.env.NEXT_PUBLIC_API_URL == null) {
+  console.warn('⚠️ Warning: NEXT_PUBLIC_API_URL is not set in .env.local');
+}
+
+if (process.env.NEXT_PUBLIC_USE_MSW === undefined) {
+  console.warn('⚠️ Warning: NEXT_PUBLIC_USE_MSW is not set in .env.local');
+}
+
 // 설정 디버깅 로그 추가
 console.log('API 설정:', {
   baseURL: USE_MSW ? '/' : BASE_URL,

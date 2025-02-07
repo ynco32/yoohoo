@@ -32,7 +32,7 @@ public class ReviewRequestDTO {
 
 	@NotNull(message = ExceptionMessage.NULL_IS_NOT_ALLOWED)
 	@Min(value = 1)
-	@Max(value = 10)
+	@Max(value = 7)
 	private Integer viewScore;
 
 	private SeatDistance seatDistance;

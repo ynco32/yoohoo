@@ -26,7 +26,7 @@ export default function LoginPage() {
       />
 
       {/* [버튼] 카카오 로그인 */}
-      <KakaoLoginButton className="absolute bottom-[50px] left-1/2 h-auto w-[90vw] max-w-[359px] -translate-x-1/2 object-cover" />
+      <KakaoLoginButton className="absolute bottom-[50px] left-1/2 h-auto w-[90vw] max-w-[340px] -translate-x-1/2 object-cover" />
 
       {/* [이미지] 콘끼리 로고 */}
       <Image

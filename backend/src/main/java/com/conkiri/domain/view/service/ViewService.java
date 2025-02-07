@@ -23,9 +23,9 @@ import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatResponseDTO;
+import com.conkiri.domain.view.dto.response.SectionDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.entity.Review;
@@ -66,65 +66,20 @@ public class ViewService {
 		return ArenaResponseDTO.from(arenas);
 	}
 
-	public SectionResponseDTO getSections(Long arenaId, Integer stageType) {
+	public SectionResponseDTO getSections(Long arenaId, Integer stageType, Long userId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		List<Section> sections = sectionRepository.findByArena(arena);
-		return SectionResponseDTO.of(sections, stageType);
-	}
-
-	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long seatId) {
-
-		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
-
-		if (seatId != null) {
-			Seat seat = findSeatBySeatIdOrElseThrow(seatId);
-			return getReviewsBySeat(seat, stageType);
-		}
-		return getReviewsBySection(section, stageType);
-	}
-
-	public ReviewResponseDTO getReviewsBySection(Section section, Integer stageType) {
-
-		List<Seat> seats = seatRepository.findBySection(section);
-		List<Review> reviews = reviewRepository.findBySeatIn(seats);
-
-		if (stageType != 0) { // '전체'가 아닐 경우 stageType으로 필터링
-			StageType selectedType = StageType.fromValue(stageType);
-			reviews = reviews.stream()
-				.filter(review -> review.getStageType() == selectedType)
-				.collect(Collectors.toList());
-		}
-		return ReviewResponseDTO.from(reviews);
-	}
-
-	public ReviewResponseDTO getReviewsBySeat(Seat seat, Integer stageType) {
-
-		List<Review> reviews = reviewRepository.findBySeat(seat);
-
-		if (stageType != 0) {
-			StageType selectedType = StageType.fromValue(stageType);
-			reviews = reviews.stream()
-				.filter(review -> review.getStageType() == selectedType)
-				.collect(Collectors.toList());
-		}
-		return ReviewResponseDTO.from(reviews);
-	}
-
-	public ScrapSectionResponseDTO getScrappedSections(Long arenaId, Integer stageType, Long userId) {
-
-		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		StageType selectedType = StageType.fromValue(stageType);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
+		StageType selectedType = StageType.fromValue(stageType);
 
-		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section_Arena(user, selectedType, arena);
-		List<Section> sections = scraps.stream()
-			.map(scrapSeat -> scrapSeat.getSeat().getSection())
-			.distinct()
-			.collect(Collectors.toList());
+		List<Section> sections = sectionRepository.findByArena(arena);
 
-		return ScrapSectionResponseDTO.from(sections);
+		return SectionResponseDTO.from(sections.stream()
+			.map(section -> {
+				boolean isScrapped = scrapSeatRepository.existsByUserAndSeat_SectionAndStageType(user, section, selectedType);
+				return SectionDetailResponseDTO.of(section, stageType, isScrapped);
+			})
+			.collect(Collectors.toList()));
 	}
 
 	public SeatResponseDTO getSeats(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
@@ -170,6 +125,45 @@ public class ViewService {
 		scrapSeatRepository.delete(scrapSeat);
 	}
 
+	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long seatId) {
+
+		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
+
+		if (seatId != null) {
+			Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+			return getReviewsBySeat(seat, stageType);
+		}
+		return getReviewsBySection(section, stageType);
+	}
+
+	public ReviewResponseDTO getReviewsBySection(Section section, Integer stageType) {
+
+		List<Seat> seats = seatRepository.findBySection(section);
+		List<Review> reviews = reviewRepository.findBySeatIn(seats);
+
+		if (stageType != 0) { // '전체'가 아닐 경우 stageType으로 필터링
+			StageType selectedType = StageType.fromValue(stageType);
+			reviews = reviews.stream()
+				.filter(review -> review.getStageType() == selectedType)
+				.collect(Collectors.toList());
+		}
+		return ReviewResponseDTO.from(reviews);
+	}
+
+	public ReviewResponseDTO getReviewsBySeat(Seat seat, Integer stageType) {
+
+		List<Review> reviews = reviewRepository.findBySeat(seat);
+
+		if (stageType != 0) {
+			StageType selectedType = StageType.fromValue(stageType);
+			reviews = reviews.stream()
+				.filter(review -> review.getStageType() == selectedType)
+				.collect(Collectors.toList());
+		}
+		return ReviewResponseDTO.from(reviews);
+	}
+
 	public ViewConcertResponseDTO getConcerts(String artist) {
 
 		List<Concert> concerts = concertRepository.findByArtistContaining(artist);
@@ -193,6 +187,9 @@ public class ViewService {
 		if(reviewRepository.existsByUserAndSeatAndConcert(user, seat, concert)) {
 			throw new DuplicateReviewException();
 		}
+
+		seat.increaseReviewCount();
+		seatRepository.save(seat);
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
 	}
@@ -239,8 +236,12 @@ public class ViewService {
 		}
 
 		String photoUrl = review.getPhotoUrl();
+		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
+
+		seat.decreaseReviewCount();
+		seatRepository.save(seat);
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

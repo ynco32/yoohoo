@@ -2,8 +2,11 @@
 import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessagePopup';
 import { useEffect, useState } from 'react';
 import AreaPopup from '@/components/features/ticketing/AreaPopup';
+import TicketingBottomBar from '@/components/ui/TicketingBottomBar';
+import { useRouter } from 'next/navigation';
 
 export default function Real2() {
+  const router = useRouter();
   const [isSecurityMessageOpen, setisSecurityMessageOpen] = useState(false);
   const [isAreaPopupOpen, setIsAreaPopupOpen] = useState(false);
 
@@ -13,6 +16,7 @@ export default function Real2() {
 
   const onMoveClick = () => {
     // 라우터로 구역 세부 페이지로 이동하기
+    router.push('real/seat');
   };
 
   return (
@@ -35,6 +39,7 @@ export default function Real2() {
         onClose={() => setIsAreaPopupOpen(false)}
         onMove={onMoveClick}
       />
+      <TicketingBottomBar isActiive={false} selectedSeat={0} />
     </div>
   );
 }

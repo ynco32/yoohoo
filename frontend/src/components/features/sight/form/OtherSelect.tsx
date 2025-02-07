@@ -27,8 +27,8 @@ const SEAT_DISTANCE_OPTIONS: SeatDistanceStatus[] = [
 const SOUND_OPTIONS: SoundStatus[] = ['나쁨', '보통', '좋음'];
 
 export const OtherSelect = ({
-  seatDistance = '',
-  sound = '',
+  seatDistance,
+  sound,
   onSeatDistanceChange,
   onSoundChange,
   onValidation,

@@ -31,7 +31,10 @@ const config = [
     },
     rules: {
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
       '@next/next/no-html-link-for-pages': 'error',
       '@next/next/no-img-element': 'error',
       'react/no-unescaped-entities': 'off',

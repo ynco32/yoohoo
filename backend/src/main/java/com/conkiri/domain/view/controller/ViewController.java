@@ -17,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
+import com.conkiri.domain.view.dto.response.SeatResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
@@ -45,26 +45,26 @@ public class ViewController {
 	public SectionResponseDTO getSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType) {
-		return viewService.getSectionsByStageType(arenaId, stageType);
+		return viewService.getSections(arenaId, stageType);
 	}
 
 	// 스크랩한 구역 전체 조회 API
 	@GetMapping("/arenas/{arenaId}/scrapped-sections")
-	public ScrapSectionResponseDTO getScrapedSections(
+	public ScrapSectionResponseDTO getScrappedSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return viewService.getScrapedSections(arenaId, stageType, userPrincipal.getUserId());
+		return viewService.getScrappedSections(arenaId, stageType, userPrincipal.getUserId());
 	}
 
-	// 선택한 구역에서 스크랩한 좌석 전체 조회 API
-	@GetMapping("/arenas/{arenaId}/scraps")
-	public ScrapSeatResponseDTO getScraps(
+	// 선택한 구역의 좌석 정보 조회 API
+	@GetMapping("/arenas/{arenaId}")
+	public SeatResponseDTO getSeats(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return viewService.getScrapsBySeat(arenaId, stageType, sectionNumber, userPrincipal.getUserId());
+		return viewService.getSeats(arenaId, stageType, sectionNumber, userPrincipal.getUserId());
 	}
 
 	// 좌석 스크랩 등록 API
@@ -91,9 +91,8 @@ public class ViewController {
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
-		@RequestParam(name = "row", required = false) Long rowLine,
-		@RequestParam(name = "column", required = false) Long columnLine) {
-		return viewService.getReviews(arenaId, stageType, sectionNumber, rowLine, columnLine);
+		@RequestParam(name = "seatId", required = false) Long seatId) {
+		return viewService.getReviews(arenaId, stageType, sectionNumber, seatId);
 	}
 
 	// 가수로 검색된 공연 전체 조회 API

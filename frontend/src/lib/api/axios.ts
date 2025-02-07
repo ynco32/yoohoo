@@ -7,7 +7,7 @@ import axios, {
 } from 'axios';
 
 const BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_URL ?? 'https://i12b207.p.ssafy.io:8080';
+  process.env.NEXT_PUBLIC_API_URL ?? 'https://i12b207.p.ssafy.io';
 const USE_MSW: boolean = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
 const api: AxiosInstance = axios.create({

@@ -84,13 +84,7 @@ export default function ArenaList() {
           setSelectedArenaId(fetchedArenas[0].arenaId);
         }
       } catch (err) {
-        console.error('API 에러 상세 정보:', {
-          name: err.name,
-          message: err.message,
-          stack: err.stack,
-          response: err.response?.data,
-          status: err.response?.status,
-        });
+        console.error('API 에러 상세');
 
         if (err instanceof ApiError) {
           console.log('ApiError 발생:', err.message);

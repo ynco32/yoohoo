@@ -23,8 +23,9 @@ import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
 import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
+import com.conkiri.domain.view.dto.response.SeatDetailResponseDTO;
+import com.conkiri.domain.view.dto.response.SeatResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.entity.Review;
@@ -65,20 +66,20 @@ public class ViewService {
 		return ArenaResponseDTO.from(arenas);
 	}
 
-	public SectionResponseDTO getSectionsByStageType(Long arenaId, Integer stageType) {
+	public SectionResponseDTO getSections(Long arenaId, Integer stageType) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
 		List<Section> sections = sectionRepository.findByArena(arena);
 		return SectionResponseDTO.of(sections, stageType);
 	}
 
-	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long rowLine, Long columnLine) {
+	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long seatId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
 
-		if (rowLine != null && columnLine != null) {
-			Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+		if (seatId != null) {
+			Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 			return getReviewsBySeat(seat, stageType);
 		}
 		return getReviewsBySection(section, stageType);
@@ -111,9 +112,9 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
-	public ScrapSectionResponseDTO getScrapedSections(Long arenaID, Integer stageType, Long userId) {
+	public ScrapSectionResponseDTO getScrappedSections(Long arenaId, Integer stageType, Long userId) {
 
-		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaID);
+		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
 		StageType selectedType = StageType.fromValue(stageType);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
@@ -126,15 +127,21 @@ public class ViewService {
 		return ScrapSectionResponseDTO.from(sections);
 	}
 
-	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
+	public SeatResponseDTO getSeats(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		StageType selectedType = StageType.fromValue(stageType);
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
+		StageType selectedType = StageType.fromValue(stageType);
 
-		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section(user, selectedType, section);
-		return ScrapSeatResponseDTO.from(scraps);
+		List<Seat> seats = seatRepository.findBySection(section);
+
+		return SeatResponseDTO.from(seats.stream()
+			.map(seat -> {
+				boolean isScrapped = scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType);
+				return SeatDetailResponseDTO.of(seat, isScrapped);
+			})
+			.collect(Collectors.toList()));
 	}
 
 	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {

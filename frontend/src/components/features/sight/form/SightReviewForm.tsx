@@ -10,7 +10,8 @@ import { OtherSelect } from './OtherSelect';
 import { CommentInput } from './CommentInput';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
-import { SeatInfo, SightReviewFormData } from '@/types/sightReviews';
+import { SightReviewFormData } from '@/types/sightReviews';
+import { ValidationState } from '@/types/validation';
 
 interface SightReviewFormProps {
   onSubmit?: (data: SightReviewFormData) => Promise<{ id: string }>;
@@ -26,71 +27,95 @@ export const SightReviewForm = React.memo(
     const isSubmitting = useSightReviewStore((state) => state.isSubmitting);
     const setFormField = useSightReviewStore((state) => state.setFormField);
     const setError = useSightReviewStore((state) => state.setError);
+    const setValidation = useSightReviewStore((state) => state.setValidation);
     const setIsSubmitting = useSightReviewStore(
       (state) => state.setIsSubmitting
     );
+    const clearErrors = useSightReviewStore((state) => state.clearErrors);
+    const isFormValid = useSightReviewStore((state) => state.isFormValid);
 
-    // 검증 콜백들을 useCallback으로 메모이제이션
+    // Validation 상태를 담을 ref 객체
+    const pendingValidation = React.useRef<{
+      field: string;
+      isValid: boolean;
+      error?: string;
+    } | null>(null);
+
+    // validation 상태 업데이트를 처리하는 useEffect
+    React.useEffect(() => {
+      if (pendingValidation.current) {
+        const { field, isValid, error } = pendingValidation.current;
+        setValidation(field as keyof ValidationState, isValid);
+        setError(field, isValid ? undefined : error);
+        pendingValidation.current = null;
+      }
+    }, [setValidation, setError]);
+
+    // validation 콜백들
     const handleConcertValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setError('concertId', result.isValid ? undefined : result.error);
+        pendingValidation.current = {
+          field: 'concertId',
+          isValid: result.isValid,
+          error: result.error,
+        };
       },
-      [setError]
+      []
     );
 
-    const handleImageValidation = React.useCallback(
-      (isValid: boolean) => {
-        setError('images', isValid ? undefined : '이미지를 업로드해주세요');
-      },
-      [setError]
-    );
+    const handleImageValidation = React.useCallback((isValid: boolean) => {
+      pendingValidation.current = {
+        field: 'images',
+        isValid,
+        error: isValid ? undefined : '이미지를 업로드해주세요',
+      };
+    }, []);
 
     const handleViewScoreValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setError('viewScore', result.isValid ? undefined : result.error);
+        pendingValidation.current = {
+          field: 'viewScore',
+          isValid: result.isValid,
+          error: result.error,
+        };
       },
-      [setError]
+      []
     );
 
     const handleSeatValidation = React.useCallback(
-      (_result: { isValid: boolean; error?: string }) => {
-        // 좌석 검증 로직 추가
+      (result: { isValid: boolean; error?: string }) => {
+        pendingValidation.current = {
+          field: 'seat',
+          isValid: result.isValid,
+          error: result.error,
+        };
       },
       []
     );
 
     const handleOtherValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setError('seatDistance', result.isValid ? undefined : result.error);
+        pendingValidation.current = {
+          field: 'seatDistance',
+          isValid: result.isValid,
+          error: result.error,
+        };
       },
-      [setError]
+      []
     );
 
     const handleCommentValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setError('content', result.isValid ? undefined : result.error);
+        pendingValidation.current = {
+          field: 'content',
+          isValid: result.isValid,
+          error: result.error,
+        };
       },
-      [setError]
+      []
     );
 
-    // 이미지 업로드 핸들러
-    const handleImageChange = React.useCallback(
-      (file: File | undefined) => {
-        setFormField('images', file ? [file] : []);
-      },
-      [setFormField]
-    );
-
-    // 좌석 선택 핸들러
-    const handleSeatChange = React.useCallback(
-      (seatInfo: SeatInfo) => {
-        setFormField('section', seatInfo.section ?? 0);
-        setFormField('rowLine', seatInfo.rowLine ?? 0);
-        setFormField('columnLine', seatInfo.columnLine ?? 0);
-      },
-      [setFormField]
-    );
-
+    // Form submission handler
     const handleSubmit = React.useCallback(
       async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -105,20 +130,49 @@ export const SightReviewForm = React.memo(
           return;
         }
 
+        clearErrors();
+
+        if (!isFormValid()) {
+          console.log('❌ 폼 검증 실패');
+          return;
+        }
+
         if (onSubmit) {
           try {
             setIsSubmitting(true);
             const result = await onSubmit(formData);
+
+            const successMessage = document.createElement('div');
+            successMessage.className =
+              'fixed bottom-4 right-4 bg-status-success text-white px-4 py-2 rounded-lg shadow-lg';
+            successMessage.textContent = '리뷰가 성공적으로 등록되었습니다!';
+            document.body.appendChild(successMessage);
+
+            setTimeout(() => {
+              document.body.removeChild(successMessage);
+            }, 3000);
+
             router.push(`/reviews/${result.id}`);
           } catch (error) {
-            setError('submit', '제출 중 오류가 발생했습니다.');
-            console.log(error);
+            console.error('Submit error:', error);
+            setError(
+              'submit',
+              '제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+            );
           } finally {
             setIsSubmitting(false);
           }
         }
       },
-      [formData, onSubmit, router, setError, setIsSubmitting]
+      [
+        clearErrors,
+        formData,
+        isFormValid,
+        onSubmit,
+        router,
+        setError,
+        setIsSubmitting,
+      ]
     );
 
     return (
@@ -137,61 +191,91 @@ export const SightReviewForm = React.memo(
         <ConcertSelect
           artist={artist}
           value={formData.concertId}
-          onChange={(concertId) => setFormField('concertId', Number(concertId))}
+          onChange={(concertId) => {
+            setFormField('concertId', Number(concertId));
+          }}
           onValidation={handleConcertValidation}
         />
         {errors.concertId && (
           <p className="mt-1 text-sm text-status-warning">{errors.concertId}</p>
         )}
+
         <SeatSelect
           value={{
             section: formData.section || null,
             rowLine: formData.rowLine || null,
             columnLine: formData.columnLine || null,
           }}
-          onChange={handleSeatChange}
+          onChange={(seatInfo) => {
+            setFormField('section', seatInfo.section ?? 0);
+            setFormField('rowLine', seatInfo.rowLine ?? 0);
+            setFormField('columnLine', seatInfo.columnLine ?? 0);
+          }}
           onValidation={handleSeatValidation}
         />
+        {errors.seat && (
+          <p className="mt-1 text-sm text-status-warning">{errors.seat}</p>
+        )}
+
         <div className="space-y-2">
           <FormSectionHeader
             title="사진"
             description="시야를 촬영한 사진을 업로드해주세요"
           />
           <div className="flex gap-4">
-            {[0].map((index) => (
-              <ImageUpload
-                key={index}
-                value={formData.images[0]}
-                onChange={handleImageChange}
-                required
-                error={errors.images?.toString()}
-                onValidationChange={handleImageValidation}
-              />
-            ))}
+            <ImageUpload
+              value={formData.images[0]}
+              onChange={(file) => {
+                setFormField('images', file ? [file] : []);
+              }}
+              required
+              error={errors.images?.toString()}
+              onValidationChange={handleImageValidation}
+            />
           </div>
         </div>
+
         <ViewScoreSelect
           value={formData.viewScore}
-          onChange={(viewScore) => setFormField('viewScore', viewScore)}
+          onChange={(viewScore) => {
+            setFormField('viewScore', viewScore);
+          }}
           onValidation={handleViewScoreValidation}
         />
+        {errors.viewScore && (
+          <p className="mt-1 text-sm text-status-warning">{errors.viewScore}</p>
+        )}
+
         <OtherSelect
           seatDistance={formData.seatDistance}
           sound={formData.sound}
-          onSeatDistanceChange={(seatDistance) =>
-            setFormField('seatDistance', seatDistance)
-          }
+          onSeatDistanceChange={(seatDistance) => {
+            setFormField('seatDistance', seatDistance);
+          }}
           onSoundChange={(sound) => setFormField('sound', sound)}
           onValidation={handleOtherValidation}
         />
+        {errors.seatDistance && (
+          <p className="mt-1 text-sm text-status-warning">
+            {errors.seatDistance}
+          </p>
+        )}
+
         <CommentInput
           value={formData.content}
-          onChange={(content) => setFormField('content', content)}
+          onChange={(content) => {
+            setFormField('content', content);
+          }}
           onValidation={handleCommentValidation}
         />
+        {errors.content && (
+          <p className="mt-1 text-sm text-status-warning">{errors.content}</p>
+        )}
+
         {errors.submit && (
           <p className="text-sm text-status-warning">{errors.submit}</p>
         )}
+
         <button
           type="submit"
           disabled={isSubmitting}

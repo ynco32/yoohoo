@@ -15,6 +15,22 @@ const api: AxiosInstance = axios.create({
   withCredentials: !USE_MSW,
 });
 
+// 환경 변수 체크 로직 추가
+if (process.env.NEXT_PUBLIC_API_URL == null) {
+  console.warn('⚠️ Warning: NEXT_PUBLIC_API_URL is not set in .env.local');
+}
+
+if (process.env.NEXT_PUBLIC_USE_MSW === undefined) {
+  console.warn('⚠️ Warning: NEXT_PUBLIC_USE_MSW is not set in .env.local');
+}
+
+// 설정 디버깅 로그 추가
+console.log('API 설정:', {
+  baseURL: USE_MSW ? '/' : BASE_URL,
+  withCredentials: !USE_MSW,
+  useMSW: USE_MSW,
+});
+
 // 모든 요청 보내기 전에 실행
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   console.log('axios api 요청 전 확인 출력');
@@ -22,6 +38,8 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     .split('; ')
     .find((row) => row.startsWith('access_token='))
     ?.split('=')[1];
+
+  console.log('토큰 존재 여부:', !(token == null)); // 추가
 
   if (token != null) {
     config.headers.Authorization = `Bearer ${token}`;

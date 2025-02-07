@@ -8,6 +8,9 @@ export interface SharingListProps {
   posts: SharingPost[];
   onMount?: () => void; // 컴포넌트가 마운트될 때 호출될 함수
   concertId: number;
+  isLoading: boolean;
+  hasMore: boolean;
+  onLoadMore: () => Promise<void>;
 }
 
 /**

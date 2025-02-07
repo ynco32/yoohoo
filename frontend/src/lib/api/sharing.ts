@@ -52,4 +52,26 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+
+  getAllSharings: async (concertId: number): Promise<SharingResponse> => {
+    try {
+      const response = await api.get<SharingResponse>(
+        `/api/v1/sharing/${concertId}`
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          console.error('Authentication error:', error.response.data);
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ??
+            '나눔 게시글을 불러오는데 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
 };

@@ -9,23 +9,8 @@ import ViewScoreSelect from './ViewScoreSelect';
 import { OtherSelect } from './OtherSelect';
 import { CommentInput } from './CommentInput';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
-
-type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-type SoundStatus = '나쁨' | '보통' | '좋음';
-
-interface SightReviewFormData {
-  section: number;
-  rowLine: number;
-  columnLine: number;
-  concertId: number;
-  images: File[];
-  content: string;
-  viewScore: number;
-  seatDistance: SeatDistanceStatus;
-  sound: SoundStatus;
-}
-
-type FormErrors = Partial<Record<keyof SightReviewFormData | 'submit', string>>;
+import { useSightReviewStore } from '@/store/useSightReviewStore';
+import { SeatInfo, SightReviewFormData } from '@/types/sightReviews';
 
 interface SightReviewFormProps {
   onSubmit?: (data: SightReviewFormData) => Promise<{ id: string }>;
@@ -36,107 +21,75 @@ interface SightReviewFormProps {
 export const SightReviewForm = React.memo(
   ({ onSubmit, artist, className = '' }: SightReviewFormProps) => {
     const router = useRouter();
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [formData, setFormData] = React.useState<SightReviewFormData>({
-      section: 0,
-      rowLine: 0,
-      columnLine: 0,
-      concertId: 0,
-      content: '',
-      images: [],
-      viewScore: 0,
-      seatDistance: '평범해요',
-      sound: '보통',
-    });
-    const [errors, setErrors] = React.useState<FormErrors>({});
+    const formData = useSightReviewStore((state) => state.formData);
+    const errors = useSightReviewStore((state) => state.errors);
+    const isSubmitting = useSightReviewStore((state) => state.isSubmitting);
+    const setFormField = useSightReviewStore((state) => state.setFormField);
+    const setError = useSightReviewStore((state) => state.setError);
+    const setIsSubmitting = useSightReviewStore(
+      (state) => state.setIsSubmitting
+    );
 
-    // 콜백 함수들을 useCallback으로 메모이제이션
+    // 검증 콜백들을 useCallback으로 메모이제이션
     const handleConcertValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setErrors((prev) => ({
-          ...prev,
-          concertId: result.isValid ? undefined : result.error,
-        }));
+        setError('concertId', result.isValid ? undefined : result.error);
       },
-      []
+      [setError]
     );
 
-    const handleSeatValidation = React.useCallback(
-      (result: { isValid: boolean; error?: string }) => {
-        console.log(result);
+    const handleImageValidation = React.useCallback(
+      (isValid: boolean) => {
+        setError('images', isValid ? undefined : '이미지를 업로드해주세요');
       },
-      []
+      [setError]
     );
-
-    const handleImageValidation = React.useCallback((isValid: boolean) => {
-      setErrors((prev) => ({
-        ...prev,
-        images: isValid ? undefined : '이미지를 업로드해주세요',
-      }));
-    }, []);
 
     const handleViewScoreValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setErrors((prev) => ({
-          ...prev,
-          viewScore: result.isValid ? undefined : result.error,
-        }));
+        setError('viewScore', result.isValid ? undefined : result.error);
+      },
+      [setError]
+    );
+
+    const handleSeatValidation = React.useCallback(
+      (_result: { isValid: boolean; error?: string }) => {
+        // 좌석 검증 로직 추가
       },
       []
     );
 
     const handleOtherValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setErrors((prev) => ({
-          ...prev,
-          seatDistance: result.isValid ? undefined : result.error,
-        }));
+        setError('seatDistance', result.isValid ? undefined : result.error);
       },
-      []
+      [setError]
     );
 
     const handleCommentValidation = React.useCallback(
       (result: { isValid: boolean; error?: string }) => {
-        setErrors((prev) => ({
-          ...prev,
-          content: result.isValid ? undefined : result.error,
-        }));
+        setError('content', result.isValid ? undefined : result.error);
       },
-      []
+      [setError]
     );
 
-    // 폼 데이터 업데이트 핸들러들을 useCallback으로 메모이제이션
-    const handleConcertChange = React.useCallback((concertId: number) => {
-      setFormData((prev) => ({ ...prev, concertId: Number(concertId) }));
-    }, []);
+    // 이미지 업로드 핸들러
+    const handleImageChange = React.useCallback(
+      (file: File | undefined) => {
+        setFormField('images', file ? [file] : []);
+      },
+      [setFormField]
+    );
 
+    // 좌석 선택 핸들러
     const handleSeatChange = React.useCallback(
-      (seatData: {
-        section?: number;
-        rowLine?: number;
-        columnLine?: number;
-      }) => {
-        setFormData((prev) => ({
-          ...prev,
-          section: seatData.section ?? prev.section,
-          rowLine: seatData.rowLine ?? prev.rowLine,
-          columnLine: seatData.columnLine ?? prev.columnLine,
-        }));
+      (seatInfo: SeatInfo) => {
+        setFormField('section', seatInfo.section ?? 0);
+        setFormField('rowLine', seatInfo.rowLine ?? 0);
+        setFormField('columnLine', seatInfo.columnLine ?? 0);
       },
-      []
+      [setFormField]
     );
-
-    const handleImageChange = React.useCallback((file: File | null) => {
-      setFormData((prev) => {
-        const newImages = [...prev.images];
-        if (file) {
-          newImages[0] = file;
-        } else {
-          newImages.splice(0, 1);
-        }
-        return { ...prev, images: newImages };
-      });
-    }, []);
 
     const handleSubmit = React.useCallback(
       async (e: React.FormEvent<HTMLFormElement>) => {
@@ -152,17 +105,21 @@ export const SightReviewForm = React.memo(
           return;
         }
 
-        // 여기에 제출 로직 추가
+        if (onSubmit) {
+          try {
+            setIsSubmitting(true);
+            const result = await onSubmit(formData);
+            router.push(`/reviews/${result.id}`);
+          } catch (error) {
+            setError('submit', '제출 중 오류가 발생했습니다.');
+            console.log(error);
+          } finally {
+            setIsSubmitting(false);
+          }
+        }
       },
-      []
+      [formData, onSubmit, router, setError, setIsSubmitting]
     );
-
-    // formData 디버깅을 위한 useEffect는 개발 환경에서만 실행
-    if (process.env.NODE_ENV === 'development') {
-      React.useEffect(() => {
-        console.log('FormData 변경됨:', formData);
-      }, [formData]);
-    }
 
     return (
       <form
@@ -180,17 +137,17 @@ export const SightReviewForm = React.memo(
         <ConcertSelect
           artist={artist}
           value={formData.concertId}
-          onChange={handleConcertChange}
+          onChange={(concertId) => setFormField('concertId', Number(concertId))}
           onValidation={handleConcertValidation}
         />
-        {errors.concertId != null && (
+        {errors.concertId && (
           <p className="mt-1 text-sm text-status-warning">{errors.concertId}</p>
         )}
         <SeatSelect
           value={{
-            section: formData.section,
-            rowLine: formData.rowLine,
-            columnLine: formData.columnLine,
+            section: formData.section || null,
+            rowLine: formData.rowLine || null,
+            columnLine: formData.columnLine || null,
           }}
           onChange={handleSeatChange}
           onValidation={handleSeatValidation}
@@ -215,23 +172,21 @@ export const SightReviewForm = React.memo(
         </div>
         <ViewScoreSelect
           value={formData.viewScore}
-          onChange={(viewScore) =>
-            setFormData((prev) => ({ ...prev, viewScore }))
-          }
+          onChange={(viewScore) => setFormField('viewScore', viewScore)}
           onValidation={handleViewScoreValidation}
         />
         <OtherSelect
           seatDistance={formData.seatDistance}
           sound={formData.sound}
           onSeatDistanceChange={(seatDistance) =>
-            setFormData((prev) => ({ ...prev, seatDistance }))
+            setFormField('seatDistance', seatDistance)
           }
-          onSoundChange={(sound) => setFormData((prev) => ({ ...prev, sound }))}
+          onSoundChange={(sound) => setFormField('sound', sound)}
           onValidation={handleOtherValidation}
         />
         <CommentInput
           value={formData.content}
-          onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+          onChange={(content) => setFormField('content', content)}
           onValidation={handleCommentValidation}
         />
         {errors.submit && (

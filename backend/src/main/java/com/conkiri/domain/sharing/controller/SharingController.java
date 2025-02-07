@@ -209,7 +209,7 @@ public class SharingController {
 	 * @return
 	 */
 	@GetMapping("/scrap/{concertId}")
-	public SharingResponseDTO getScrapedSharing(
+	public SharingResponseDTO getScrappedSharing(
 		@PathVariable("concertId") Long concertId,
 		@RequestParam(value = "last", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {

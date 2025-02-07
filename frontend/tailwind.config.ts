@@ -24,6 +24,8 @@ module.exports = {
           'radial-gradient(50% 100% at 100% 50%, #E0F5FF 0%, #FFF 93.5%)',
         'sight-main-gra':
           'linear-gradient(180deg, #FFF 33.04%, #DBEEFD 52.81%, #BAE4FD 88.73%)',
+        'gradient-radial':
+          'radial-gradient(closest-side, var(--tw-gradient-stops))',
       },
       borderRadius: {
         menu: '12.273px',

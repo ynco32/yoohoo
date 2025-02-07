@@ -139,7 +139,7 @@ public class ViewService {
 		return SeatResponseDTO.from(seats.stream()
 			.map(seat -> {
 				boolean isScrapped = scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType);
-				return SeatDetailResponseDTO.of(seat, isScrapped);
+				return SeatDetailResponseDTO.of(seat, section.getSectionNumber(), isScrapped);
 			})
 			.collect(Collectors.toList()));
 	}

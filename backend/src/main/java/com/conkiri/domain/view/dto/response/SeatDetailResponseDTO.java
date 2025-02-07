@@ -17,14 +17,16 @@ public class SeatDetailResponseDTO {
 	private Long rowLine;
 	private Long columnLine;
 	private Long reviewCount;
+	private Long sectionNumber;
 	private boolean isScrapped;
 
-	public static SeatDetailResponseDTO of(Seat seat, Boolean isScrapped) {
+	public static SeatDetailResponseDTO of(Seat seat, Long sectionNumber, Boolean isScrapped) {
 		return SeatDetailResponseDTO.builder()
 			.seatId(seat.getSeatId())
 			.rowLine(seat.getRowLine())
 			.columnLine(seat.getColumnLine())
 			.reviewCount(seat.getReviewCount())
+			.sectionNumber(sectionNumber)
 			.isScrapped(isScrapped)
 			.build();
 	}

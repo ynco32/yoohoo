@@ -1,15 +1,10 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface Concert {
   concertId: number;
   label: string;
   artist: string;
-}
-
-interface ValidationResult {
-  isValid: boolean;
-  error?: string;
 }
 
 interface SelectProps {
@@ -72,7 +67,7 @@ interface ConcertSelectProps {
   artist?: string;
   value: number | null;
   onChange: (value: number) => void;
-  onValidation: (result: ValidationResult) => void;
+  error?: string;
   className?: string;
 }
 
@@ -80,35 +75,9 @@ export const ConcertSelect = ({
   artist,
   value = null,
   onChange,
-  onValidation,
+  error,
   className = '',
 }: ConcertSelectProps) => {
-  const validate = (): ValidationResult => {
-    console.log('=== ConcertSelect validation 실행 ===');
-    if (value === null) {
-      console.log('❌ 콘서트 선택 누락');
-      return {
-        isValid: false,
-        error: '콘서트를 선택해주세요',
-      };
-    }
-    console.log('✅ validation 성공');
-    return { isValid: true };
-  };
-
-  // 값이 변경될 때마다 validation 실행
-  useEffect(() => {
-    const validationResult = validate();
-    if (!validationResult.isValid) {
-      console.log('Validation Error:', validationResult.error);
-    }
-    onValidation(validationResult);
-  }, [value]);
-
-  const handleChange = (newValue: number) => {
-    onChange(newValue);
-  };
-
   const concerts: Concert[] = [
     { concertId: 1, label: 'WORLD TOUR [BORN PINK]', artist: 'BLACKPINK' },
     { concertId: 2, label: '5TH WORLD TOUR', artist: 'TWICE' },
@@ -135,16 +104,14 @@ export const ConcertSelect = ({
       <Select
         options={filteredConcerts}
         value={value}
-        onChange={handleChange}
+        onChange={onChange}
         placeholder={
           artist != null
             ? `${artist}의 콘서트를 선택해주세요`
             : '콘서트를 선택해주세요'
         }
       />
-      {!validate().isValid && (
-        <p className="mt-1 text-sm text-status-warning">{validate().error}</p>
-      )}
+      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
     </div>
   );
 };

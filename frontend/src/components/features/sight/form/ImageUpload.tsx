@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -6,39 +6,20 @@ interface ImageUploadProps {
   value?: File;
   onChange?: (file: File | undefined) => void;
   className?: string;
-  required?: boolean;
   error?: string;
-  onValidationChange?: (isValid: boolean) => void;
 }
 
 export const ImageUpload = ({
   onChange,
   className = '',
-  required = false,
-  error: externalError,
-  onValidationChange,
+  error,
 }: ImageUploadProps) => {
   const [preview, setPreview] = useState<string>();
-  const [error, setError] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const validate = (file?: File) => {
-    if (required && !file) {
-      setError('이미지를 업로드해주세요');
-      onValidationChange?.(false);
-      return false;
-    }
-    setError(undefined);
-    onValidationChange?.(true);
-    return true;
-  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const isValid = validate(file);
-    if (!isValid) return;
 
     onChange?.(file);
     const reader = new FileReader();
@@ -59,11 +40,7 @@ export const ImageUpload = ({
     if (inputRef.current) {
       inputRef.current.value = '';
     }
-    validate(undefined);
   };
-
-  // Use external error if provided, otherwise use internal error
-  const displayError = externalError != null || error;
 
   return (
     <div className={className}>
@@ -80,7 +57,7 @@ export const ImageUpload = ({
             type="button"
             onClick={handleClick}
             className={`relative flex h-24 w-32 items-center justify-center rounded-lg transition-colors ${
-              displayError
+              error
                 ? 'border-2 border-red-500 bg-red-50 hover:bg-red-100'
                 : 'bg-gray-50 hover:bg-gray-100'
             }`}
@@ -98,7 +75,7 @@ export const ImageUpload = ({
               </div>
             ) : (
               <CameraIcon
-                className={`h-6 w-6 ${displayError ? 'text-red-400' : 'text-gray-400'}`}
+                className={`h-6 w-6 ${error ? 'text-red-400' : 'text-gray-400'}`}
               />
             )}
           </button>
@@ -112,10 +89,8 @@ export const ImageUpload = ({
             </div>
           )}
         </div>
-        {displayError && <p className="text-sm text-red-500">{displayError}</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
     </div>
   );
 };
-
-export default ImageUpload;

@@ -95,59 +95,62 @@ export const SightReviewForm = React.memo(
       switch (currentStep) {
         case 0:
           return (
-            <ConcertSelect
-              artist={artist}
-              value={formData.concertId}
-              onChange={(concertId) =>
-                handleFieldChange('concertId', Number(concertId))
-              }
-              error={errors.concertId}
-            />
+            <>
+              <ConcertSelect
+                artist={artist}
+                value={formData.concertId}
+                onChange={(concertId) =>
+                  handleFieldChange('concertId', Number(concertId))
+                }
+                error={errors.concertId}
+              />
+              <SeatSelect
+                value={{
+                  section: formData.section || null,
+                  rowLine: formData.rowLine || null,
+                  columnLine: formData.columnLine || null,
+                }}
+                onChange={(seatInfo) => {
+                  handleFieldChange('section', seatInfo.section ?? 0);
+                  handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
+                  handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
+                }}
+                error={errors.seat}
+              />
+            </>
           );
         case 1:
           return (
-            <SeatSelect
-              value={{
-                section: formData.section || null,
-                rowLine: formData.rowLine || null,
-                columnLine: formData.columnLine || null,
-              }}
-              onChange={(seatInfo) => {
-                handleFieldChange('section', seatInfo.section ?? 0);
-                handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
-                handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
-              }}
-              error={errors.seat}
-            />
+            <>
+              <div className="space-y-2">
+                <FormSectionHeader
+                  title="사진"
+                  description="시야를 촬영한 사진을 업로드해주세요"
+                />
+                <div className="flex gap-4">
+                  <ImageUpload
+                    value={formData.images[0]}
+                    onChange={(file) =>
+                      handleFieldChange('images', file ? [file] : [])
+                    }
+                    error={errors.images?.toString()}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ViewScoreSelect
+                    value={formData.viewScore}
+                    onChange={(viewScore) =>
+                      handleFieldChange('viewScore', viewScore)
+                    }
+                    error={errors.viewScore}
+                  />
+                </div>
+              </div>
+            </>
           );
         case 2:
           return (
-            <div className="space-y-2">
-              <FormSectionHeader
-                title="사진"
-                description="시야를 촬영한 사진을 업로드해주세요"
-              />
-              <div className="flex gap-4">
-                <ImageUpload
-                  value={formData.images[0]}
-                  onChange={(file) =>
-                    handleFieldChange('images', file ? [file] : [])
-                  }
-                  error={errors.images?.toString()}
-                />
-              </div>
-            </div>
-          );
-        case 3:
-          return (
-            <div className="space-y-8">
-              <ViewScoreSelect
-                value={formData.viewScore}
-                onChange={(viewScore) =>
-                  handleFieldChange('viewScore', viewScore)
-                }
-                error={errors.viewScore}
-              />
+            <>
               <OtherSelect
                 seatDistance={formData.seatDistance}
                 sound={formData.sound}
@@ -157,15 +160,12 @@ export const SightReviewForm = React.memo(
                 onSoundChange={(sound) => handleFieldChange('sound', sound)}
                 error={errors.seatDistance}
               />
-            </div>
-          );
-        case 4:
-          return (
-            <CommentInput
-              value={formData.content}
-              onChange={(content) => handleFieldChange('content', content)}
-              error={errors.content}
-            />
+              <CommentInput
+                value={formData.content}
+                onChange={(content) => handleFieldChange('content', content)}
+                error={errors.content}
+              />
+            </>
           );
       }
     };

@@ -2,11 +2,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { SightReviewFormData } from '@/types/sightReviews';
 
 export const STEPS = [
-  { id: 'concert', title: '공연 선택' },
-  { id: 'seat', title: '좌석 정보' },
-  { id: 'photos', title: '사진 업로드' },
-  { id: 'rating', title: '평가' },
-  { id: 'comment', title: '코멘트' },
+  { id: 'concertInfo', title: '정보 입력력' },
+  { id: 'reviweSight', title: '리뷰 입력 - 시야' },
+  { id: 'reviewOthers', title: '리뷰 입력 - 그 외' },
 ] as const;
 
 export type StepId = (typeof STEPS)[number]['id'];
@@ -21,20 +19,19 @@ export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
   const checkStepValidity = useCallback(
     (stepId: StepId): boolean => {
       switch (stepId) {
-        case 'concert':
-          return formData.concertId > 0;
-        case 'seat':
+        case 'concertInfo':
           return (
+            formData.concertId > 0 &&
             formData.section > 0 &&
             formData.rowLine > 0 &&
             formData.columnLine > 0
           );
-        case 'photos':
-          return formData.images.length > 0;
-        case 'rating':
-          return formData.viewScore > 0 && formData.seatDistance.length > 0;
-        case 'comment':
-          return formData.content.length >= 10;
+        case 'reviweSight':
+          return formData.images.length > 0 && formData.viewScore > 0;
+        case 'reviewOthers':
+          return (
+            formData.seatDistance.length > 0 && formData.content.length >= 10
+          );
         default:
           return false;
       }

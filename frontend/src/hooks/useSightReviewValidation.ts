@@ -19,7 +19,7 @@ export const useSightReviewValidation = ({
   const validateStep = useCallback(
     (stepId: StepId) => {
       switch (stepId) {
-        case 'concert':
+        case 'concertInfo':
           const isConcertValid = formData.concertId > 0;
           setValidation('concertId', isConcertValid);
           if (!isConcertValid && touched.concertId) {
@@ -27,9 +27,7 @@ export const useSightReviewValidation = ({
           } else {
             setError('concertId', undefined);
           }
-          return isConcertValid;
 
-        case 'seat':
           const isSeatValid =
             formData.section > 0 &&
             formData.rowLine > 0 &&
@@ -40,9 +38,9 @@ export const useSightReviewValidation = ({
           } else {
             setError('seat', undefined);
           }
-          return isSeatValid;
+          return isConcertValid && isSeatValid;
 
-        case 'photos':
+        case 'reviweSight':
           const isPhotosValid = formData.images.length > 0;
           setValidation('images', isPhotosValid);
           if (!isPhotosValid && touched.images) {
@@ -50,28 +48,25 @@ export const useSightReviewValidation = ({
           } else {
             setError('images', undefined);
           }
-          return isPhotosValid;
-
-        case 'rating':
           const isViewScoreValid = formData.viewScore > 0;
-          const isSeatDistanceValid = formData.seatDistance.length > 0;
           setValidation('viewScore', isViewScoreValid);
-          setValidation('seatDistance', isSeatDistanceValid);
-
           if (!isViewScoreValid && touched.viewScore) {
             setError('viewScore', '시야 점수를 선택해주세요');
           } else {
             setError('viewScore', undefined);
           }
+          return isPhotosValid && isViewScoreValid;
+        case 'reviewOthers':
+          const isSeatDistanceValid = formData.seatDistance.length > 0;
+
+          setValidation('seatDistance', isSeatDistanceValid);
 
           if (!isSeatDistanceValid && touched.seatDistance) {
             setError('seatDistance', '좌석 간격을 선택해주세요');
           } else {
             setError('seatDistance', undefined);
           }
-          return isViewScoreValid && isSeatDistanceValid;
 
-        case 'comment':
           const isCommentValid = formData.content.length >= 10;
           setValidation('content', isCommentValid);
           if (!isCommentValid && touched.content) {
@@ -79,7 +74,7 @@ export const useSightReviewValidation = ({
           } else {
             setError('content', undefined);
           }
-          return isCommentValid;
+          return isSeatDistanceValid && isCommentValid;
 
         default:
           return false;

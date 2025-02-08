@@ -9,10 +9,10 @@ interface ViewScoreSelectProps {
 }
 
 export const ViewScoreSelect = ({
-  value = 0,
+  value,
   onChange,
   error,
-  className = '',
+  className,
 }: ViewScoreSelectProps) => {
   const circles = [
     { size: 'w-4 h-4', value: 0 },

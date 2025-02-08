@@ -1,4 +1,3 @@
-// SeatSelect.tsx
 import React from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
@@ -21,13 +20,13 @@ const SeatNumberInput = ({
   onChange,
 }: {
   label: string;
-  value?: string;
+  value?: number | null;
   onChange?: (value: string) => void;
 }) => (
   <div className="w-20">
     <input
       type="number"
-      value={value === '0' ? '' : value}
+      value={value?.toString() || ''}
       onChange={(e) => {
         const newValue = e.target.value;
         if (newValue === '' || parseInt(newValue) >= 0) {
@@ -75,17 +74,17 @@ export const SeatSelect = ({
       <div className="flex items-end space-x-4">
         <SeatNumberInput
           label="구역"
-          value={value.section?.toString()}
+          value={value.section}
           onChange={handleSectionChange}
         />
         <SeatNumberInput
           label="열"
-          value={value.rowLine?.toString()}
+          value={value.rowLine}
           onChange={handleRowChange}
         />
         <SeatNumberInput
           label="번"
-          value={value.columnLine?.toString()}
+          value={value.columnLine}
           onChange={handleNumberChange}
         />
       </div>

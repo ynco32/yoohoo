@@ -9,7 +9,7 @@ import { ViewScoreSelect } from './ViewScoreSelect';
 import { OtherSelect } from './OtherSelect';
 import { CommentInput } from './CommentInput';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
-import { useSightReviewStore } from '@/store/useSightReviewStore';
+import { useSightReviewStore, ValidFields } from '@/store/useSightReviewStore';
 import { SightReviewFormData } from '@/types/sightReviews';
 
 interface SightReviewFormProps {
@@ -37,11 +37,12 @@ export const SightReviewForm = React.memo(
       formData,
       errors,
       isSubmitting,
-      validation,
+      touched,
       setFormField,
       setError,
       setIsSubmitting,
       setValidation,
+      setTouched,
       clearErrors,
       isFormValid,
     } = useSightReviewStore();
@@ -74,7 +75,7 @@ export const SightReviewForm = React.memo(
         switch (stepId) {
           case 'concert':
             setValidation('concertId', isValid);
-            if (!isValid) {
+            if (!isValid && touched.concertId) {
               setError('concertId', '공연을 선택해주세요');
             } else {
               setError('concertId', undefined);
@@ -82,7 +83,7 @@ export const SightReviewForm = React.memo(
             break;
           case 'seat':
             setValidation('seat', isValid);
-            if (!isValid) {
+            if (!isValid && touched.seat) {
               setError('seat', '좌석 정보를 모두 입력해주세요');
             } else {
               setError('seat', undefined);
@@ -90,7 +91,7 @@ export const SightReviewForm = React.memo(
             break;
           case 'photos':
             setValidation('images', isValid);
-            if (!isValid) {
+            if (!isValid && touched.images) {
               setError('images', '이미지를 업로드해주세요');
             } else {
               setError('images', undefined);
@@ -102,13 +103,13 @@ export const SightReviewForm = React.memo(
             setValidation('viewScore', isViewScoreValid);
             setValidation('seatDistance', isSeatDistanceValid);
 
-            if (!isViewScoreValid) {
+            if (!isViewScoreValid && touched.viewScore) {
               setError('viewScore', '시야 점수를 선택해주세요');
             } else {
               setError('viewScore', undefined);
             }
 
-            if (!isSeatDistanceValid) {
+            if (!isSeatDistanceValid && touched.seatDistance) {
               setError('seatDistance', '좌석 간격을 선택해주세요');
             } else {
               setError('seatDistance', undefined);
@@ -116,7 +117,7 @@ export const SightReviewForm = React.memo(
             break;
           case 'comment':
             setValidation('content', isValid);
-            if (!isValid) {
+            if (!isValid && touched.content) {
               setError('content', '최소 10자 이상 입력해주세요');
             } else {
               setError('content', undefined);
@@ -126,7 +127,7 @@ export const SightReviewForm = React.memo(
 
         return isValid;
       },
-      [formData, setValidation, setError]
+      [formData, setValidation, setError, touched]
     );
 
     // 필드 변경 시 유효성 검사를 useEffect로 이동
@@ -134,11 +135,37 @@ export const SightReviewForm = React.memo(
       validateStep(STEPS[currentStep].id);
     }, [formData, currentStep, validateStep]);
 
+    const getValidationField = (
+      field: keyof SightReviewFormData
+    ): ValidFields | null => {
+      if (
+        field === 'concertId' ||
+        field === 'images' ||
+        field === 'viewScore' ||
+        field === 'seatDistance' ||
+        field === 'content'
+      ) {
+        return field as ValidFields;
+      }
+      if (
+        field === 'section' ||
+        field === 'rowLine' ||
+        field === 'columnLine'
+      ) {
+        return 'seat';
+      }
+      return null;
+    };
+
     const handleFieldChange = <K extends keyof SightReviewFormData>(
       field: K,
       value: SightReviewFormData[K]
     ) => {
       setFormField(field, value);
+      const validationField = getValidationField(field);
+      if (validationField) {
+        setTouched(validationField);
+      }
     };
 
     const canProceed = React.useMemo(() => {

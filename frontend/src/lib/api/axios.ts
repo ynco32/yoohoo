@@ -87,7 +87,7 @@ api.interceptors.response.use(
 
       try {
         // 토큰 갱신 요청
-        await api.post('/api/auth/refresh');
+        await api.post('/api/v1/auth/refresh');
 
         // 갱신 성공 시
         processQueue(); // 대기 중인 요청들 실행

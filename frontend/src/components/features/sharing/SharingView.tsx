@@ -58,7 +58,7 @@ export const SharingView = () => {
 
         allData = [...allData, ...response.sharings];
 
-        if (response.isLastPage) {
+        if (response.lastPage) {
           hasMoreData = false;
         } else {
           lastId = response.sharings[response.sharings.length - 1].sharingId;

@@ -5,28 +5,14 @@ import { useRouter } from 'next/navigation';
 import { ConcertSelect } from './ConcertSelect';
 import { SeatSelect } from './SeatSelect';
 import { ImageUpload } from './ImageUpload';
-import VisibilitySelect from './VisibilitySelect';
+import { ViewScoreSelect } from './ViewScoreSelect';
 import { OtherSelect } from './OtherSelect';
 import { CommentInput } from './CommentInput';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
-
-interface SeatInfo {
-  section: string;
-  row: string;
-  number: string;
-}
-
-interface SightReviewFormData {
-  concertId?: string;
-  seat?: SeatInfo;
-  images: File[];
-  visibility?: number;
-  comfort?: string;
-  sightLevel?: string;
-  comment?: string;
-}
-
-type FormErrors = Partial<Record<keyof SightReviewFormData | 'submit', string>>;
+import { useSightReviewStore } from '@/store/useSightReviewStore';
+import { SightReviewFormData } from '@/types/sightReviews';
+import { STEPS, useSightReviewSteps } from '@/hooks/useSightReviewSteps';
+import { useSightReviewValidation } from '@/hooks/useSightReviewValidation';
 
 interface SightReviewFormProps {
   onSubmit?: (data: SightReviewFormData) => Promise<{ id: string }>;
@@ -34,215 +20,229 @@ interface SightReviewFormProps {
   className?: string;
 }
 
-export const SightReviewForm = ({
-  onSubmit,
-  artist,
-  className = '',
-}: SightReviewFormProps) => {
-  console.log('=== SightReviewForm 렌더링 ===');
+export const SightReviewForm = React.memo(
+  ({ onSubmit, artist, className = '' }: SightReviewFormProps) => {
+    const router = useRouter();
+    const {
+      formData,
+      errors,
+      isSubmitting,
+      touched,
+      setFormField,
+      setError,
+      setIsSubmitting,
+      setValidation,
+      setTouched,
+      clearErrors,
+      isFormValid,
+    } = useSightReviewStore();
 
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [formData, setFormData] = React.useState<SightReviewFormData>({
-    images: [],
-  });
-  const [errors, setErrors] = React.useState<FormErrors>({});
+    const { currentStep, canProceed, handleNext, handleBack } =
+      useSightReviewSteps({
+        formData,
+      });
 
-  // formData 변경 추적
-  React.useEffect(() => {
-    console.log('FormData 변경됨:', {
-      concertId: formData.concertId,
-      seat: formData.seat,
-      imagesCount: formData.images.length,
-      visibility: formData.visibility,
-      comfort: formData.comfort,
-      sightLevel: formData.sightLevel,
-      commentLength: formData.comment?.length,
+    const { validateStep, getValidationField } = useSightReviewValidation({
+      formData,
+      touched,
+      setValidation,
+      setError,
     });
-  }, [formData]);
 
-  const validateForm = (): boolean => {
-    console.log('=== validateForm 실행 시작 ===');
-    const newErrors: FormErrors = {};
+    React.useEffect(() => {
+      validateStep(STEPS[currentStep].id);
+    }, [formData, currentStep, validateStep]);
 
-    if (!formData.concertId) {
-      newErrors.concertId = '콘서트를 선택해주세요';
-      console.log('❌ Concert ID missing');
-    }
-    if (
-      !formData.seat?.section ||
-      !formData.seat?.row ||
-      !formData.seat?.number
-    ) {
-      newErrors.seat = '좌석 정보를 모두 입력해주세요';
-      console.log('❌ Seat info missing');
-    }
-    if (!formData.visibility) {
-      newErrors.visibility = '시야 정보를 선택해주세요';
-      console.log('❌ Visibility missing');
-    }
-    if (!formData.comfort) {
-      newErrors.comfort = '음향 정보를 선택해주세요';
-      console.log('❌ Comfort missing');
-    }
-    if (!formData.sightLevel) {
-      newErrors.sightLevel = '좌석 간격 정보를 선택해주세요';
-      console.log('❌ Sight level missing');
-    }
-    if (!formData.comment) {
-      newErrors.comment = '총평을 입력해주세요';
-      console.log('❌ Comment missing');
-    }
+    const handleFieldChange = <K extends keyof SightReviewFormData>(
+      field: K,
+      value: SightReviewFormData[K]
+    ) => {
+      setFormField(field, value);
+      const validationField = getValidationField(field);
+      if (validationField) {
+        setTouched(validationField);
+      }
+    };
 
-    setErrors(newErrors);
-    const isValid = Object.keys(newErrors).length === 0;
-    console.log('=== validateForm 결과 ===');
-    console.log('검증 결과:', isValid ? '✅ 성공' : '❌ 실패');
-    console.log('발견된 에러:', newErrors);
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      clearErrors();
 
-    return isValid;
-  };
+      if (!validateStep(STEPS[currentStep].id)) return;
+      if (!isFormValid() || !onSubmit) return;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('=== handleSubmit 실행 ===');
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    // button click state를 활용
-    const target = e.nativeEvent.target as HTMLFormElement;
-    const submitButton = target.querySelector('button[type="submit"]');
-    const isButtonSubmit = document.activeElement === submitButton;
-
-    if (!isButtonSubmit) {
-      console.log('❌ 제출 버튼을 통하지 않은 제출');
-      return;
-    }
-
-    console.log('폼 검증 시작');
-    if (validateForm()) {
       try {
-        console.log('폼 검증 성공, 제출 시작');
         setIsSubmitting(true);
-        const result = await onSubmit?.(formData);
-        console.log('제출 결과:', result);
+        const result = await onSubmit(formData);
 
-        if (result?.id) {
-          console.log('제출 성공, 페이지 이동 준비');
-          await Promise.resolve();
-          console.log('success 페이지로 이동 시도');
-          router.push('/sight/success');
-        }
+        const successMessage = document.createElement('div');
+        successMessage.className =
+          'fixed bottom-4 right-4 bg-status-success text-white px-4 py-2 rounded-lg shadow-lg';
+        successMessage.textContent = '리뷰가 성공적으로 등록되었습니다!';
+        document.body.appendChild(successMessage);
+        setTimeout(() => document.body.removeChild(successMessage), 3000);
+
+        router.push(`/reviews/${result.id}`);
       } catch (error) {
-        console.error('제출 실패:', error);
-        setErrors((prev) => ({
-          ...prev,
-          submit: '리뷰 제출에 실패했습니다. 다시 시도해주세요.',
-        }));
+        console.error('Submit error:', error);
+        setError('submit', '제출 중 오류가 발생했습니다. 다시 시도해주세요.');
       } finally {
         setIsSubmitting(false);
       }
-    } else {
-      console.log('폼 검증 실패');
-    }
-  };
+    };
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className={`space-y-8 ${className}`}
-      onKeyDown={(e) => {
-        if (
-          e.key === 'Enter' &&
-          (e.target as HTMLElement).tagName.toLowerCase() !== 'textarea'
-        ) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <ConcertSelect
-        artist={artist}
-        value={formData.concertId}
-        onChange={(concertId) => setFormData({ ...formData, concertId })}
-      />
-      {errors.concertId && (
-        <p className="mt-1 text-sm text-status-warning">{errors.concertId}</p>
-      )}
-
-      <SeatSelect
-        value={formData.seat}
-        onChange={(seat) => setFormData({ ...formData, seat })}
-      />
-      {errors.seat && (
-        <p className="mt-1 text-sm text-status-warning">{errors.seat}</p>
-      )}
-
-      <div className="space-y-2">
-        <FormSectionHeader
-          title="사진"
-          description="시야를 촬영한 사진을 업로드해주세요"
-        />
-        <div className="flex gap-4">
-          {[0].map((index) => (
-            <ImageUpload
-              key={index}
-              value={formData.images[index]}
-              onChange={(file) => {
-                const newImages = [...formData.images];
-                if (file) {
-                  newImages[index] = file;
-                } else {
-                  newImages.splice(index, 1);
+    const renderStepContent = () => {
+      switch (currentStep) {
+        case 0:
+          return (
+            <>
+              <ConcertSelect
+                artist={artist}
+                value={formData.concertId}
+                onChange={(concertId) =>
+                  handleFieldChange('concertId', Number(concertId))
                 }
-                setFormData({ ...formData, images: newImages });
-              }}
-            />
+                error={errors.concertId}
+              />
+              <SeatSelect
+                value={{
+                  section: formData.section || null,
+                  rowLine: formData.rowLine || null,
+                  columnLine: formData.columnLine || null,
+                }}
+                onChange={(seatInfo) => {
+                  handleFieldChange('section', seatInfo.section ?? 0);
+                  handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
+                  handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
+                }}
+                error={errors.seat}
+              />
+            </>
+          );
+        case 1:
+          return (
+            <>
+              <div className="space-y-2">
+                <FormSectionHeader
+                  title="사진"
+                  description="시야를 촬영한 사진을 업로드해주세요"
+                />
+                <div className="flex gap-4">
+                  <ImageUpload
+                    value={formData.images[0]}
+                    onChange={(file) =>
+                      handleFieldChange('images', file ? [file] : [])
+                    }
+                    error={errors.images?.toString()}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <ViewScoreSelect
+                    value={formData.viewScore}
+                    onChange={(viewScore) =>
+                      handleFieldChange('viewScore', viewScore)
+                    }
+                    error={errors.viewScore}
+                  />
+                </div>
+              </div>
+            </>
+          );
+        case 2:
+          return (
+            <>
+              <OtherSelect
+                seatDistance={formData.seatDistance}
+                sound={formData.sound}
+                onSeatDistanceChange={(seatDistance) =>
+                  handleFieldChange('seatDistance', seatDistance)
+                }
+                onSoundChange={(sound) => handleFieldChange('sound', sound)}
+                error={errors.seatDistance}
+              />
+              <CommentInput
+                value={formData.content}
+                onChange={(content) => handleFieldChange('content', content)}
+                error={errors.content}
+              />
+            </>
+          );
+      }
+    };
+
+    return (
+      <div className={`space-y-8 ${className}`}>
+        <div className="mb-8 flex justify-between">
+          {STEPS.map((step, index) => (
+            <div
+              key={step.id}
+              className={`flex items-center ${
+                index === STEPS.length - 1 ? '' : 'flex-1'
+              }`}
+            >
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                  index <= currentStep
+                    ? 'bg-primary-main text-white'
+                    : 'bg-gray-200 text-gray-600'
+                }`}
+              >
+                {index + 1}
+              </div>
+              {index < STEPS.length - 1 && (
+                <div
+                  className={`mx-2 h-1 flex-1 ${
+                    index < currentStep ? 'bg-primary-main' : 'bg-gray-200'
+                  }`}
+                />
+              )}
+            </div>
           ))}
         </div>
+
+        <form onSubmit={handleSubmit}>
+          {renderStepContent()}
+
+          {errors.submit && (
+            <p className="mt-4 text-sm text-status-warning">{errors.submit}</p>
+          )}
+
+          <div className="mt-8 flex justify-between gap-4">
+            {currentStep > 0 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex-1 rounded-lg border border-primary-main px-4 py-2 text-primary-main transition-colors hover:bg-primary-50"
+              >
+                이전
+              </button>
+            )}
+
+            {currentStep < STEPS.length - 1 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!canProceed}
+                className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
+              >
+                다음
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting || !canProceed}
+                className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
+              >
+                {isSubmitting ? '제출 중...' : '작성하기'}
+              </button>
+            )}
+          </div>
+        </form>
       </div>
+    );
+  }
+);
 
-      <VisibilitySelect
-        value={formData.visibility}
-        onChange={(visibility) => setFormData({ ...formData, visibility })}
-      />
-      {errors.visibility && (
-        <p className="mt-1 text-sm text-status-warning">{errors.visibility}</p>
-      )}
-
-      <OtherSelect
-        comfort={formData.comfort}
-        sightLevel={formData.sightLevel}
-        onComfortChange={(comfort) => setFormData({ ...formData, comfort })}
-        onSightLevelChange={(sightLevel) =>
-          setFormData({ ...formData, sightLevel })
-        }
-      />
-      {(errors.comfort || errors.sightLevel) && (
-        <p className="mt-1 text-sm text-status-warning">
-          {errors.comfort || errors.sightLevel}
-        </p>
-      )}
-
-      <CommentInput
-        value={formData.comment}
-        onChange={(comment) => setFormData({ ...formData, comment })}
-        error={errors.comment}
-      />
-
-      {errors.submit && (
-        <p className="text-sm text-status-warning">{errors.submit}</p>
-      )}
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        onClick={() => console.log('제출 버튼 클릭됨')}
-        className="w-full rounded-lg bg-primary-main py-4 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
-      >
-        {isSubmitting ? '제출 중...' : '작성하기'}
-      </button>
-    </form>
-  );
-};
+SightReviewForm.displayName = 'SightReviewForm';
 
 export default SightReviewForm;

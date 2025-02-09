@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import VisibilitySelect from '@/components/features/sight/form/VisibilitySelect';
+import VisibilitySelect from '@/components/features/sight/form/ViewScoreSelect';
 
 const meta = {
   title: 'Features/sight/Form/VisibilitySelect',

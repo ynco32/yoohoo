@@ -13,31 +13,29 @@ import { sharingAPI } from '@/lib/api/sharing';
 
 type ViewMode = 'list' | 'map';
 
-const SKIP_MSW_CHECK = false;
+const SKIP_MSW_CHECK = true;
+const ITEMS_PER_PAGE = 5;
 
 export const SharingView = () => {
-  // 지도와 리스트 각각의 상태 관리
-  const [mapPosts, setMapPosts] = useState<SharingPost[]>([]);
-  const [listPosts, setListPosts] = useState<SharingPost[]>([]);
+  // 상태 관리
+  const [allPosts, setAllPosts] = useState<SharingPost[]>([]);
+  const [displayedPosts, setDisplayedPosts] = useState<SharingPost[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [lastSharingId, setLastSharingId] = useState<number | undefined>(
-    undefined
-  );
+  const [currentPage, setCurrentPage] = useState(0);
   const [mswInitialized, setMswInitialized] = useState(false);
+  const [shouldScrollTop, setShouldScrollTop] = useState(false);
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
-  const isFetching = useRef(false);
   const isInitialized = useRef(false);
 
-  // URL 파라미터에서 공연 ID 추출
+  // URL 파라미터
   const params = useParams();
   const concertId =
     params.concertId !== undefined ? Number(params.concertId) : 0;
 
-  // 뷰 모드 상태 관리
+  // 뷰 모드
   const [viewMode, setViewMode] = useState<ViewMode>('map');
 
   // MSW 초기화 체크
@@ -61,115 +59,111 @@ export const SharingView = () => {
     }
   }, []);
 
-  // 지도용 전체 데이터 가져오기
-  const fetchMapSharings = useCallback(async () => {
-    if (!SKIP_MSW_CHECK && !mswInitialized) return;
-
-    setIsLoading(true);
-    try {
-      // 지도용은 전체 데이터를 한 번에 가져옴
-      const response = await sharingAPI.getAllSharings(concertId);
-      setMapPosts(response.sharings);
-    } catch (err) {
-      console.error('Error fetching map sharing posts:', err);
-      setError(
-        err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [concertId, mswInitialized]);
-
-  // 리스트용 페이지네이션 데이터 가져오기
-  const fetchListSharings = useCallback(async () => {
-    if (!SKIP_MSW_CHECK && !mswInitialized) return;
-    if (!hasMore || isFetching.current) return;
-
-    isFetching.current = true;
+  // 모든 데이터 가져오기
+  const fetchAllSharings = async () => {
+    if (!mswInitialized) return;
     setIsLoading(true);
 
     try {
-      const response = await sharingAPI.getSharings(concertId, lastSharingId);
-      setHasMore(!response.isLastPage);
+      let allData: SharingPost[] = [];
+      let lastId: number | undefined = undefined;
+      let hasMoreData = true;
 
-      if (response.sharings.length > 0) {
-        setLastSharingId(
-          response.sharings[response.sharings.length - 1].sharingId
-        );
+      while (hasMoreData) {
+        const response = await sharingAPI.getSharings(concertId, {
+          usePagination: true,
+          lastSharingId: lastId,
+        });
+
+        if (!Array.isArray(response.sharings)) {
+          console.error('Invalid data format:', response);
+          break;
+        }
+
+        allData = [...allData, ...response.sharings];
+
+        if (response.isLastPage) {
+          hasMoreData = false;
+        } else {
+          lastId = response.sharings[response.sharings.length - 1].sharingId;
+        }
       }
 
-      setListPosts((prev) => {
-        const merged = [...prev, ...response.sharings];
-        return Array.from(
-          new Map(merged.map((item) => [item.sharingId, item])).values()
-        );
-      });
-    } catch (err) {
-      console.error('Error fetching list sharing posts:', err);
-      setError(
-        err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.'
+      const formattedPosts = allData.map((post) => ({
+        ...post,
+        startTime: formatDateTime(post.startTime),
+      }));
+
+      setAllPosts(formattedPosts);
+      setDisplayedPosts(
+        viewMode === 'map'
+          ? formattedPosts
+          : formattedPosts.slice(0, ITEMS_PER_PAGE)
       );
+      setHasMore(formattedPosts.length > ITEMS_PER_PAGE);
+    } catch (err) {
+      console.error('Error fetching all sharings:', err);
     } finally {
       setIsLoading(false);
-      isFetching.current = false;
     }
-  }, [concertId, lastSharingId, hasMore, mswInitialized]);
+  };
+  // 초기 데이터 로드
+  useEffect(() => {
+    if (!isInitialized.current && mswInitialized) {
+      fetchAllSharings();
+      isInitialized.current = true;
+    }
+  }, [mswInitialized, fetchAllSharings]);
+
+  // 더 보기 핸들러 (리스트 뷰)
+  const handleLoadMore = useCallback(async () => {
+    if (!hasMore || isLoading) return;
+
+    const nextPage = currentPage + 1;
+    const start = nextPage * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const nextPosts = allPosts.slice(start, end);
+
+    if (nextPosts.length > 0) {
+      setDisplayedPosts((prev) => [...prev, ...nextPosts]);
+      setCurrentPage(nextPage);
+      setHasMore(end < allPosts.length);
+    } else {
+      setHasMore(false);
+    }
+  }, [allPosts, currentPage, hasMore, isLoading]);
 
   // 뷰 모드 변경 핸들러
   const handleViewModeChange = useCallback(
     (newMode: ViewMode) => {
       setViewMode(newMode);
-      // 모드 변경 시 해당 모드의 데이터가 없으면 가져오기
-      if (newMode === 'map' && mapPosts.length === 0) {
-        fetchMapSharings();
-      } else if (newMode === 'list' && listPosts.length === 0) {
-        fetchListSharings();
+      setShouldScrollTop(true); // 뷰 모드 변경 시에만 스크롤 탑 설정
+
+      if (newMode === 'map') {
+        setDisplayedPosts(allPosts);
+        setCurrentPage(0);
+      } else {
+        setDisplayedPosts(allPosts.slice(0, ITEMS_PER_PAGE));
+        setHasMore(allPosts.length > ITEMS_PER_PAGE);
+        if (containerRef.current) {
+          containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     },
-    [fetchMapSharings, fetchListSharings, mapPosts.length, listPosts.length]
+    [allPosts]
   );
 
-  // 초기 데이터 로드
-  useEffect(() => {
-    if (!isInitialized.current) {
-      if (!SKIP_MSW_CHECK && !mswInitialized) return;
-
-      isInitialized.current = true;
-      if (viewMode === 'map') {
-        fetchMapSharings();
-      } else {
-        fetchListSharings();
-      }
+  // 컴포넌트 마운트 핸들러
+  const handleMount = useCallback(() => {
+    if (shouldScrollTop && containerRef.current) {
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      setShouldScrollTop(false);
     }
-  }, [viewMode, fetchMapSharings, fetchListSharings, mswInitialized]);
-
-  // 스크롤 리셋
-  const resetScroll = useCallback(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0;
-    }
-  }, []);
-
-  // 에러 처리
-  if (error !== null && error !== undefined && error !== '') {
-    return <div className="py-4 text-center text-red-500">{error}</div>;
-  }
-
-  // 현재 뷰 모드에 따른 게시글 데이터 선택 및 포맷팅
-  const currentPosts = (viewMode === 'map' ? mapPosts : listPosts).map(
-    (post) => ({
-      ...post,
-      startTime: formatDateTime(post.startTime),
-    })
-  );
+  }, [shouldScrollTop]);
 
   return (
     <div
-      className={`${
-        viewMode === 'map'
-          ? '-mt-[56px] h-screen'
-          : 'flex h-[calc(100vh-56px)] flex-col'
-      }`}
+      className={`${viewMode === 'map' ? '-mt-[56px] h-screen' : 'flex h-[calc(100vh-56px)] flex-col'}`}
     >
       <div
         className={viewMode === 'map' ? 'absolute top-[56px] z-10 p-4' : 'p-4'}
@@ -184,25 +178,24 @@ export const SharingView = () => {
         ref={containerRef}
         className={`${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
       >
-        {viewMode === 'list' && (
-          <SharingList
-            posts={currentPosts}
-            onMount={resetScroll}
-            concertId={concertId}
-            isLoading={isLoading}
-            hasMore={hasMore}
-            onLoadMore={fetchListSharings}
-          />
-        )}
         {viewMode === 'map' && (
           <SharingMap
-            posts={currentPosts}
+            posts={displayedPosts}
             venueLocation={VENUE_COORDINATES.KSPO_DOME}
             concertId={concertId}
           />
         )}
+        {viewMode === 'list' && (
+          <SharingList
+            posts={displayedPosts}
+            onMount={handleMount}
+            concertId={concertId}
+            isLoading={isLoading}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+          />
+        )}
       </div>
-      {isLoading && <div className="py-4 text-center">로딩 중...</div>}
       <WriteButton path={`/sharing/${concertId}/write`} />
     </div>
   );

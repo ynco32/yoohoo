@@ -51,8 +51,15 @@ export const SharingView = () => {
       while (hasMoreData) {
         const response = await sharingAPI.getSharings(concertId, lastId);
 
-        if (!Array.isArray(response.sharings)) {
+        // response.sharings 존재 여부와 배열 여부 체크
+        if (!response?.sharings || !Array.isArray(response.sharings)) {
           console.error('Invalid data format:', response);
+          break;
+        }
+
+        // 빈 배열 체크
+        if (response.sharings.length === 0) {
+          hasMoreData = false;
           break;
         }
 

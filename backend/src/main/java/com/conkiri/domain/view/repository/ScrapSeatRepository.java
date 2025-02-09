@@ -16,6 +16,8 @@ public interface ScrapSeatRepository extends JpaRepository<ScrapSeat, Long> {
 
 	boolean existsByUserAndSeatAndStageType(User user, Seat seat, StageType stageType);
 
+	boolean existsByUserAndSeat_SectionAndStageType(User user, Section section, StageType stageType);
+
 	Optional<ScrapSeat> findByUserAndSeatAndStageType(User user, Seat seat, StageType stageType);
 
 	List<ScrapSeat> findByUserAndStageTypeAndSeat_Section(User user, StageType stageType, Section section);

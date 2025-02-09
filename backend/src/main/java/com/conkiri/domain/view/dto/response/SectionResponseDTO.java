@@ -18,11 +18,9 @@ public class SectionResponseDTO {
 
 	private List<SectionDetailResponseDTO> sections;
 
-	public static SectionResponseDTO of(List<Section> sections, int stageType) {
+	public static SectionResponseDTO from(List<SectionDetailResponseDTO> sectionDetails) {
 		return SectionResponseDTO.builder()
-			.sections(sections.stream()
-				.map(section -> SectionDetailResponseDTO.of(section, stageType))
-				.collect(Collectors.toList()))
+			.sections(sectionDetails)
 			.build();
 	}
 }

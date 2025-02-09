@@ -1,27 +1,28 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ConcertSelect } from './ConcertSelect';
 import { SeatSelect } from './SeatSelect';
 import { ImageUpload } from './ImageUpload';
 import { ViewScoreSelect } from './ViewScoreSelect';
 import { OtherSelect } from './OtherSelect';
 import { CommentInput } from './CommentInput';
-import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 import { SightReviewFormData } from '@/types/sightReviews';
 import { STEPS, useSightReviewSteps } from '@/hooks/useSightReviewSteps';
 import { useSightReviewValidation } from '@/hooks/useSightReviewValidation';
+import StepProgressBar from './StepProgressBar';
 
 interface SightReviewFormProps {
   onSubmit?: (data: SightReviewFormData) => Promise<{ id: string }>;
   artist?: string;
   className?: string;
+  onClose?: () => void;
 }
 
 export const SightReviewForm = React.memo(
-  ({ onSubmit, artist, className = '' }: SightReviewFormProps) => {
+  ({ onSubmit, artist, className = '', onClose }: SightReviewFormProps) => {
     const router = useRouter();
     const {
       formData,
@@ -74,14 +75,6 @@ export const SightReviewForm = React.memo(
       try {
         setIsSubmitting(true);
         const result = await onSubmit(formData);
-
-        const successMessage = document.createElement('div');
-        successMessage.className =
-          'fixed bottom-4 right-4 bg-status-success text-white px-4 py-2 rounded-lg shadow-lg';
-        successMessage.textContent = '리뷰가 성공적으로 등록되었습니다!';
-        document.body.appendChild(successMessage);
-        setTimeout(() => document.body.removeChild(successMessage), 3000);
-
         router.push(`/reviews/${result.id}`);
       } catch (error) {
         console.error('Submit error:', error);
@@ -96,6 +89,8 @@ export const SightReviewForm = React.memo(
         case 0:
           return (
             <>
+              <StepProgressBar currentStep={0} />
+
               <ConcertSelect
                 artist={artist}
                 value={formData.concertId}
@@ -121,36 +116,30 @@ export const SightReviewForm = React.memo(
           );
         case 1:
           return (
-            <>
+            <div className="space-y-4">
               <div className="space-y-2">
-                <FormSectionHeader
-                  title="사진"
-                  description="시야를 촬영한 사진을 업로드해주세요"
+                <StepProgressBar currentStep={1} />
+                <ImageUpload
+                  value={formData.images[0]}
+                  onChange={(file) =>
+                    handleFieldChange('images', file ? [file] : [])
+                  }
+                  error={errors.images?.toString()}
                 />
-                <div className="flex gap-4">
-                  <ImageUpload
-                    value={formData.images[0]}
-                    onChange={(file) =>
-                      handleFieldChange('images', file ? [file] : [])
-                    }
-                    error={errors.images?.toString()}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <ViewScoreSelect
-                    value={formData.viewScore}
-                    onChange={(viewScore) =>
-                      handleFieldChange('viewScore', viewScore)
-                    }
-                    error={errors.viewScore}
-                  />
-                </div>
               </div>
-            </>
+              <ViewScoreSelect
+                value={formData.viewScore}
+                onChange={(viewScore) =>
+                  handleFieldChange('viewScore', viewScore)
+                }
+                error={errors.viewScore}
+              />
+            </div>
           );
         case 2:
           return (
             <>
+              <StepProgressBar currentStep={2} />
               <OtherSelect
                 seatDistance={formData.seatDistance}
                 sound={formData.sound}
@@ -171,43 +160,34 @@ export const SightReviewForm = React.memo(
     };
 
     return (
-      <div className={`space-y-8 ${className}`}>
-        <div className="mb-8 flex justify-between">
-          {STEPS.map((step, index) => (
-            <div
-              key={step.id}
-              className={`flex items-center ${
-                index === STEPS.length - 1 ? '' : 'flex-1'
-              }`}
-            >
-              <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                  index <= currentStep
-                    ? 'bg-primary-main text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {index + 1}
-              </div>
-              {index < STEPS.length - 1 && (
-                <div
-                  className={`mx-2 h-1 flex-1 ${
-                    index < currentStep ? 'bg-primary-main' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </div>
-          ))}
+      <div
+        className={`relative flex h-dvh w-full flex-col rounded-layout bg-white p-6 shadow-card ${className}`}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+        >
+          <XMarkIcon className="h-6 w-6" />
+        </button>
+
+        {/* Title */}
+        <div className="text-center">
+          <h1 className="text-xl font-semibold">좌석의 후기를 남겨보세요</h1>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {renderStepContent()}
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-1 flex-col">
+          <div className="flex-1 rounded-lg bg-white">
+            {renderStepContent()}
+          </div>
 
           {errors.submit && (
             <p className="mt-4 text-sm text-status-warning">{errors.submit}</p>
           )}
 
-          <div className="mt-8 flex justify-between gap-4">
+          {/* Navigation Buttons */}
+          <div className="mt-6 flex justify-between gap-4">
             {currentStep > 0 && (
               <button
                 type="button"
@@ -217,25 +197,18 @@ export const SightReviewForm = React.memo(
                 이전
               </button>
             )}
-
-            {currentStep < STEPS.length - 1 ? (
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={!canProceed}
-                className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
-              >
-                다음
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={isSubmitting || !canProceed}
-                className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
-              >
-                {isSubmitting ? '제출 중...' : '작성하기'}
-              </button>
-            )}
+            <button
+              type={currentStep === STEPS.length - 1 ? 'submit' : 'button'}
+              onClick={currentStep < STEPS.length - 1 ? handleNext : undefined}
+              disabled={!canProceed || isSubmitting}
+              className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
+            >
+              {currentStep === STEPS.length - 1
+                ? isSubmitting
+                  ? '제출 중...'
+                  : '작성하기'
+                : '다음'}
+            </button>
           </div>
         </form>
       </div>

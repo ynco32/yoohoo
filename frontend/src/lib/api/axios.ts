@@ -103,7 +103,19 @@ api.interceptors.response.use(
 
       try {
         console.log('🔑 토큰 갱신 시도 중...');
-        const refreshResponse = await api.post('/api/v1/auth/refresh', {});
+        // httponly -> 일반 쿠키로 변경
+        const refreshToken = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('refresh_token='))
+          ?.split('=')[1];
+
+        if (!refreshToken) {
+          console.log('❌ 리프레시 토큰을 찾을 수 없습니다');
+          throw new Error('No refresh token found');
+        }
+        const refreshResponse = await api.post('/api/v1/auth/refresh', {
+          refreshToken,
+        });
         console.log('✅ 토큰 갱신 성공:', refreshResponse.status);
 
         processQueue();

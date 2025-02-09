@@ -12,7 +12,6 @@ import com.conkiri.global.auth.service.AuthService;
 import com.conkiri.global.auth.token.UserPrincipal;
 
 import jakarta.validation.Valid;
-import jakarta.servlet.http.HttpServletRequest; // 리프레시 토큰 때문에 추가가
 import lombok.RequiredArgsConstructor;
 
 @RestController

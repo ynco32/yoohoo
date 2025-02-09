@@ -9,6 +9,7 @@ import { SharingDetailComments } from './SharingDetailComments';
 import { sharingAPI } from '@/lib/api/sharing';
 import { SharingPost } from '@/types/sharing';
 import { MOCK_COMMENTS } from '@/types/sharing';
+import { useMswInit } from '@/hooks/useMswInit';
 
 interface SharingDetailProps {
   id: number;
@@ -18,9 +19,15 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
   const [detailData, setDetailData] = useState<SharingPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // MSW 초기화 상태 체크
+  const { mswInitialized } = useMswInit();
 
   useEffect(() => {
     const fetchSharingDetail = async () => {
+      if (!mswInitialized) {
+        return;
+      }
+
       try {
         setIsLoading(true);
         const response = await sharingAPI.getSharingDetail(id);
@@ -38,7 +45,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
     };
 
     fetchSharingDetail();
-  }, [id]);
+  }, [id, mswInitialized]);
 
   if (isLoading) {
     return <div className="py-4 text-center">로딩 중...</div>;

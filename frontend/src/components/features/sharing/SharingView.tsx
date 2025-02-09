@@ -71,18 +71,14 @@ export const SharingView = () => {
       }));
 
       setAllPosts(formattedPosts);
-      setDisplayedPosts(
-        viewMode === 'map'
-          ? formattedPosts
-          : formattedPosts.slice(0, ITEMS_PER_PAGE)
-      );
+      setDisplayedPosts(formattedPosts.slice(0, ITEMS_PER_PAGE));
       setHasMore(formattedPosts.length > ITEMS_PER_PAGE);
     } catch (err) {
       console.error('Error fetching all sharings:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [concertId, mswInitialized, viewMode]);
+  }, [concertId, mswInitialized]);
 
   // 초기 데이터 로드
   useEffect(() => {

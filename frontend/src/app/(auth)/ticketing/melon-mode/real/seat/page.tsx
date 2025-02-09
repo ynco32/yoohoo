@@ -1,3 +1,4 @@
+'use client';
 import TicketingBottomBar from '@/components/ui/TicketingBottomBar';
 import { useState } from 'react';
 

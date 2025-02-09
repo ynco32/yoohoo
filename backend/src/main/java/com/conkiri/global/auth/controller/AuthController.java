@@ -21,30 +21,10 @@ public class AuthController {
 
 	private final AuthService authService;
 
-@PostMapping("/refresh")
-public TokenDTO refreshToken(HttpServletRequest request) {
-    // 쿠키에서 refresh_token 읽기
-    String refreshToken = Arrays.stream(request.getCookies())
-        .filter(cookie -> cookie.getName().equals("refresh_token"))
-        .findFirst()
-        .map(Cookie::getValue)
-        .orElseThrow(() -> new InvalidTokenException("Refresh token not found"));
-        
-    return authService.refreshToken(refreshToken.trim());
-}
-
 	@PostMapping("/refresh")
-public TokenDTO refreshToken(HttpServletRequest request) {
-    // 1. 쿠키에서 리프레시 토큰 추출
-    String refreshToken = Arrays.stream(request.getCookies())
-        .filter(cookie -> cookie.getName().equals("refresh_token"))
-        .findFirst()
-        .map(Cookie::getValue)
-        .orElseThrow(() -> new RuntimeException("Refresh token not found"));
-
-    // 2. 기존 서비스 로직 사용
-    return authService.refreshToken(refreshToken.trim());
-}
+	public TokenDTO refreshToken(@Valid @RequestBody RefreshTokenRequestDTO request) {
+		return authService.refreshToken(request.getRefreshToken().trim());
+	}
 
 	@PostMapping("/logout")
 	public void logout(@AuthenticationPrincipal UserPrincipal user) {

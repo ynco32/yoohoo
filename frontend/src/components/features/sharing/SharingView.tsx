@@ -10,11 +10,11 @@ import { VENUE_COORDINATES } from '@/lib/constans/venues';
 import { WriteButton } from '@/components/common/WriteButton';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { sharingAPI } from '@/lib/api/sharing';
+import { useMswInit } from '@/hooks/useMswInit';
 
 type ViewMode = 'list' | 'map';
 
-const SKIP_MSW_CHECK = true;
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 export const SharingView = () => {
   // 상태 관리
@@ -23,7 +23,7 @@ export const SharingView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [mswInitialized, setMswInitialized] = useState(false);
+  const { mswInitialized } = useMswInit();
   const [shouldScrollTop, setShouldScrollTop] = useState(false);
 
   // refs
@@ -37,27 +37,6 @@ export const SharingView = () => {
 
   // 뷰 모드
   const [viewMode, setViewMode] = useState<ViewMode>('map');
-
-  // MSW 초기화 체크
-  useEffect(() => {
-    if (SKIP_MSW_CHECK) {
-      setMswInitialized(true);
-      return;
-    }
-
-    if (window.mswInitialized) {
-      setMswInitialized(true);
-    } else {
-      const interval = setInterval(() => {
-        if (window.mswInitialized) {
-          setMswInitialized(true);
-          clearInterval(interval);
-        }
-      }, 100);
-
-      return () => clearInterval(interval);
-    }
-  }, []);
 
   // 모든 데이터 가져오기
   const fetchAllSharings = useCallback(async () => {
@@ -107,7 +86,11 @@ export const SharingView = () => {
 
   // 초기 데이터 로드
   useEffect(() => {
-    if (!isInitialized.current && mswInitialized) {
+    if (!mswInitialized) return; // MSW가 초기화되지 않았다면 실행하지 않음
+
+    isInitialized.current = false; // 새로고침 시 초기화
+
+    if (!isInitialized.current) {
       fetchAllSharings();
       isInitialized.current = true;
     }

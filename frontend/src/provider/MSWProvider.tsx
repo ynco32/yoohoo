@@ -22,6 +22,10 @@ export default function MSWProvider() {
           const { worker } = await import('@/mocks/browser');
           await worker.start({
             onUnhandledRequest: (request, print) => {
+              // 카카오 지도 타일 요청은 무시하고 네트워크로 전달
+              if (Boolean(request.url.hostname.includes('mts.daumcdn.net'))) {
+                return; // MSW에서 무시 (가로채지 않음)
+              }
               if (Boolean(request.url.pathname.startsWith('/api/'))) {
                 print.warning();
               }

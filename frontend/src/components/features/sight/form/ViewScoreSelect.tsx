@@ -1,18 +1,19 @@
 import React from 'react';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
-interface VisibilitySelectProps {
+interface ViewScoreSelectProps {
   value?: number;
   onChange?: (value: number) => void;
+  error?: string;
   className?: string;
 }
 
-const VisibilitySelect = ({
-  value = 0,
+export const ViewScoreSelect = ({
+  value,
   onChange,
-  className = '',
-}: VisibilitySelectProps) => {
-  // Array of circle sizes from smallest to largest
+  error,
+  className,
+}: ViewScoreSelectProps) => {
   const circles = [
     { size: 'w-4 h-4', value: 0 },
     { size: 'w-5 h-5', value: 1 },
@@ -27,7 +28,7 @@ const VisibilitySelect = ({
     <div className={`space-y-2 ${className}`}>
       <FormSectionHeader title="시야" description="시야 거리를 선택해주세요" />
       <div className="flex items-center justify-between px-2">
-        <span className="text-sm text-gray-500">가까다</span>
+        <span className="text-sm text-gray-500">가깝다</span>
         <div className="flex items-center gap-2">
           {circles.map((circle, index) => (
             <button
@@ -44,8 +45,7 @@ const VisibilitySelect = ({
         </div>
         <span className="text-sm text-gray-500">멀다</span>
       </div>
+      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
     </div>
   );
 };
-
-export default VisibilitySelect;

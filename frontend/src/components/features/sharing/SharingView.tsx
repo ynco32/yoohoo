@@ -60,7 +60,7 @@ export const SharingView = () => {
   }, []);
 
   // 모든 데이터 가져오기
-  const fetchAllSharings = async () => {
+  const fetchAllSharings = useCallback(async () => {
     if (!mswInitialized) return;
     setIsLoading(true);
 
@@ -70,10 +70,7 @@ export const SharingView = () => {
       let hasMoreData = true;
 
       while (hasMoreData) {
-        const response = await sharingAPI.getSharings(concertId, {
-          usePagination: true,
-          lastSharingId: lastId,
-        });
+        const response = await sharingAPI.getSharings(concertId, lastId);
 
         if (!Array.isArray(response.sharings)) {
           console.error('Invalid data format:', response);
@@ -106,7 +103,8 @@ export const SharingView = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [concertId, mswInitialized, viewMode]);
+
   // 초기 데이터 로드
   useEffect(() => {
     if (!isInitialized.current && mswInitialized) {

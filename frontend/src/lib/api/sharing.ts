@@ -7,11 +7,6 @@ export interface SharingResponse {
   isLastPage: boolean;
 }
 
-export interface GetSharingsOptions {
-  usePagination?: boolean;
-  lastSharingId?: number;
-}
-
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -26,23 +21,19 @@ export const sharingAPI = {
   /**
    * 나눔 게시글 목록을 가져옵니다.
    * @param concertId - 공연 ID
-   * @param options - 옵션 (페이지네이션 사용 여부, 마지막 게시글 ID)
+   * @param lastSharingId - 마지막으로 불러온 나눔 게시글 ID (페이지네이션)
    */
   getSharings: async (
     concertId: number,
-    options: GetSharingsOptions = {}
+    lastSharingId?: number
   ): Promise<SharingResponse> => {
     try {
-      const params = new URLSearchParams();
+      let url = `/api/v1/sharing/${concertId}`;
 
-      if (options.usePagination) {
-        params.append('paginate', 'true');
-        if (typeof options.lastSharingId === 'number') {
-          params.append('last', String(options.lastSharingId));
-        }
+      if (typeof lastSharingId === 'number') {
+        url += `?last=${lastSharingId}`;
       }
 
-      const url = `/api/v1/sharing/${concertId}${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await api.get<SharingResponse>(url);
       return response.data;
     } catch (error) {

@@ -32,6 +32,7 @@ const processQueue = (error: AxiosError | null = null) => {
   // 대기 중인 모든 요청들을 순회하면서
   failedQueue.forEach((prom) => {
     if (error) {
+      console.log('💥failedQueue 재요청 실패', error);
       prom.reject(error); // 에러가 있다면 reject
     } else {
       prom.resolve(); // 성공했다면 resolve
@@ -82,8 +83,8 @@ api.interceptors.response.use(
       }
 
       // 9️⃣ 첫 토큰 만료 상황이라면
-      originalRequest.hasRetried = true; // 재시도 표시
-      isRefreshing = true; // 토큰 갱신 시작
+      originalRequest.hasRetried = true; // 재시도 표시 - 다른 요청이 토큰 갱신 중인지 체크하기 위함
+      isRefreshing = true; // 토큰 갱신 시작 - 무한 루프 방지
 
       try {
         // 토큰 갱신 요청

@@ -103,7 +103,7 @@ api.interceptors.response.use(
 
       try {
         console.log('🔑 토큰 갱신 시도 중...');
-        const refreshResponse = await api.post('/api/v1/auth/refresh');
+        const refreshResponse = await api.post('/api/v1/auth/refresh', {});
         console.log('✅ 토큰 갱신 성공:', refreshResponse.status);
 
         processQueue();

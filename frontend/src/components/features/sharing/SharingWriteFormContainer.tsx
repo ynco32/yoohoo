@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SharingWriteForm } from './SharingWriteForm';
 import { sharingAPI } from '@/lib/api/sharing';
@@ -9,42 +8,37 @@ import { SharingFormData } from '@/types/sharing';
 interface SharingWriteFormContainerProps {
   location: { latitude: number; longitude: number };
   concertId: number;
+  formData: SharingFormData; // ✅ 기존 데이터 유지
+  setFormData: React.Dispatch<React.SetStateAction<SharingFormData>>; // ✅ 상태 업데이트 함수
+  onLocationReset: () => void;
+  onSubmitComplete: () => void;
 }
 
 export function SharingWriteFormContainer({
-  location,
-  concertId,
+  formData,
+  setFormData,
+  onLocationReset,
+  onSubmitComplete,
 }: SharingWriteFormContainerProps) {
-  const router = useRouter();
-  const [formData, setFormData] = useState<SharingFormData>({
-    title: '',
-    content: '',
-    latitude: location.latitude || 0,
-    longitude: location.longitude || 0,
-    startTime: '',
-    image: undefined,
-    concertId: concertId || 0,
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // 폼 입력 값 변경 핸들러
   const handleFormChange = (data: SharingFormData) => {
-    setFormData(data);
+    setFormData(data); // 부모 컴포넌트에서 상태 유지
   };
 
+  // 폼 제출 핸들러
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
       setIsSubmitting(true);
-      const postData = {
-        ...formData,
-      };
+      const postData = { ...formData };
 
       if (formData.image) {
         await sharingAPI.createSharing(postData, formData.image);
-        router.push(`/${concertId}`);
+        onSubmitComplete();
       } else {
         setErrors((prev) => ({ ...prev, image: '이미지를 업로드해주세요.' }));
       }
@@ -58,6 +52,7 @@ export function SharingWriteFormContainer({
     }
   };
 
+  // ✅ 폼 검증 함수
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.title.trim()) newErrors.title = '나눔할 물건을 입력해주세요';
@@ -74,14 +69,8 @@ export function SharingWriteFormContainer({
     <SharingWriteForm
       formData={formData}
       onFormChange={handleFormChange}
-      onSubmitComplete={() => router.push('/success')}
-      onLocationReset={() =>
-        setFormData({
-          ...formData,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        })
-      }
+      onSubmitComplete={onSubmitComplete}
+      onLocationReset={onLocationReset}
       errors={errors}
       isSubmitting={isSubmitting}
       onSubmit={handleSubmit}

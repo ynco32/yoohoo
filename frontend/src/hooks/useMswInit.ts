@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 // 개발 환경에서 MSW 체크를 건너뛰기 위한 플래그
-const SKIP_MSW_CHECK = true;
+const SKIP_MSW_CHECK = false;
 
 export const useMswInit = () => {
   const [mswInitialized, setMswInitialized] = useState(false);

@@ -240,6 +240,21 @@ export const mockComments: Comment[] = [
   },
 ];
 
+// 새로운 나눔 게시글을 추가하는 함수
+export const addSharing = (
+  newSharingData: Omit<ExtendedSharingPost, 'sharingId'>
+): ExtendedSharingPost => {
+  const newSharing = {
+    sharingId: mockSharings.length + 1, // 새로운 ID 부여 (mock 데이터의 길이에 기반)
+    ...newSharingData,
+  };
+
+  mockSharings.push(newSharing); // 데이터 추가
+  console.log('새로운 나눔 게시글 추가:', newSharing);
+
+  return newSharing;
+};
+
 // 특정 공연의 나눔 게시글만 필터링하는 헬퍼 함수
 export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
   return mockSharings

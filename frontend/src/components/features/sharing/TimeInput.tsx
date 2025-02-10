@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 export const TimeInput = ({
   value,
@@ -13,55 +13,81 @@ export const TimeInput = ({
   const [hour, setHour] = useState<number>(12);
   const [minute, setMinute] = useState<number>(0);
 
+  // 현재 날짜를 YYYY-MM-DD 형식으로 가져오는 함수를 메모이제이션
+  const getCurrentDate = useCallback(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }, []);
+
+  // 시간 값을 ISO 형식으로 조합하는 함수를 메모이제이션
+  const getTimeValue = useCallback(
+    (newMeridian: '오전' | '오후', newHour: number, newMinute: number) => {
+      const adjustedHour =
+        newMeridian === '오전' ? newHour % 12 : (newHour % 12) + 12;
+      const formattedHour = String(adjustedHour).padStart(2, '0');
+      const formattedMinute = String(newMinute).padStart(2, '0');
+      return `${getCurrentDate()}T${formattedHour}:${formattedMinute}:00`;
+    },
+    [getCurrentDate]
+  );
+
   // 초기값 설정
   useEffect(() => {
     if (value) {
-      const [formattedHour, formattedMinute] = value.split(':').map(Number);
-      const isPM = formattedHour >= 12;
-      setMeridian(isPM ? '오후' : '오전');
-      setHour(isPM ? formattedHour - 12 || 12 : formattedHour || 12);
-      setMinute(formattedMinute);
+      const timeMatch = value.match(/(\d{2}):(\d{2}):00$/);
+      if (timeMatch) {
+        const [, formattedHour, formattedMinute] = timeMatch;
+        const hourNum = parseInt(formattedHour, 10);
+        const isPM = hourNum >= 12;
+        setMeridian(isPM ? '오후' : '오전');
+        setHour(isPM ? hourNum - 12 || 12 : hourNum || 12);
+        setMinute(parseInt(formattedMinute, 10));
+      }
+    } else {
+      // value가 없을 경우 기본값 설정
+      onChange(getTimeValue('오전', 12, 0));
     }
-  }, [value]);
+  }, [value, onChange, getTimeValue]);
 
-  // 시간 값을 조합하는 함수
-  const getTimeValue = (newMeridian: '오전' | '오후', newHour: number, newMinute: number) => {
-    const adjustedHour = newMeridian === '오전' ? newHour % 12 : (newHour % 12) + 12;
-    const formattedHour = String(adjustedHour).padStart(2, '0');
-    const formattedMinute = String(newMinute).padStart(2, '0');
-    return `${formattedHour}:${formattedMinute}`;
-  };
+  // 변경 핸들러들을 메모이제이션
+  const handleMeridianChange = useCallback(
+    (newMeridian: '오전' | '오후') => {
+      setMeridian(newMeridian);
+      onChange(getTimeValue(newMeridian, hour, minute));
+    },
+    [onChange, getTimeValue, hour, minute]
+  );
 
-  // 변경 핸들러
-  const handleMeridianChange = (newMeridian: '오전' | '오후') => {
-    setMeridian(newMeridian);
-    onChange(getTimeValue(newMeridian, hour, minute));
-  };
+  const handleHourChange = useCallback(
+    (newHour: number) => {
+      setHour(newHour);
+      onChange(getTimeValue(meridian, newHour, minute));
+    },
+    [onChange, getTimeValue, meridian, minute]
+  );
 
-  const handleHourChange = (newHour: number) => {
-    setHour(newHour);
-    onChange(getTimeValue(meridian, newHour, minute));
-  };
-
-  const handleMinuteChange = (newMinute: number) => {
-    setMinute(newMinute);
-    onChange(getTimeValue(meridian, hour, newMinute));
-  };
+  const handleMinuteChange = useCallback(
+    (newMinute: number) => {
+      setMinute(newMinute);
+      onChange(getTimeValue(meridian, hour, newMinute));
+    },
+    [onChange, getTimeValue, meridian, hour]
+  );
 
   return (
     <div>
       <div className="flex space-x-2">
-        {/* 오전/오후 선택 */}
         <select
           value={meridian}
-          onChange={(e) => handleMeridianChange(e.target.value as '오전' | '오후')}
+          onChange={(e) =>
+            handleMeridianChange(e.target.value as '오전' | '오후')
+          }
           className="rounded-lg bg-gray-100 p-3"
         >
           <option value="오전">오전</option>
           <option value="오후">오후</option>
         </select>
 
-        {/* 시간 선택 */}
         <select
           value={hour}
           onChange={(e) => handleHourChange(Number(e.target.value))}
@@ -74,20 +100,19 @@ export const TimeInput = ({
           ))}
         </select>
 
-        {/* 분 선택 */}
         <select
           value={minute}
           onChange={(e) => handleMinuteChange(Number(e.target.value))}
           className="rounded-lg bg-gray-100 p-3"
         >
-          {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+          {Array.from({ length: 12 }, (_, i) => i * 10).map((m) => (
             <option key={m} value={m}>
               {String(m).padStart(2, '0')}
             </option>
           ))}
         </select>
       </div>
-      {error && <p className="text-sm text-status-warning mt-1">{error}</p>}
+      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
     </div>
   );
 };

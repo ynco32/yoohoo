@@ -130,11 +130,14 @@ export const sharingAPI = {
   ): Promise<void> => {
     try {
       const formData = new FormData();
-      formData.append(
-        'sharingRequestDTO',
-        new Blob([JSON.stringify(data)], { type: 'application/json' })
-      );
+      formData.append('sharingRequestDTO', JSON.stringify(data)); // 문자열로 추가
       formData.append('file', file);
+
+      // FormData 내부 데이터 확인
+      console.log('[API 요청] 전송할 FormData:');
+      for (const [key, value] of formData.entries()) {
+        console.log(`  ${key}:`, value);
+      }
 
       await api.post('/api/v1/sharing', formData, {
         headers: {

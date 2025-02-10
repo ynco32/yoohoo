@@ -3,6 +3,7 @@ import {
   getSharingsByConcertId,
   getSharingById,
   getCommentsByPage,
+  addSharing,
 } from '../data/sharing.data';
 
 type PathParams = {
@@ -11,6 +12,80 @@ type PathParams = {
 };
 
 export const sharingHandlers = [
+  // 글 작성 API
+  rest.post('/api/v1/sharing', async (req, res, ctx) => {
+    try {
+      const data = await req.text();
+      const boundary = req.headers.get('content-type')?.split('boundary=')[1];
+
+      if (!boundary) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: 'Invalid content type' })
+        );
+      }
+
+      // FormData 파트 분리
+      const parts = data.split('--' + boundary);
+      let requestBody = null;
+      let hasFile = false;
+
+      for (const part of parts) {
+        if (part.includes('name="sharingRequestDTO"')) {
+          const jsonStr = part.split('\r\n\r\n')[1]?.split('\r\n')[0];
+          if (jsonStr) {
+            requestBody = JSON.parse(jsonStr);
+          }
+        }
+        if (part.includes('name="file"')) {
+          hasFile = true;
+        }
+      }
+
+      if (!requestBody || !hasFile) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: '필수 필드가 누락되었습니다.' })
+        );
+      }
+
+      // 필수 필드 검증
+      if (
+        !requestBody.title ||
+        !requestBody.content ||
+        typeof requestBody.latitude !== 'number' ||
+        typeof requestBody.longitude !== 'number' ||
+        !requestBody.startTime ||
+        typeof requestBody.concertId !== 'number'
+      ) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: '필수 필드가 누락되었습니다.' })
+        );
+      }
+
+      // 새로운 나눔 게시글 추가
+      const newSharing = addSharing({
+        ...requestBody,
+        status: 'UPCOMING',
+        nickname: '닉네임',
+        photoUrl: '/images/card.png',
+      });
+
+      return res(
+        ctx.status(201),
+        ctx.json({
+          message: '나눔 글 등록 성공',
+          sharingId: newSharing.sharingId,
+        })
+      );
+    } catch (error) {
+      console.error('❌ [MSW] 핸들러 내부 오류:', error);
+      return res(ctx.status(500), ctx.json({ message: '서버 내부 오류' }));
+    }
+  }),
+
+  // 나눔 글 전체 목록
   rest.get('/api/v1/sharing/:concertId', (req, res, ctx) => {
     const params = req.params as PathParams;
     const concertIdNum = Number(params.concertId);

@@ -88,9 +88,7 @@ export const SightReviewForm = React.memo(
       switch (currentStep) {
         case 0:
           return (
-            <>
-              <StepProgressBar currentStep={0} />
-
+            <div className="w-full">
               <ConcertSelect
                 artist={artist}
                 value={formData.concertId}
@@ -99,34 +97,33 @@ export const SightReviewForm = React.memo(
                 }
                 error={errors.concertId}
               />
-              <SeatSelect
-                value={{
-                  section: formData.section || null,
-                  rowLine: formData.rowLine || null,
-                  columnLine: formData.columnLine || null,
-                }}
-                onChange={(seatInfo) => {
-                  handleFieldChange('section', seatInfo.section ?? 0);
-                  handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
-                  handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
-                }}
-                error={errors.seat}
-              />
-            </>
+              <div className="mt-lg">
+                <SeatSelect
+                  value={{
+                    section: formData.section || null,
+                    rowLine: formData.rowLine || null,
+                    columnLine: formData.columnLine || null,
+                  }}
+                  onChange={(seatInfo) => {
+                    handleFieldChange('section', seatInfo.section ?? 0);
+                    handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
+                    handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
+                  }}
+                  error={errors.seat}
+                />
+              </div>
+            </div>
           );
         case 1:
           return (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <StepProgressBar currentStep={1} />
-                <ImageUpload
-                  value={formData.images[0]}
-                  onChange={(file) =>
-                    handleFieldChange('images', file ? [file] : [])
-                  }
-                  error={errors.images?.toString()}
-                />
-              </div>
+            <div className="w-full">
+              <ImageUpload
+                value={formData.images[0]}
+                onChange={(file) =>
+                  handleFieldChange('images', file ? [file] : [])
+                }
+                error={errors.images?.toString()}
+              />
               <ViewScoreSelect
                 value={formData.viewScore}
                 onChange={(viewScore) =>
@@ -138,8 +135,7 @@ export const SightReviewForm = React.memo(
           );
         case 2:
           return (
-            <>
-              <StepProgressBar currentStep={2} />
+            <div className="w-full">
               <OtherSelect
                 seatDistance={formData.seatDistance}
                 sound={formData.sound}
@@ -154,61 +150,70 @@ export const SightReviewForm = React.memo(
                 onChange={(content) => handleFieldChange('content', content)}
                 error={errors.content}
               />
-            </>
+            </div>
           );
       }
     };
 
     return (
       <div
-        className={`relative flex h-dvh w-full flex-col rounded-layout bg-white p-6 shadow-card ${className}`}
+        className={`shadow-card-colored relative flex h-dvh flex-col rounded-layout bg-white ${className}`}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+          className="absolute right-md top-md text-gray-500 hover:text-gray-700"
         >
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        {/* Title */}
-        <div className="text-center">
-          <h1 className="text-xl font-semibold">좌석의 후기를 남겨보세요</h1>
-        </div>
-
-        {/* Form Content */}
-        <form onSubmit={handleSubmit} className="mt-6 flex flex-1 flex-col">
-          <div className="flex-1 rounded-lg bg-white">
-            {renderStepContent()}
+        <form onSubmit={handleSubmit} className="flex flex-1 flex-col py-2xl">
+          {/* 상단 고정 영역 */}
+          <div className="bg-white px-md pt-2xl">
+            <StepProgressBar
+              currentStep={currentStep}
+              handleNext={handleNext}
+              handleBack={handleBack}
+            />
           </div>
 
-          {errors.submit && (
-            <p className="mt-4 text-sm text-status-warning">{errors.submit}</p>
-          )}
+          {/* 중앙 컨텐츠 영역 */}
+          <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-md py-lg">
+            <div className="w-full max-w-2xl">{renderStepContent()}</div>
+          </div>
 
-          {/* Navigation Buttons */}
-          <div className="mt-6 flex justify-between gap-4">
-            {currentStep > 0 && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="flex-1 rounded-lg border border-primary-main px-4 py-2 text-primary-main transition-colors hover:bg-primary-50"
-              >
-                이전
-              </button>
+          {/* 하단 고정 영역 */}
+          <div className="bg-white px-md py-md">
+            {errors.submit && (
+              <p className="mb-md text-sm text-status-warning">
+                {errors.submit}
+              </p>
             )}
-            <button
-              type={currentStep === STEPS.length - 1 ? 'submit' : 'button'}
-              onClick={currentStep < STEPS.length - 1 ? handleNext : undefined}
-              disabled={!canProceed || isSubmitting}
-              className="flex-1 rounded-lg bg-primary-main px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:bg-gray-300"
-            >
-              {currentStep === STEPS.length - 1
-                ? isSubmitting
-                  ? '제출 중...'
-                  : '작성하기'
-                : '다음'}
-            </button>
+            <div className="flex justify-between gap-md">
+              {currentStep > 0 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="hover:button h-12 flex-1 rounded-lg border border-sight-button px-md py-2 text-sight-button transition-colors"
+                >
+                  이전
+                </button>
+              )}
+              <button
+                type={currentStep === STEPS.length - 1 ? 'submit' : 'button'}
+                onClick={
+                  currentStep < STEPS.length - 1 ? handleNext : undefined
+                }
+                disabled={!canProceed || isSubmitting}
+                className="h-12 flex-1 rounded-lg bg-sight-button px-md py-2 text-white transition-colors hover:bg-sight-button disabled:bg-gray-300"
+              >
+                {currentStep === STEPS.length - 1
+                  ? isSubmitting
+                    ? '제출 중...'
+                    : '작성하기'
+                  : '다음'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

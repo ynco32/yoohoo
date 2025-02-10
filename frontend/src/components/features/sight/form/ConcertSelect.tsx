@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface Concert {
   concertId: number;
@@ -35,7 +34,7 @@ const Select = ({
           }
         }}
         disabled={disabled}
-        className={`w-full appearance-none rounded-lg border border-gray-200 bg-background-default p-3 text-gray-900 focus:border-primary-main focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
+        className={`w-full appearance-none rounded-md border border-gray-100 bg-background-default px-md py-md text-gray-900 focus:border-primary-main focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -44,7 +43,7 @@ const Select = ({
           </option>
         ))}
       </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-600">
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-xs text-gray-600">
         <svg
           className="h-4 w-4"
           fill="none"
@@ -92,15 +91,7 @@ export const ConcertSelect = ({
   }, [artist]);
 
   return (
-    <div className={`space-y-2 ${className}`}>
-      <FormSectionHeader
-        title="콘서트"
-        description={
-          artist != null
-            ? `${artist}의 콘서트 중 리뷰를 작성할 공연을 선택해주세요`
-            : '리뷰를 작성할 콘서트를 선택해주세요'
-        }
-      />
+    <div className={`space-y-xs ${className}`}>
       <Select
         options={filteredConcerts}
         value={value}
@@ -111,7 +102,7 @@ export const ConcertSelect = ({
             : '콘서트를 선택해주세요'
         }
       />
-      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
+      {error && <p className="mt-xs text-sm text-status-warning">{error}</p>}
     </div>
   );
 };

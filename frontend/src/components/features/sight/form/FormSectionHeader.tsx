@@ -12,7 +12,7 @@ export const FormSectionHeader = ({
   className = '',
 }: FormSectionHeaderProps) => {
   return (
-    <div className={`space-y-1 ${className}`}>
+    <div className={`space-y-xs ${className}`}>
       <h2 className="text-lg font-bold">{title}</h2>
       {description && <p className="text-sm text-gray-500">{description}</p>}
     </div>

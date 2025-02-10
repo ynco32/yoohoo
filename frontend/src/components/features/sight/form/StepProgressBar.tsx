@@ -4,12 +4,14 @@ interface StepProgressBarProps {
   currentStep: number;
   handleNext?: () => void;
   handleBack?: () => void;
+  className?: string;
 }
 
 const StepProgressBar: React.FC<StepProgressBarProps> = ({
   currentStep,
   handleNext,
   handleBack,
+  className = '',
 }) => {
   const getBarStyle = (stepNumber: number) => {
     if (currentStep === 0) {
@@ -26,23 +28,23 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
     if (step === currentStep) return;
 
     if (step < currentStep && handleBack) {
-      // 현재 스텝보다 이전 스텝을 클릭한 경우
       handleBack();
     } else if (step > currentStep && handleNext) {
-      // 현재 스텝보다 다음 스텝을 클릭한 경우
       handleNext();
     }
   };
 
   return (
-    <div className="flex h-[78px] w-[277px] flex-col items-center justify-center">
+    <div
+      className={`${className} mx-auto flex h-20 flex-col items-center justify-center space-y-md`}
+    >
       {/* Title */}
-      <h1 className="mb-3 text-title-bold text-gray-900">
+      <h1 className="mb-sm text-head-bold text-gray-900">
         좌석의 후기를 남겨보세요
       </h1>
 
       {/* Progress Bar */}
-      <div className="flex items-start justify-center space-x-8">
+      <div className="flex w-72 items-start justify-center space-x-lg">
         {/* 정보입력 섹션 */}
         <div
           className="group cursor-pointer text-center"
@@ -57,7 +59,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
           >
             정보입력
           </div>
-          <div className="mt-2 h-0.5 w-32 bg-gray-200 transition-colors duration-200 group-hover:bg-gray-300">
+          <div className="mt-xs h-0.5 w-16 bg-gray-200 transition-colors duration-200 group-hover:bg-gray-300">
             <div
               className={`h-full ${getBarStyle(0)} transition-duration-normal`}
             />
@@ -78,7 +80,7 @@ const StepProgressBar: React.FC<StepProgressBarProps> = ({
           >
             리뷰쓰기
           </div>
-          <div className="mt-2 flex w-32">
+          <div className="mt-xs flex w-16 gap-sm">
             <div className="h-0.5 flex-1 bg-gray-200 transition-colors duration-200 group-hover:bg-gray-300">
               <div
                 className={`h-full ${

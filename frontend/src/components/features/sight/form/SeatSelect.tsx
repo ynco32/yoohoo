@@ -1,5 +1,4 @@
 import React from 'react';
-import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface SeatInfo {
   section: number | null;
@@ -23,7 +22,7 @@ const SeatNumberInput = ({
   value?: number | null;
   onChange?: (value: string) => void;
 }) => (
-  <div className="w-20">
+  <div className="flex items-center space-x-2">
     <input
       type="number"
       value={value?.toString() || ''}
@@ -35,9 +34,9 @@ const SeatNumberInput = ({
       }}
       placeholder=""
       min={0}
-      className="w-full rounded border-b border-gray-200 bg-transparent p-2 text-center focus:border-primary-main focus:outline-none"
+      className="w-20 rounded-md bg-primary-50 p-2 text-center focus:outline-none focus:ring-2 focus:ring-primary-main"
     />
-    <p className="mt-1 text-center text-caption2 text-gray-500">{label}</p>
+    <span className="text-caption2 text-gray-500">{label}</span>
   </div>
 );
 
@@ -69,9 +68,8 @@ export const SeatSelect = ({
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      <FormSectionHeader title="좌석" />
-      <div className="flex items-end space-x-4">
+    <div className={`flex flex-col items-center ${className}`}>
+      <div className="flex items-start space-x-4">
         <SeatNumberInput
           label="구역"
           value={value.section}

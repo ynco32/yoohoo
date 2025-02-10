@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.global.auth.dto.RefreshTokenRequestDTO;
-import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
 import com.conkiri.global.auth.token.UserPrincipal;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -22,8 +22,10 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/refresh")
-	public TokenDTO refreshToken(@Valid @RequestBody RefreshTokenRequestDTO request) {
-		return authService.refreshToken(request.getRefreshToken().trim());
+	public void refreshToken(
+		@Valid @RequestBody RefreshTokenRequestDTO request,
+		HttpServletResponse response) {
+		authService.refreshToken(request.getRefreshToken().trim(), response);
 	}
 
 	@PostMapping("/logout")

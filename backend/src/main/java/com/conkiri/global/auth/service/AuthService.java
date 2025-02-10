@@ -2,6 +2,7 @@ package com.conkiri.global.auth.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,8 @@ import com.conkiri.global.auth.repository.AuthRepository;
 import com.conkiri.global.exception.auth.InvalidTokenException;
 import com.conkiri.global.util.JwtUtil;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,7 +27,10 @@ public class AuthService {
 	private final AuthRepository authRepository;
 	private final UserReadService userReadService;
 
-	public TokenDTO refreshToken(String refreshToken) {
+	@Value("${server.domain}")
+	private String serverDomain;
+
+	public void refreshToken(String refreshToken, HttpServletResponse response) {
 		if (!jwtUtil.validateToken(refreshToken)) {
 			throw new InvalidTokenException();
 		}
@@ -39,17 +45,13 @@ public class AuthService {
 		}
 
 		TokenDTO newTokens = jwtUtil.generateTokens(email);
-		saveRefreshToken(email, newTokens.getRefreshToken());
-		return newTokens;
+		saveRefreshToken(user, newTokens.getRefreshToken());
+		addRefreshTokenCookie(response, newTokens.getRefreshToken());
+		addAccessTokenCookie(response, newTokens.getAccessToken());
 	}
 
-	public void logout(String email) {
-		authRepository.deleteByUserEmail(email);
-	}
+	public void saveRefreshToken(User user, String refreshToken) {
 
-	public void saveRefreshToken(String email, String refreshToken) {
-
-		User user = userReadService.findUserByEmailOrElseThrow(email);
 		Auth token = authRepository.findByUser(user)
 			.map(existingToken -> {
 				existingToken.updateToken(
@@ -67,5 +69,28 @@ public class AuthService {
 				.build());
 
 		authRepository.save(token);
+	}
+
+	public void addAccessTokenCookie(HttpServletResponse response, String accessToken) {
+		Cookie cookie = new Cookie("access_token", accessToken);
+		cookie.setSecure(false);
+		cookie.setPath("/");
+		cookie.setDomain(serverDomain);
+		cookie.setMaxAge(10800); // 3시간
+		response.addCookie(cookie);
+	}
+
+	public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+		Cookie cookie = new Cookie("refresh_token", refreshToken);
+		cookie.setHttpOnly(false);
+		cookie.setSecure(false);
+		cookie.setPath("/");
+		cookie.setMaxAge(14 * 24 * 60 * 60); // 14일
+		cookie.setDomain(serverDomain); // 도메인 설정 추가
+		response.addCookie(cookie);
+	}
+
+	public void logout(String email) {
+		authRepository.deleteByUserEmail(email);
 	}
 }

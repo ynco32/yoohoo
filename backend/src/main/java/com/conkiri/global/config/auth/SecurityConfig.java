@@ -95,7 +95,7 @@ public class SecurityConfig {
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
 		// 쿠키 및 Authorization 헤더 노출 허용
-		configuration.setExposedHeaders(Arrays.asList("Authorization"));
+		configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

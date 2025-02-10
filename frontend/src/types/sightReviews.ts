@@ -1,6 +1,6 @@
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-export type SoundStatus = '나쁨' | '보통' | '좋음';
-export type ViewQualityStatus = string; // TODO: 실제 가능한 값들로 타입 제한 필요
+export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
+export type ViewQualityStatus = number; // viewScore로 변경되어 number 타입으로 수정
 
 export interface SightReviewData {
   arenaId: number;
@@ -18,20 +18,16 @@ export interface SightReviewData {
 }
 
 export interface SightReviewFormData {
+  concertId: number;
   section: number;
   rowLine: number;
   columnLine: number;
-  concertId: number;
   images: File[];
-  content: string;
   viewScore: number;
   seatDistance: SeatDistanceStatus;
   sound: SoundStatus;
+  content: string;
 }
-
-export type FormErrors = Partial<
-  Record<keyof SightReviewFormData | 'submit', string>
->;
 
 export interface SeatInfo {
   section: number | null;
@@ -39,12 +35,31 @@ export interface SeatInfo {
   columnLine: number | null;
 }
 
-export interface SeatSelectProps {
-  value: SeatInfo;
-  onChange: (value: SeatInfo) => void;
-  onValidation?: (result: { isValid: boolean; error?: string }) => void;
+export type FormErrors = Partial<
+  Record<keyof SightReviewFormData | 'submit' | 'seat', string>
+>;
+
+export interface ValidationState {
+  concertId: boolean;
+  images: boolean;
+  viewScore: boolean;
+  seat: boolean;
+  seatDistance: boolean;
+  content: boolean;
 }
 
+export interface TouchedState {
+  concertId: boolean;
+  images: boolean;
+  viewScore: boolean;
+  seat: boolean;
+  seatDistance: boolean;
+  content: boolean;
+}
+
+export type ValidFields = keyof ValidationState;
+
+// 목업 데이터는 유지
 export const mockReviewData: SightReviewData[] = [
   {
     arenaId: 1,
@@ -57,9 +72,9 @@ export const mockReviewData: SightReviewData[] = [
     images: ['/images/sight.png'],
     content:
       '소학교 때 책상을 같이 했던 아이들의 이름과 때, 경, 옥 이런 이국소녀들의 이름과 떠써 아기 어머니된 계집애들의 이름과, 가난한 이웃 사람들의 이름과, 비둘기, 강아지, 토끼, 노루, 노루, 프랑시스 잠 ...',
-    viewQuality: '하나님석 잘 보여요',
-    soundQuality: '음향 평범해요',
-    seatQuality: '좌석 평범해요',
+    viewQuality: 5,
+    soundQuality: '선명해요',
+    seatQuality: '평범해요',
   },
   {
     arenaId: 1,
@@ -72,9 +87,9 @@ export const mockReviewData: SightReviewData[] = [
     images: ['/images/sight.png', '/images/sight.png'],
     content:
       '공연장 분위기가 정말 좋았어요. 특히 앵콜 무대에서 보여준 퍼포먼스는 잊을 수 없을 것 같아요!',
-    viewQuality: '시야 좋아요',
-    soundQuality: '음향 매우 좋음',
-    seatQuality: '좌석 편해요',
+    viewQuality: 4,
+    soundQuality: '선명해요',
+    seatQuality: '넓어요',
   },
   {
     arenaId: 2,
@@ -87,8 +102,8 @@ export const mockReviewData: SightReviewData[] = [
     images: [],
     content:
       '음향이 살짝 아쉬웠지만 무대는 정말 최고였습니다. 다음에도 꼭 보러 올게요!',
-    viewQuality: '무대가 잘 보여요',
-    soundQuality: '음향이 조금 아쉬워요',
-    seatQuality: '좌석은 괜찮아요',
+    viewQuality: 3,
+    soundQuality: '잘 안 들려요',
+    seatQuality: '좁아요',
   },
 ];

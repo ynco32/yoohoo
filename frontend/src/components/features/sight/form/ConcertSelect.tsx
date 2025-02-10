@@ -1,11 +1,6 @@
-import React, { useMemo } from 'react';
-import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
-
-interface Concert {
-  concertId: number;
-  label: string;
-  artist: string;
-}
+import React, { useEffect, useState } from 'react';
+import { Concert, concertAPI } from '@/lib/api/concertSight';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 
 interface SelectProps {
   options: Concert[];
@@ -15,6 +10,18 @@ interface SelectProps {
   disabled?: boolean;
   className?: string;
 }
+
+const formatDateTime = (dateTimeStr: string): string => {
+  const date = new Date(dateTimeStr);
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+};
 
 const Select = ({
   options,
@@ -35,16 +42,16 @@ const Select = ({
           }
         }}
         disabled={disabled}
-        className={`w-full appearance-none rounded-lg border border-gray-200 bg-background-default p-3 text-gray-900 focus:border-primary-main focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
+        className={`w-full appearance-none rounded-md border border-gray-100 bg-background-default px-md py-md text-gray-900 focus:border-primary-main focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
       >
         <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.concertId} value={option.concertId}>
-            {option.label}
+        {options.map((concert) => (
+          <option key={concert.concertId} value={concert.concertId}>
+            {concert.concertName} ({formatDateTime(concert.startTime)})
           </option>
         ))}
       </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-600">
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-xs text-gray-600">
         <svg
           className="h-4 w-4"
           fill="none"
@@ -64,7 +71,6 @@ const Select = ({
 };
 
 interface ConcertSelectProps {
-  artist?: string;
   value: number | null;
   onChange: (value: number) => void;
   error?: string;
@@ -72,46 +78,85 @@ interface ConcertSelectProps {
 }
 
 export const ConcertSelect = ({
-  artist,
   value = null,
   onChange,
   error,
   className = '',
 }: ConcertSelectProps) => {
-  const concerts: Concert[] = [
-    { concertId: 1, label: 'WORLD TOUR [BORN PINK]', artist: 'BLACKPINK' },
-    { concertId: 2, label: '5TH WORLD TOUR', artist: 'TWICE' },
-    { concertId: 3, label: 'TOUR THE DREAM SHOW2', artist: 'NCT DREAM' },
-    { concertId: 4, label: 'WORLD TOUR [SYNK]', artist: 'BLACKPINK' },
-    { concertId: 5, label: 'READY TO BE', artist: 'TWICE' },
-  ];
+  const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-  const filteredConcerts = useMemo(() => {
-    if (artist == null) return concerts;
-    return concerts.filter((concert) => concert.artist === artist);
-  }, [artist]);
+  // 검색어 디바운싱 처리
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // API 호출
+  useEffect(() => {
+    const fetchConcerts = async () => {
+      try {
+        setLoading(true);
+        setApiError(null);
+        const response =
+          await concertAPI.getConcertsByArtist(debouncedSearchTerm);
+        setConcerts(response.concerts);
+      } catch (error) {
+        if (error instanceof Error) {
+          setApiError(error.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConcerts();
+  }, [debouncedSearchTerm]);
 
   return (
-    <div className={`space-y-2 ${className}`}>
-      <FormSectionHeader
-        title="콘서트"
-        description={
-          artist != null
-            ? `${artist}의 콘서트 중 리뷰를 작성할 공연을 선택해주세요`
-            : '리뷰를 작성할 콘서트를 선택해주세요'
-        }
-      />
+    <div className={`space-y-sm ${className}`}>
+      {/* 검색 입력 필드 */}
+      <div className="relative max-w-[100px]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
+          <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="가수 이름을 입력해주세요"
+          className="w-full border-0 border-b border-gray-200 bg-transparent py-2 pl-8 pr-3 text-sm text-gray-900 focus:border-primary-main focus:outline-none focus:ring-0" /* 스타일 변경 */
+        />
+      </div>
+
+      {/* Select 컴포넌트 */}
       <Select
-        options={filteredConcerts}
+        options={concerts}
         value={value}
         onChange={onChange}
         placeholder={
-          artist != null
-            ? `${artist}의 콘서트를 선택해주세요`
+          searchTerm
+            ? `${searchTerm}의 콘서트를 선택해주세요`
             : '콘서트를 선택해주세요'
         }
+        disabled={loading}
       />
-      {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
+
+      {/* 에러 메시지 */}
+      {(error || apiError) && (
+        <p className="mt-xs text-sm text-status-warning">{error || apiError}</p>
+      )}
+
+      {/* 로딩 중이 아니고 검색 결과가 없는 경우 */}
+      {!loading && searchTerm && concerts.length === 0 && (
+        <p className="text-sm text-gray-500">검색 결과가 없습니다.</p>
+      )}
     </div>
   );
 };

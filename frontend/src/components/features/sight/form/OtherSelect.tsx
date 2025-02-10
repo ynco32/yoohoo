@@ -3,7 +3,7 @@ import { ToggleButtonGroup } from '@/components/ui/ToggleButtonGroup';
 import { FormSectionHeader } from './FormSectionHeader';
 
 type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-type SoundStatus = '나쁨' | '보통' | '좋음';
+type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
 
 interface OtherSelectProps {
   seatDistance?: SeatDistanceStatus;
@@ -19,7 +19,7 @@ const SEAT_DISTANCE_OPTIONS: SeatDistanceStatus[] = [
   '평범해요',
   '넓어요',
 ];
-const SOUND_OPTIONS: SoundStatus[] = ['나쁨', '보통', '좋음'];
+const SOUND_OPTIONS: SoundStatus[] = ['잘 안 들려요', '평범해요', '선명해요'];
 
 export const OtherSelect = ({
   seatDistance,
@@ -30,20 +30,21 @@ export const OtherSelect = ({
   className = '',
 }: OtherSelectProps) => {
   return (
-    <div className={`space-y-6 ${className}`}>
-      <FormSectionHeader title="기타" />
+    <div className={`mt-2 space-y-2 px-4 ${className}`}>
       <div className="space-y-4">
-        <div className="space-y-2">
-          <p className="text-sm text-gray-600">좌석 간격</p>
+        <div>
+          <FormSectionHeader title="좌석 간격" />
           <ToggleButtonGroup
+            className="mt-sm"
             options={SEAT_DISTANCE_OPTIONS}
             value={seatDistance}
             onChange={onSeatDistanceChange}
           />
         </div>
-        <div className="space-y-2">
-          <p className="text-sm text-gray-600">음향</p>
+        <div className="space-y-md">
+          <FormSectionHeader title="음향" />
           <ToggleButtonGroup
+            className="mt-sm"
             options={SOUND_OPTIONS}
             value={sound}
             onChange={onSoundChange}

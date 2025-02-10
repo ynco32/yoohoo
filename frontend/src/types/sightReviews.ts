@@ -1,3 +1,7 @@
+export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
+export type SoundStatus = '나쁨' | '보통' | '좋음';
+export type ViewQualityStatus = string; // TODO: 실제 가능한 값들로 타입 제한 필요
+
 export interface SightReviewData {
   arenaId: number;
   sectionId: number;
@@ -8,9 +12,37 @@ export interface SightReviewData {
   seatInfo: string;
   images: string[];
   content: string;
-  viewQuality: string;
+  viewQuality: ViewQualityStatus;
   soundQuality: string;
   seatQuality: string;
+}
+
+export interface SightReviewFormData {
+  section: number;
+  rowLine: number;
+  columnLine: number;
+  concertId: number;
+  images: File[];
+  content: string;
+  viewScore: number;
+  seatDistance: SeatDistanceStatus;
+  sound: SoundStatus;
+}
+
+export type FormErrors = Partial<
+  Record<keyof SightReviewFormData | 'submit', string>
+>;
+
+export interface SeatInfo {
+  section: number | null;
+  rowLine: number | null;
+  columnLine: number | null;
+}
+
+export interface SeatSelectProps {
+  value: SeatInfo;
+  onChange: (value: SeatInfo) => void;
+  onValidation?: (result: { isValid: boolean; error?: string }) => void;
 }
 
 export const mockReviewData: SightReviewData[] = [

@@ -139,6 +139,7 @@ module.exports = {
           arenaType: '#ECF7FF',
           badge: '#0077FF',
           bg: '#DFF3FF',
+          button: '#4986E8',
         },
         gray: {
           900: '#101014',

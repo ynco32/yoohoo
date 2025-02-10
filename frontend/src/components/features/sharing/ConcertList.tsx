@@ -3,9 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ConcertItem } from './ConcertItem';
 import { Concert, concertAPI } from '@/lib/api/concert';
-
-// 개발 중 MSW 체크를 건너뛰기 위한 플래그
-const SKIP_MSW_CHECK = true;
+import { useMswInit } from '@/hooks/useMswInit';
 
 export const ConcertList = () => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
@@ -15,58 +13,28 @@ export const ConcertList = () => {
   const [lastConcertId, setLastConcertId] = useState<number | undefined>(
     undefined
   );
-  const [mswInitialized, setMswInitialized] = useState(false);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const isFetching = useRef(false);
   const isInitialized = useRef(false);
   const lastElementRef = useRef<HTMLDivElement | null>(null);
 
-  /**
-   * MSW 초기화 상태 확인
-   */
-  useEffect(() => {
-    console.log('MSW 초기화 상태 체크 시작');
-
-    if (SKIP_MSW_CHECK) {
-      console.log('MSW 체크 스킵 모드 활성화');
-      setMswInitialized(true);
-      return;
-    }
-
-    if (window.mswInitialized) {
-      console.log('MSW 이미 초기화됨');
-      setMswInitialized(true);
-    } else {
-      console.log('MSW 초기화 대기 시작');
-      const interval = setInterval(() => {
-        if (window.mswInitialized) {
-          console.log('MSW 초기화 완료 감지');
-          setMswInitialized(true);
-          clearInterval(interval);
-        }
-      }, 100);
-
-      return () => clearInterval(interval);
-    }
-  }, []);
+  // MSW 초기화 상태
+  const { mswInitialized } = useMswInit();
 
   /**
    * 공연 데이터를 불러오는 함수
    */
   const fetchConcerts = useCallback(async () => {
-    // MSW 체크는 별도로 진행
-    if (!SKIP_MSW_CHECK && !mswInitialized) {
+    if (!mswInitialized) {
       console.log('MSW 초기화 대기 중 - API 호출 스킵');
       return;
     }
 
-    // 일반적인 fetch 조건 체크
     if (!hasMore || isFetching.current) {
       console.log('fetchConcerts 실행 중단: 조건 미충족', {
         isFetching: isFetching.current,
         hasMore,
-        reason: !hasMore ? '더 이상 불러올 데이터 없음' : '기타 조건',
       });
       return;
     }
@@ -79,7 +47,6 @@ export const ConcertList = () => {
       const response = await concertAPI.getConcerts(undefined, lastConcertId);
       console.log('ConcertList - API Response:', response);
 
-      // 마지막 페이지 상태를 먼저 업데이트
       const isLastPage = response.lastPage;
       setHasMore(!isLastPage);
 
@@ -97,7 +64,6 @@ export const ConcertList = () => {
         return uniqueConcerts;
       });
 
-      // 마지막 페이지일 경우 명시적 로그 추가
       if (isLastPage) {
         console.log('마지막 페이지에 도달했습니다.');
       }
@@ -117,18 +83,14 @@ export const ConcertList = () => {
    * Intersection Observer 설정
    */
   const setupIntersectionObserver = useCallback(() => {
-    // 기존 옵저버 해제
     if (observer.current) {
       observer.current.disconnect();
     }
 
-    // 마지막 요소가 없으면 중단
     if (!lastElementRef.current) return;
 
-    // 새 옵저버 생성
     observer.current = new IntersectionObserver(
       (entries) => {
-        // 마지막 요소가 뷰포트에 들어오고, 현재 fetching 중이 아니며, 더 불러올 데이터가 있을 때
         if (entries[0].isIntersecting && !isFetching.current && hasMore) {
           console.log('Intersection Observer triggered');
           fetchConcerts();
@@ -139,7 +101,6 @@ export const ConcertList = () => {
       }
     );
 
-    // 마지막 요소 관찰 시작
     observer.current.observe(lastElementRef.current);
   }, [fetchConcerts, hasMore]);
 
@@ -159,8 +120,7 @@ export const ConcertList = () => {
    */
   useEffect(() => {
     if (!isInitialized.current) {
-      // MSW 체크 별도 진행
-      if (!SKIP_MSW_CHECK && !mswInitialized) {
+      if (!mswInitialized) {
         console.log('MSW 초기화 대기 중 - 초기 데이터 로드 스킵');
         return;
       }

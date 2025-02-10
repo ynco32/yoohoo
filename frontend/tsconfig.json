@@ -32,5 +32,12 @@
     "src/types/**/*.d.ts",
     "tailwind.config.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/*.stories.tsx",
+    "**/*.stories.ts",
+    "**/stories/**",
+    ".next",
+    "storybook-static"
+  ]
 }

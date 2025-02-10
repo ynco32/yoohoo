@@ -69,7 +69,7 @@ export const concertAPI = {
         );
       }
       // 네트워크 에러 등 서버 응답을 받지 못한 경우
-      throw new ApiError(0, '서버와의 통신 중 오류가 발생했습니다.');
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
 };

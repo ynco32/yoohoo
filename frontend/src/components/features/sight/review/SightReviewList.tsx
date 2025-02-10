@@ -43,17 +43,38 @@ export function SightReviewList() {
   const stageType = searchParams.get('stageType') || '';
 
   useEffect(() => {
+    console.log({
+      arenaId,
+      stageType,
+      sectionId,
+      seatId,
+      isValidParams: Boolean(arenaId && stageType && sectionId),
+    });
+
     const fetchReviews = async () => {
-      if (!arenaId || !stageType || !sectionId) return;
+      if (!arenaId || !stageType || !sectionId) {
+        console.log('필수 파라미터 누락');
+        return;
+      }
 
       try {
         setIsLoading(true);
         setError(null);
+
+        console.log('API 요청 파라미터:', {
+          arenaId,
+          stageType,
+          section: sectionId,
+          seatId,
+        });
+
         const response = await getArenaReviews(arenaId, {
           stageType,
           section: sectionId,
           ...(seatId && { seatId }),
         });
+
+        console.log('API 응답:', response);
 
         const mappedReviews = response.reviews.map((review) =>
           mapApiToSightReview(review, arenaId, sectionId)
@@ -61,6 +82,7 @@ export function SightReviewList() {
 
         setReviews(mappedReviews);
       } catch (err) {
+        console.error('에러 발생:', err);
         setError(
           err instanceof Error ? err.message : '리뷰를 불러오는데 실패했습니다.'
         );

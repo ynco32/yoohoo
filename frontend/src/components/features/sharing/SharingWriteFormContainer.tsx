@@ -11,7 +11,7 @@ interface SharingWriteFormContainerProps {
   formData: SharingFormData; // ✅ 기존 데이터 유지
   setFormData: React.Dispatch<React.SetStateAction<SharingFormData>>; // ✅ 상태 업데이트 함수
   onLocationReset: () => void;
-  onSubmitComplete: () => void;
+  onSubmitComplete: (sharingId: number) => void;
 }
 
 export function SharingWriteFormContainer({
@@ -37,8 +37,11 @@ export function SharingWriteFormContainer({
       const postData = { ...formData };
 
       if (formData.image) {
-        await sharingAPI.createSharing(postData, formData.image);
-        onSubmitComplete();
+        const sharingId = await sharingAPI.createSharing(
+          postData,
+          formData.image
+        );
+        onSubmitComplete(sharingId); // sharingId를 전달
       } else {
         setErrors((prev) => ({ ...prev, image: '이미지를 업로드해주세요.' }));
       }

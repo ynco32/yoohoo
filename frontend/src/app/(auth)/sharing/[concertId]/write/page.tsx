@@ -18,6 +18,9 @@ export default function SharingWritePage() {
   const [step, setStep] = useState<'location' | 'form'>('location');
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [completedSharingId, setCompletedSharingId] = useState<number | null>(
+    null
+  );
 
   const params = useParams();
   const concertId =
@@ -51,14 +54,17 @@ export default function SharingWritePage() {
   };
 
   // 글 작성 완료 시 모달 오픈
-  const handleSubmitComplete = () => {
+  const handleSubmitComplete = (sharingId: number) => {
+    setCompletedSharingId(sharingId);
     setIsCompleteModalOpen(true);
   };
 
-  // 모달 닫기 및 글 목록으로 이동
+  // 모달 닫기 및 상세페이지로 이동
   const handleModalClose = () => {
     setIsCompleteModalOpen(false);
-    router.push(`/sharing/${concertId}`);
+    if (completedSharingId) {
+      router.replace(`/sharing/${concertId}/${completedSharingId}`);
+    }
   };
 
   return (

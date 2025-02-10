@@ -13,7 +13,7 @@ interface SharingWriteFormProps {
   onFormChange: (data: SharingFormData) => void;
   onSubmit: () => void;
   onLocationReset: () => void;
-  onSubmitComplete: () => void;
+  onSubmitComplete: (sharingId: number) => void;
   isSubmitting: boolean;
   errors: { [key: string]: string };
 }

@@ -127,7 +127,7 @@ export const sharingAPI = {
   createSharing: async (
     data: Omit<SharingFormData, 'image'>,
     file: File
-  ): Promise<void> => {
+  ): Promise<number> => {
     try {
       const formData = new FormData();
       formData.append('sharingRequestDTO', JSON.stringify(data)); // 문자열로 추가
@@ -139,11 +139,17 @@ export const sharingAPI = {
         console.log(`  ${key}:`, value);
       }
 
-      await api.post('/api/v1/sharing', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post<{ sharingId: number }>(
+        '/api/v1/sharing',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      return response.data.sharingId; // sharingId 반환
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {

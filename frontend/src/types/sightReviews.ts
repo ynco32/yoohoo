@@ -1,5 +1,5 @@
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-export type SoundStatus = '나쁨' | '보통' | '좋음';
+export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
 export type ViewQualityStatus = string; // TODO: 실제 가능한 값들로 타입 제한 필요
 
 export interface SightReviewData {

@@ -3,7 +3,7 @@ import { ToggleButtonGroup } from '@/components/ui/ToggleButtonGroup';
 import { FormSectionHeader } from './FormSectionHeader';
 
 type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-type SoundStatus = '나쁨' | '보통' | '좋음';
+type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
 
 interface OtherSelectProps {
   seatDistance?: SeatDistanceStatus;
@@ -19,7 +19,7 @@ const SEAT_DISTANCE_OPTIONS: SeatDistanceStatus[] = [
   '평범해요',
   '넓어요',
 ];
-const SOUND_OPTIONS: SoundStatus[] = ['나쁨', '보통', '좋음'];
+const SOUND_OPTIONS: SoundStatus[] = ['잘 안 들려요', '평범해요', '선명해요'];
 
 export const OtherSelect = ({
   seatDistance,

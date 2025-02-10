@@ -29,6 +29,9 @@ public class ReviewDetailResponseDTO {
 	private LocalDateTime writeTime;
 	private LocalDateTime modifyTime;
 	private StageType stageType;
+	private String level;
+	private String nickname;
+	private String concertName;
 
 	public static ReviewDetailResponseDTO from(Review review) {
 		return ReviewDetailResponseDTO.builder()
@@ -43,6 +46,9 @@ public class ReviewDetailResponseDTO {
 			.writeTime(review.getWriteTime())
 			.modifyTime(review.getModifyTime())
 			.stageType(review.getStageType())
+			.level(review.getUser().getLevel())
+			.nickname(review.getUser().getNickname())
+			.concertName(review.getConcert().getConcertName())
 			.build();
 	}
 }

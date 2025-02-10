@@ -8,7 +8,6 @@ import { SharingDetailMap } from './SharingDetailMap';
 import { SharingDetailComments } from './SharingDetailComments';
 import { sharingAPI } from '@/lib/api/sharing';
 import { SharingPost } from '@/types/sharing';
-import { MOCK_COMMENTS } from '@/types/sharing';
 import { useMswInit } from '@/hooks/useMswInit';
 
 interface SharingDetailProps {
@@ -84,7 +83,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
         />
 
         {/* 댓글 */}
-        <SharingDetailComments comments={MOCK_COMMENTS} />
+        <SharingDetailComments sharingId={id} />
       </div>
     </div>
   );

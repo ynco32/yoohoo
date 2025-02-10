@@ -6,7 +6,6 @@ import { SharingPost } from '@/types/sharing';
 
 export interface SharingListProps {
   posts: SharingPost[];
-  onMount?: () => void; // 컴포넌트가 마운트될 때 호출될 함수
   concertId: number;
   isLoading: boolean;
   hasMore: boolean;
@@ -19,17 +18,11 @@ export interface SharingListProps {
  */
 export const SharingList = ({
   posts,
-  onMount,
   concertId,
   isLoading,
   hasMore,
   onLoadMore,
 }: SharingListProps) => {
-  useEffect(() => {
-    // 컴포넌트가 마운트될 때 스크롤을 맨 위로 이동
-    onMount?.();
-  }, [onMount]);
-
   const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

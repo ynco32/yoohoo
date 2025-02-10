@@ -2,28 +2,26 @@ interface TextAreaProps {
   value: string;
   onChange: (value: string) => void;
   error?: string;
-  label?: string;
   placeholder?: string;
   className?: string;
-  minHeight?: string;
+  rows?: number; // ✅ 줄 수 설정
 }
 
 export const TextArea = ({
   value,
   onChange,
   error,
-  label,
   placeholder = '',
   className = '',
-  minHeight = 'min-h-[120px]',
+  rows = 4,
 }: TextAreaProps) => (
   <div className={className}>
-    {label && <label className="mb-1 block text-sm">{label}</label>}
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full rounded-lg bg-gray-100 p-3 ${minHeight} resize-none`}
+      rows={rows}
+      className={`text-m w-full resize-none rounded-lg bg-gray-100 p-3`}
     />
     {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
   </div>

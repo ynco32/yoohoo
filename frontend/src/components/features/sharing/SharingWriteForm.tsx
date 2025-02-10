@@ -4,9 +4,11 @@ import React from 'react';
 import { SharingFormData } from '@/types/sharing';
 import { TitleInput } from './TitleInput';
 import { TimeInput } from './TimeInput';
-import { PhotoUpload } from '@/components/common/PhotoUpload';
+import { ImageUpload } from '@/components/features/sight/form/ImageUpload';
 import { TextArea } from '@/components/common/TextArea';
 import { TextButton } from '@/components/ui/TextButton';
+import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
+import { sharingAPI } from '@/lib/api/sharing';
 
 interface SharingWriteFormProps {
   location: { latitude: number; longitude: number };
@@ -26,12 +28,10 @@ type FormErrors = {
 };
 
 export const SharingWriteForm = ({
-  location,
   formData,
   onFormChange,
   onSubmitComplete,
   onLocationReset,
-  concertId,
 }: SharingWriteFormProps) => {
   const [errors, setErrors] = React.useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -62,8 +62,26 @@ export const SharingWriteForm = ({
     if (validateForm()) {
       try {
         setIsSubmitting(true);
-        await onSubmitComplete();
-      } catch (error) {
+
+        const postData = {
+          title: formData.title,
+          content: formData.content,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+          startTime: formData.startTime,
+          concertId: formData.concertId,
+        };
+
+        if (formData.image) {
+          await sharingAPI.createSharing(postData, formData.image);
+          onSubmitComplete(); // 성공 시 콜백 호출
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            image: '이미지를 업로드해주세요.',
+          }));
+        }
+      } catch (_error) {
         setErrors((prev) => ({
           ...prev,
           submit: '나눔 등록에 실패했습니다. 다시 시도해주세요.',
@@ -78,39 +96,61 @@ export const SharingWriteForm = ({
     <div className="flex h-[calc(100vh-56px)] w-full max-w-[430px] flex-col">
       <div className="h-full overflow-y-auto">
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4 p-4">
+          <div className="space-y-6 p-4">
+            {/* 제목 섹션 */}
+            <FormSectionHeader
+              title="제목"
+              description="나눔할 물건의 제목을 입력해주세요"
+            />
             <TitleInput
               value={formData.title || ''}
               onChange={(title) => onFormChange({ ...formData, title })}
               error={errors.title}
+            />
+
+            {/* 시간 섹션 */}
+            <FormSectionHeader
+              title="시간 선택"
+              description="나눔을 시작할 시간을 설정해주세요"
             />
             <TimeInput
               value={formData.startTime || ''}
               onChange={(startTime) => onFormChange({ ...formData, startTime })}
               error={errors.startTime}
             />
-            <PhotoUpload
-              value={formData.image}
+
+            {/* 사진 섹션 */}
+            <FormSectionHeader
+              title="사진 업로드"
+              description="나눔할 물건의 사진을 업로드해주세요"
+            />
+            <ImageUpload
+              value={formData.image || undefined}
               onChange={(image) => onFormChange({ ...formData, image })}
               error={errors.image}
-              label="사진"
-              placeholder="사진을 업로드해주세요"
+            />
+
+            {/* 상세 내용 섹션 */}
+            <FormSectionHeader
+              title="상세 내용"
+              description="나눔할 물건에 대한 자세한 설명을 입력해주세요"
             />
             <TextArea
               value={formData.content}
               onChange={(content) => onFormChange({ ...formData, content })}
               error={errors.content}
-              label="상세 내용"
               placeholder="상세 내용을 입력해주세요"
             />
           </div>
         </form>
       </div>
 
+      {/* 에러 메시지 */}
       {errors.submit && (
         <p className="px-4 text-sm text-status-warning">{errors.submit}</p>
       )}
 
+      {/* 버튼 섹션 */}
       <div className="space-y-2 p-4">
         <TextButton variant="outline" onClick={onLocationReset}>
           위치 다시 선택하기

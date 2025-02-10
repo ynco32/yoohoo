@@ -33,15 +33,22 @@ export const sharingHandlers = [
       filteredSharings = allSharings.slice(0, ITEMS_PER_PAGE);
     }
 
+    // 현재 요청에서 가져온 데이터 이후의 남은 데이터 길이 계산
+    const nextStartIndex =
+      lastSharingId !== null
+        ? allSharings.findIndex(
+            (sharing) => sharing.sharingId === lastSharingId
+          ) + filteredSharings.length
+        : filteredSharings.length;
+
+    const remainingItems = allSharings.length - nextStartIndex;
+
     return res(
       ctx.delay(300),
       ctx.status(200),
       ctx.json({
         sharings: filteredSharings,
-        isLastPage:
-          filteredSharings.length === 0 ||
-          filteredSharings[filteredSharings.length - 1].sharingId ===
-            allSharings[allSharings.length - 1].sharingId,
+        lastPage: remainingItems <= 0,
       })
     );
   }),

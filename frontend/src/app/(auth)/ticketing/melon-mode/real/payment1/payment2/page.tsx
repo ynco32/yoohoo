@@ -147,7 +147,9 @@ export default function PaymentPage() {
         <section className="rounded-md bg-gray-50 p-4">
           <div className="mb-2 flex items-center justify-between">
             <span>총 결제금액</span>
-            <span className="text-xl font-bold text-blue-500">79,000원</span>
+            <span className="text-xl font-bold text-primary-main">
+              79,000원
+            </span>
           </div>
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>티켓금액</span>
@@ -173,7 +175,7 @@ export default function PaymentPage() {
         {/* 결제하기 버튼 */}
         <button
           onClick={handleSubmit}
-          className="w-full rounded-md bg-blue-500 py-4 text-lg text-white"
+          className="w-full rounded-md bg-primary-main py-4 text-lg text-white"
         >
           79,000원 결제하기
         </button>

@@ -24,7 +24,6 @@ export const SharingView = () => {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const { mswInitialized } = useMswInit();
-  const [shouldScrollTop, setShouldScrollTop] = useState(false);
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -121,29 +120,16 @@ export const SharingView = () => {
   const handleViewModeChange = useCallback(
     (newMode: ViewMode) => {
       setViewMode(newMode);
-      setShouldScrollTop(true); // 뷰 모드 변경 시에만 스크롤 탑 설정
-
       if (newMode === 'map') {
         setDisplayedPosts(allPosts);
         setCurrentPage(0);
       } else {
         setDisplayedPosts(allPosts.slice(0, ITEMS_PER_PAGE));
         setHasMore(allPosts.length > ITEMS_PER_PAGE);
-        if (containerRef.current) {
-          containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-        }
       }
     },
     [allPosts]
   );
-
-  // 컴포넌트 마운트 핸들러
-  const handleMount = useCallback(() => {
-    if (shouldScrollTop && containerRef.current) {
-      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      setShouldScrollTop(false);
-    }
-  }, [shouldScrollTop]);
 
   return (
     <div
@@ -172,7 +158,6 @@ export const SharingView = () => {
         {viewMode === 'list' && (
           <SharingList
             posts={displayedPosts}
-            onMount={handleMount}
             concertId={concertId}
             isLoading={isLoading}
             hasMore={hasMore}

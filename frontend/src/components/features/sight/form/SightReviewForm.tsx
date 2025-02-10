@@ -64,18 +64,25 @@ export const SightReviewForm = React.memo(
         setTouched(validationField);
       }
     };
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       clearErrors();
+
+      // 디버깅을 위한 콘솔 로그 추가
+      console.log('Form validation:', validateStep(STEPS[currentStep].id));
+      console.log('Form is valid:', isFormValid());
+      console.log('onSubmit exists:', !!onSubmit);
 
       if (!validateStep(STEPS[currentStep].id)) return;
       if (!isFormValid() || !onSubmit) return;
 
       try {
         setIsSubmitting(true);
+        // 디버깅을 위한 콘솔 로그 추가
+        console.log('Submitting form data:', formData);
         const result = await onSubmit(formData);
-        router.push(`/reviews/${result.id}`);
+        console.log('Submit result:', result);
+        router.push(`/sight/success`);
       } catch (error) {
         console.error('Submit error:', error);
         setError('submit', '제출 중 오류가 발생했습니다. 다시 시도해주세요.');

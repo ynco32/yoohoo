@@ -105,7 +105,7 @@ export default function PaymentPage() {
       type: 'confirm',
       confirmText: '결제완료',
       onConfirm: () => {
-        router.push('/result');
+        router.push('../result');
       },
     });
   };

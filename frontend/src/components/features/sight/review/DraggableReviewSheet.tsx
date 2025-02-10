@@ -25,12 +25,14 @@ interface DraggableReviewSheetProps {
   isOpen: boolean;
   onClose: () => void;
   reviewDataList: SightReviewData[];
+  children?: React.ReactNode;
 }
 
 export const DraggableReviewSheet = ({
   isOpen,
   onClose,
   reviewDataList,
+  children,
 }: DraggableReviewSheetProps) => {
   const params = useParams();
   const currentSectionId = Number(params.sectionId);
@@ -82,44 +84,46 @@ export const DraggableReviewSheet = ({
             </div>
 
             <div className="h-[90vh] overflow-y-auto">
-              <div className="space-y-4 px-4">
-                {reviewDataList.map((reviewData, index) => {
-                  if (!isSoundStatus(reviewData.soundQuality)) {
-                    console.warn(
-                      `Invalid sound quality value: ${reviewData.soundQuality}`
-                    );
-                    return null;
-                  }
-                  if (!isSeatDistanceStatus(reviewData.seatQuality)) {
-                    console.warn(
-                      `Invalid seat quality value: ${reviewData.seatQuality}`
-                    );
-                    return null;
-                  }
+              {children || (
+                <div className="space-y-4 px-4">
+                  {reviewDataList.map((reviewData, index) => {
+                    if (!isSoundStatus(reviewData.soundQuality)) {
+                      console.warn(
+                        `Invalid sound quality value: ${reviewData.soundQuality}`
+                      );
+                      return null;
+                    }
+                    if (!isSeatDistanceStatus(reviewData.seatQuality)) {
+                      console.warn(
+                        `Invalid seat quality value: ${reviewData.seatQuality}`
+                      );
+                      return null;
+                    }
 
-                  return (
-                    <div
-                      key={`${reviewData.sectionId}-${reviewData.seatId}-${index}`}
-                      className="flex flex-col rounded-t-3xl bg-white"
-                    >
-                      <SightReviewCard
-                        concertTitle={reviewData.concertTitle}
-                        nickName={reviewData.nickName}
-                        profilePicture={reviewData.profilePicture}
-                        seatInfo={reviewData.seatInfo}
-                        images={reviewData.images}
-                        content={reviewData.content}
-                        viewQuality={reviewData.viewQuality}
-                        soundQuality={reviewData.soundQuality}
-                        seatQuality={reviewData.seatQuality}
-                      />
-                      {index < reviewDataList.length - 1 && (
-                        <hr className="my-4 border-t border-gray-100" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                    return (
+                      <div
+                        key={`${reviewData.sectionId}-${reviewData.seatId}-${index}`}
+                        className="flex flex-col rounded-t-3xl bg-white"
+                      >
+                        <SightReviewCard
+                          concertTitle={reviewData.concertTitle}
+                          nickName={reviewData.nickName}
+                          profilePicture={reviewData.profilePicture}
+                          seatInfo={reviewData.seatInfo}
+                          images={reviewData.images}
+                          content={reviewData.content}
+                          viewQuality={reviewData.viewQuality}
+                          soundQuality={reviewData.soundQuality}
+                          seatQuality={reviewData.seatQuality}
+                        />
+                        {index < reviewDataList.length - 1 && (
+                          <hr className="my-4 border-t border-gray-100" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

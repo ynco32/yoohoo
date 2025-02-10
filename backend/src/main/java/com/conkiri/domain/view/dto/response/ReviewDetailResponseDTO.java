@@ -20,6 +20,8 @@ public class ReviewDetailResponseDTO {
 
 	private Long reviewId;
 	private Long seatId;
+	private Long rowLine;
+	private Long columnLine;
 	private Long concertId;
 	private String content;
 	private int viewScore;
@@ -29,11 +31,16 @@ public class ReviewDetailResponseDTO {
 	private LocalDateTime writeTime;
 	private LocalDateTime modifyTime;
 	private StageType stageType;
+	private String level;
+	private String nickname;
+	private String concertName;
 
 	public static ReviewDetailResponseDTO from(Review review) {
 		return ReviewDetailResponseDTO.builder()
 			.reviewId(review.getReviewId())
 			.seatId(review.getSeat().getSeatId())
+			.rowLine(review.getSeat().getRowLine())
+			.columnLine(review.getSeat().getColumnLine())
 			.concertId(review.getConcert().getConcertId())
 			.content(review.getContent())
 			.viewScore(review.getViewScore())
@@ -43,6 +50,9 @@ public class ReviewDetailResponseDTO {
 			.writeTime(review.getWriteTime())
 			.modifyTime(review.getModifyTime())
 			.stageType(review.getStageType())
+			.level(review.getUser().getLevel())
+			.nickname(review.getUser().getNickname())
+			.concertName(review.getConcert().getConcertName())
 			.build();
 	}
 }

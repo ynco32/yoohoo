@@ -9,16 +9,18 @@ import { TextButton } from '@/components/ui/TextButton';
 import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface SharingWriteFormProps {
-  formData: SharingFormData;
-  onFormChange: (data: SharingFormData) => void;
+  mode: 'create' | 'edit';
+  formData: Partial<SharingFormData>;
+  onFormChange: (data: Partial<SharingFormData>) => void;
   onSubmit: () => void;
-  onLocationReset: () => void;
+  onLocationReset?: () => void;
   onSubmitComplete: (sharingId: number) => void;
   isSubmitting: boolean;
   errors: { [key: string]: string };
 }
 
 export const SharingWriteForm = ({
+  mode,
   formData,
   onFormChange,
   onSubmit,
@@ -37,7 +39,7 @@ export const SharingWriteForm = ({
             />
             <TextArea
               value={formData?.title || ''}
-              onChange={(title) => onFormChange({ ...formData, title })}
+              onChange={(title) => onFormChange({ title })}
               error={errors?.title}
               placeholder="제목을 입력해주세요"
               rows={1}
@@ -49,7 +51,7 @@ export const SharingWriteForm = ({
             />
             <TimeInput
               value={formData?.startTime || ''}
-              onChange={(startTime) => onFormChange({ ...formData, startTime })}
+              onChange={(startTime) => onFormChange({ startTime })}
               error={errors?.startTime}
             />
 
@@ -59,7 +61,7 @@ export const SharingWriteForm = ({
             />
             <ImageUpload
               value={formData?.image || undefined}
-              onChange={(image) => onFormChange({ ...formData, image })}
+              onChange={(image) => onFormChange({ image })}
               error={errors?.image}
             />
 
@@ -69,7 +71,7 @@ export const SharingWriteForm = ({
             />
             <TextArea
               value={formData?.content || ''}
-              onChange={(content) => onFormChange({ ...formData, content })}
+              onChange={(content) => onFormChange({ content })}
               error={errors?.content}
               placeholder="상세 내용을 입력해주세요"
               rows={5}
@@ -83,15 +85,17 @@ export const SharingWriteForm = ({
       )}
 
       <div className="space-y-2 p-4">
-        <TextButton variant="outline" onClick={onLocationReset}>
-          위치 다시 선택하기
-        </TextButton>
+        {onLocationReset && mode === 'create' && (
+          <TextButton variant="outline" onClick={onLocationReset}>
+            위치 다시 선택하기
+          </TextButton>
+        )}
         <TextButton
           onClick={onSubmit}
           isLoading={isSubmitting}
-          loadingText="등록 중..."
+          loadingText={mode === 'create' ? '등록 중...' : '수정 중...'}
         >
-          나눔 등록하기
+          {mode === 'create' ? '나눔 등록하기' : '나눔 수정하기'}
         </TextButton>
       </div>
     </div>

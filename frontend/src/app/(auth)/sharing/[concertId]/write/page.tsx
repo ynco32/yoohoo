@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { SharingLocationSelect } from '@/components/features/sharing/SharingLocationSelect';
 import { Modal } from '@/components/common/Modal';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
-import { SharingWriteFormContainer } from '@/components/features/sharing/SharingWriteFormContainer';
+import { SharingFormContainer } from '@/components/features/sharing/SharingFormContainer';
 import { SharingFormData } from '@/types/sharing';
 
 interface LocationInfo {
@@ -18,15 +18,13 @@ export default function SharingWritePage() {
   const [step, setStep] = useState<'location' | 'form'>('location');
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-  const [completedSharingId, setCompletedSharingId] = useState<number | null>(
-    null
-  );
+  const [completedSharingId, setCompletedSharingId] = useState<number | null>(null);
 
   const params = useParams();
   const concertId =
     params.concertId !== undefined ? Number(params.concertId) : 0;
 
-  // 위치 선택 후 폼으로 이동할 때 기존 데이터 유지
+  // 초기 폼 데이터 상태 유지
   const [formData, setFormData] = useState<SharingFormData>({
     title: '',
     content: '',
@@ -80,11 +78,12 @@ export default function SharingWritePage() {
       )}
       {step === 'form' && location && (
         <div className="h-full">
-          <SharingWriteFormContainer
+          <SharingFormContainer
+            mode="create"
             location={location}
             concertId={concertId}
-            formData={formData} // 기존 데이터 유지
-            setFormData={setFormData} // 기존 데이터 유지 가능하도록 상태 업데이트 함수 전달
+            initialData={formData} // 기존 데이터 유지
+            setFormData={setFormData} // 상태 업데이트 함수 전달
             onLocationReset={handleLocationReset}
             onSubmitComplete={handleSubmitComplete}
           />

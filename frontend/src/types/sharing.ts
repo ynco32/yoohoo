@@ -140,7 +140,6 @@ export interface SharingFormData {
   latitude: number; // 위도
   longitude: number; // 경도
   startTime: string; // 시작 시간 (ISO8601 형식)
-  concertId: number; // 콘서트 ID
+  concertId?: number; // 콘서트 ID
   image: File | undefined; // 업로드할 이미지 파일
 }
-

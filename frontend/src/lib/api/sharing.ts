@@ -163,4 +163,62 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+
+  /**
+   * 나눔 게시글을 수정합니다.
+   * @param sharingId - 수정할 나눔 게시글 ID
+   * @param data - 수정할 게시글 데이터 (제목, 내용, 위치, 시작 시간)
+   */
+  updateSharing: async (
+    sharingId: number,
+    data: {
+      title: string;
+      content: string;
+      latitude: number;
+      longitude: number;
+      startTime: string;
+    },
+    image?: File
+  ) => {
+    const formData = new FormData();
+
+    // JSON 데이터를 문자열로 추가
+    formData.append(
+      'sharingUpdateRequestDTO',
+      JSON.stringify({
+        title: data.title,
+        content: data.content,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        startTime: data.startTime,
+      })
+    );
+
+    // 이미지 파일이 있다면 추가
+    if (image) {
+      formData.append('file', image);
+    }
+
+    try {
+      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      // 에러 처리 로직
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '게시글 수정에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
 };

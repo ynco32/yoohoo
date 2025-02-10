@@ -141,6 +141,7 @@ module.exports = {
           badge: '#0077FF',
           bg: '#DFF3FF',
           button: '#4986E8',
+          form: '#A7DEFF',
         },
         gray: {
           900: '#101014',

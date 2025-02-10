@@ -3,37 +3,12 @@
 import PerformanceInfo from '../../ui/PerformanceInfo';
 import TicketingDetails from '../../ui/TicketingDetails';
 import SeatType from '../../ui/SeatType';
-// import TicketingButton from '../features/ticketing/TicketingButton';
-// import { useRouter } from 'next/navigation';
 import FixedButton from '../../ui/FixedButton';
-import { useState } from 'react';
-import SchedulePopup from '../../ui/SchedulePopup';
-import ConcertScheduleButton from '../../ui/ConcertScheduleButton';
-import QueuePopup from '../../ui/QueuePopup';
-import { useEffect } from 'react';
+interface TicketingInfoProps {
+  fixedButtonOnClick: () => void;
+}
 
-const TicketingInfo = () => {
-  const [isSchedulePopupOpen, setisSchedulePopupOpen] = useState(false);
-  const [isQueuePopupOpen, setisQueuePopupOpen] = useState(false);
-
-  ////// 더미 데이터 :
-  const ranNum: number = 2343;
-  const ranNum2: number = 1122;
-  const ranTime: string = '1시간 23분 33초';
-  //////
-
-  const handleQueuePopupOpen = () => {
-    setisSchedulePopupOpen(false);
-    setisQueuePopupOpen(true);
-  };
-
-  useEffect(() => {
-    if (isSchedulePopupOpen && isQueuePopupOpen) {
-      // 두 팝업이 동시에 열리는 것을 방지
-      setisSchedulePopupOpen(false);
-    }
-  }, [isQueuePopupOpen, isSchedulePopupOpen]);
-
+const TicketingInfo = ({ fixedButtonOnClick }: TicketingInfoProps) => {
   return (
     <div>
       <div className="px-4 py-6">
@@ -61,35 +36,9 @@ const TicketingInfo = () => {
       </div>
       {/* <TicketingButton onReservationStart={reservationStart} />
        */}
-      <FixedButton
-        onClick={() => setisSchedulePopupOpen(true)}
-        disabled={false}
-      >
+      <FixedButton fixedButtonOnClick={fixedButtonOnClick} disabled={false}>
         예매하기
       </FixedButton>
-      <SchedulePopup
-        isOpen={isSchedulePopupOpen}
-        onClose={() => setisSchedulePopupOpen(false)}
-        title="공연 회차를 고르세요."
-        width="md"
-      >
-        <div>
-          <ConcertScheduleButton onClick={handleQueuePopupOpen}>
-            2024.2.21(토) 20시 00분
-          </ConcertScheduleButton>
-          <ConcertScheduleButton onClick={handleQueuePopupOpen}>
-            2024.2.22(일) 18시 00분
-          </ConcertScheduleButton>
-        </div>
-      </SchedulePopup>
-      <QueuePopup
-        title="ASIA TOUR LOG in SEOUL"
-        queueNumber={ranNum}
-        behindMe={ranNum2}
-        expectedTime={ranTime}
-        onClose={() => setisQueuePopupOpen(false)}
-        isOpen={isQueuePopupOpen}
-      ></QueuePopup>
     </div>
   );
 };

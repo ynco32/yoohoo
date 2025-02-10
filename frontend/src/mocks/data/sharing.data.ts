@@ -184,6 +184,60 @@ export const mockComments: Comment[] = [
     content: '혹시 아직 가능한가요?',
     modifyTime: '2025-02-12T14:30:00',
   },
+  {
+    commentId: 3,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 4,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 5,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 6,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 7,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 8,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 9,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 10,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 11,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
 ];
 
 // 특정 공연의 나눔 게시글만 필터링하는 헬퍼 함수
@@ -265,8 +319,7 @@ export const getCommentsByPage = (
 
   // 페이지 크기만큼 잘라서 반환
   const comments = filteredComments.slice(0, pageSize);
-  const lastPage = comments.length < pageSize || 
-    (comments.length === 0 && lastCommentId !== undefined);
+  const lastPage = filteredComments.length === 0 || comments.length < pageSize;
 
   return {
     comments,

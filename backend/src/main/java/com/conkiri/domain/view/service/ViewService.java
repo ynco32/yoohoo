@@ -23,8 +23,9 @@ import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.domain.view.dto.response.ScrapSeatResponseDTO;
-import com.conkiri.domain.view.dto.response.ScrapSectionResponseDTO;
+import com.conkiri.domain.view.dto.response.SeatDetailResponseDTO;
+import com.conkiri.domain.view.dto.response.SeatResponseDTO;
+import com.conkiri.domain.view.dto.response.SectionDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.entity.Review;
@@ -65,20 +66,72 @@ public class ViewService {
 		return ArenaResponseDTO.from(arenas);
 	}
 
-	public SectionResponseDTO getSectionsByStageType(Long arenaId, Integer stageType) {
+	public SectionResponseDTO getSections(Long arenaId, Integer stageType, Long userId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+		StageType selectedType = StageType.fromValue(stageType);
+
 		List<Section> sections = sectionRepository.findByArena(arena);
-		return SectionResponseDTO.of(sections, stageType);
+
+		return SectionResponseDTO.from(sections.stream()
+			.map(section -> {
+				boolean isScrapped = scrapSeatRepository.existsByUserAndSeat_SectionAndStageType(user, section, selectedType);
+				return SectionDetailResponseDTO.of(section, stageType, isScrapped);
+			})
+			.collect(Collectors.toList()));
 	}
 
-	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long rowLine, Long columnLine) {
+	public SeatResponseDTO getSeats(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
+
+		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+		StageType selectedType = StageType.fromValue(stageType);
+
+		List<Seat> seats = seatRepository.findBySection(section);
+
+		return SeatResponseDTO.from(seats.stream()
+			.map(seat -> {
+				boolean isScrapped = scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType);
+				return SeatDetailResponseDTO.of(seat, section.getSectionNumber(), isScrapped);
+			})
+			.collect(Collectors.toList()));
+	}
+
+	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
+
+		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		StageType selectedType = StageType.fromValue(stageType);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+
+		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
+			throw new DuplicateScrapSeatException();
+		}
+
+		ScrapSeat scrapSeat = ScrapSeat.of(user, seat, selectedType);
+		scrapSeatRepository.save(scrapSeat);
+	}
+
+	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
+
+		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
+		StageType selectedType = StageType.fromValue(stageType);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+
+		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
+			.orElseThrow(ScrapSeatNotFoundException::new);
+
+		scrapSeatRepository.delete(scrapSeat);
+	}
+
+	public ReviewResponseDTO getReviews(Long arenaId, Integer stageType, Long sectionNumber, Long seatId) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
 
-		if (rowLine != null && columnLine != null) {
-			Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(rowLine, columnLine, section);
+		if (seatId != null) {
+			Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 			return getReviewsBySeat(seat, stageType);
 		}
 		return getReviewsBySection(section, stageType);
@@ -111,58 +164,6 @@ public class ViewService {
 		return ReviewResponseDTO.from(reviews);
 	}
 
-	public ScrapSectionResponseDTO getScrapedSections(Long arenaID, Integer stageType, Long userId) {
-
-		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaID);
-		StageType selectedType = StageType.fromValue(stageType);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
-
-		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section_Arena(user, selectedType, arena);
-		List<Section> sections = scraps.stream()
-			.map(scrapSeat -> scrapSeat.getSeat().getSection())
-			.distinct()
-			.collect(Collectors.toList());
-
-		return ScrapSectionResponseDTO.from(sections);
-	}
-
-	public ScrapSeatResponseDTO getScrapsBySeat(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
-
-		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		StageType selectedType = StageType.fromValue(stageType);
-		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
-
-		List<ScrapSeat> scraps = scrapSeatRepository.findByUserAndStageTypeAndSeat_Section(user, selectedType, section);
-		return ScrapSeatResponseDTO.from(scraps);
-	}
-
-	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
-
-		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
-		StageType selectedType = StageType.fromValue(stageType);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
-
-		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
-			throw new DuplicateScrapSeatException();
-		}
-
-		ScrapSeat scrapSeat = ScrapSeat.of(user, seat, selectedType);
-		scrapSeatRepository.save(scrapSeat);
-	}
-
-	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
-
-		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
-		StageType selectedType = StageType.fromValue(stageType);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
-
-		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
-			.orElseThrow(ScrapSeatNotFoundException::new);
-
-		scrapSeatRepository.delete(scrapSeat);
-	}
-
 	public ViewConcertResponseDTO getConcerts(String artist) {
 
 		List<Concert> concerts = concertRepository.findByArtistContaining(artist);
@@ -186,6 +187,9 @@ public class ViewService {
 		if(reviewRepository.existsByUserAndSeatAndConcert(user, seat, concert)) {
 			throw new DuplicateReviewException();
 		}
+
+		seat.increaseReviewCount();
+		seatRepository.save(seat);
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
 	}
@@ -232,8 +236,12 @@ public class ViewService {
 		}
 
 		String photoUrl = review.getPhotoUrl();
+		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
+
+		seat.decreaseReviewCount();
+		seatRepository.save(seat);
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

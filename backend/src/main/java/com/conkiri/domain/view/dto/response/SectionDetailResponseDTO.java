@@ -16,12 +16,14 @@ public class SectionDetailResponseDTO {
 	private Long sectionId;
 	private Long sectionNumber;
 	private boolean available;
+	private boolean isScrapped;
 
-	public static SectionDetailResponseDTO of(Section section, int stageType) {
+	public static SectionDetailResponseDTO of(Section section, int stageType, Boolean isScrapped) {
 		return SectionDetailResponseDTO.builder()
 			.sectionId(section.getSectionId())
 			.sectionNumber(section.getSectionNumber())
 			.available(checkAvailability(section.getSectionNumber(), stageType))
+			.isScrapped(isScrapped)
 			.build();
 	}
 

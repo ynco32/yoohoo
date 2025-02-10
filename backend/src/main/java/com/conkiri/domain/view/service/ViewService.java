@@ -19,6 +19,7 @@ import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.base.service.ArenaReadService;
 import com.conkiri.domain.base.service.ConcertReadService;
 import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
@@ -59,6 +60,7 @@ public class ViewService {
 	private final ArenaReadService arenaReadService;
 	private final ConcertReadService concertReadService;
 	private final S3Service s3Service;
+	private final UserRepository userRepository;
 
 	public ArenaResponseDTO getArenas() {
 
@@ -188,10 +190,13 @@ public class ViewService {
 			throw new DuplicateReviewException();
 		}
 
+		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
+
 		seat.increaseReviewCount();
 		seatRepository.save(seat);
 
-		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
+		user.incrementReviewCount();
+		userRepository.save(user);
 	}
 
 	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
@@ -230,6 +235,7 @@ public class ViewService {
 	public void deleteReview(Long reviewId, Long userId) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if(!review.getUser().getUserId().equals(userId)) {
 			throw new UnauthorizedAccessException();
@@ -242,6 +248,9 @@ public class ViewService {
 
 		seat.decreaseReviewCount();
 		seatRepository.save(seat);
+
+		user.decrementReviewCount();
+		userRepository.save(user);
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

@@ -1,6 +1,6 @@
 import type { ApiResponse } from '@/types/sightReviews';
-import type { SightReviewFormData } from '@/types/sightReviews';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface SightReviewResponse {
   id: string;
   // 다른 응답 필드들...
@@ -11,46 +11,48 @@ const SIGHT_REVIEW_API = {
   REVIEWS: '/api/v1/view/reviews',
 } as const;
 
+const TIMEOUT_MS = 10000; // 10초
+
 export async function getArenaReviews(
   arenaId: number,
   params: {
-    stageType: string;
+    stageType: number;
     section: number;
     seatId?: number;
   }
 ): Promise<ApiResponse> {
-  const queryParams = new URLSearchParams({
-    stageType: params.stageType,
-    section: params.section.toString(),
-    ...(params.seatId && { seatId: params.seatId.toString() }),
-  });
+  try {
+    const queryParams = new URLSearchParams({
+      stageType: params.stageType.toString(),
+      section: params.section.toString(),
+      ...(params.seatId && { seatId: params.seatId.toString() }),
+    });
 
-  const response = await fetch(
-    `${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`
-  );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  if (!response.ok) {
-    throw new Error('리뷰를 불러오는데 실패했습니다.');
+    const response = await fetch(
+      `${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`,
+      {
+        signal: controller.signal,
+      }
+    );
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('요청 시간이 초과되었습니다.');
+      }
+      throw error;
+    }
+    throw new Error('알 수 없는 에러가 발생했습니다.');
   }
-
-  return response.json();
-}
-
-export async function submitSightReview(
-  data: SightReviewFormData
-): Promise<SightReviewResponse> {
-  const response = await fetch(SIGHT_REVIEW_API.REVIEWS, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || '리뷰 제출에 실패했습니다.');
-  }
-
-  return response.json();
 }

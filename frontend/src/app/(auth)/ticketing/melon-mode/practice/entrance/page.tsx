@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useTicketintPracticeResultStore } from '@/store/ticketintPracticeResult';
 
 export default function Entrance() {
-  const _router = useRouter();
+  const router = useRouter();
   const [gameState, setGameState] = useState(''); //counting, waiting
   const [countdown, setCountdown] = useState(5);
   const [startTime, setStartTime] = useState(0);
@@ -29,6 +29,7 @@ export default function Entrance() {
     const reactionTime = startTime - endTime;
     // router.push('/result', { state: { reactionTime } });
     setReactionTime(reactionTime);
+    router.push('/result');
   };
 
   useEffect(() => {

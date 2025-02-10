@@ -1,4 +1,3 @@
-// app/(auth)/ticketing/payment/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +5,8 @@ import { PaymentMethodGroup } from '@/components/features/ticketing/PaymentMetho
 import { BankTransferForm } from '@/components/features/ticketing/BankTransferForm';
 import { AgreementSection } from '@/components/features/ticketing/AgreementSection';
 import { StepIndicator } from '@/components/features/ticketing/StepIndicator';
+import { useRouter } from 'next/navigation';
+
 import type {
   PaymentMethod,
   BankType,
@@ -15,7 +16,8 @@ import type {
 } from '@/types/payments';
 
 export default function PaymentPage() {
-  // State 관리
+  const router = useRouter();
+
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('credit');
   const [bank, setBank] = useState<BankType>('');
   const [receiptType, setReceiptType] = useState<ReceiptType>('none');
@@ -27,7 +29,6 @@ export default function PaymentPage() {
     terms4: false,
   });
 
-  // 약관 동의 처리
   const handleAllAgreements = (checked: boolean) => {
     setAgreements({
       all: checked,
@@ -53,10 +54,13 @@ export default function PaymentPage() {
     });
   };
 
-  // 결제 처리
   const handleSubmit = () => {
-    if (paymentMethod === 'deposit' && bank != null) {
+    if (paymentMethod === 'deposit' && bank === '') {
       alert('입금하실 은행을 선택해주세요.');
+      return;
+    }
+    if (paymentMethod != 'deposit') {
+      alert('무통장 입금을 선택해주세요요');
       return;
     }
     if (paymentMethod === 'deposit' && receiptType !== 'none') {
@@ -68,15 +72,17 @@ export default function PaymentPage() {
       return;
     }
     alert('연습용이므로 실제 결제는 진행되지 않습니다.');
+    router.push('/result');
   };
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-md bg-white">
-      {/* Progress Steps */}
+    <div className="mx-auto w-full max-w-md bg-white">
+      {/* 고정 헤더 */}
       <StepIndicator currentStep={3} />
 
+      {/* 메인 컨텐츠 */}
       <div className="space-y-6 p-4">
-        {/* 예매 정보 */}
+        {/* 예매 정보 섹션 */}
         <section>
           <h2 className="mb-2 text-lg">예매정보</h2>
           <div className="space-y-4">
@@ -124,7 +130,7 @@ export default function PaymentPage() {
           </div>
         </section>
 
-        {/* 결제 수단 */}
+        {/* 결제 수단 섹션 */}
         <section>
           <h2 className="mb-4 text-lg">결제수단</h2>
           <PaymentMethodGroup
@@ -143,7 +149,7 @@ export default function PaymentPage() {
           />
         )}
 
-        {/* 결제 금액 */}
+        {/* 결제 금액 섹션 */}
         <section className="rounded-md bg-gray-50 p-4">
           <div className="mb-2 flex items-center justify-between">
             <span>총 결제금액</span>
@@ -165,14 +171,16 @@ export default function PaymentPage() {
           </div>
         </section>
 
-        {/* 약관 동의 */}
+        {/* 약관 동의 섹션 */}
         <AgreementSection
           agreements={agreements}
           onAgreementChange={handleSingleAgreement}
           onAllAgreementChange={handleAllAgreements}
         />
+      </div>
 
-        {/* 결제하기 버튼 */}
+      {/* 하단 버튼 */}
+      <div className="border-t bg-white p-4">
         <button
           onClick={handleSubmit}
           className="w-full rounded-md bg-primary-main py-4 text-lg text-white"

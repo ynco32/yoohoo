@@ -6,9 +6,15 @@ import SeatType from '../../ui/SeatType';
 import FixedButton from '../../ui/FixedButton';
 interface TicketingInfoProps {
   fixedButtonOnClick: () => void;
+  isfixedButtonDisabled: boolean;
+  fixedButtonMessage: React.ReactNode;
 }
 
-const TicketingInfo = ({ fixedButtonOnClick }: TicketingInfoProps) => {
+const TicketingInfo = ({
+  fixedButtonOnClick,
+  isfixedButtonDisabled = false,
+  fixedButtonMessage,
+}: TicketingInfoProps) => {
   return (
     <div>
       <div className="px-4 py-6">
@@ -36,8 +42,11 @@ const TicketingInfo = ({ fixedButtonOnClick }: TicketingInfoProps) => {
       </div>
       {/* <TicketingButton onReservationStart={reservationStart} />
        */}
-      <FixedButton fixedButtonOnClick={fixedButtonOnClick} disabled={false}>
-        예매하기
+      <FixedButton
+        fixedButtonOnClick={fixedButtonOnClick}
+        isfixedButtonDisabled={isfixedButtonDisabled}
+      >
+        {fixedButtonMessage}
       </FixedButton>
     </div>
   );

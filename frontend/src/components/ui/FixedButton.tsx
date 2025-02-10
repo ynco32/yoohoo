@@ -1,15 +1,15 @@
 interface FixedButtonProps {
   fixedButtonOnClick?: () => void;
   children: React.ReactNode; // 백엔드에서 뭘로 넘겨줄지 모르니 일단 다 들어가게 하기
-  disabled?: boolean; // 활성화 유무
+  isfixedButtonDisabled?: boolean; // 활성화 유무
 }
 
 export default function FixedButton({
   fixedButtonOnClick,
   children,
-  disabled = false, // 기본값 비활성화된 걸로로
+  isfixedButtonDisabled = false, // 기본값 비활성화된 걸로로
 }: FixedButtonProps) {
-  const ButtonType = disabled
+  const ButtonType = isfixedButtonDisabled
     ? 'bg-gray-300 text-white disabled'
     : 'bg-primary-main text-white';
 
@@ -20,7 +20,7 @@ export default function FixedButton({
     <button
       type="button"
       onClick={fixedButtonOnClick}
-      disabled={disabled}
+      disabled={isfixedButtonDisabled}
       className={`${fixedBottom} ${ButtonType}`}
     >
       {children}

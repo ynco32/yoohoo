@@ -13,6 +13,12 @@ export default function Ticketing1() {
   //////
   const [isSchedulePopupOpen, setisSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setisQueuePopupOpen] = useState(false);
+  const [isfixedButtonDisabled, _setIsfixedButtonDisabled] = useState(true);
+  const [fixedButtonMessage, _setFixedButtonMessage] = useState('임시 메세지');
+
+  // api/v1/ticketing/status 에서 온 응답이 true 면 setIsfixedButtonDisabled(false) 로 바꾸기
+
+  // 백엔드에서 오는 웹소켓 메세지에 따라 setFixedButtonMessage로 바꾸기
 
   const handleQueuePopupOpen = () => {
     setisSchedulePopupOpen(false);
@@ -27,7 +33,11 @@ export default function Ticketing1() {
   }, [isQueuePopupOpen, isSchedulePopupOpen]);
   return (
     <div>
-      <Page1 fixedButtonOnClick={() => setisSchedulePopupOpen(true)} />
+      <Page1
+        isfixedButtonDisabled={isfixedButtonDisabled}
+        fixedButtonOnClick={() => setisSchedulePopupOpen(true)}
+        fixedButtonMessage={fixedButtonMessage}
+      />
       <SchedulePopup
         isOpen={isSchedulePopupOpen}
         onClose={() => setisSchedulePopupOpen(false)}

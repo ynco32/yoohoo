@@ -27,7 +27,6 @@ import { DraggableReviewSheet } from './DraggableReviewSheet';
 import { getArenaReviews } from '@/lib/api/sightReview';
 import { mapApiToSightReview } from '@/lib/utils/sightReviewMapper';
 import type { SightReviewData } from '@/types/sightReviews';
-import Image from 'next/image';
 
 export function SightReviewList() {
   const [isSheetOpen, setIsSheetOpen] = useState(true);
@@ -94,74 +93,25 @@ export function SightReviewList() {
     fetchReviews();
   }, [arenaId, stageType, sectionId, seatId]);
 
-  let content: React.ReactNode = null;
-
   if (isLoading) {
-    content = <div className="p-4">데이터를 불러오는 중입니다...</div>;
-  } else if (error) {
-    content = <div className="p-4 text-red-500">{error}</div>;
-  } else {
-    content = (
-      <div className="space-y-4 px-4">
-        {reviews.map((review) => (
-          <div
-            key={review.reviewId}
-            className="rounded-lg bg-white p-4 shadow-md"
-          >
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                {review.profilePicture && (
-                  <Image
-                    src={review.profilePicture}
-                    alt="프로필 이미지"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                  />
-                )}
-                <div>
-                  <p className="font-bold">{review.nickName}</p>
-                  <p className="text-sm text-gray-600">{review.concertTitle}</p>
-                </div>
-              </div>
-              <div className="font-bold text-primary-main">
-                {review.viewQuality.toFixed(1)}점
-              </div>
-            </div>
+    return (
+      <DraggableReviewSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        reviewDataList={[]}
+        isLoading={true}
+      />
+    );
+  }
 
-            <p className="mb-2 text-gray-800">{review.content}</p>
-
-            <div className="flex gap-2 text-sm text-gray-600">
-              <span>좌석: {review.seatInfo}</span>
-              <span>•</span>
-              <span>거리감: {review.seatQuality}</span>
-              <span>•</span>
-              <span>음향: {review.soundQuality}</span>
-            </div>
-
-            {review.images && review.images.length > 0 && (
-              <div className="mt-2 grid grid-cols-2 gap-2">
-                {review.images.map((imageUrl, index) => (
-                  <Image
-                    key={`${review.reviewId}-image-${index}`}
-                    src={imageUrl}
-                    alt={`리뷰 이미지 ${index + 1}`}
-                    width={300}
-                    height={200}
-                    className="h-48 w-full rounded-lg object-cover"
-                  />
-                ))}
-              </div>
-            )}
-
-            {review.writeTime && (
-              <p className="mt-2 text-sm text-gray-400">
-                {new Date(review.writeTime).toLocaleDateString()}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
+  if (error) {
+    return (
+      <DraggableReviewSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        reviewDataList={[]}
+        error={error}
+      />
     );
   }
 
@@ -170,8 +120,6 @@ export function SightReviewList() {
       isOpen={isSheetOpen}
       onClose={() => setIsSheetOpen(false)}
       reviewDataList={reviews}
-    >
-      {content}
-    </DraggableReviewSheet>
+    />
   );
 }

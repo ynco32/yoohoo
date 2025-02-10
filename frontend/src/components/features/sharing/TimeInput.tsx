@@ -50,7 +50,6 @@ export const TimeInput = ({
 
   return (
     <div>
-      <label className="block text-sm mb-1">시작 시간</label>
       <div className="flex space-x-2">
         {/* 오전/오후 선택 */}
         <select

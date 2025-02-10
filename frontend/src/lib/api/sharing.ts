@@ -1,6 +1,6 @@
 import api from './axios';
 import { AxiosError } from 'axios';
-import { SharingPost, Comment } from '@/types/sharing';
+import { SharingPost, Comment, SharingFormData } from '@/types/sharing';
 
 export interface SharingResponse {
   sharings: SharingPost[];
@@ -115,6 +115,42 @@ export const sharingAPI = {
         );
       }
       // 서버 연결 실패 등
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
+
+  /**
+   * 나눔 게시글을 등록합니다.
+   * @param data - 게시글 데이터 (JSON)
+   * @param file - 업로드할 이미지 파일
+   */
+  createSharing: async (
+    data: Omit<SharingFormData, 'image'>,
+    file: File
+  ): Promise<void> => {
+    try {
+      const formData = new FormData();
+      formData.append(
+        'sharingRequestDTO',
+        new Blob([JSON.stringify(data)], { type: 'application/json' })
+      );
+      formData.append('file', file);
+
+      await api.post('/api/v1/sharing', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '게시글 등록에 실패했습니다.'
+        );
+      }
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },

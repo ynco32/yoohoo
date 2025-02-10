@@ -1,5 +1,9 @@
 // types/sightReview.ts
-
+export enum StageType {
+  STANDARD = 1,
+  THEATER = 2,
+  CONCERT = 3,
+}
 // 기본 상태 타입들
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
@@ -8,7 +12,6 @@ export type UserLevel = 'ROOKIE' | 'AMATEUR' | 'SEMI_PRO' | 'PROFESSIONAL';
 // API 응답에서 사용하는 상태값들
 export type ApiSeatDistance = 'NARROW' | 'AVERAGE' | 'WIDE';
 export type ApiSound = 'UNCLEAR' | 'AVERAGE' | 'CLEAR';
-export type StageType = 'STANDARD' | 'EXTENDED';
 
 // API 응답 타입
 export interface SightReviewData {
@@ -28,7 +31,7 @@ export interface SightReviewData {
   seatQuality: SeatDistanceStatus;
   writeTime?: string;
   modifyTime?: string;
-  stageType?: StageType;
+  stageType?: number;
 }
 
 // API 응답 원본 타입
@@ -43,7 +46,7 @@ export interface ApiReview {
   photoUrl: string | null;
   writeTime: string;
   modifyTime: string;
-  stageType: StageType;
+  stageType: number;
   userNickname: string;
   userLevel: UserLevel;
   concertTitle: string;
@@ -63,6 +66,7 @@ export interface SightReviewFormData {
   viewScore: number;
   seatDistance: SeatDistanceStatus;
   sound: SoundStatus;
+  stageType: number;
   content: string;
 }
 

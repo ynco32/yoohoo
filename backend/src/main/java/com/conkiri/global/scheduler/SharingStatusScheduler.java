@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.sharing.service.SharingStatusService;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -24,13 +23,7 @@ public class SharingStatusScheduler {
 	private static final Logger log = LoggerFactory.getLogger(SharingStatusScheduler.class);
 	private final SharingRepository sharingRepository;
 	private final SharingStatusService sharingStatusService;
-
-	private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-
-	@PostConstruct
-	public void initScheduler() {
-		taskScheduler.initialize();
-	}
+	private final ThreadPoolTaskScheduler taskScheduler;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void onApplicationReady() {
@@ -44,8 +37,8 @@ public class SharingStatusScheduler {
 	@Scheduled(cron = "0 */10 * * * *")
 	@Transactional
 	public void updateSharingToOngoing() {
-		LocalDateTime now = LocalDateTime.now();
 
+		LocalDateTime now = LocalDateTime.now();
 		sharingRepository.updateStatusToOngoingForUpcomingSharings(now);
 	}
 }

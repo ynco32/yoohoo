@@ -1,13 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { SharingLocationSelect } from '@/components/features/sharing/SharingLocationSelect';
-import { SharingWriteForm } from '@/components/features/sharing/SharingWriteForm';
 import { Modal } from '@/components/common/Modal';
 import { VENUE_COORDINATES } from '@/lib/constans/venues';
-import { SharingFormData } from '@/types/sharing';
+import { SharingWriteFormContainer } from '@/components/features/sharing/SharingWriteFormContainer';
 
 interface LocationInfo {
   latitude: number;
@@ -19,27 +17,15 @@ export default function SharingWritePage() {
   const [step, setStep] = useState<'location' | 'form'>('location');
   const [location, setLocation] = useState<LocationInfo | null>(null);
 
-  const [formData, setFormData] = useState<SharingFormData>({
-    title: '',
-    startTime: '',
-    content: '',
-  });
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 
   const params = useParams();
-  const concertId = params.concertId !== undefined ? Number(params.concertId) : 0;
+  const concertId =
+    params.concertId !== undefined ? Number(params.concertId) : 0;
 
   const handleLocationSelect = (locationInfo: LocationInfo) => {
     setLocation(locationInfo);
     setStep('form');
-  };
-
-  const handleLocationReset = () => {
-    setStep('location');
-  };
-
-  const handleSubmitComplete = () => {
-    setIsCompleteModalOpen(true);
   };
 
   const handleModalClose = () => {
@@ -60,12 +46,8 @@ export default function SharingWritePage() {
       )}
       {step === 'form' && location && (
         <div className="h-full">
-          <SharingWriteForm
+          <SharingWriteFormContainer
             location={location}
-            formData={formData}
-            onFormChange={setFormData}
-            onSubmitComplete={handleSubmitComplete}
-            onLocationReset={handleLocationReset}
             concertId={concertId}
           />
         </div>

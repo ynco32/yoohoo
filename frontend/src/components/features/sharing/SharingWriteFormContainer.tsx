@@ -44,7 +44,7 @@ export function SharingWriteFormContainer({
 
       if (formData.image) {
         await sharingAPI.createSharing(postData, formData.image);
-        router.push('/success'); // 성공 시 이동
+        router.push(`/${concertId}`);
       } else {
         setErrors((prev) => ({ ...prev, image: '이미지를 업로드해주세요.' }));
       }

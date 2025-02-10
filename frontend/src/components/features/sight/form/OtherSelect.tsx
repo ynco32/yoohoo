@@ -30,20 +30,21 @@ export const OtherSelect = ({
   className = '',
 }: OtherSelectProps) => {
   return (
-    <div className={`space-y-6 ${className}`}>
-      <FormSectionHeader title="기타" />
+    <div className={`mt-2 space-y-2 px-4 ${className}`}>
       <div className="space-y-4">
-        <div className="space-y-2">
-          <p className="text-sm text-gray-600">좌석 간격</p>
+        <div>
+          <FormSectionHeader title="좌석 간격" />
           <ToggleButtonGroup
+            className="mt-sm"
             options={SEAT_DISTANCE_OPTIONS}
             value={seatDistance}
             onChange={onSeatDistanceChange}
           />
         </div>
-        <div className="space-y-2">
-          <p className="text-sm text-gray-600">음향</p>
+        <div className="space-y-md">
+          <FormSectionHeader title="음향" />
           <ToggleButtonGroup
+            className="mt-sm"
             options={SOUND_OPTIONS}
             value={sound}
             onChange={onSoundChange}

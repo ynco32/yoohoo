@@ -97,7 +97,7 @@ export const SightReviewForm = React.memo(
                 }
                 error={errors.concertId}
               />
-              <div className="mt-lg">
+              <div className="mt-md">
                 <SeatSelect
                   value={{
                     section: formData.section || null,
@@ -135,7 +135,7 @@ export const SightReviewForm = React.memo(
           );
         case 2:
           return (
-            <div className="w-full">
+            <div className="w-full space-y-4">
               <OtherSelect
                 seatDistance={formData.seatDistance}
                 sound={formData.sound}

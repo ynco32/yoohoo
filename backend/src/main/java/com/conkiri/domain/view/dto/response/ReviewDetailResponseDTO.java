@@ -20,6 +20,8 @@ public class ReviewDetailResponseDTO {
 
 	private Long reviewId;
 	private Long seatId;
+	private Long rowLine;
+	private Long columnLine;
 	private Long concertId;
 	private String content;
 	private int viewScore;
@@ -37,6 +39,8 @@ public class ReviewDetailResponseDTO {
 		return ReviewDetailResponseDTO.builder()
 			.reviewId(review.getReviewId())
 			.seatId(review.getSeat().getSeatId())
+			.rowLine(review.getSeat().getRowLine())
+			.columnLine(review.getSeat().getColumnLine())
 			.concertId(review.getConcert().getConcertId())
 			.content(review.getContent())
 			.viewScore(review.getViewScore())

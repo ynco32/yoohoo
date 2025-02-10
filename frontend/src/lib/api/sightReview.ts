@@ -6,7 +6,7 @@ interface SightReviewResponse {
 }
 
 const SIGHT_REVIEW_API = {
-  REVIEWS: '/api/sight-reviews',
+  REVIEWS: '/api/v1/view/reviews',
 } as const;
 
 export async function submitSightReview(

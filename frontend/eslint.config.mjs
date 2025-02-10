@@ -33,7 +33,11 @@ const config = [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
       ],
       '@next/next/no-html-link-for-pages': 'error',
       '@next/next/no-img-element': 'error',

@@ -22,7 +22,7 @@ interface SightReviewFormProps {
 }
 
 export const SightReviewForm = React.memo(
-  ({ onSubmit, artist, className = '', onClose }: SightReviewFormProps) => {
+  ({ onSubmit, className = '', onClose }: SightReviewFormProps) => {
     const router = useRouter();
     const {
       formData,
@@ -97,7 +97,6 @@ export const SightReviewForm = React.memo(
           return (
             <div className="w-full">
               <ConcertSelect
-                artist={artist}
                 value={formData.concertId}
                 onChange={(concertId) =>
                   handleFieldChange('concertId', Number(concertId))

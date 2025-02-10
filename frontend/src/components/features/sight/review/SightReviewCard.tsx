@@ -8,55 +8,27 @@
  * - 리뷰 이미지 갤러리
  * - 시야/음향/좌석 품질 평가 표시
  * - 리뷰 본문 내용 표시
- *
- * @props
- * @prop {string} concertTitle - 공연 제목
- * @prop {string} nickName - 리뷰 작성자 닉네임
- * @prop {string} profilePicture - 작성자 프로필 이미지 URL
- * @prop {string} seatInfo - 좌석 위치 정보
- * @prop {string[]} images - 리뷰 이미지 URL 배열
- * @prop {string} content - 리뷰 본문 내용
- * @prop {string} soundQuality - 음향 품질 평가
- * @prop {string} seatQuality - 좌석 품질 평가
- * @prop {string} viewQuality - 시야 품질 평가
- *
- * @example
- * ```jsx
- * <SightReviewCard
- *   concertTitle="BTS Concert"
- *   nickName="ARMY"
- *   profilePicture="/profile.jpg"
- *   seatInfo="1층 A구역 15열 23번"
- *   images={['img1.jpg', 'img2.jpg']}
- *   content="시야가 매우 좋았습니다!"
- *   soundQuality="음향 좋음"
- *   seatQuality="좌석 편안함"
- *   viewQuality="시야 매우 좋음"
- * />
- * ```
- *
- * @dependencies
- * - React
- * - ./ReviewHeader
- * - ./ReviewImages
- * - ./ReviewContent
  */
 import React from 'react';
 import { ReviewHeader } from './ReviewHeader';
 import { ReviewImages } from './ReviewImages';
 import { ReviewContent } from './ReviewContent';
 
+// 타입 정의
+type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
+type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
+
 // 리뷰 카드 컴포넌트의 Props 인터페이스 정의
 interface SightReviewCardProps {
-  concertTitle: string; // 공연 제목
-  nickName: string; // 리뷰 작성자 닉네임
-  profilePicture: string; // 작성자 프로필 이미지
-  seatInfo: string; // 좌석 위치 정보
-  images: string[]; // 리뷰 이미지 URL 배열
-  content: string; // 리뷰 본문 내용
-  soundQuality: string; // 음향 품질 평가
-  seatQuality: string; // 좌석 품질 평가
-  viewQuality: string; // 시야 품질 평가
+  concertTitle: string;
+  nickName: string;
+  profilePicture: string;
+  seatInfo: string;
+  images: string[];
+  content: string;
+  soundQuality: SoundStatus;
+  seatQuality: SeatDistanceStatus;
+  viewQuality: number;
 }
 
 export const SightReviewCard = ({
@@ -70,10 +42,13 @@ export const SightReviewCard = ({
   seatQuality,
   viewQuality,
 }: SightReviewCardProps) => {
+  // 시야 점수를 별점으로 표시하는 함수
+  const renderViewScore = (score: number) => {
+    return `${score}점`;
+  };
+
   return (
-    // 리뷰 카드 컨테이너
     <div className="w-full rounded-lg p-4">
-      {/* 리뷰 헤더 섹션: 공연 정보 및 작성자 정보 */}
       <ReviewHeader
         concertTitle={concertTitle}
         nickName={nickName}
@@ -81,22 +56,19 @@ export const SightReviewCard = ({
         seatInfo={seatInfo}
       />
 
-      {/* 리뷰 이미지 갤러리 섹션 */}
       <ReviewImages images={images} />
 
-      {/* 좌석 평가 정보 섹션 */}
-      <div className="0 mb-4 flex gap-2 font-pretendard text-sm">
-        <span className="text-caption1-bold">하나님석</span>
-        <span className="text-gray-600">{viewQuality}</span>
+      <div className="mb-4 flex gap-2 font-pretendard text-sm">
+        <span className="text-caption1-bold"></span>
+        <span className="text-gray-600">{renderViewScore(viewQuality)}</span>
         <span className="text-caption1-bold">|</span>
-        <span className="text-sight-badge text-caption1-bold">음향</span>
+        <span className="text-caption1-bold text-sight-badge">음향</span>
         <span className="text-gray-600">{soundQuality}</span>
         <span className="text-caption1-bold">|</span>
-        <span className="text-sight-badge text-caption1-bold">좌석</span>
+        <span className="text-caption1-bold text-sight-badge">좌석</span>
         <span className="text-gray-600">{seatQuality}</span>
       </div>
 
-      {/* 리뷰 본문 내용 섹션 */}
       <ReviewContent content={content} />
     </div>
   );

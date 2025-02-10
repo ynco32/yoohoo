@@ -20,7 +20,7 @@ export const CommentInput = ({
   title = '총평',
 }: CommentInputProps) => {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`mt-2 space-y-2 px-4 ${className}`}>
       <FormSectionHeader title={title} />
       <TextInput
         value={value}

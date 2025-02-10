@@ -1,53 +1,30 @@
-/**
- * @component DraggableReviewSheet
- * @description 드래그 가능한 리뷰 시트를 제공하는 컴포넌트. 모바일에서 바텀시트처럼 동작하며
- * 상/중/하 3단계 위치로 드래그하여 조절할 수 있습니다.
- *
- * @features
- * - 드래그로 시트 위치 조절 (상단/중단/하단)
- * - 터치 제스처 지원
- * - 부드러운 애니메이션 효과
- * - 리뷰 카드 리스트 표시
- *
- * @props
- * @prop {boolean} isOpen - 시트가 열려있는지 여부
- * @prop {function} onClose - 시트를 닫을 때 호출되는 콜백 함수
- * @prop {SightReviewData[]} reviewDataList - 표시할 리뷰 데이터 배열
- *
- * @states
- * @state {string} position - 현재 시트 위치 ('closed' | 'half' | 'full')
- * @state {number | null} dragStart - 드래그 시작 위치
- * @state {number} currentTranslate - 현재 Y축 변환값 (0-100%)
- *
- * @example
- * ```jsx
- * <DraggableReviewSheet
- *   isOpen={isSheetOpen}
- *   onClose={() => setIsSheetOpen(false)}
- *   reviewDataList={reviews}
- * />
- * ```
- *
- * @notes
- * - 모바일 환경에 최적화되어 있음
- * - 드래그 위치에 따라 자동으로 가까운 위치로 스냅됨
- * - 90vh 높이로 스크롤 가능한 컨텐츠 영역 제공
- *
- * @dependencies
- * - React
- * - @/types/sightReviews
- * - ./SightReviewCard
- */
 import React, { useState, useEffect, useRef } from 'react';
 import { SightReviewCard } from './SightReviewCard';
-import type { SightReviewData } from '@/types/sightReviews';
 import { useParams } from 'next/navigation';
 
-// 드래그 가능한 리뷰 시트의 Props 인터페이스 정의
+// 타입 정의
+type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
+type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
+
+interface SightReviewData {
+  arenaId: number;
+  sectionId: number;
+  seatId: number;
+  concertTitle: string;
+  nickName: string;
+  profilePicture: string;
+  seatInfo: string;
+  images: string[];
+  content: string;
+  viewQuality: number;
+  soundQuality: string;
+  seatQuality: string;
+}
+
 interface DraggableReviewSheetProps {
-  isOpen: boolean; // 시트가 열려있는지 여부
-  onClose: () => void; // 시트를 닫을 때 호출되는 함수
-  reviewDataList: SightReviewData[]; // 리뷰 데이터 배열
+  isOpen: boolean;
+  onClose: () => void;
+  reviewDataList: SightReviewData[];
 }
 
 export const DraggableReviewSheet = ({
@@ -55,62 +32,50 @@ export const DraggableReviewSheet = ({
   onClose,
   reviewDataList,
 }: DraggableReviewSheetProps) => {
-  // 시트의 위치 상태 관리 (closed, half, full)
   const [position, setPosition] = useState('half');
-  // 드래그 시작 위치 저장
   const [dragStart, setDragStart] = useState<number | null>(null);
-  // 현재 시트의 Y축 변환값 (0-100%)
   const [currentTranslate, setCurrentTranslate] = useState(50);
-  // 시트 요소에 대한 ref
   const sheetRef = useRef<HTMLDivElement>(null);
 
-  // URL 파라미터에서 현재 선택된 경기장/섹션/좌석 ID 추출
   const params = useParams();
-  const currentSectionId = Number(params.sectionId); // 현재 섹션 ID
-  const currentSeatId = Number(params.seatId); // 현재 좌석 ID (선택적)
+  const currentSectionId = Number(params.sectionId);
+  const currentSeatId = Number(params.seatId);
 
-  // 터치 시작 시 호출되는 핸들러
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStart(e.touches[0].clientY);
   };
 
-  // 터치 이동 시 호출되는 핸들러
   const handleTouchMove = (e: React.TouchEvent) => {
     if (dragStart === null) return;
 
     const currentPosition = e.touches[0].clientY;
     const diff = currentPosition - dragStart;
 
-    // 윈도우 높이를 기준으로 이동 거리를 퍼센트로 변환
     const windowHeight = window.innerHeight;
     const percentage = (diff / windowHeight) * 100;
 
-    // 새로운 변환값 계산 (0-100% 범위 내로 제한)
     let newTranslate = currentTranslate + percentage;
     newTranslate = Math.max(0, Math.min(90, newTranslate));
 
     setCurrentTranslate(newTranslate);
   };
 
-  // 터치 종료 시 호출되는 핸들러
   const handleTouchEnd = () => {
     setDragStart(null);
 
-    // 시트 위치 결정 (상단/중간/하단)
     if (currentTranslate < 25) {
-      setPosition('full'); // 완전히 열린 상태
+      setPosition('full');
       setCurrentTranslate(0);
     } else if (currentTranslate < 75) {
-      setPosition('half'); // 반만 열린 상태
+      setPosition('half');
       setCurrentTranslate(50);
     } else {
-      setPosition('closed'); // 닫힌 상태
+      setPosition('closed');
       setCurrentTranslate(90);
       onClose();
     }
   };
 
-  // isOpen prop이 변경될 때 시트 위치 조정
   useEffect(() => {
     if (isOpen) {
       setPosition('half');
@@ -121,32 +86,34 @@ export const DraggableReviewSheet = ({
     }
   }, [isOpen]);
 
-  // // 시트가 닫혀있을 때는 아무것도 렌더링하지 않음
-  // if (!isOpen) return null;
+  // 타입 가드 함수들
+  const isSoundStatus = (value: string): value is SoundStatus => {
+    return ['잘 안 들려요', '평범해요', '선명해요'].includes(value);
+  };
+
+  const isSeatDistanceStatus = (value: string): value is SeatDistanceStatus => {
+    return ['좁아요', '평범해요', '넓어요'].includes(value);
+  };
 
   return (
-    // 시트 컨테이너
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-10 flex justify-center">
       <div className="relative h-full w-full max-w-md">
-        {/* 드래그 가능한 시트 */}
         <div
           className="pointer-events-auto absolute bottom-0 w-full transform px-4 transition-transform duration-300 ease-out"
           style={{
             transform: `translateY(${currentTranslate}%)`,
-            touchAction: 'none', // 기본 터치 동작 비활성화
+            touchAction: 'none',
           }}
           ref={sheetRef}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="bg-sight-bg relative w-full rounded-t-3xl shadow-lg">
-            {/* 드래그 핸들 (상단 바) */}
+          <div className="relative w-full rounded-t-3xl bg-sight-bg shadow-lg">
             <div className="py-2 pt-4">
               <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
             </div>
 
-            {/* 리뷰 헤더 */}
             <div className="">
               <div className="flex items-center gap-2 px-6 py-2">
                 <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
@@ -164,20 +131,45 @@ export const DraggableReviewSheet = ({
               </div>
             </div>
 
-            {/* 리뷰 카드 컨테이너 */}
             <div className="h-[90vh] overflow-y-auto">
               <div className="space-y-4 px-4">
-                {reviewDataList.map((reviewData, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col rounded-t-3xl bg-white"
-                  >
-                    <SightReviewCard {...reviewData} />
-                    {index < reviewDataList.length - 1 && (
-                      <hr className="my-4 border-t border-gray-100" />
-                    )}
-                  </div>
-                ))}
+                {reviewDataList.map((reviewData, index) => {
+                  // 타입 검증
+                  if (!isSoundStatus(reviewData.soundQuality)) {
+                    console.warn(
+                      `Invalid sound quality value: ${reviewData.soundQuality}`
+                    );
+                    return null;
+                  }
+                  if (!isSeatDistanceStatus(reviewData.seatQuality)) {
+                    console.warn(
+                      `Invalid seat quality value: ${reviewData.seatQuality}`
+                    );
+                    return null;
+                  }
+
+                  return (
+                    <div
+                      key={`${reviewData.sectionId}-${reviewData.seatId}-${index}`}
+                      className="flex flex-col rounded-t-3xl bg-white"
+                    >
+                      <SightReviewCard
+                        concertTitle={reviewData.concertTitle}
+                        nickName={reviewData.nickName}
+                        profilePicture={reviewData.profilePicture}
+                        seatInfo={reviewData.seatInfo}
+                        images={reviewData.images}
+                        content={reviewData.content}
+                        viewQuality={reviewData.viewQuality}
+                        soundQuality={reviewData.soundQuality}
+                        seatQuality={reviewData.seatQuality}
+                      />
+                      {index < reviewDataList.length - 1 && (
+                        <hr className="my-4 border-t border-gray-100" />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

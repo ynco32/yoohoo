@@ -5,10 +5,26 @@ import axios, {
   AxiosInstance,
 } from 'axios';
 
+// MSW 초기화 체크를 위한 전역 타입 선언
+declare global {
+  interface Window {
+    mswInitialized?: boolean;
+  }
+}
+
 // 1️⃣ 기본 설정
 const BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://i12b207.p.ssafy.io';
 const USE_MSW: boolean = process.env.NEXT_PUBLIC_USE_MSW === 'true';
+
+// MSW 초기화 대기 함수
+const waitForMSW = async () => {
+  if (USE_MSW && typeof window !== 'undefined') {
+    while (!window.mswInitialized) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+};
 
 // API 인스턴스 생성
 const api: AxiosInstance = axios.create({
@@ -42,7 +58,12 @@ const processQueue = (error: AxiosError | null = null) => {
 };
 
 // 4️⃣ Request Interceptor (요청 전 실행)
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  // MSW 초기화 대기
+  if (USE_MSW) {
+    await waitForMSW();
+  }
+
   // 쿠키에서 access_token 찾기
   const token = document.cookie
     .split('; ')

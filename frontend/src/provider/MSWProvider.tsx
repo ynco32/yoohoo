@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 
 declare global {
   interface Window {
-    mswInitialized: boolean;
+    mswInitialized?: boolean;
+    originalFetch?: typeof fetch;
   }
 }
 
@@ -19,6 +20,19 @@ export default function MSWProvider() {
 
       if (isMockingEnabled) {
         try {
+          // 기존 fetch 함수를 저장
+          if (typeof window !== 'undefined' && !window.originalFetch) {
+            window.originalFetch = window.fetch;
+
+            // fetch를 가로채서 MSW가 초기화될 때까지 대기하는 함수로 교체
+            window.fetch = async (...args) => {
+              while (!window.mswInitialized) {
+                await new Promise((resolve) => setTimeout(resolve, 50));
+              }
+              return window.originalFetch!(...args);
+            };
+          }
+
           const { worker } = await import('@/mocks/browser');
           await worker.start({
             onUnhandledRequest: (request, print) => {
@@ -49,6 +63,14 @@ export default function MSWProvider() {
     }
 
     initMSW();
+
+    // cleanup function
+    return () => {
+      if (typeof window !== 'undefined' && window.originalFetch) {
+        window.fetch = window.originalFetch;
+        delete window.originalFetch;
+      }
+    };
   }, []);
 
   if (!mswInitialized && process.env.NEXT_PUBLIC_API_MOCKING !== 'disabled') {

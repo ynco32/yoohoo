@@ -53,7 +53,7 @@ const initialFormData: SightReviewFormData = {
   images: [],
   viewScore: 0,
   seatDistance: '평범해요',
-  sound: '보통',
+  sound: '평범해요',
   content: '',
 };
 

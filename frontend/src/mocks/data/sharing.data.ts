@@ -174,17 +174,69 @@ export const mockSharings: ExtendedSharingPost[] = [
 export const mockComments: Comment[] = [
   {
     commentId: 1,
-    sharingId: 1,
     writer: '닉네임',
     content: '저 참여하고 싶어요!',
     modifyTime: '2025-02-12T14:00:00',
   },
   {
     commentId: 2,
-    sharingId: 1,
     writer: '닉네임2',
     content: '혹시 아직 가능한가요?',
     modifyTime: '2025-02-12T14:30:00',
+  },
+  {
+    commentId: 3,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 4,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 5,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 6,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 7,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 8,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 9,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 10,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 11,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
   },
 ];
 
@@ -250,7 +302,27 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
   return undefined;
 };
 
-// 특정 나눔 게시글의 댓글을 가져오는 헬퍼 함수
-export const getCommentsBySharingId = (sharingId: number): Comment[] => {
-  return mockComments.filter((comment) => comment.sharingId === sharingId);
+// 댓글 페이지네이션 가능한 함수
+export const getCommentsByPage = (
+  lastCommentId?: number,
+  pageSize: number = 10
+): { comments: Comment[]; lastPage: boolean } => {
+  let filteredComments = [...mockComments];
+
+  // lastCommentId가 있으면 해당 ID 이후의 댓글만 가져옴
+  if (lastCommentId) {
+    const startIndex = mockComments.findIndex(
+      (comment) => comment.commentId === lastCommentId
+    );
+    filteredComments = mockComments.slice(startIndex + 1);
+  }
+
+  // 페이지 크기만큼 잘라서 반환
+  const comments = filteredComments.slice(0, pageSize);
+  const lastPage = filteredComments.length === 0 || comments.length < pageSize;
+
+  return {
+    comments,
+    lastPage,
+  };
 };

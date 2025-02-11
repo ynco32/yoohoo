@@ -1,13 +1,18 @@
+'use client';
 import React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useTicketintPracticeResultStore } from '@/store/ticketintPracticeResult';
 
 export default function ResultPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const time = parseFloat(searchParams.get('time') || '0');
+  const { reactionTime } = useTicketintPracticeResultStore();
 
   const handleRetry = () => {
-    router.push('/game');
+    router.push('entrance');
+  };
+
+  const home = () => {
+    router.push('./');
   };
 
   return (
@@ -19,13 +24,15 @@ export default function ResultPage() {
         </div>
 
         <div className="flex h-48 w-full flex-col items-center justify-center rounded-xl bg-white shadow-sm">
-          <p className="text-6xl font-bold text-blue-600">{time.toFixed(3)}</p>
+          <p className="text-6xl font-bold text-blue-600">
+            {reactionTime.toFixed(3)}
+          </p>
           <p className="mt-2 text-xl text-gray-600">밀리초</p>
 
           <p className="mt-4 text-lg text-gray-800">
-            {time < 200
+            {reactionTime < 200
               ? '🎯 놀라운 반응 속도입니다!'
-              : time < 300
+              : reactionTime < 300
                 ? '👍 평균 이상의 반응 속도네요!'
                 : '💪 조금 더 연습해보세요!'}
           </p>
@@ -33,6 +40,9 @@ export default function ResultPage() {
 
         <button onClick={handleRetry} className="h-14 w-full text-lg">
           다시 도전하기
+        </button>
+        <button onClick={home} className="h-14 w-full text-lg">
+          홈으로
         </button>
       </div>
     </div>

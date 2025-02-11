@@ -39,6 +39,14 @@ export default function Entrance() {
         setGameState('waiting');
         // 반응 속도 측정 시작 시간 설정
         setStartTime(performance.now());
+
+        const autoRedirectTimer = setTimeout(() => {
+          setReactionTime(5000); // 5초로 설정
+          router.push('result');
+        }, 5000); // 5초 후 자동 이동
+
+        // cleanup에 autoRedirectTimer 정리 추가
+        return () => clearTimeout(autoRedirectTimer);
       } else {
         setCountdown(remaining);
       }
@@ -57,8 +65,8 @@ export default function Entrance() {
       const endTime = performance.now();
       const reactionTime = Math.max(0, endTime - startTime);
 
-      // 비정상적인 반응 시간 필터링 (100ms 미만 또는 5초 초과)
-      if (reactionTime < 100 || reactionTime > 5000) {
+      // 비정상적인 반응 시간 필터링 (5초 초과)
+      if (reactionTime > 5000) {
         console.warn('Invalid reaction time detected');
         return;
       }

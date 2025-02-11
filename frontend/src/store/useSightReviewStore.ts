@@ -37,6 +37,7 @@ interface SightReviewState {
     field: K,
     value: SightReviewFormData[K]
   ) => void;
+  setFormData: (data: SightReviewFormData) => void; // 새로 추가된 메서드
   setError: (field: string, error: string | undefined) => void;
   setValidation: (field: keyof ValidationState, isValid: boolean) => void;
   setTouched: (field: ValidFields) => void;
@@ -75,7 +76,6 @@ const initialTouched: TouchedState = {
   seatDistance: false,
   content: false,
 };
-
 export const useSightReviewStore = create<SightReviewState>((set, get) => ({
   formData: initialFormData,
   errors: {},
@@ -89,6 +89,14 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: value,
       },
     })),
+  setFormData: (data) =>
+    set({
+      formData: data,
+      // 폼 데이터가 새로 설정될 때 validation과 touched 상태도 초기화
+      validation: initialValidation,
+      touched: initialTouched,
+      errors: {},
+    }),
   setError: (field, error) =>
     set((state) => ({
       errors: {

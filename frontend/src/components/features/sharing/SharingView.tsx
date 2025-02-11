@@ -30,8 +30,7 @@ export const SharingView = () => {
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInitialized = useRef(false);
-
+  
   // URL 파라미터
   const params = useParams();
   const concertId =
@@ -99,23 +98,13 @@ export const SharingView = () => {
     }
   }, [concertId, mswInitialized, currentTab]);
 
-  // 탭 변경 시 데이터 새로 로드
-  useEffect(() => {
-    setCurrentPage(0);
-    fetchData();
-  }, [currentTab, fetchData]);
-
   // 초기 데이터 로드
   useEffect(() => {
-    if (!mswInitialized) return; // MSW가 초기화되지 않았다면 실행하지 않음
-
-    isInitialized.current = false; // 새로고침 시 초기화
-
-    if (!isInitialized.current) {
-      fetchData();
-      isInitialized.current = true;
-    }
-  }, [mswInitialized, fetchData]);
+    if (!mswInitialized) return;
+    
+    setCurrentPage(0);
+    fetchData();
+  }, [mswInitialized, currentTab, fetchData]);
 
   // 더 보기 핸들러 (리스트 뷰)
   const handleLoadMore = useCallback(async () => {

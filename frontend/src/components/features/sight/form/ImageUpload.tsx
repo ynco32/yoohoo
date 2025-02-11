@@ -1,32 +1,26 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
   value?: File;
-  onChange?: (file: File | undefined) => void;
+  onChange: (file: File | undefined) => void;
   className?: string;
   error?: string;
 }
 
 export const ImageUpload = ({
+  value,
   onChange,
   className = '',
   error,
 }: ImageUploadProps) => {
-  const [preview, setPreview] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    onChange?.(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    onChange(file);
   };
 
   const handleClick = () => {
@@ -35,15 +29,16 @@ export const ImageUpload = ({
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setPreview(undefined);
-    onChange?.(undefined);
+    onChange(undefined);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
   };
 
+  const preview = value ? URL.createObjectURL(value) : undefined;
+
   return (
-    <div className={className}>
+    <div className={`flex flex-col items-center gap-4 ${className}`}>
       <input
         type="file"
         ref={inputRef}

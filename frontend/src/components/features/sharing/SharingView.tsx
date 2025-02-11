@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { ViewModeToggle } from './ViewModeToggle';
+import { ViewTab } from './ViewTap';
 import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
@@ -10,11 +11,12 @@ import { VENUE_COORDINATES } from '@/lib/constans/venues';
 import { WriteButton } from '@/components/common/WriteButton';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { sharingAPI } from '@/lib/api/sharing';
+import { useMswInit } from '@/hooks/useMswInit';
 
 type ViewMode = 'list' | 'map';
+type ViewTabItem = 'all' | 'my' | 'scrap';
 
-const SKIP_MSW_CHECK = true;
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 export const SharingView = () => {
   // 상태 관리
@@ -23,13 +25,12 @@ export const SharingView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [mswInitialized, setMswInitialized] = useState(false);
-  const [shouldScrollTop, setShouldScrollTop] = useState(false);
+  const [currentTab, setCurrentTab] = useState<ViewTabItem>('all');
+  const { mswInitialized } = useMswInit();
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInitialized = useRef(false);
-
+  
   // URL 파라미터
   const params = useParams();
   const concertId =
@@ -38,29 +39,8 @@ export const SharingView = () => {
   // 뷰 모드
   const [viewMode, setViewMode] = useState<ViewMode>('map');
 
-  // MSW 초기화 체크
-  useEffect(() => {
-    if (SKIP_MSW_CHECK) {
-      setMswInitialized(true);
-      return;
-    }
-
-    if (window.mswInitialized) {
-      setMswInitialized(true);
-    } else {
-      const interval = setInterval(() => {
-        if (window.mswInitialized) {
-          setMswInitialized(true);
-          clearInterval(interval);
-        }
-      }, 100);
-
-      return () => clearInterval(interval);
-    }
-  }, []);
-
   // 모든 데이터 가져오기
-  const fetchAllSharings = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     if (!mswInitialized) return;
     setIsLoading(true);
 
@@ -70,16 +50,33 @@ export const SharingView = () => {
       let hasMoreData = true;
 
       while (hasMoreData) {
-        const response = await sharingAPI.getSharings(concertId, lastId);
+        let response;
 
-        if (!Array.isArray(response.sharings)) {
+        switch (currentTab) {
+          case 'scrap':
+            response = await sharingAPI.getScrapSharings(lastId);
+            break;
+          case 'my':
+            // TODO: 내가 쓴 글 API 추가 필요
+            response = await sharingAPI.getSharings(concertId, lastId);
+            break;
+          default:
+            response = await sharingAPI.getSharings(concertId, lastId);
+        }
+
+        if (!response?.sharings || !Array.isArray(response.sharings)) {
           console.error('Invalid data format:', response);
+          break;
+        }
+
+        if (response.sharings.length === 0) {
+          hasMoreData = false;
           break;
         }
 
         allData = [...allData, ...response.sharings];
 
-        if (response.isLastPage) {
+        if (response.lastPage) {
           hasMoreData = false;
         } else {
           lastId = response.sharings[response.sharings.length - 1].sharingId;
@@ -92,26 +89,22 @@ export const SharingView = () => {
       }));
 
       setAllPosts(formattedPosts);
-      setDisplayedPosts(
-        viewMode === 'map'
-          ? formattedPosts
-          : formattedPosts.slice(0, ITEMS_PER_PAGE)
-      );
+      setDisplayedPosts(formattedPosts.slice(0, ITEMS_PER_PAGE));
       setHasMore(formattedPosts.length > ITEMS_PER_PAGE);
     } catch (err) {
-      console.error('Error fetching all sharings:', err);
+      console.error('Error fetching data:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [concertId, mswInitialized, viewMode]);
+  }, [concertId, mswInitialized, currentTab]);
 
   // 초기 데이터 로드
   useEffect(() => {
-    if (!isInitialized.current && mswInitialized) {
-      fetchAllSharings();
-      isInitialized.current = true;
-    }
-  }, [mswInitialized, fetchAllSharings]);
+    if (!mswInitialized) return;
+    
+    setCurrentPage(0);
+    fetchData();
+  }, [mswInitialized, currentTab, fetchData]);
 
   // 더 보기 핸들러 (리스트 뷰)
   const handleLoadMore = useCallback(async () => {
@@ -135,41 +128,31 @@ export const SharingView = () => {
   const handleViewModeChange = useCallback(
     (newMode: ViewMode) => {
       setViewMode(newMode);
-      setShouldScrollTop(true); // 뷰 모드 변경 시에만 스크롤 탑 설정
-
       if (newMode === 'map') {
         setDisplayedPosts(allPosts);
         setCurrentPage(0);
       } else {
         setDisplayedPosts(allPosts.slice(0, ITEMS_PER_PAGE));
         setHasMore(allPosts.length > ITEMS_PER_PAGE);
-        if (containerRef.current) {
-          containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-        }
       }
     },
     [allPosts]
   );
-
-  // 컴포넌트 마운트 핸들러
-  const handleMount = useCallback(() => {
-    if (shouldScrollTop && containerRef.current) {
-      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-      setShouldScrollTop(false);
-    }
-  }, [shouldScrollTop]);
 
   return (
     <div
       className={`${viewMode === 'map' ? '-mt-[56px] h-screen' : 'flex h-[calc(100vh-56px)] flex-col'}`}
     >
       <div
-        className={viewMode === 'map' ? 'absolute top-[56px] z-10 p-4' : 'p-4'}
+        className={viewMode === 'map' ? 'absolute top-[56px] z-10 w-full p-4' : 'p-4'}
       >
-        <ViewModeToggle
-          viewMode={viewMode}
-          onModeChange={handleViewModeChange}
-        />
+        <div className="flex items-center justify-between">
+          <ViewModeToggle
+            viewMode={viewMode}
+            onModeChange={handleViewModeChange}
+          />
+          <ViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
+        </div>
       </div>
 
       <div
@@ -186,7 +169,6 @@ export const SharingView = () => {
         {viewMode === 'list' && (
           <SharingList
             posts={displayedPosts}
-            onMount={handleMount}
             concertId={concertId}
             isLoading={isLoading}
             hasMore={hasMore}

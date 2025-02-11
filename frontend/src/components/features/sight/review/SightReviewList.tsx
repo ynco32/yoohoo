@@ -21,39 +21,105 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { DraggableReviewSheet } from './DraggableReviewSheet';
-import { mockReviewData } from '@/types/sightReviews';
+import { getArenaReviews } from '@/lib/api/sightReview';
+import { mapApiToSightReview } from '@/lib/utils/sightReviewMapper';
+import type { SightReviewData } from '@/types/sightReviews';
 
 export function SightReviewList() {
-  // 리뷰 시트의 열림/닫힘 상태 관리
   const [isSheetOpen, setIsSheetOpen] = useState(true);
+  const [reviews, setReviews] = useState<SightReviewData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // URL 파라미터에서 현재 선택된 경기장/섹션/좌석 ID 추출
   const params = useParams();
-  const currentArenaId = Number(params.arenaId); // 현재 경기장 ID
-  const currentSectionId = Number(params.sectionId); // 현재 섹션 ID
-  const currentSeatId = Number(params.seatId); // 현재 좌석 ID (선택적)
 
-  // 리뷰 필터링 로직
-  const filteredReviews = mockReviewData.filter((review) => {
-    // 경기장 ID와 섹션 ID는 항상 일치해야 함
-    const isArenaMatch = review.arenaId === currentArenaId;
-    const isSectionMatch = review.sectionId === currentSectionId;
+  const arenaId = Number(params.arenaId);
+  const sectionId = Number(params.sectionId);
+  const seatId = Number(params.seatId);
+  const stageType = Number(params.stageType);
 
-    // 좌석 ID가 params에 있는 경우에만 좌석 일치 여부 확인
-    const isSeatMatch =
-      currentSeatId !== 0 ? review.seatId === currentSeatId : true;
+  useEffect(() => {
+    console.log({
+      arenaId,
+      stageType,
+      sectionId,
+      seatId,
+      isValidParams: Boolean(stageType && sectionId),
+    });
 
-    return isArenaMatch && isSectionMatch && isSeatMatch;
-  });
+    const fetchReviews = async () => {
+      if (!stageType || !sectionId) {
+        console.log('필수 파라미터 누락');
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        console.log('API 요청 파라미터:', {
+          arenaId,
+          stageType,
+          section: sectionId,
+          seatId,
+        });
+
+        const response = await getArenaReviews(arenaId, {
+          stageType,
+          section: sectionId,
+          ...(seatId && { seatId }),
+        });
+
+        console.log('API 응답:', response);
+
+        const mappedReviews = response.reviews.map((review) =>
+          mapApiToSightReview(review, arenaId, sectionId)
+        );
+
+        setReviews(mappedReviews);
+      } catch (err) {
+        console.error('에러 발생:', err);
+        setError(
+          err instanceof Error ? err.message : '리뷰를 불러오는데 실패했습니다.'
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [arenaId, stageType, sectionId, seatId]);
+
+  if (isLoading) {
+    return (
+      <DraggableReviewSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        reviewDataList={[]}
+        isLoading={true}
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <DraggableReviewSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        reviewDataList={[]}
+        error={error}
+      />
+    );
+  }
 
   return (
     <DraggableReviewSheet
       isOpen={isSheetOpen}
       onClose={() => setIsSheetOpen(false)}
-      reviewDataList={filteredReviews}
+      reviewDataList={reviews}
     />
   );
 }

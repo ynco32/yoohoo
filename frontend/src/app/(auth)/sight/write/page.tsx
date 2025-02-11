@@ -1,10 +1,5 @@
-import SightReviewForm from '@/components/features/sight/form/SightReviewForm';
-import FormContainer from '@/components/ui/FormContainer';
+import { SightReviewFormContainer } from '@/components/features/sight/form/SightReviewFormContainer';
 
 export default function ReviewFormPage() {
-  return (
-    <FormContainer>
-      <SightReviewForm />
-    </FormContainer>
-  );
+  return <SightReviewFormContainer />;
 }

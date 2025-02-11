@@ -2,9 +2,10 @@
 
 interface SectionProps {
   sectionId: number;
-  arenaId: number;
-  sectionName: string;
-  isScraped: boolean;
+  sectionNumber: number; // API에서 제공하는 필드
+  available: boolean; // API에서 제공하는 필드
+  scrapped: boolean; // API에서 제공하는 필드
+  arenaId?: string; // API 응답에는 없지만 부모로부터 받는 필드
   onClick?: () => void;
   startAngle: number;
   endAngle: number;
@@ -15,9 +16,10 @@ interface SectionProps {
 
 export const Section = ({
   sectionId,
+  sectionNumber,
+  available,
+  scrapped,
   arenaId,
-  sectionName,
-  isScraped,
   onClick,
   startAngle,
   endAngle,
@@ -59,14 +61,15 @@ export const Section = ({
   };
 
   const getFillColor = () => {
+    if (!available) return '#CCCCCC'; // 이용 불가능한 섹션
     if (!isScrapMode) return '#4A90E2';
-    return isScraped ? '#FF6B6B' : '#4A90E2';
+    return scrapped ? '#FF6B6B' : '#4A90E2';
   };
 
   return (
     <g
-      onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      onClick={available ? onClick : undefined}
+      style={{ cursor: available && onClick ? 'pointer' : 'default' }}
       data-section-id={sectionId}
       data-arena-id={arenaId}
     >
@@ -75,6 +78,7 @@ export const Section = ({
         fill={getFillColor()}
         stroke="#fff"
         strokeWidth="1"
+        opacity={available ? 1 : 0.5}
       />
 
       <text
@@ -85,8 +89,10 @@ export const Section = ({
         fill="#fff"
         fontSize="12"
       >
-        {sectionName}
+        {sectionNumber}
       </text>
     </g>
   );
 };
+
+export default Section;

@@ -52,7 +52,7 @@ services:
       context: ./frontend
       args:
         - NEXT_PUBLIC_KAKAO_MAP_API_KEY=${NEXT_PUBLIC_KAKAO_MAP_API_KEY}
-        - NEXT_PUBLIC_API_URL=http://i12b207.p.ssafy.io:8080
+        - NEXT_PUBLIC_API_URL=https://i12b207.p.ssafy.io
     ports:
       - "3000:3000"
     environment:

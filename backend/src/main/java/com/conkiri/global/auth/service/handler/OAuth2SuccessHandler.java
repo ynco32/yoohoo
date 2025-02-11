@@ -77,7 +77,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
 		Cookie cookie = new Cookie("refresh_token", refreshToken);
-		cookie.setHttpOnly(true);
+		cookie.setHttpOnly(false);
 		cookie.setSecure(false);
 		cookie.setPath("/");
 		cookie.setMaxAge(14 * 24 * 60 * 60); // 14일

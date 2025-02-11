@@ -8,7 +8,6 @@ import { useParams } from 'next/navigation';
 export const ScrapMode = () => {
   const [isScrapMode, setIsScrapMode] = useState(false);
   const params = useParams();
-  const currentArenaId = Number(params.arenaId);
   const currentSectionId = params.sectionId;
 
   const handleScrapModeChange = (isScrap: boolean) => {
@@ -20,7 +19,7 @@ export const ScrapMode = () => {
       <StarButton onScrapModeChange={handleScrapModeChange} />
       {!currentSectionId ? (
         // sight/[arenaId] 경로에서는 섹션 목록
-        <SectionList arenaId={currentArenaId} isScrapMode={isScrapMode} />
+        <SectionList isScrapMode={isScrapMode} />
       ) : (
         // sight/[arenaId]/[sectionId] 경로에서는 좌석 목록
         <SeatList isScrapMode={isScrapMode} />

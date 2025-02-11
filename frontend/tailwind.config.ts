@@ -36,6 +36,7 @@ module.exports = {
       boxShadow: {
         menu: '3.068px 3.068px 20.455px 0px rgba(106, 160, 205, 0.25)',
         card: '0px 4px 10px 0px rgba(0,0,0,0.25)',
+        'card-colored': '0px 0px 10px 0px rgba(34, 129, 198, 0.25)',
       },
       minHeight: {
         screen: ['100vh', '100dvh'],
@@ -140,6 +141,7 @@ module.exports = {
           badge: '#0077FF',
           bg: '#DFF3FF',
           button: '#4986E8',
+          form: '#A7DEFF',
         },
         gray: {
           900: '#101014',

@@ -109,7 +109,6 @@ export const MOCK_POSTS: SharingPost[] = [
 
 export interface Comment {
   commentId: number;
-  sharingId: number; // 연결된 나눔 글 ID
   writer: string; // 작성자
   content: string; // 댓글 내용
   modifyTime: string; // 작성 시간
@@ -118,14 +117,12 @@ export interface Comment {
 export const MOCK_COMMENTS: Comment[] = [
   {
     commentId: 1,
-    sharingId: 1,
     writer: '닉네임',
     content: '저 참여하고 싶어요!',
     modifyTime: '2025-02-12T14:00:00',
   },
   {
     commentId: 2,
-    sharingId: 1,
     writer: '닉네임2',
     content: '혹시 아직 가능한가요?',
     modifyTime: '2025-02-12T14:30:00',
@@ -138,8 +135,11 @@ export const getMockSharingDetail = (id: number) => {
 
 // 등록 폼 인터페이스
 export interface SharingFormData {
-  title: string;
-  startTime: string;
-  content: string;
-  image?: File;
+  title: string; // 제목
+  content: string; // 내용
+  latitude: number; // 위도
+  longitude: number; // 경도
+  startTime: string; // 시작 시간 (ISO8601 형식)
+  concertId?: number; // 콘서트 ID
+  image: File | undefined; // 업로드할 이미지 파일
 }

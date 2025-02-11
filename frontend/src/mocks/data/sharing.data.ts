@@ -174,19 +174,86 @@ export const mockSharings: ExtendedSharingPost[] = [
 export const mockComments: Comment[] = [
   {
     commentId: 1,
-    sharingId: 1,
     writer: '닉네임',
     content: '저 참여하고 싶어요!',
     modifyTime: '2025-02-12T14:00:00',
   },
   {
     commentId: 2,
-    sharingId: 1,
     writer: '닉네임2',
     content: '혹시 아직 가능한가요?',
     modifyTime: '2025-02-12T14:30:00',
   },
+  {
+    commentId: 3,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 4,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 5,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 6,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 7,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 8,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 9,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 10,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
+  {
+    commentId: 11,
+    writer: '닉네임3',
+    content: '감사합니다!',
+    modifyTime: '2025-02-12T14:40:00',
+  },
 ];
+
+// 새로운 나눔 게시글을 추가하는 함수
+export const addSharing = (
+  newSharingData: Omit<ExtendedSharingPost, 'sharingId'>
+): ExtendedSharingPost => {
+  const newSharing = {
+    sharingId: mockSharings.length + 1, // 새로운 ID 부여 (mock 데이터의 길이에 기반)
+    ...newSharingData,
+  };
+
+  mockSharings.push(newSharing); // 데이터 추가
+  console.log('새로운 나눔 게시글 추가:', newSharing);
+
+  return newSharing;
+};
 
 // 특정 공연의 나눔 게시글만 필터링하는 헬퍼 함수
 export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
@@ -250,7 +317,68 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
   return undefined;
 };
 
-// 특정 나눔 게시글의 댓글을 가져오는 헬퍼 함수
-export const getCommentsBySharingId = (sharingId: number): Comment[] => {
-  return mockComments.filter((comment) => comment.sharingId === sharingId);
+// 댓글 페이지네이션 가능한 함수
+export const getCommentsByPage = (
+  lastCommentId?: number,
+  pageSize: number = 10
+): { comments: Comment[]; lastPage: boolean } => {
+  let filteredComments = [...mockComments];
+
+  // lastCommentId가 있으면 해당 ID 이후의 댓글만 가져옴
+  if (lastCommentId) {
+    const startIndex = mockComments.findIndex(
+      (comment) => comment.commentId === lastCommentId
+    );
+    filteredComments = mockComments.slice(startIndex + 1);
+  }
+
+  // 페이지 크기만큼 잘라서 반환
+  const comments = filteredComments.slice(0, pageSize);
+  const lastPage = filteredComments.length === 0 || comments.length < pageSize;
+
+  return {
+    comments,
+    lastPage,
+  };
+};
+
+// 스크랩한 게시글 목록 조회용 헬퍼 함수 추가
+const mockScrappedSharingIds = new Set([1, 3, 5]); // 임의로 몇 개의 게시글을 스크랩된 상태로 설정
+
+export const getScrappedSharings = (
+  lastSharingId?: number,
+  pageSize: number = 10
+): { sharings: SharingPost[]; lastPage: boolean } => {
+  // mockSharings에서 스크랩된 게시글만 필터링
+  const scrappedSharings = mockSharings
+    .filter((sharing) => mockScrappedSharingIds.has(sharing.sharingId))
+    .map((sharing) => ({
+      sharingId: sharing.sharingId,
+      title: sharing.title,
+      content: sharing.content,
+      nickname: sharing.nickname,
+      status: sharing.status,
+      startTime: sharing.startTime,
+      photoUrl: sharing.photoUrl,
+      latitude: sharing.latitude,
+      longitude: sharing.longitude,
+    }));
+
+  let filteredSharings;
+  if (lastSharingId) {
+    const startIndex = scrappedSharings.findIndex(
+      (sharing) => sharing.sharingId === lastSharingId
+    );
+    filteredSharings = scrappedSharings.slice(
+      startIndex + 1,
+      startIndex + 1 + pageSize
+    );
+  } else {
+    filteredSharings = scrappedSharings.slice(0, pageSize);
+  }
+
+  return {
+    sharings: filteredSharings,
+    lastPage: filteredSharings.length < pageSize,
+  };
 };

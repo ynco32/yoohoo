@@ -1,42 +1,25 @@
 'use client';
 
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { SVGIcons } from '@/assets/svgs';
 import { useRouter } from 'next/navigation';
 import { UserInfo } from './UserInfo';
+import { useUserStore } from '@/store/useUserStore';
 
 /**
  * @component UserProfile
  * @description 사용자의 프로필 섹션을 표시하는 컴포넌트입니다.
- * 프로필 배경, 아트워크 이미지, 그리고 사용자 정보를 포함합니다.
+ * API에서 사용자 정보를 가져와 프로필 배경, 아트워크 이미지, 그리고 사용자 정보를 표시합니다.
  * 클릭 시 기본적으로 마이페이지로 이동하며, onClick prop이 제공되면 해당 함수를 실행합니다.
- *
- * @typedef {Object} UserProfileProps
- * @property {string} nickname - 사용자의 닉네임
- * @property {string} level - 사용자의 레벨
- * @property {number} steps - 최애로부터의 걸음 수
- * @property {Function} [onClick] - 프로필 클릭 시 실행될 콜백 함수
- *
- * @details
- * - 반응형 레이아웃: 모바일, 태블릿 크기에 따라 다른 높이와 패딩 값 적용
- * - 프로필 이미지는 컨테이너의 4/5 높이를 차지
- * - 유저 정보는 하단 1/5 높이를 차지
  */
-
-interface UserProfileProps {
-  nickname: string;
-  level: string;
-  steps: number;
-  onClick?: () => void;
-}
-
-export const UserProfile = ({
-  nickname,
-  level,
-  steps,
-  onClick,
-}: UserProfileProps) => {
+export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   const router = useRouter();
+  const { user, isLoading, error, fetchUserInfo } = useUserStore();
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, [fetchUserInfo]);
 
   const handleClick = () => {
     if (onClick) {
@@ -45,6 +28,30 @@ export const UserProfile = ({
       router.push('/mypage');
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[35vh] w-full items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-[35vh] w-full items-center justify-center">
+        <div className="text-status-warning">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex h-[35vh] w-full items-center justify-center">
+        <div className="text-gray-500">No user data available</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -68,8 +75,8 @@ export const UserProfile = ({
           <div className="relative h-4/5 w-full">
             <div className="flex h-full items-center justify-center">
               <Image
-                src={SVGIcons.Artwork}
-                alt={nickname}
+                src={user.profileUrl || SVGIcons.Artwork}
+                alt={user.nickname}
                 className="h-full w-auto object-contain"
                 width={0}
                 height={0}
@@ -82,9 +89,9 @@ export const UserProfile = ({
           {/* 유저 정보 섹션 */}
           <div className="h-1/5 w-full">
             <UserInfo
-              nickname={nickname}
-              level={level}
-              steps={steps}
+              nickname={user.nickname}
+              level={user.level || '0'}
+              tier={user.tier || 'Unranked'}
               className="text-sm mobile:text-base tablet:text-lg"
             />
           </div>
@@ -93,3 +100,5 @@ export const UserProfile = ({
     </div>
   );
 };
+
+export default UserProfile;

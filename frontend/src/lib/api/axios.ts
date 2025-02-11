@@ -5,124 +5,135 @@ import axios, {
   AxiosInstance,
 } from 'axios';
 
-// 1️⃣ 기본 설정
 const BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://i12b207.p.ssafy.io';
 const USE_MSW: boolean = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
-// API 인스턴스 생성
 const api: AxiosInstance = axios.create({
-  baseURL: USE_MSW ? '/' : BASE_URL, // MSW 사용 시 상대경로, 아니면 실제 서버 URL
-  withCredentials: !USE_MSW, // CORS 요청에 쿠키 포함 여부
+  baseURL: USE_MSW ? '/' : BASE_URL,
+  withCredentials: !USE_MSW,
 });
 
-// 2️⃣ 토큰 갱신 관련 상태 관리
-let isRefreshing = false; // 현재 토큰 갱신 진행 중인지 여부
-
-// 토큰 갱신 대기열에 들어갈 요청의 타입 정의
+let isRefreshing = false;
 interface QueueItem {
-  resolve: (value?: unknown) => void; // 요청 성공 시 실행할 함수
-  reject: (reason?: AxiosError) => void; // 요청 실패 시 실행할 함수
+  resolve: (value?: unknown) => void;
+  reject: (reason?: AxiosError) => void;
 }
 
-let failedQueue: QueueItem[] = []; // 토큰 만료로 실패한 요청들의 대기열
+let failedQueue: QueueItem[] = [];
 
-// 3️⃣ 대기열 처리 함수
 const processQueue = (error: AxiosError | null = null) => {
-  // 대기 중인 모든 요청들을 순회하면서
+  console.log('📋 대기열 처리 중:', {
+    대기요청수: failedQueue.length,
+    에러발생: !!error,
+  });
+
   failedQueue.forEach((prom) => {
     if (error) {
-      console.log('💥failedQueue 재요청 실패', error);
-      prom.reject(error); // 에러가 있다면 reject
+      console.log('❌ 대기 요청 실패:', error.message);
+      prom.reject(error);
     } else {
-      prom.resolve(); // 성공했다면 resolve
+      console.log('✅ 대기 요청 성공적으로 처리됨');
+      prom.resolve();
     }
   });
-  failedQueue = []; // 대기열 비우기
+
+  failedQueue = [];
 };
 
-// 4️⃣ Request Interceptor (요청 전 실행)
+interface RequestWithRetry extends InternalAxiosRequestConfig {
+  hasRetried?: boolean;
+  _retryCount?: number;
+}
+
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // 쿠키에서 access_token 찾기
   const token = document.cookie
     .split('; ')
     .find((row) => row.startsWith('access_token='))
     ?.split('=')[1];
 
-  // 토큰이 있다면 요청 헤더에 추가
+  console.log('📤 요청 전송:', {
+    주소: config.url,
+    토큰존재: !!token,
+    메서드: config.method,
+  });
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// 5️⃣ 재시도 관련 설정을 추가한 요청 설정 타입
-interface RequestWithRetry extends InternalAxiosRequestConfig {
-  hasRetried?: boolean; // 토큰 만료로 재시도 했는지 여부
-}
-
-// 6️⃣ Response Interceptor (응답 처리)
 api.interceptors.response.use(
-  // 성공 응답은 그대로 반환
-  (response: AxiosResponse) => response,
-
-  // 에러 응답 처리
+  (response: AxiosResponse) => {
+    console.log('📥 응답 수신:', {
+      주소: response.config.url,
+      상태: response.status,
+    });
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as RequestWithRetry;
 
-    // 7️⃣ 토큰 만료(401) 에러 && 아직 재시도하지 않은 요청
+    console.log('❌ 응답 에러 발생:', {
+      주소: originalRequest.url,
+      상태코드: error.response?.status,
+      재시도여부: originalRequest.hasRetried,
+      토큰갱신중: isRefreshing,
+    });
+
     if (error.response?.status === 401 && !originalRequest.hasRetried) {
-      // 8️⃣ 이미 다른 요청이 토큰 갱신 중이라면
       if (isRefreshing) {
-        // 새로운 Promise를 만들어 대기열에 추가
+        console.log('⏳ 토큰 갱신 진행중 - 요청을 대기열에 추가합니다');
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => api(originalRequest)) // 토큰 갱신 성공 시 원래 요청 재시도
-          .catch((err) => Promise.reject(err)); // 실패 시 에러 반환
+          .then(() => {
+            console.log('🔄 토큰 갱신 완료 - 원래 요청을 재시도합니다');
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            console.log('❌ 대기열 처리 실패:', err.message);
+            return Promise.reject(err);
+          });
       }
 
-      // 9️⃣ 첫 토큰 만료 상황이라면
-      originalRequest.hasRetried = true; // 재시도 표시 - 다른 요청이 토큰 갱신 중인지 체크하기 위함
-      isRefreshing = true; // 토큰 갱신 시작 - 무한 루프 방지
+      originalRequest.hasRetried = true;
+      isRefreshing = true;
 
       try {
-        // 토큰 갱신 요청
-        await api.post('/api/v1/auth/refresh');
+        console.log('🔑 토큰 갱신 시도 중...');
+        // httponly -> 일반 쿠키로 변경
+        const refreshToken = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('refresh_token='))
+          ?.split('=')[1];
 
-        // 갱신 성공 시
-        processQueue(); // 대기 중인 요청들 실행
-        return api(originalRequest); // 원래 요청도 재시도
+        if (!refreshToken) {
+          console.log('❌ 리프레시 토큰을 찾을 수 없습니다');
+          throw new Error('No refresh token found');
+        }
+        const refreshResponse = await api.post('/api/v1/auth/refresh', {
+          refreshToken,
+        });
+        console.log('✅ 토큰 갱신 성공:', refreshResponse.status);
+
+        processQueue();
+        return api(originalRequest);
       } catch (e) {
-        // 토큰 갱신 실패 시
-        processQueue(e as AxiosError); // 대기 중인 요청들에 에러 전파
-        console.log('토큰 갱신 실패');
-        window.location.href = '/login'; // 로그인 페이지로 이동
+        console.log('❌ 토큰 갱신 실패:', e);
+        processQueue(e as AxiosError);
+
+        console.log('🚪 로그인 페이지로 이동합니다');
+        window.location.href = '/login';
         return Promise.reject(error);
       } finally {
-        isRefreshing = false; // 토큰 갱신 상태 초기화
+        isRefreshing = false;
       }
     }
 
-    // 그 외 에러는 그대로 반환
     return Promise.reject(error);
   }
 );
-
-// 🔍 환경 변수 체크
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  console.warn('⚠️ Warning: NEXT_PUBLIC_API_URL is not set in .env.local');
-}
-
-if (process.env.NEXT_PUBLIC_USE_MSW === undefined) {
-  console.warn('⚠️ Warning: NEXT_PUBLIC_USE_MSW is not set in .env.local');
-}
-
-// 🔍 설정 디버깅 로그
-console.log('API 설정:', {
-  baseURL: USE_MSW ? '/' : BASE_URL,
-  withCredentials: !USE_MSW,
-  useMSW: USE_MSW,
-});
 
 export default api;

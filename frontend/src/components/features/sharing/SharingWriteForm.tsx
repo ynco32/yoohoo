@@ -2,129 +2,102 @@
 
 import React from 'react';
 import { SharingFormData } from '@/types/sharing';
-import { TitleInput } from './TitleInput';
 import { TimeInput } from './TimeInput';
-import { PhotoUpload } from '@/components/common/PhotoUpload';
+import { ImageUpload } from '@/components/features/sight/form/ImageUpload';
 import { TextArea } from '@/components/common/TextArea';
 import { TextButton } from '@/components/ui/TextButton';
+import { FormSectionHeader } from '@/components/features/sight/form/FormSectionHeader';
 
 interface SharingWriteFormProps {
-  location: { latitude: number; longitude: number };
-  onSubmitComplete: () => void;
-  formData: SharingFormData;
-  onFormChange: (data: SharingFormData) => void;
-  onLocationReset: () => void;
-  concertId: number;
+  mode: 'create' | 'edit';
+  formData: Partial<SharingFormData>;
+  onFormChange: (data: Partial<SharingFormData>) => void;
+  onSubmit: () => void;
+  onLocationReset?: () => void;
+  onSubmitComplete: (sharingId: number) => void;
+  isSubmitting: boolean;
+  errors: { [key: string]: string };
 }
 
-type FormErrors = {
-  title?: string;
-  startTime?: string;
-  content?: string;
-  image?: string;
-  submit?: string;
-};
-
 export const SharingWriteForm = ({
-  location,
+  mode,
   formData,
   onFormChange,
-  onSubmitComplete,
+  onSubmit,
   onLocationReset,
-  concertId,
+  isSubmitting,
+  errors,
 }: SharingWriteFormProps) => {
-  const [errors, setErrors] = React.useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.title?.trim()) {
-      newErrors.title = '나눔할 물건을 입력해주세요';
-    }
-    if (!formData.startTime) {
-      newErrors.startTime = '시작 시간을 선택해주세요';
-    }
-    if (!formData.image) {
-      newErrors.image = '사진을 업로드해주세요';
-    }
-    if (!formData.content?.trim()) {
-      newErrors.content = '상세 내용을 입력해주세요';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      try {
-        setIsSubmitting(true);
-        await onSubmitComplete();
-      } catch (error) {
-        setErrors((prev) => ({
-          ...prev,
-          submit: '나눔 등록에 실패했습니다. 다시 시도해주세요.',
-        }));
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  };
-
   return (
     <div className="flex h-[calc(100vh-56px)] w-full max-w-[430px] flex-col">
       <div className="h-full overflow-y-auto">
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4 p-4">
-            <TitleInput
-              value={formData.title || ''}
-              onChange={(title) => onFormChange({ ...formData, title })}
-              error={errors.title}
-            />
-            <TimeInput
-              value={formData.startTime || ''}
-              onChange={(startTime) => onFormChange({ ...formData, startTime })}
-              error={errors.startTime}
-            />
-            <PhotoUpload
-              value={formData.image}
-              onChange={(image) => onFormChange({ ...formData, image })}
-              error={errors.image}
-              label="사진"
-              placeholder="사진을 업로드해주세요"
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className="space-y-6 p-4">
+            <FormSectionHeader
+              title="제목"
+              description="나눔할 물건의 제목을 입력해주세요"
             />
             <TextArea
-              value={formData.content}
-              onChange={(content) => onFormChange({ ...formData, content })}
-              error={errors.content}
-              label="상세 내용"
+              value={formData?.title || ''}
+              onChange={(title) => onFormChange({ title })}
+              error={errors?.title}
+              placeholder="제목을 입력해주세요"
+              rows={1}
+            />
+
+            <FormSectionHeader
+              title="시간 선택"
+              description="나눔을 시작할 시간을 설정해주세요"
+            />
+            <TimeInput
+              value={formData?.startTime || ''}
+              onChange={(startTime) => onFormChange({ startTime })}
+              error={errors?.startTime}
+            />
+
+            <FormSectionHeader
+              title="사진 업로드"
+              description="나눔할 물건의 사진을 업로드해주세요"
+            />
+            <ImageUpload
+              value={formData?.image || undefined}
+              onChange={(image) => onFormChange({ image })}
+              error={errors?.image}
+            />
+
+            <FormSectionHeader
+              title="상세 내용"
+              description="나눔할 물건에 대한 자세한 설명을 입력해주세요"
+            />
+            <TextArea
+              value={formData?.content || ''}
+              onChange={(content) => onFormChange({ content })}
+              error={errors?.content}
               placeholder="상세 내용을 입력해주세요"
+              rows={5}
             />
           </div>
         </form>
       </div>
 
-      {errors.submit && (
+      {errors?.submit && (
         <p className="px-4 text-sm text-status-warning">{errors.submit}</p>
       )}
 
       <div className="space-y-2 p-4">
-        <TextButton variant="outline" onClick={onLocationReset}>
-          위치 다시 선택하기
-        </TextButton>
+        {onLocationReset && mode === 'create' && (
+          <TextButton variant="outline" onClick={onLocationReset}>
+            위치 다시 선택하기
+          </TextButton>
+        )}
         <TextButton
-          onClick={handleSubmit}
+          onClick={onSubmit}
           isLoading={isSubmitting}
-          loadingText="등록 중..."
+          loadingText={mode === 'create' ? '등록 중...' : '수정 중...'}
         >
-          나눔 등록하기
+          {mode === 'create' ? '나눔 등록하기' : '나눔 수정하기'}
         </TextButton>
       </div>
     </div>
   );
 };
-
-export default SharingWriteForm;

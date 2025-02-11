@@ -1,7 +1,7 @@
-// src/store/useUserStore.ts
 import { create } from 'zustand';
 
 interface UserData {
+  userId: number;
   nickname: string;
   email: string;
   userName: string;

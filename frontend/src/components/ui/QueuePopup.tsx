@@ -4,7 +4,7 @@ interface QueuePopupProps {
   isOpen: boolean;
   title: string;
   onClose: () => void;
-  queueNumber: number;
+  queueNumber: string;
   behindMe: number;
   expectedTime: string; //4시간 58분 29초
 }

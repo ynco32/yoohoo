@@ -1,5 +1,3 @@
-// src/mocks/data/sharing.data.ts
-
 import { SharingPost, Comment, SharingStatus } from '@/types/sharing';
 
 // 실제 데이터에는 concertId가 있어야 합니다
@@ -15,6 +13,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     content:
       '안녕하세요! 베몬 포토카드 나눔합니다. 총 5장이며 상태 좋습니다. 관심 있으신 분들 신청해주세요!',
     nickname: '닉네임',
+    writerId: 1,
     status: 'ONGOING' as SharingStatus,
     startTime: '2025-02-12T14:00',
     photoUrl: '/images/card.png',
@@ -28,6 +27,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     content:
       '새로 받은 포토카드 중 중복된 카드 2장을 나눔합니다. 원하시는 분 계시면 연락주세요!',
     nickname: '닉네임',
+    writerId: 2,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T15:30',
     photoUrl: '/images/card.png',
@@ -41,6 +41,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     content:
       '한 번 써본 팔찌 나눔합니다. 아직 상태 좋고 깨끗합니다. 가져가실 분 연락주세요!',
     nickname: '닉네임',
+    writerId: 3,
     status: 'CLOSED' as SharingStatus,
     startTime: '2025-02-12T13:00',
     photoUrl: '/images/card.png',
@@ -54,6 +55,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     content:
       '최근에 구매한 포토카드 세트 중 일부를 나눔합니다. 관심 있는 콜렉터분들 환영합니다!',
     nickname: '닉네임',
+    writerId: 4,
     status: 'ONGOING' as SharingStatus,
     startTime: '2025-02-12T16:00',
     photoUrl: '/images/card.png',
@@ -67,6 +69,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     content:
       '여름을 대비해 새 부채를 나눔합니다. 디자인 예쁘고 상태 좋습니다. 필요하신 분 연락주세요!',
     nickname: '닉네임',
+    writerId: 5,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -79,6 +82,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '부채 나눔합니다22',
     content: '추가로 부채 한 개 더 나눔합니다. 관심 있으신 분들 신청해주세요!',
     nickname: '닉네임',
+    writerId: 6,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -91,6 +95,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 7,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -103,6 +108,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 8,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -115,6 +121,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 9,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -127,6 +134,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 10,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -139,6 +147,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글22',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 11,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -151,6 +160,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 12,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -163,6 +173,7 @@ export const mockSharings: ExtendedSharingPost[] = [
     title: '나눔 게시글',
     content: '나눔 내용',
     nickname: '닉네임',
+    writerId: 13,
     status: 'UPCOMING' as SharingStatus,
     startTime: '2025-02-12T17:30',
     photoUrl: '/images/card.png',
@@ -175,66 +186,77 @@ export const mockComments: Comment[] = [
   {
     commentId: 1,
     writer: '닉네임',
+    writerId: 1,
     content: '저 참여하고 싶어요!',
     modifyTime: '2025-02-12T14:00:00',
   },
   {
     commentId: 2,
     writer: '닉네임2',
+    writerId: 2,
     content: '혹시 아직 가능한가요?',
     modifyTime: '2025-02-12T14:30:00',
   },
   {
     commentId: 3,
     writer: '닉네임3',
+    writerId: 3,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 4,
     writer: '닉네임3',
+    writerId: 4,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 5,
     writer: '닉네임3',
+    writerId: 5,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 6,
     writer: '닉네임3',
+    writerId: 6,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 7,
     writer: '닉네임3',
+    writerId: 7,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 8,
     writer: '닉네임3',
+    writerId: 8,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 9,
     writer: '닉네임3',
+    writerId: 9,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 10,
     writer: '닉네임3',
+    writerId: 10,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
   {
     commentId: 11,
     writer: '닉네임3',
+    writerId: 11,
     content: '감사합니다!',
     modifyTime: '2025-02-12T14:40:00',
   },
@@ -265,6 +287,7 @@ export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
         title,
         content,
         nickname,
+        writerId,
         status,
         startTime,
         photoUrl,
@@ -276,6 +299,7 @@ export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
         title,
         content,
         nickname,
+        writerId,
         status,
         startTime,
         photoUrl,
@@ -296,6 +320,7 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
       title,
       content,
       nickname,
+      writerId,
       status,
       startTime,
       photoUrl,
@@ -307,6 +332,7 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
       title,
       content,
       nickname,
+      writerId,
       status,
       startTime,
       photoUrl,
@@ -339,5 +365,47 @@ export const getCommentsByPage = (
   return {
     comments,
     lastPage,
+  };
+};
+
+// 스크랩한 게시글 목록 조회용 헬퍼 함수 추가
+const mockScrappedSharingIds = new Set([1, 3, 5]); // 임의로 몇 개의 게시글을 스크랩된 상태로 설정
+
+export const getScrappedSharings = (
+  lastSharingId?: number,
+  pageSize: number = 10
+): { sharings: SharingPost[]; lastPage: boolean } => {
+  // mockSharings에서 스크랩된 게시글만 필터링
+  const scrappedSharings = mockSharings
+    .filter((sharing) => mockScrappedSharingIds.has(sharing.sharingId))
+    .map((sharing) => ({
+      sharingId: sharing.sharingId,
+      title: sharing.title,
+      content: sharing.content,
+      writerId: sharing.writerId,
+      nickname: sharing.nickname,
+      status: sharing.status,
+      startTime: sharing.startTime,
+      photoUrl: sharing.photoUrl,
+      latitude: sharing.latitude,
+      longitude: sharing.longitude,
+    }));
+
+  let filteredSharings;
+  if (lastSharingId) {
+    const startIndex = scrappedSharings.findIndex(
+      (sharing) => sharing.sharingId === lastSharingId
+    );
+    filteredSharings = scrappedSharings.slice(
+      startIndex + 1,
+      startIndex + 1 + pageSize
+    );
+  } else {
+    filteredSharings = scrappedSharings.slice(0, pageSize);
+  }
+
+  return {
+    sharings: filteredSharings,
+    lastPage: filteredSharings.length < pageSize,
   };
 };

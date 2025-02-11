@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
+import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -27,6 +28,11 @@ public class TicketingController {
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
 
+	// 서버 시간 제공
+	@GetMapping("/time-info")
+	public TicketingInfoResponseDTO getTimeInfo(@AuthenticationPrincipal UserPrincipal user) {
+		return new TicketingInfoResponseDTO();
+	}
 
 	// 대기열 진입 API
 	@PostMapping("/queue")

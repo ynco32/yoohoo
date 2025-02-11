@@ -19,7 +19,8 @@ public class SharingDetailResponseDTO {
 	private String photoUrl;
 	private String status;
 	private String startTime;
-	private String nickname;
+	private String writer;
+	private Long writerId;
 	private Double latitude;
 	private Double longitude;
 
@@ -31,7 +32,8 @@ public class SharingDetailResponseDTO {
 			.photoUrl(sharing.getPhotoUrl())
 			.status(sharing.getStatus().name())
 			.startTime(sharing.getStartTime().toString())
-			.nickname(sharing.getUser().getNickname())
+			.writer(sharing.getUser().getNickname())
+			.writerId(sharing.getUser().getUserId())
 			.latitude(sharing.getLatitude())
 			.longitude(sharing.getLongitude())
 			.build();

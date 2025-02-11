@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
+import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -27,16 +28,16 @@ public class TicketingController {
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
 
-	// 티켓팅 활성화여부 API, 응답으로 활성화 여부
-	@GetMapping("/status")
-	public boolean getTicketingStatus() {
-		return queueProcessingService.isTicketingActive();
+	// 서버 시간 제공
+	@GetMapping("/time-info")
+	public TicketingInfoResponseDTO getTimeInfo(@AuthenticationPrincipal UserPrincipal user) {
+		return new TicketingInfoResponseDTO();
 	}
 
-	// 대기열 진입 API, 응답으로 대기번호
+	// 대기열 진입 API
 	@PostMapping("/queue")
-	public Long joinQueue(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return queueProcessingService.addToQueue(userPrincipal.getUserId());
+	public void joinQueue(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		queueProcessingService.addToQueue(userPrincipal.getUserId());
 	}
 
 	// 구역 조회 API
@@ -63,4 +64,13 @@ public class TicketingController {
 		);
 	}
 
+	// @GetMapping("/result")
+	// public HistoryResponseDTO getTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	// 	return ticketingService.getTicketingResult(userPrincipal.getUserId());
+	// }
+
+	// @PostMapping("/result")
+	// public void saveTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	// 	ticketingService.saveTicketingResult(userPrincipal.getUserId());
+	// }
 }

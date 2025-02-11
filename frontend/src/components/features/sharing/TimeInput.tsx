@@ -116,7 +116,7 @@ export const TimeInput = ({
           onChange={(e) => handleMinuteChange(Number(e.target.value))}
           className="rounded-lg bg-gray-100 p-3"
         >
-          {Array.from({ length: 12 }, (_, i) => i * 10).map((m) => (
+          {Array.from({ length: 6 }, (_, i) => i * 10).map((m) => (
             <option key={m} value={m}>
               {String(m).padStart(2, '0')}
             </option>

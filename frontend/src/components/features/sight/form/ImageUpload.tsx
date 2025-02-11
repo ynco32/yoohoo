@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
-  value?: File;
-  onChange: (file: File | undefined) => void;
+  value: File | null; // undefined 대신 null 사용
+  onChange: (file: File | null) => void; // undefined 대신 null 사용
   className?: string;
   error?: string;
 }
@@ -19,7 +19,10 @@ export const ImageUpload = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      onChange(null); // 파일이 없을 경우 null 전달
+      return;
+    }
     onChange(file);
   };
 
@@ -29,13 +32,23 @@ export const ImageUpload = ({
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onChange(undefined);
+    onChange(null); // undefined 대신 null 사용
     if (inputRef.current) {
       inputRef.current.value = '';
     }
   };
 
-  const preview = value ? URL.createObjectURL(value) : undefined;
+  // File이 있을 때만 URL 생성
+  const preview = value instanceof File ? URL.createObjectURL(value) : null;
+
+  // cleanup URL when component unmounts or when preview changes
+  React.useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
@@ -74,7 +87,7 @@ export const ImageUpload = ({
               />
             )}
           </button>
-          {preview != null && (
+          {preview && (
             <div
               role="button"
               onClick={handleRemove}

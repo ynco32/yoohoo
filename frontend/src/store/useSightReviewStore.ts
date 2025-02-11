@@ -3,7 +3,7 @@ import { SightReviewFormData } from '@/types/sightReviews';
 
 export type ValidFields =
   | 'concertId'
-  | 'images'
+  | 'photo' // images -> photo로 변경
   | 'viewScore'
   | 'seat'
   | 'seatDistance'
@@ -11,7 +11,7 @@ export type ValidFields =
 
 interface ValidationState {
   concertId: boolean;
-  images: boolean;
+  photo: boolean; // images -> photo로 변경
   viewScore: boolean;
   seat: boolean;
   seatDistance: boolean;
@@ -20,7 +20,7 @@ interface ValidationState {
 
 interface TouchedState {
   concertId: boolean;
-  images: boolean;
+  photo: boolean; // images -> photo로 변경
   viewScore: boolean;
   seat: boolean;
   seatDistance: boolean;
@@ -37,7 +37,7 @@ interface SightReviewState {
     field: K,
     value: SightReviewFormData[K]
   ) => void;
-  setFormData: (data: SightReviewFormData) => void; // 새로 추가된 메서드
+  setFormData: (data: SightReviewFormData) => void;
   setError: (field: string, error: string | undefined) => void;
   setValidation: (field: keyof ValidationState, isValid: boolean) => void;
   setTouched: (field: ValidFields) => void;
@@ -52,7 +52,7 @@ const initialFormData: SightReviewFormData = {
   rowLine: 0,
   columnLine: 0,
   stageType: 0,
-  images: [],
+  photo: null, // images 배열 대신 photo: null
   viewScore: 0,
   seatDistance: '평범해요',
   sound: '평범해요',
@@ -61,7 +61,7 @@ const initialFormData: SightReviewFormData = {
 
 const initialValidation: ValidationState = {
   concertId: false,
-  images: false,
+  photo: false, // images -> photo로 변경
   viewScore: false,
   seat: false,
   seatDistance: false,
@@ -70,12 +70,13 @@ const initialValidation: ValidationState = {
 
 const initialTouched: TouchedState = {
   concertId: false,
-  images: false,
+  photo: false, // images -> photo로 변경
   viewScore: false,
   seat: false,
   seatDistance: false,
   content: false,
 };
+
 export const useSightReviewStore = create<SightReviewState>((set, get) => ({
   formData: initialFormData,
   errors: {},
@@ -92,7 +93,6 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
   setFormData: (data) =>
     set({
       formData: data,
-      // 폼 데이터가 새로 설정될 때 validation과 touched 상태도 초기화
       validation: initialValidation,
       touched: initialTouched,
       errors: {},

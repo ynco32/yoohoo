@@ -41,13 +41,14 @@ export const useSightReviewValidation = ({
           return isConcertValid && isSeatValid;
 
         case 'reviweSight':
-          const isPhotosValid = formData.images.length > 0;
-          setValidation('images', isPhotosValid);
-          if (!isPhotosValid && touched.images) {
-            setError('images', '이미지를 업로드해주세요');
+          const isPhotoValid = formData.photo instanceof File;
+          setValidation('photo', isPhotoValid);
+          if (!isPhotoValid && touched.photo) {
+            setError('photo', '이미지를 업로드해주세요');
           } else {
-            setError('images', undefined);
+            setError('photo', undefined);
           }
+
           const isViewScoreValid = formData.viewScore > 0;
           setValidation('viewScore', isViewScoreValid);
           if (!isViewScoreValid && touched.viewScore) {
@@ -55,12 +56,11 @@ export const useSightReviewValidation = ({
           } else {
             setError('viewScore', undefined);
           }
-          return isPhotosValid && isViewScoreValid;
+          return isPhotoValid && isViewScoreValid;
+
         case 'reviewOthers':
           const isSeatDistanceValid = formData.seatDistance.length > 0;
-
           setValidation('seatDistance', isSeatDistanceValid);
-
           if (!isSeatDistanceValid && touched.seatDistance) {
             setError('seatDistance', '좌석 간격을 선택해주세요');
           } else {
@@ -88,7 +88,7 @@ export const useSightReviewValidation = ({
   ): ValidFields | null => {
     if (
       field === 'concertId' ||
-      field === 'images' ||
+      field === 'photo' || // images -> photo로 변경
       field === 'viewScore' ||
       field === 'seatDistance' ||
       field === 'content'

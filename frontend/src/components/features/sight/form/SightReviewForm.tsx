@@ -124,11 +124,9 @@ export const SightReviewForm = React.memo(
           return (
             <div className="w-full">
               <ImageUpload
-                value={formData.images[0]}
-                onChange={(file) =>
-                  handleFieldChange('images', file ? [file] : [])
-                }
-                error={errors.images?.toString()}
+                value={formData.photo}
+                onChange={(file) => handleFieldChange('photo', file)}
+                error={errors.photo?.toString()}
               />
               <ViewScoreSelect
                 value={formData.viewScore}
@@ -163,7 +161,7 @@ export const SightReviewForm = React.memo(
 
     return (
       <div
-        className={`shadow-card-colored relative flex h-dvh flex-col rounded-layout bg-white ${className}`}
+        className={`relative flex h-dvh flex-col rounded-layout bg-white shadow-card-colored ${className}`}
       >
         {/* Close Button */}
         <button

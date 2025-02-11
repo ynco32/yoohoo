@@ -27,15 +27,16 @@ export const SharingDetailHeader = ({
   const { isScraped, toggleScrap } = useSharingScrapStore();
   const [isToggling, setIsToggling] = useState(false);
 
+  const scraped = isScraped(sharingId);
+
   const handleScrapClick = async () => {
     if (isToggling) return;
-    
+
+    setIsToggling(true);
     try {
-      setIsToggling(true);
       await toggleScrap(sharingId);
     } catch (error) {
       console.error('Failed to toggle scrap:', error);
-      // 에러 처리는 필요에 따라 추가
     } finally {
       setIsToggling(false);
     }
@@ -72,7 +73,6 @@ export const SharingDetailHeader = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between gap-2">
           <div className="relative h-10 w-10">
-            {' '}
             {/* 원형 프로필 */}
             <Image
               src={profileImage}
@@ -94,13 +94,13 @@ export const SharingDetailHeader = ({
           </div>
         </div>
         <div className="flex-end flex flex-col items-end gap-2">
-        <button
+          <button
             onClick={handleScrapClick}
             disabled={isToggling}
             className="transition-transform hover:scale-110 active:scale-95"
           >
-            {isScraped(sharingId) ? (
-              <BookmarkSolid className="h-6 w-6 text-primary" />
+            {scraped ? (
+              <BookmarkSolid className="text-primary h-6 w-6" />
             ) : (
               <BookmarkOutline className="h-6 w-6" />
             )}

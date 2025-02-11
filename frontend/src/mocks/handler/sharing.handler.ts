@@ -175,15 +175,26 @@ export const sharingHandlers = [
     );
   }),
 
-  // 스크랩 토글
+  // 스크랩 추가
   rest.post('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
-    const isScraped = Math.random() < 0.5; // 테스트를 위해 랜덤하게 상태 반환
-
     return res(
       ctx.delay(300),
       ctx.status(201),
       ctx.json({
-        isScraped,
+        message: '스크랩 성공',
+        isScraped: true,
+      })
+    );
+  }),
+
+  // 스크랩 취소
+  rest.delete('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
+    return res(
+      ctx.delay(300),
+      ctx.status(200),
+      ctx.json({
+        message: '스크랩 취소 성공',
+        isScraped: false,
       })
     );
   }),

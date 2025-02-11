@@ -27,6 +27,7 @@ export const mapApiToSightReview = (
     concertId: apiReview.concertId,
     concertTitle: apiReview.concertTitle,
     content: apiReview.content,
+    writerId: apiReview.userId,
     nickName: apiReview.userNickname,
     profilePicture: getUserProfileImage(apiReview.userLevel),
     seatInfo: `${currentSectionId}구역 ${apiReview.seatId}번`,

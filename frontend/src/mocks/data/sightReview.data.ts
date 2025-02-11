@@ -26,7 +26,7 @@ export const mockApiReviews: ApiReview[] = [
     photoUrl: '/images/review1.jpg',
     writeTime: '2025-02-10T10:00:00',
     modifyTime: '2025-02-10T10:00:00',
-    stageType: 'STANDARD',
+    stageType: 1,
     userNickname: '관람자1',
     userLevel: 'SEMI_PRO',
     concertTitle: '2025 첫 번째 콘서트',
@@ -42,7 +42,7 @@ export const mockApiReviews: ApiReview[] = [
     photoUrl: '/images/review2.jpg',
     writeTime: '2025-02-09T15:30:00',
     modifyTime: '2025-02-09T15:30:00',
-    stageType: 'EXTENDED',
+    stageType: 1,
     userNickname: '관람자2',
     userLevel: 'PROFESSIONAL',
     concertTitle: '2025 첫 번째 콘서트',
@@ -58,7 +58,7 @@ export const mockApiReviews: ApiReview[] = [
     photoUrl: null,
     writeTime: '2025-02-08T20:15:00',
     modifyTime: '2025-02-08T20:15:00',
-    stageType: 'STANDARD',
+    stageType: 2,
     userNickname: '관람자3',
     userLevel: 'AMATEUR',
     concertTitle: '2025 첫 번째 콘서트',
@@ -123,7 +123,7 @@ export const createSightReview = (data: SightReviewFormData): ApiReview => {
         : null,
     writeTime: new Date().toISOString(),
     modifyTime: new Date().toISOString(),
-    stageType: 'STANDARD', // 기본값 설정
+    stageType: 1, // 기본값 설정
     userNickname: '작성자',
     userLevel: 'ROOKIE',
     concertTitle: '콘서트 제목', // 실제로는 DB에서 가져와야 함

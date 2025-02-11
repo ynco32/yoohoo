@@ -1,8 +1,10 @@
 import React from 'react';
-import { SightReviewCard } from './SightReviewCard';
 import { useParams } from 'next/navigation';
 import { useDraggableSheet } from '@/hooks/useDraggableSheet';
+import { SightReviewCard } from './SightReviewCard';
 import { SightReviewData } from '@/types/sightReviews';
+import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
+import { useSeatsStore } from '@/store/useSeatStore';
 
 type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
@@ -26,7 +28,12 @@ export const DraggableReviewSheet = ({
 }: DraggableReviewSheetProps) => {
   const params = useParams();
   const currentSectionId = Number(params.sectionId);
+  const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
+
+  // Zustand store hooks
+  const { getSeatScrapStatus, updateSeatScrapStatus } = useSeatsStore();
+  const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
   const { handlers, style } = useDraggableSheet({
     isOpen,
@@ -40,6 +47,12 @@ export const DraggableReviewSheet = ({
 
   const isSeatDistanceStatus = (value: string): value is SeatDistanceStatus => {
     return ['좁아요', '평범해요', '넓어요'].includes(value);
+  };
+
+  const handleScrap = (isScrapped: boolean) => {
+    if (currentSeatId) {
+      updateSeatScrapStatus(currentSeatId, isScrapped);
+    }
   };
 
   const renderReviewContent = () => {
@@ -100,19 +113,34 @@ export const DraggableReviewSheet = ({
               <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
             </div>
 
-            <div className="flex items-center gap-2 px-6 py-2">
-              <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
-              <span className="text-body-bold text-primary-main">
-                {currentSectionId}구역
-              </span>
-              {currentSeatId !== 0 && (
-                <>
-                  <div className="h-1 w-1 rounded-full bg-gray-300" />
-                  <span className="text-body text-gray-600">
-                    {currentSeatId}열
-                  </span>
-                </>
-              )}
+            <div className="flex items-center justify-between px-6 py-2">
+              <div className="flex items-center gap-2">
+                <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
+                <span className="text-body-bold text-primary-main">
+                  {currentSectionId}구역
+                </span>
+                {typeof currentSeatId === 'number' &&
+                  !Number.isNaN(currentSeatId) && (
+                    <>
+                      <div className="h-1 w-1 rounded-full bg-gray-300" />
+                      <span className="text-body text-gray-600">
+                        {currentSeatId}열
+                      </span>
+                    </>
+                  )}
+              </div>
+
+              {typeof currentSeatId === 'number' &&
+                !Number.isNaN(currentSeatId) && (
+                  <SeatScrapButton
+                    seatId={currentSeatId}
+                    stageType={currentStageType}
+                    initialScrapState={isScraped}
+                    size="lg"
+                    variant="contained"
+                    onScrap={handleScrap}
+                  />
+                )}
             </div>
 
             <div className="h-[90vh] overflow-y-auto">

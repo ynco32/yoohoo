@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import Image from 'next/image';
 import { SVGIcons } from '@/assets/svgs';
 import { useRouter } from 'next/navigation';
@@ -15,11 +14,7 @@ import { useUserStore } from '@/store/useUserStore';
  */
 export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   const router = useRouter();
-  const { user, isLoading, error, fetchUserInfo } = useUserStore();
-
-  useEffect(() => {
-    fetchUserInfo();
-  }, [fetchUserInfo]);
+  const { user, isLoading, error } = useUserStore();
 
   const handleClick = () => {
     if (onClick) {

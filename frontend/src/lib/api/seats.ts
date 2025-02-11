@@ -1,5 +1,4 @@
-// lib/api/seats.ts
-
+import { SeatProps } from '@/types/seats'; // 경로가 정확한지 확인
 interface ApiSeat {
   seatId: number;
   rowLine: number;
@@ -11,17 +10,6 @@ interface ApiSeat {
 
 interface ApiResponse {
   seats: ApiSeat[];
-}
-
-export interface SeatProps {
-  seatId: number;
-  arenaId: number;
-  sectionId: number;
-  row: number;
-  col: number;
-  isScraped: boolean;
-  isScrapMode: boolean;
-  isSelected: boolean;
 }
 
 export async function fetchSeats(
@@ -53,7 +41,7 @@ export async function fetchSeats(
       sectionId: seat.sectionNumber,
       row: seat.rowLine,
       col: seat.columnLine,
-      isScraped: seat.scrapped,
+      scrapped: seat.scrapped,
       isScrapMode: false, // 기본값으로 설정
       isSelected: false, // 기본값으로 설정
     }));

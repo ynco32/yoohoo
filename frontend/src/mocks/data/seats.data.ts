@@ -6,7 +6,7 @@ export const mockSeats = [
     rowLine: 1,
     columnLine: 1,
     reviewCount: 2,
-    sectionNumber: 101,
+    sectionNumber: 1,
     scrapped: true,
   },
   {
@@ -14,7 +14,7 @@ export const mockSeats = [
     rowLine: 1,
     columnLine: 2,
     reviewCount: 1,
-    sectionNumber: 101,
+    sectionNumber: 1,
     scrapped: false,
   },
   {
@@ -22,7 +22,7 @@ export const mockSeats = [
     rowLine: 2,
     columnLine: 1,
     reviewCount: 3,
-    sectionNumber: 101,
+    sectionNumber: 1,
     scrapped: true,
   },
   {
@@ -30,7 +30,7 @@ export const mockSeats = [
     rowLine: 2,
     columnLine: 2,
     reviewCount: 0,
-    sectionNumber: 101,
+    sectionNumber: 1,
     scrapped: false,
   },
   {
@@ -38,7 +38,7 @@ export const mockSeats = [
     rowLine: 1,
     columnLine: 1,
     reviewCount: 2,
-    sectionNumber: 102,
+    sectionNumber: 2,
     scrapped: true,
   },
   {
@@ -46,7 +46,7 @@ export const mockSeats = [
     rowLine: 1,
     columnLine: 2,
     reviewCount: 1,
-    sectionNumber: 102,
+    sectionNumber: 2,
     scrapped: false,
   },
   // ... 더 많은 좌석 데이터

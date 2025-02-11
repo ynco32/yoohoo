@@ -26,7 +26,7 @@ export interface SeatProps {
 
 export async function fetchSeats(
   arenaId: number,
-  stageType: string,
+  stageType: number,
   sectionNumber: number
 ): Promise<SeatProps[]> {
   try {

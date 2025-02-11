@@ -7,9 +7,9 @@ import { useTicketintPracticeResultStore } from '@/store/ticketintPracticeResult
 export default function Entrance() {
   const router = useRouter();
   // [React] 게임 상태 관리
-  const [gameState, setGameState] = useState<'counting' | 'waiting'>(
-    'counting'
-  );
+  const [gameState, setGameState] = useState<
+    'counting' | 'waiting' | 'completed'
+  >('counting');
   const [countdown, setCountdown] = useState(5);
   const [startTime, setStartTime] = useState(0);
 
@@ -20,6 +20,8 @@ export default function Entrance() {
 
   // [React] 카운트다운 및 게임 상태 관리
   useEffect(() => {
+    let autoRedirectTimer: NodeJS.Timeout;
+
     // 카운트다운 시작 시점의 타임스탬프
     const startTimestamp = performance.now();
 
@@ -40,9 +42,11 @@ export default function Entrance() {
         // 반응 속도 측정 시작 시간 설정
         setStartTime(performance.now());
 
-        const autoRedirectTimer = setTimeout(() => {
-          setReactionTime(5000); // 5초로 설정
-          router.push('result');
+        autoRedirectTimer = setTimeout(() => {
+          if (gameState != 'completed') {
+            setReactionTime(5000); // 5초로 설정
+            router.push('result');
+          }
         }, 5000); // 5초 후 자동 이동
 
         // cleanup에 autoRedirectTimer 정리 추가
@@ -52,9 +56,14 @@ export default function Entrance() {
       }
     }, 100); // 100ms 간격으로 업데이트
 
-    // cleanup: 컴포넌트 언마운트 시 인터벌 정리
-    return () => clearInterval(interval);
-  }, []); // 마운트 시 한 번만 실행
+    return () => {
+      clearInterval(interval);
+      if (autoRedirectTimer) {
+        // 👈 cleanup에서 자동 이동 타이머도 정리
+        clearTimeout(autoRedirectTimer);
+      }
+    };
+  }, [router, setReactionTime, gameState]); // 👈 gameState 의존성 추가
 
   // [React] 버튼 클릭 핸들러
   const onButtonClick = async () => {
@@ -73,6 +82,7 @@ export default function Entrance() {
 
       // 반응 시간 저장 후 결과 페이지로 이동
       setReactionTime(reactionTime);
+      setGameState('completed');
       await new Promise((resolve) => setTimeout(resolve, 0));
       router.push('result');
     } catch (error) {

@@ -1,17 +1,17 @@
 'use client';
-import { useState } from 'react';
 import { StarIcon as StarOutlined } from '@heroicons/react/24/outline';
 import { StarIcon as StarFilled } from '@heroicons/react/24/solid';
+import { useScrapStore } from '@/store/useScrapStore';
 
 interface StarButtonProps {
   onScrapModeChange?: (isScrap: boolean) => void;
 }
 
 export const StarButton = ({ onScrapModeChange }: StarButtonProps) => {
-  const [isScrapMode, setIsScrapMode] = useState(false);
+  const { isScrapMode, toggleScrapMode } = useScrapStore();
 
   const handleClick = () => {
-    setIsScrapMode(!isScrapMode);
+    toggleScrapMode();
     onScrapModeChange?.(!isScrapMode);
   };
 

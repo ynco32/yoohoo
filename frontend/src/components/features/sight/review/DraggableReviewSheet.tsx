@@ -1,9 +1,10 @@
 import React from 'react';
-import { SightReviewCard } from './SightReviewCard';
 import { useParams } from 'next/navigation';
 import { useDraggableSheet } from '@/hooks/useDraggableSheet';
+import { SightReviewCard } from './SightReviewCard';
 import { SightReviewData } from '@/types/sightReviews';
 import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
+import { useSeatsStore } from '@/store/useSeatStore';
 
 type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
@@ -30,6 +31,10 @@ export const DraggableReviewSheet = ({
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
 
+  // Zustand store hooks
+  const { getSeatScrapStatus, updateSeatScrapStatus } = useSeatsStore();
+  const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
+
   const { handlers, style } = useDraggableSheet({
     isOpen,
     onClose,
@@ -45,8 +50,9 @@ export const DraggableReviewSheet = ({
   };
 
   const handleScrap = (isScrapped: boolean) => {
-    console.log('Seat scrapped:', isScrapped);
-    // 추가적인 스크랩 처리 로직
+    if (currentSeatId) {
+      updateSeatScrapStatus(currentSeatId, isScrapped);
+    }
   };
 
   const renderReviewContent = () => {
@@ -129,6 +135,7 @@ export const DraggableReviewSheet = ({
                   <SeatScrapButton
                     seatId={currentSeatId}
                     stageType={currentStageType}
+                    initialScrapState={isScraped}
                     size="lg"
                     variant="contained"
                     onScrap={handleScrap}

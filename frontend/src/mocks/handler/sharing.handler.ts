@@ -70,6 +70,7 @@ export const sharingHandlers = [
         ...requestBody,
         status: 'UPCOMING',
         nickname: '닉네임',
+        writerId: 100,
         photoUrl: '/images/card.png',
       });
 

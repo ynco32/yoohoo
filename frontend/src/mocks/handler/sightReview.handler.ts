@@ -79,6 +79,26 @@ export const sightReviewHandlers = [
 
     return res(ctx.delay(500), ctx.status(201), ctx.json(newReview));
   }),
+
+  // GET Single Review Handler
+  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    const { reviewId } = req.params;
+
+    const review = mockApiReviews.find(
+      (review) => review.reviewId === parseInt(reviewId as string)
+    );
+
+    if (!review) {
+      return res(
+        ctx.status(404),
+        ctx.json({
+          message: '리뷰를 찾을 수 없습니다.',
+        })
+      );
+    }
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(review));
+  }),
 ];
 
 // 에러 케이스 핸들러
@@ -97,6 +117,15 @@ export const errorHandlers = [
       ctx.status(500),
       ctx.json({
         message: '리뷰 저장 중 오류가 발생했습니다.',
+      })
+    );
+  }),
+  // 에러 케이스 핸들러에 추가
+  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    return res(
+      ctx.status(500),
+      ctx.json({
+        message: '리뷰를 불러오는 중 오류가 발생했습니다.',
       })
     );
   }),

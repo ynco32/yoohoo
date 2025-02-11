@@ -22,6 +22,7 @@ export interface SightReviewData {
   concertId: number;
   concertTitle: string;
   content: string;
+  writerId: number;
   nickName: string;
   profilePicture: string;
   seatInfo: string;
@@ -41,6 +42,7 @@ export interface ApiReview {
   concertId: number;
   content: string;
   viewScore: number;
+  userId: number;
   seatDistance: ApiSeatDistance;
   sound: ApiSound;
   photoUrl: string | null;

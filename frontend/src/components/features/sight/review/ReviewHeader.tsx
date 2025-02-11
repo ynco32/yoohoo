@@ -2,11 +2,14 @@ import Image from 'next/image';
 import { useUserStore } from '@/store/useUserStore';
 import { useEffect, useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { deleteSightReview } from '@/lib/api/sightReview';
+import router from 'next/router';
 
 interface ReviewHeaderProps {
   concertTitle: string;
   nickName: string;
   writerId: number;
+  reviewId: number;
   profilePicture: string;
   seatInfo: string;
 }
@@ -14,6 +17,7 @@ interface ReviewHeaderProps {
 export const ReviewHeader = ({
   concertTitle,
   nickName,
+  reviewId,
   writerId,
   profilePicture,
   seatInfo,
@@ -27,12 +31,19 @@ export const ReviewHeader = ({
     setShowMenu(!showMenu);
   };
 
-  const handleEdit = () => {
-    // 수정 페이지로 이동 로직
+  const handleDelete = async () => {
+    try {
+      await deleteSightReview(writerId);
+      // 삭제 성공 후 처리 (예: 리다이렉트 또는 목록 새로고침)
+    } catch (error) {
+      // 에러 처리
+      console.error('리뷰 삭제 실패:', error);
+    }
   };
 
-  const handleDelete = () => {
-    // 삭제 로직
+  const handleEdit = () => {
+    // 수정 페이지로 이동
+    router.push(`/sight/reviews/${reviewId}/edit`);
   };
 
   useEffect(() => {

@@ -1,34 +1,54 @@
 'use client';
-import { Section } from '../../../ui/Section';
-import { sections } from '../../../../types/sections';
-import { useRouter } from 'next/navigation';
+
+import { useEffect, useState } from 'react';
+import { Section as SectionComponent } from '../../../ui/Section';
+import { Section, fetchSections } from '@/lib/api/sections';
+import { useParams, useRouter } from 'next/navigation';
 
 /**
  * @component SectionList
  * @description 공연장 구역 전체를 표시하는 컴포넌트
  */
 
-// 섹션 데이터 인터페이스 정의
-interface SectionData {
-  sectionId: number;
-  arenaId: number;
-  sectionName: string;
-  isScraped: boolean;
-  isScrapMode: boolean;
-}
-
-// 섹션 리스트 props 인터페이스 정의
 interface SectionListProps {
-  arenaId: number;
   isScrapMode: boolean;
 }
 
-export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
-  const filteredSections = sections.filter(
-    (section) => section.arenaId === arenaId
-  );
-
+export const SectionList = ({ isScrapMode }: SectionListProps) => {
+  const { arenaId, stageType } = useParams();
   const router = useRouter();
+  const [sections, setSections] = useState<Section[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadSections() {
+      if (!arenaId || !stageType) {
+        setError('Missing arena ID or stage type');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const sectionsData = await fetchSections(
+          Array.isArray(arenaId) ? arenaId[0] : arenaId,
+          Array.isArray(stageType) ? stageType[0] : stageType
+        );
+        setSections(sectionsData);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to load sections:', err);
+        setError('Failed to load sections. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (arenaId && stageType) {
+      loadSections();
+    }
+  }, [arenaId, stageType]);
 
   const calculateSectionSize = (totalSections: number) => {
     const BASE_INNER_RADIUS = 120;
@@ -41,7 +61,7 @@ export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
       angleSpread: Math.min(22, 360 / totalSections),
     };
   };
-  // 각 섹션의 위치와 크기를 계산하는 함수s
+
   const getPositionForSection = (index: number, totalSections: number) => {
     const { innerRadius, outerRadius, angleSpread } =
       calculateSectionSize(totalSections);
@@ -73,27 +93,33 @@ export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
     };
   };
 
+  if (isLoading) {
+    return <div className="py-4 text-center">Loading sections...</div>;
+  }
+
+  if (error) {
+    return <div className="py-4 text-center text-red-500">{error}</div>;
+  }
+
   return (
     <svg
       viewBox="-400 -400 800 800"
       preserveAspectRatio="xMidYMid meet"
       className="mx-auto h-full w-full"
     >
-      {/* 섹션 컴포넌트 위치 조정 */}
       <g transform="translate(-500, -550) scale(1.3)">
-        {filteredSections.map((section, index) => {
-          const position = getPositionForSection(
-            index,
-            filteredSections.length
-          );
+        {sections.map((section, index) => {
+          const position = getPositionForSection(index, sections.length);
           return (
-            <Section
+            <SectionComponent
               key={section.sectionId}
               {...section}
               {...position}
               isScrapMode={isScrapMode}
               onClick={() =>
-                router.push(`/sight/${arenaId}/${section.sectionId}`)
+                router.push(
+                  `/sight/${arenaId}/${stageType}/${section.sectionId}`
+                )
               }
             />
           );
@@ -102,3 +128,5 @@ export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
     </svg>
   );
 };
+
+export default SectionList;

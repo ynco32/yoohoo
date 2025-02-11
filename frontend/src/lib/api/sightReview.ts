@@ -194,3 +194,35 @@ export async function deleteSightReview(
     throw new Error('알 수 없는 에러가 발생했습니다.');
   }
 }
+
+// 단일 리뷰 조회
+export async function getReview(
+  reviewId: number
+): Promise<SightReviewFormData> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
+      method: 'GET',
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('요청 시간이 초과되었습니다.');
+      }
+      throw error;
+    }
+    throw new Error('알 수 없는 에러가 발생했습니다.');
+  }
+}

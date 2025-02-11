@@ -18,6 +18,7 @@ public class CommentDetailResponseDTO {
 	private Long commentId;
 	private String content;
 	private String writer;
+	private Long writerId;
 	private LocalDateTime modifyTime;
 
 	public static CommentDetailResponseDTO from(Comment comment) {
@@ -25,6 +26,7 @@ public class CommentDetailResponseDTO {
 			.commentId(comment.getCommentId())
 			.content(comment.getContent())
 			.writer(comment.getUser().getNickname())
+			.writerId(comment.getUser().getUserId())
 			.modifyTime(comment.getModifyTime())
 			.build();
 	}

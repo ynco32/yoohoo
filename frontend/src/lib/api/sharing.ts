@@ -1,6 +1,11 @@
 import api from './axios';
 import { AxiosError } from 'axios';
-import { SharingPost, Comment, SharingFormData } from '@/types/sharing';
+import {
+  SharingPost,
+  Comment,
+  SharingFormData,
+  SharingStatus,
+} from '@/types/sharing';
 
 export interface SharingResponse {
   sharings: SharingPost[];
@@ -216,6 +221,31 @@ export const sharingAPI = {
         throw new ApiError(
           error.response.status,
           error.response.data?.message ?? '게시글 수정에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
+
+  /**
+   * 나눔 게시글의 상태를 변경합니다.
+   * @param sharingId - 나눔 게시글 ID
+   * @param status - 변경할 상태 (UPCOMING, ONGOING, CLOSED)
+   */
+  updateSharingStatus: async (
+    sharingId: number,
+    status: SharingStatus
+  ): Promise<void> => {
+    try {
+      await api.put(`/api/v1/sharing/${sharingId}/status`, { status });
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '상태 변경에 실패했습니다.'
         );
       }
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');

@@ -7,7 +7,7 @@ import { SharingDetailContent } from './SharingDetailContent';
 import { SharingDetailMap } from './SharingDetailMap';
 import { SharingDetailComments } from './SharingDetailComments';
 import { sharingAPI } from '@/lib/api/sharing';
-import { SharingPost } from '@/types/sharing';
+import { SharingPost, SharingStatus } from '@/types/sharing';
 import { useMswInit } from '@/hooks/useMswInit';
 
 interface SharingDetailProps {
@@ -15,11 +15,16 @@ interface SharingDetailProps {
 }
 
 export const SharingDetail = ({ id }: SharingDetailProps) => {
+  const [currentStatus, setCurrentStatus] = useState<SharingStatus>('ONGOING'); // 기본값 설정
   const [detailData, setDetailData] = useState<SharingPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // MSW 초기화 상태 체크
   const { mswInitialized } = useMswInit();
+
+  const handleStatusChange = (newStatus: SharingStatus) => {
+    setCurrentStatus(newStatus);
+  };
 
   useEffect(() => {
     const fetchSharingDetail = async () => {
@@ -31,6 +36,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
         setIsLoading(true);
         const response = await sharingAPI.getSharingDetail(id);
         setDetailData(response);
+        setCurrentStatus(response.status); // 서버에서 받아온 상태로 초기화
       } catch (err) {
         console.error('Error fetching sharing detail:', err);
         setError(
@@ -63,7 +69,11 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
       {/* 내부 컨테이너 */}
       <div className="h-full overflow-y-auto">
         {/* 헤더 */}
-        <SharingDetailHeader {...detailData} />
+        <SharingDetailHeader
+          {...detailData}
+          status={currentStatus}
+          onStatusChange={handleStatusChange}
+        />
 
         {/* 이미지 */}
         <SharingDetailImages

@@ -3,10 +3,10 @@ import Link from 'next/link';
 export default function Practice() {
   return (
     <div>
-      <Link href="/entrance">
+      <Link href="practice/entrance">
         <div>대기열 입장</div>
       </Link>
-      <Link href="/grapes">
+      <Link href="grapes">
         <div>포도알 잡기</div>
       </Link>
       <Link href="securityMessage">

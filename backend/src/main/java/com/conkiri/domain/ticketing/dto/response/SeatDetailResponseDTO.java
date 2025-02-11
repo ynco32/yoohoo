@@ -9,5 +9,4 @@ public class SeatDetailResponseDTO {
 
 	private String seatNumber;
 	private String status;
-	private Long userId;
 }

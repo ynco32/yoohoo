@@ -341,3 +341,44 @@ export const getCommentsByPage = (
     lastPage,
   };
 };
+
+// 스크랩한 게시글 목록 조회용 헬퍼 함수 추가
+const mockScrappedSharingIds = new Set([1, 3, 5]); // 임의로 몇 개의 게시글을 스크랩된 상태로 설정
+
+export const getScrappedSharings = (
+  lastSharingId?: number,
+  pageSize: number = 10
+): { sharings: SharingPost[]; lastPage: boolean } => {
+  // mockSharings에서 스크랩된 게시글만 필터링
+  const scrappedSharings = mockSharings
+    .filter((sharing) => mockScrappedSharingIds.has(sharing.sharingId))
+    .map((sharing) => ({
+      sharingId: sharing.sharingId,
+      title: sharing.title,
+      content: sharing.content,
+      nickname: sharing.nickname,
+      status: sharing.status,
+      startTime: sharing.startTime,
+      photoUrl: sharing.photoUrl,
+      latitude: sharing.latitude,
+      longitude: sharing.longitude,
+    }));
+
+  let filteredSharings;
+  if (lastSharingId) {
+    const startIndex = scrappedSharings.findIndex(
+      (sharing) => sharing.sharingId === lastSharingId
+    );
+    filteredSharings = scrappedSharings.slice(
+      startIndex + 1,
+      startIndex + 1 + pageSize
+    );
+  } else {
+    filteredSharings = scrappedSharings.slice(0, pageSize);
+  }
+
+  return {
+    sharings: filteredSharings,
+    lastPage: filteredSharings.length < pageSize,
+  };
+};

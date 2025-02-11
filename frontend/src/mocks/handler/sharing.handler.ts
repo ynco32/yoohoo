@@ -4,6 +4,7 @@ import {
   getSharingById,
   getCommentsByPage,
   addSharing,
+  getScrappedSharings,
 } from '../data/sharing.data';
 
 type PathParams = {
@@ -173,5 +174,39 @@ export const sharingHandlers = [
         lastPage,
       })
     );
+  }),
+
+  // 스크랩 추가
+  rest.post('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
+    return res(
+      ctx.delay(300),
+      ctx.status(201),
+      ctx.json({
+        message: '스크랩 성공',
+        isScraped: true,
+      })
+    );
+  }),
+
+  // 스크랩 취소
+  rest.delete('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
+    return res(
+      ctx.delay(300),
+      ctx.status(200),
+      ctx.json({
+        message: '스크랩 취소 성공',
+        isScraped: false,
+      })
+    );
+  }),
+
+  // 스크랩한 게시글 목록 조회
+  rest.get('/api/v1/mypage/scrap', (req, res, ctx) => {
+    const lastParam = req.url.searchParams.get('last');
+    const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
+
+    const result = getScrappedSharings(lastSharingId);
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(result));
   }),
 ];

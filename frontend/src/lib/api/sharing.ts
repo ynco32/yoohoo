@@ -221,4 +221,85 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+
+  /**
+   * 나눔 게시글을 스크랩합니다.
+   * @param sharingId - 나눔 게시글 ID
+   * @returns Promise<{ isScraped: boolean }> - 스크랩 상태
+   */
+  addScrap: async (sharingId: number): Promise<{ isScraped: boolean }> => {
+    try {
+      const response = await api.post<{ isScraped: boolean }>(
+        `/api/v1/sharing/${sharingId}/scrap`
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '스크랩 처리에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
+
+  /**
+   * 나눔 게시글 스크랩을 취소합니다.
+   * @param sharingId - 나눔 게시글 ID
+   * @returns Promise<{ isScraped: boolean }> - 스크랩 상태
+   */
+  deleteScrap: async (sharingId: number): Promise<{ isScraped: boolean }> => {
+    try {
+      const response = await api.delete<{ isScraped: boolean }>(
+        `/api/v1/sharing/${sharingId}/scrap`
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '스크랩 삭제에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
+
+  /**
+   * 스크랩한 게시글 목록을 가져옵니다.
+   * @param lastSharingId - 마지막으로 불러온 나눔 게시글 ID
+   */
+  getScrapSharings: async (
+    lastSharingId?: number
+  ): Promise<SharingResponse> => {
+    try {
+      let url = '/api/v1/mypage/scrap';
+
+      if (typeof lastSharingId === 'number') {
+        url += `?last=${lastSharingId}`;
+      }
+
+      const response = await api.get<SharingResponse>(url);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ??
+            '스크랩 목록을 불러오는데 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
 };

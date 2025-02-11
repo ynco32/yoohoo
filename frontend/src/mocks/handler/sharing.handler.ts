@@ -174,4 +174,17 @@ export const sharingHandlers = [
       })
     );
   }),
+
+  // 스크랩 토글
+  rest.post('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
+    const isScraped = Math.random() < 0.5; // 테스트를 위해 랜덤하게 상태 반환
+
+    return res(
+      ctx.delay(300),
+      ctx.status(201),
+      ctx.json({
+        isScraped,
+      })
+    );
+  }),
 ];

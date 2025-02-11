@@ -1,11 +1,14 @@
-// components/features/sharing/SharingDetailHeader.tsx
 import Image from 'next/image';
-import { BookmarkIcon } from '@heroicons/react/24/outline';
+import { useState } from 'react';
+import { BookmarkIcon as BookmarkOutline } from '@heroicons/react/24/outline';
+import { BookmarkIcon as BookmarkSolid } from '@heroicons/react/24/solid';
 import { SharingStatus } from '@/types/sharing';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import { formatDateTime } from '@/lib/utils/dateFormat';
+import { useSharingScrapStore } from '@/store/useSharingScrapStore';
 
 interface SharingDetailHeaderProps {
+  sharingId: number;
   title: string;
   nickname: string;
   status: SharingStatus;
@@ -14,12 +17,30 @@ interface SharingDetailHeaderProps {
 }
 
 export const SharingDetailHeader = ({
+  sharingId,
   title,
   nickname,
   status,
   startTime,
   profileImage = '/images/profile.png',
 }: SharingDetailHeaderProps) => {
+  const { isScraped, toggleScrap } = useSharingScrapStore();
+  const [isToggling, setIsToggling] = useState(false);
+
+  const handleScrapClick = async () => {
+    if (isToggling) return;
+    
+    try {
+      setIsToggling(true);
+      await toggleScrap(sharingId);
+    } catch (error) {
+      console.error('Failed to toggle scrap:', error);
+      // 에러 처리는 필요에 따라 추가
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
   const getStatusText = (status: SharingStatus) => {
     switch (status) {
       case 'ONGOING':
@@ -73,7 +94,17 @@ export const SharingDetailHeader = ({
           </div>
         </div>
         <div className="flex-end flex flex-col items-end gap-2">
-          <BookmarkIcon className="h-6 w-6" />
+        <button
+            onClick={handleScrapClick}
+            disabled={isToggling}
+            className="transition-transform hover:scale-110 active:scale-95"
+          >
+            {isScraped(sharingId) ? (
+              <BookmarkSolid className="h-6 w-6 text-primary" />
+            ) : (
+              <BookmarkOutline className="h-6 w-6" />
+            )}
+          </button>
           <span
             className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
           >

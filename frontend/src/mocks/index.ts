@@ -6,6 +6,8 @@ import { concertSightHandlers } from './handler/concertSight.handler';
 import { seatsHandlers } from './handler/seats.handler';
 import { userHandlers } from './handler/user.handler';
 import { sectionHandlers } from './handler/sections.handler';
+// [MSW] 전체 핸들러 설정
+import { ticketingHandlers } from './handler/ticketing.handler';
 
 export const handlers = [
   ...sightHandlers,
@@ -16,4 +18,5 @@ export const handlers = [
   ...seatsHandlers,
   ...userHandlers,
   ...sectionHandlers,
+  ...ticketingHandlers,
 ];

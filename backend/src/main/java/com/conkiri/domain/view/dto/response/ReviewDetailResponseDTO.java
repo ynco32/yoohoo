@@ -34,6 +34,7 @@ public class ReviewDetailResponseDTO {
 	private String level;
 	private String nickname;
 	private String concertName;
+	private Long userId;
 
 	public static ReviewDetailResponseDTO from(Review review) {
 		return ReviewDetailResponseDTO.builder()
@@ -53,6 +54,7 @@ public class ReviewDetailResponseDTO {
 			.level(review.getUser().getLevel())
 			.nickname(review.getUser().getNickname())
 			.concertName(review.getConcert().getConcertName())
+			.userId(review.getUser().getUserId())
 			.build();
 	}
 }

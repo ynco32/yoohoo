@@ -7,12 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.auth.dto.TokenDTO;
 import com.conkiri.global.auth.service.AuthService;
 import com.conkiri.global.auth.token.UserPrincipal;
 import com.conkiri.global.util.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	private final JwtUtil jwtUtil;
 	private final AuthService authService;
+	private final UserReadService userReadService;
 
 	@Value("${frontend.url}")
 	private String frontendUrl;
-
-	@Value("${server.domain}")
-	private String serverDomain;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -42,18 +41,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		log.info("OAuth2 Success: {}", authentication);
 		UserPrincipal oAuth2User = (UserPrincipal) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();
+		User user = userReadService.findUserByEmailOrElseThrow(email);
 
 		// 토큰 생성
 		TokenDTO tokens = jwtUtil.generateTokens(email);
 
 		// Refresh Token DB 저장
-		authService.saveRefreshToken(email, tokens.getRefreshToken());
+		authService.saveRefreshToken(user, tokens.getRefreshToken());
 
-		// Refresh Token은 httpOnly 쿠키로 저장
-		addRefreshTokenCookie(response, tokens.getRefreshToken());
+		// Refresh Token 쿠키에 저장
+		authService.addRefreshTokenCookie(response, tokens.getRefreshToken());
 
-		// Access Token을 secure 쿠키로 저장
-		addAccessTokenCookie(response, tokens.getAccessToken());
+		// Access Token 쿠키에 저장
+		authService.addAccessTokenCookie(response, tokens.getAccessToken());
 
 		// CORS 헤더 설정
 		response.setHeader("Access-Control-Allow-Origin", frontendUrl);
@@ -66,22 +66,4 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 	}
 
-	private void addAccessTokenCookie(HttpServletResponse response, String accessToken) {
-		Cookie cookie = new Cookie("access_token", accessToken);
-		cookie.setSecure(false);
-		cookie.setPath("/");
-		cookie.setDomain(serverDomain);
-		cookie.setMaxAge(3600); // 1시간
-		response.addCookie(cookie);
-	}
-
-	private void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-		Cookie cookie = new Cookie("refresh_token", refreshToken);
-		cookie.setHttpOnly(false);
-		cookie.setSecure(false);
-		cookie.setPath("/");
-		cookie.setMaxAge(14 * 24 * 60 * 60); // 14일
-		cookie.setDomain(serverDomain); // 도메인 설정 추가
-		response.addCookie(cookie);
-	}
 }

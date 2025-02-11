@@ -20,7 +20,7 @@ export default function Ticketing1() {
   const [queueNumber, setQueueNumber] = useState('');
   const stompClient = useRef<Client | null>(null); // STOMP 클라이언트 참조 저장
   const [waitingTime, setWaitingTime] = useState<string>(''); // 대기 시간
-  const [peopleAhead, setPeopleAhead] = useState<number>(0); // 앞 대기 인원
+  const [peopleBehind, setPeopleBehind] = useState<number>(0); // 내 뒤 대기 인원
 
   useEffect(() => {
     // 🌟 STOMP 클라이언트 설정
@@ -44,7 +44,7 @@ export default function Ticketing1() {
         const response = JSON.parse(message.body);
         setQueueNumber(response.position); // 현재 위치
         setWaitingTime(response.estimatedWaitingSeconds); // 예상 대기 시간 업데이트
-        setPeopleAhead(response.usersAhead); // 앞 대기 인원 업데이트
+        setPeopleBehind(response.usersAfter); // 앞 대기 인원 업데이트
       });
 
       // 🔔 개인별 알림 구독 설정
@@ -67,7 +67,7 @@ export default function Ticketing1() {
       console.error('🤝 STOMP 에러:', frame);
     };
 
-    // 🎯 모든 설정이 끝났으니니 연결 시작
+    // 🎯 모든 설정이 끝났으니 연결 시작
     client.activate();
     stompClient.current = client; // ref에 클라이언트 저장
 
@@ -124,7 +124,7 @@ export default function Ticketing1() {
       <QueuePopup
         title="ASIA TOUR LOG in SEOUL"
         queueNumber={queueNumber}
-        behindMe={peopleAhead}
+        behindMe={peopleBehind}
         expectedTime={waitingTime}
         onClose={() => setisQueuePopupOpen(false)}
         isOpen={isQueuePopupOpen}

@@ -85,11 +85,9 @@ export const SharingWriteForm = ({
       )}
 
       <div className="space-y-2 p-4">
-        {onLocationReset && mode === 'create' && (
           <TextButton variant="outline" onClick={onLocationReset}>
             위치 다시 선택하기
           </TextButton>
-        )}
         <TextButton
           onClick={onSubmit}
           isLoading={isSubmitting}

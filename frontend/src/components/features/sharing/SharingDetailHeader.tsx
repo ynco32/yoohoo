@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import {
   BookmarkIcon as BookmarkOutline,
   EllipsisVerticalIcon,
@@ -30,6 +31,9 @@ export const SharingDetailHeader = ({
   startTime,
   profileImage = '/images/profile.png',
 }: SharingDetailHeaderProps) => {
+  const params = useParams();
+  const concertId = Number(params.concertId);
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   const { isScraped, toggleScrap } = useSharingScrapStore();
   const [isToggling, setIsToggling] = useState(false);
@@ -43,7 +47,8 @@ export const SharingDetailHeader = ({
   };
 
   const handleEdit = () => {
-    // 수정 페이지로 이동 로직
+    router.push(`/sharing/${concertId}/${sharingId}/edit`);
+    setShowMenu(false);
   };
 
   const handleDelete = () => {

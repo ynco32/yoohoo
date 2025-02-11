@@ -9,21 +9,27 @@ import { useRouter } from 'next/navigation';
  */
 
 // 섹션 데이터 인터페이스 정의
-interface SectionData {
-  sectionId: number;
-  arenaId: number;
-  sectionName: string;
-  isScraped: boolean;
-  isScrapMode: boolean;
-}
+// interface SectionData {
+//   sectionId: number;
+//   arenaId: number;
+//   sectionName: string;
+//   isScraped: boolean;
+//   stageType: number;
+//   isScrapMode: boolean;
+// }
 
 // 섹션 리스트 props 인터페이스 정의
 interface SectionListProps {
   arenaId: number;
+  stageType: number;
   isScrapMode: boolean;
 }
 
-export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
+export const SectionList = ({
+  arenaId,
+  stageType,
+  isScrapMode,
+}: SectionListProps) => {
   const filteredSections = sections.filter(
     (section) => section.arenaId === arenaId
   );
@@ -93,7 +99,9 @@ export const SectionList = ({ arenaId, isScrapMode }: SectionListProps) => {
               {...position}
               isScrapMode={isScrapMode}
               onClick={() =>
-                router.push(`/sight/${arenaId}/${section.sectionId}`)
+                router.push(
+                  `/sight/${arenaId}/${stageType}/${section.sectionId}`
+                )
               }
             />
           );

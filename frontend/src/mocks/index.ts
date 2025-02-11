@@ -4,6 +4,7 @@ import { concertHandlers } from './handler/concert.handler';
 import { sharingHandlers } from './handler/sharing.handler';
 import { concertSightHandlers } from './handler/concertSight.handler';
 import { seatsHandlers } from './handler/seats.handler';
+import { userHandlers } from './handler/user.handler';
 
 export const handlers = [
   ...sightHandlers,
@@ -12,4 +13,5 @@ export const handlers = [
   ...sightReviewHandlers,
   ...concertSightHandlers,
   ...seatsHandlers,
+  ...userHandlers,
 ];

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CongestionDisplay } from '@/components/features/congestion/CongestionDisplay';
+import { CongestionMap } from '@/components/features/congestion/CongestionMap';
 import { congestionAPI } from '@/lib/api/congestion';
 import { useParams } from 'next/navigation';
+import { locationInfo } from '@/lib/utils/locationInfo';
 
 interface LocationInfo {
   latitude: number;
@@ -26,7 +27,11 @@ export default function CongestionPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const locations = (await congestionAPI.getLocations(arenaId)).locations;
+      const arena = locationInfo.find((arena) => arena.arenaId === arenaId);
+
+      const locations = arena?.locations;
+
+      if (!locations) return;
 
       const congestions = await Promise.all(
         locations.map(async (location) => {
@@ -45,9 +50,12 @@ export default function CongestionPage() {
   }, [arenaId]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">실시간 혼잡도</h1>
-      <CongestionDisplay data={congestions} />
+    <div className="container mx-auto px-4">
+      {congestions.length > 0 ? (
+        <CongestionMap data={congestions} />
+      ) : (
+        <div>데이터가 없습니다.</div>
+      )}
     </div>
   );
 }

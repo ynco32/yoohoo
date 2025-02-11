@@ -1,6 +1,5 @@
 import { SightReviewList } from '@/components/features/sight/review/SightReviewList';
 import ScrapMode from '@/components/features/sight/ScrapMode';
-import { SeatList } from '@/components/features/sight/seat/SeatList';
 import { WriteButton } from '@/components/common/WriteButton';
 
 export default function SeatSelectPage() {

@@ -12,8 +12,11 @@
 
 'use client';
 
+'use client';
+
+import { useEffect, useState } from 'react';
 import Seat from '@/components/ui/Seat';
-import { seats } from '@/types/seats';
+import { fetchSeats, SeatProps } from '@/lib/api/seats';
 import { useParams, useRouter } from 'next/navigation';
 
 /**
@@ -36,7 +39,7 @@ import { useParams, useRouter } from 'next/navigation';
  * @description SeatList 컴포넌트의 props 타입을 정의합니다.
  */
 interface SeatListProps {
-  isScrapMode: boolean; // 스크랩 모드 활성화 상태
+  isScrapMode: boolean;
 }
 
 export const SeatList = ({ isScrapMode }: SeatListProps) => {
@@ -52,25 +55,39 @@ export const SeatList = ({ isScrapMode }: SeatListProps) => {
 
   const router = useRouter();
 
-  /**
-   * 좌석 레이아웃 관련 상수
-   * @constant
-   */
-  const SEAT_WIDTH = 30; // 좌석 너비 (픽셀)
-  const SEAT_HEIGHT = 30; // 좌석 높이 (픽셀)
-  const SEAT_MARGIN = 5; // 좌석 간 여백 (픽셀)
+  useEffect(() => {
+    async function loadSeats() {
+      try {
+        setIsLoading(true);
+        const seatsData = await fetchSeats(
+          Number(arenaId),
+          //Number(stageType),
+          'stageType',
+          Number(sectionId)
+        );
+        setSeats(seatsData);
+      } catch (error) {
+        console.error('Failed to load seats:', error);
+        // 에러 처리를 추가하세요 (예: 에러 상태 설정)
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  /**
-   * 전체 섹션의 최대 행/열 계산
-   * - 모든 좌석의 row, col 값 중 최댓값을 찾아 SVG 크기 결정에 사용
-   */
-  const maxRow = Math.max(...filteredSections.map((seat) => seat.row));
-  const maxCol = Math.max(...filteredSections.map((seat) => seat.col));
+    loadSeats();
+  }, [arenaId, stageType, sectionId]);
 
-  /**
-   * SVG 뷰포트 크기 계산
-   * - 좌석 크기와 여백을 고려하여 전체 SVG 영역 크기 설정
-   */
+  if (isLoading) {
+    return <div>Loading...</div>; // 로딩 상태 표시
+  }
+
+  const SEAT_WIDTH = 30;
+  const SEAT_HEIGHT = 30;
+  const SEAT_MARGIN = 5;
+
+  const maxRow = Math.max(...seats.map((seat) => seat.row));
+  const maxCol = Math.max(...seats.map((seat) => seat.col));
+
   const viewBoxWidth = (maxCol + 1) * (SEAT_WIDTH + SEAT_MARGIN);
   const viewBoxHeight = (maxRow + 1) * (SEAT_HEIGHT + SEAT_MARGIN);
 
@@ -80,14 +97,13 @@ export const SeatList = ({ isScrapMode }: SeatListProps) => {
       width={viewBoxWidth}
       height={viewBoxHeight}
     >
-      {/* 필터링된 좌석들을 SVG 내에 배치 */}
-      {filteredSections.map((section) => (
+      {seats.map((seat) => (
         <Seat
-          key={section.seatId}
-          {...section}
+          key={seat.seatId}
+          {...seat}
           isScrapMode={isScrapMode}
-          x={section.col * (SEAT_WIDTH + SEAT_MARGIN)} // 열 위치에 따른 x 좌표 계산
-          y={section.row * (SEAT_HEIGHT + SEAT_MARGIN)} // 행 위치에 따른 y 좌표 계산
+          x={seat.col * (SEAT_WIDTH + SEAT_MARGIN)}
+          y={seat.row * (SEAT_HEIGHT + SEAT_MARGIN)}
           width={SEAT_WIDTH}
           height={SEAT_HEIGHT}
           onClick={() =>

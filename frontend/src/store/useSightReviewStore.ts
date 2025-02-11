@@ -50,6 +50,7 @@ const initialFormData: SightReviewFormData = {
   section: 0,
   rowLine: 0,
   columnLine: 0,
+  stageType: 0,
   images: [],
   viewScore: 0,
   seatDistance: '평범해요',

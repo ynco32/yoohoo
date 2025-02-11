@@ -48,14 +48,14 @@ public class SharingService {
 	 * @param sharingRequestDTO
 	 * @param file
 	 */
-	public void writeSharing(SharingRequestDTO sharingRequestDTO, Long userId, MultipartFile file) {
+	public Long writeSharing(SharingRequestDTO sharingRequestDTO, Long userId, MultipartFile file) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingRequestDTO.getConcertId());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
-		sharingRepository.save(sharing);
+		return sharingRepository.save(sharing).getSharingId();
 	}
 
 	/**

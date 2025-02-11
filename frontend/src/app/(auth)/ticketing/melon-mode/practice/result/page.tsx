@@ -30,11 +30,13 @@ export default function ResultPage() {
           <p className="mt-2 text-xl text-gray-600">밀리초</p>
 
           <p className="mt-4 text-lg text-gray-800">
-            {reactionTime < 200
-              ? '🎯 놀라운 반응 속도입니다!'
-              : reactionTime < 300
-                ? '👍 평균 이상의 반응 속도네요!'
-                : '💪 조금 더 연습해보세요!'}
+            {reactionTime < 100
+              ? '🦾 당신 매크로입니까?'
+              : reactionTime < 200
+                ? '🎯 놀라운 반응 속도입니다!'
+                : reactionTime < 300
+                  ? '👍 평균 이상의 반응 속도네요!'
+                  : '💪 조금 더 연습해보세요!'}
           </p>
         </div>
 

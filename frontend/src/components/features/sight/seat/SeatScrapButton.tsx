@@ -5,6 +5,7 @@ import { ArrowPathIcon } from '@heroicons/react/24/solid';
 interface SeatScrapButtonProps {
   seatId: number;
   stageType: number;
+  initialScrapState: boolean;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'contained';
   className?: string;
@@ -15,13 +16,15 @@ const SeatScrapButton: React.FC<SeatScrapButtonProps> = ({
   seatId,
   stageType,
   size = 'md',
+  initialScrapState,
   variant = 'default',
   className = '',
   onScrap,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isScraped, setIsScraped] = useState(false);
+  const [isScraped, setIsScraped] = useState(initialScrapState);
+  console.log('스크랩 초기 상태: ' + isScraped);
 
   const sizeClasses = {
     sm: 'p-1',

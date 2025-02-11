@@ -27,7 +27,7 @@ export default function Ticketing1() {
     const client = new Client({
       brokerURL: 'ws://i12b207p.ssafy.io/ticketing',
       debug: function (str) {
-        console.log('STOMP: ' + str);
+        console.log('🤝 STOMP: ' + str);
       },
       reconnectDelay: 5000, // 연결 끊김 시 5초 후 재시도
       heartbeatIncoming: 4000, // 서버->클라이언트 생존 확인 4초
@@ -36,7 +36,7 @@ export default function Ticketing1() {
 
     // ✨ 연결 성공하면면 실행될 콜백
     client.onConnect = () => {
-      console.log('🚿 웹소켓 연결 성공');
+      console.log('🤝  웹소켓 연결 성공');
 
       // 📩 대기열 정보 구독 설정
       // 서버에서 주기적으로 대기 시간과 인원 업데이트
@@ -51,7 +51,7 @@ export default function Ticketing1() {
       // 유저별 고유 메시지 (입장 허가 등) 수신
       client.subscribe(`/user/book/notification`, (message: IMessage) => {
         const response = JSON.parse(message.body);
-        console.log('입장 알림 응답:', response); // 응답 구조 확인
+        console.log('🤝 입장 알림 응답:', response); // 응답 구조 확인
         if (response === true) {
           // 'ENTER' 이거 수정 예정!!!!
           // 입장 가능 알림
@@ -64,7 +64,7 @@ export default function Ticketing1() {
 
     // ⚠️ 에러 처리 콜백
     client.onStompError = (frame) => {
-      console.error('STOMP 에러:', frame);
+      console.error('🤝 STOMP 에러:', frame);
     };
 
     // 🎯 모든 설정이 끝났으니니 연결 시작
@@ -88,7 +88,7 @@ export default function Ticketing1() {
       setQueueNumber(response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log('⚠️ queue 진입 api 실패:', error.response?.status);
+        console.log('🤝 ⚠️ queue 진입 api 실패:', error.response?.status);
       }
     }
   };

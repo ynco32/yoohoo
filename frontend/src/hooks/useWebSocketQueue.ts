@@ -41,7 +41,7 @@ export const useWebSocketQueue = () => {
     client.onConnect = () => {
       console.log('🤝 웹소켓 연결 성공');
 
-      client.subscribe(`user/book/waiting-time`, (message: IMessage) => {
+      client.subscribe(`/user/book/waiting-time`, (message: IMessage) => {
         console.log('🤝waiting-time 수신된 메세지:', message.body);
         const response = JSON.parse(message.body);
         setQueueNumber(response.position);

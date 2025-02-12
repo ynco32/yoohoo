@@ -124,7 +124,6 @@ public class QueueProcessingService {
 
 		if (isQueueEmpty()) {return;}
 		log.info("!!!! 큐가 비어있나봐");
-				
 		Set<String> nextBatch = fetchNextBatch(batchSize);
 		if (!nextBatch.isEmpty()) {
 			processUsersEntrance(nextBatch);

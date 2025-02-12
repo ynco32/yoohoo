@@ -304,4 +304,37 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+
+  /**
+   * 로그인한 유저가 작성한 나눔 게시글 목록을 가져옵니다.
+   * @param concertId - 공연 ID
+   * @param lastSharingId - 마지막으로 불러온 나눔 게시글 ID (페이지네이션)
+   */
+  getWroteSharings: async (
+    concertId: number,
+    lastSharingId?: number
+  ): Promise<SharingResponse> => {
+    try {
+      let url = `/api/v1/sharing/wrote/${concertId}`;
+
+      if (typeof lastSharingId === 'number') {
+        url += `?last=${lastSharingId}`;
+      }
+
+      const response = await api.get<SharingResponse>(url);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ??
+            '작성한 게시글을 불러오는데 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
 };

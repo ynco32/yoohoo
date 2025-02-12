@@ -1,9 +1,11 @@
+'use client';
+
 import Image from 'next/image';
 import { useUserStore } from '@/store/useUserStore';
 import { useEffect, useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { deleteSightReview } from '@/lib/api/sightReview';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface ReviewHeaderProps {
   concertTitle: string;
@@ -26,6 +28,7 @@ export const ReviewHeader = ({
   const [showMenu, setShowMenu] = useState(false);
 
   const isAuthor = user?.userId === writerId;
+  const router = useRouter();
 
   const handleMenuClick = () => {
     setShowMenu(!showMenu);

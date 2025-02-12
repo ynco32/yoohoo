@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { EditSightReviewFormContainer } from '@/components/features/sight/form/EditSightReviewFormContainer';
 import type { SightReviewFormData } from '@/types/sightReviews';
-import { getReview } from '@/lib/api/sightReview'; // getReview 함수 추가 필요
+import { getReview } from '@/lib/api/sightReview';
 
 export default function EditSightReviewPage() {
   const params = useParams();
@@ -18,7 +18,6 @@ export default function EditSightReviewPage() {
   useEffect(() => {
     const fetchReviewData = async () => {
       try {
-        console.log(reviewId);
         const data = await getReview(reviewId);
         setInitialData(data);
         setError(null);
@@ -34,7 +33,6 @@ export default function EditSightReviewPage() {
     };
 
     if (reviewId) {
-      console.log(reviewId);
       fetchReviewData();
     }
   }, [reviewId]);

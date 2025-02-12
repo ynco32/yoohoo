@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
@@ -100,6 +101,14 @@ public class ViewController {
 		@RequestPart("file") MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		viewService.createReview(reviewRequestDTO, file, userPrincipal.getUserId());
+	}
+
+	// 수정할 후기 조회 API
+	@GetMapping("/reviews/{reviewId}")
+	public ReviewDetailResponseDTO getReview(
+		@PathVariable Long reviewId,
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return viewService.getReview(reviewId, userPrincipal.getUserId());
 	}
 
 	// 후기 수정 API

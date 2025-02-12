@@ -6,7 +6,6 @@ import type {
   SightReviewFormData,
   ApiSeatDistance,
   ApiSound,
-  StageType,
   SeatDistanceStatus,
   SoundStatus,
 } from '@/types/sightReviews';
@@ -69,7 +68,7 @@ export const mockApiReviews: ApiReview[] = [
 // 리뷰 필터링 헬퍼 함수
 export const getFilteredReviews = (
   arenaId: number,
-  stageType: StageType,
+  stageType: number,
   sectionId: number,
   seatId?: number
 ): ApiResponse => {

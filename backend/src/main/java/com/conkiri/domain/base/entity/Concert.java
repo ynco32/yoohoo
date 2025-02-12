@@ -38,6 +38,9 @@ public class Concert {
 	@Column(name = "start_time")
 	private LocalDateTime startTime;
 
+	@Column(name = "photo_url")
+	private String photoUrl;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "stage_type")
 	private StageType stageType;

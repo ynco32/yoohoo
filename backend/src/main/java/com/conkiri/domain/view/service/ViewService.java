@@ -23,6 +23,7 @@ import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatResponseDTO;
@@ -197,6 +198,17 @@ public class ViewService {
 
 		user.incrementReviewCount();
 		userRepository.save(user);
+	}
+
+	public ReviewDetailResponseDTO getReview(Long reviewId, Long userId) {
+
+		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+
+		if(!review.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+
+		return ReviewDetailResponseDTO.from(review);
 	}
 
 	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {

@@ -1,4 +1,4 @@
-import { SeatProps } from '@/types/seats'; // 경로가 정확한지 확인
+import { SeatProps } from '@/types/seats';
 interface ApiSeat {
   seatId: number;
   rowLine: number;

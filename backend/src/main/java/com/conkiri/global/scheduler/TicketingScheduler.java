@@ -2,6 +2,7 @@ package com.conkiri.global.scheduler;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.time.ZoneId;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -34,10 +35,13 @@ public class TicketingScheduler {
 	// 애플리케이션 시작 시 티켓팅 초기화
 	@EventListener(ApplicationReadyEvent.class)
 	public void onApplicationReady() {
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime todayStart = getTodayTicketingStartTime();
 		LocalDateTime endTime = todayStart.plusHours(TICKETING_DURATION_HOURS);
 
+		log.info("onReady");
+		log.info("todayStart: {}", todayStart);
+		log.info("endTime: {}", endTime);
 		if (isWithinTicketingHours(now, todayStart, endTime)) {
 			initializeTicketing(now, endTime);
 		}
@@ -64,6 +68,7 @@ public class TicketingScheduler {
 
 	// 티켓팅 초기화 작업 수행
 	private void initializeTicketing(LocalDateTime startTime, LocalDateTime endTime) {
+		log.info("Initializing ticketing with start: {}, end: {}", startTime, endTime);
 		setTicketingTime(startTime, endTime);
 		initializeTicketingSections();
 	}
@@ -82,6 +87,7 @@ public class TicketingScheduler {
 
 	// 현재 시간이 티켓팅 운영 시간 내인지 확인
 	private boolean isWithinTicketingHours(LocalDateTime now, LocalDateTime startTime, LocalDateTime endTime) {
+		log.info("with now: {}, start: {}, end: {}", now, startTime, endTime);
 		return now.isAfter(startTime) && now.isBefore(endTime);
 	}
 

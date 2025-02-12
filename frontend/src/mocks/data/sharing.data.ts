@@ -1,4 +1,5 @@
 import { SharingPost, Comment, SharingStatus } from '@/types/sharing';
+import { mockUserData } from '../handler/user.handler';
 
 // 실제 데이터에는 concertId가 있어야 합니다
 interface ExtendedSharingPost extends SharingPost {
@@ -402,6 +403,51 @@ export const getScrappedSharings = (
     );
   } else {
     filteredSharings = scrappedSharings.slice(0, pageSize);
+  }
+
+  return {
+    sharings: filteredSharings,
+    lastPage: filteredSharings.length < pageSize,
+  };
+};
+
+// 내가 작성한 글 필터링 함수
+export const getWroteSharings = (
+  concertId: number,
+  lastSharingId?: number,
+  pageSize: number = 10
+): { sharings: SharingPost[]; lastPage: boolean } => {
+  // mockUserData의 userId와 일치하는 글만 필터링
+  const wroteSharings = mockSharings
+    .filter(
+      (sharing) =>
+        sharing.writerId === mockUserData.userId &&
+        sharing.concertId === concertId
+    )
+    .map((sharing) => ({
+      sharingId: sharing.sharingId,
+      title: sharing.title,
+      content: sharing.content,
+      nickname: sharing.nickname,
+      writerId: sharing.writerId,
+      status: sharing.status,
+      startTime: sharing.startTime,
+      photoUrl: sharing.photoUrl,
+      latitude: sharing.latitude,
+      longitude: sharing.longitude,
+    }));
+
+  let filteredSharings;
+  if (lastSharingId) {
+    const startIndex = wroteSharings.findIndex(
+      (sharing) => sharing.sharingId === lastSharingId
+    );
+    filteredSharings = wroteSharings.slice(
+      startIndex + 1,
+      startIndex + 1 + pageSize
+    );
+  } else {
+    filteredSharings = wroteSharings.slice(0, pageSize);
   }
 
   return {

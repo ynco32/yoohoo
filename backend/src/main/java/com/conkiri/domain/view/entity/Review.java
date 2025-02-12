@@ -47,7 +47,7 @@ public class Review extends BaseTime {
 	@Column(name = "sound")
 	private Sound sound;
 
-	@Column(name = "photo_url", length = 300)
+	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
 
 	@Enumerated(EnumType.STRING)

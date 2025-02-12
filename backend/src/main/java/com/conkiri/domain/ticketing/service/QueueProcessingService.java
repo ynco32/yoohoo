@@ -2,6 +2,7 @@ package com.conkiri.domain.ticketing.service;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.time.ZoneId;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -31,7 +32,7 @@ public class QueueProcessingService {
 
 	// 티켓팅 시작 및 종료 시간을 Redis 에 설정합니다
 	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime) {
-
+		log.info("Setting method ");
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
 	}
@@ -44,7 +45,7 @@ public class QueueProcessingService {
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
 		return now.isAfter(startTime) && now.isBefore(endTime);
@@ -112,6 +113,7 @@ public class QueueProcessingService {
 	public void processWaitingQueue() {
 
 		if (!isTicketingActive()) {return;}
+		log.info("@@@@@@@@@@@@@@@@@@@@ 대기열 입장 @@@@@@@@@@@@@@@@");
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 		processNextBatch(batchSize);
@@ -121,6 +123,8 @@ public class QueueProcessingService {
 	private void processNextBatch(int batchSize) {
 
 		if (isQueueEmpty()) {return;}
+		log.info("!!!! 큐가 비어있나봐");
+		
 		Set<String> nextBatch = fetchNextBatch(batchSize);
 		if (!nextBatch.isEmpty()) {
 			processUsersEntrance(nextBatch);

@@ -45,7 +45,10 @@ const TicketingButton = ({ onReservationStart }: TicketingButtonProps) => {
   const { text, disabled } = getButtonConfig();
 
   return (
-    <FixedButton onClick={onReservationStart} disabled={disabled}>
+    <FixedButton
+      fixedButtonOnClick={onReservationStart}
+      isfixedButtonDisabled={disabled}
+    >
       {text}
     </FixedButton>
   );

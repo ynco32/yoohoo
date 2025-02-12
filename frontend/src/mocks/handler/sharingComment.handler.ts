@@ -85,4 +85,22 @@ export const sharingCommentHandlers = [
 
     return res(ctx.status(200), ctx.json(updatedComment));
   }),
+
+  // 댓글 삭제
+  rest.delete('/api/v1/sharing/comment/:commentId', async (req, res, ctx) => {
+    const { commentId } = req.params;
+
+    // commentId가 유효한지 검사
+    if (!commentId) {
+      return res(
+        ctx.status(400),
+        ctx.json({ message: '댓글을 찾을 수 없습니다.' })
+      );
+    }
+    return res(
+      ctx.delay(300),
+      ctx.status(200),
+      ctx.json({ message: '댓글이 삭제되었습니다.' })
+    );
+  }),
 ];

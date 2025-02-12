@@ -31,7 +31,7 @@ public class QueueProcessingService {
 
 	// 티켓팅 시작 및 종료 시간을 Redis 에 설정합니다
 	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime) {
-
+		log.info("Setting method ");
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
 	}

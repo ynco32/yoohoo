@@ -38,6 +38,9 @@ public class TicketingScheduler {
 		LocalDateTime todayStart = getTodayTicketingStartTime();
 		LocalDateTime endTime = todayStart.plusHours(TICKETING_DURATION_HOURS);
 
+		log.info("onReady");
+		log.info("todayStart: {}", todayStart);
+		log.info("endTime: {}", endTime);
 		if (isWithinTicketingHours(now, todayStart, endTime)) {
 			initializeTicketing(now, endTime);
 		}
@@ -64,6 +67,7 @@ public class TicketingScheduler {
 
 	// 티켓팅 초기화 작업 수행
 	private void initializeTicketing(LocalDateTime startTime, LocalDateTime endTime) {
+		log.info("Initializing ticketing with start: {}, end: {}", startTime, endTime);
 		setTicketingTime(startTime, endTime);
 		initializeTicketingSections();
 	}

@@ -1,6 +1,6 @@
 import api from '@/lib/api/axios';
 import { AxiosError } from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface TimeInfo {
   startTime: string;
@@ -10,6 +10,11 @@ interface TimeInfo {
 }
 
 export const useTicketingTimer2 = () => {
+  // 넘겨줘야 하는 값들들
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [buttonMessage, setButtonMessage] = useState('잠시만 기다려주세요...');
+  const [intervalId, setIntervalId] = useState<number | null>(null);
+
   const [timeInfo, setTimeInfo] = useState<TimeInfo | null>(null);
 
   //1️⃣ 시간 정보 가져오기
@@ -51,5 +56,57 @@ export const useTicketingTimer2 = () => {
     // 밀리초를 초로 변환 (Math.floor로 소수점 버림)
     const secondsLeft = Math.floor(timeLeft / 1000);
     return secondsLeft;
+  };
+
+  // 3️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
+  const changeButtonMessage = () => {
+    fetchTimeInfo();
+
+    // 이전 인터벌 제거
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    const secondsLeft = calculateSecondsLeft();
+
+    if (timeInfo) {
+      if (timeInfo.Finished) {
+        // 티켓팅이 끝났을 때
+        setButtonDisabled(true);
+        setButtonMessage('마감되었습니다.');
+      } else if (secondsLeft <= 0 && !timeInfo.Finished) {
+        // 시간이 안 남고 티켓팅이 끝나지 않았을 때
+        setButtonDisabled(false);
+        setButtonMessage('예매하기.');
+      } else if (secondsLeft <= 60 && !timeInfo.Finished) {
+        // 60초 이하 남았을 때
+        setButtonDisabled(true);
+        setButtonMessage(secondsLeft + '초 후 예매 시작');
+        setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초마다 실행
+      } else if (secondsLeft < 600 && !timeInfo.Finished) {
+        // 10분 이하 남았을 때
+        setButtonDisabled(true);
+        const min = Math.floor(secondsLeft / 60);
+        setButtonMessage(min + '분 후 예매 시작');
+        setIntervalId(window.setInterval(changeButtonMessage, 60000) as number); // 1분마다 실행
+      } else if (secondsLeft >= 600 && !timeInfo.Finished) {
+        // 10분 이상 남았을 때
+        setButtonDisabled(true);
+        const start = new Date(timeInfo.startTime);
+        const hours = start.getHours().toString().padStart(2, '0');
+        const minutes = start.getMinutes().toString().padStart(2, '0');
+        setButtonMessage(`${hours}시 ${minutes}분 오픈`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(changeButtonMessage, 300000); // 5분마다 실행
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return {
+    buttonDisabled,
+    buttonMessage,
   };
 };

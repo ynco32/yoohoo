@@ -34,14 +34,25 @@ export const TimeInput = ({
   // 초기값 설정
   useEffect(() => {
     if (value) {
-      const timeMatch = value.match(/(\d{2}):(\d{2}):00$/);
+      // T로 시간 부분 분리하고, :00이 없을 수 있으므로 더 유연한 매칭 사용
+      const timeMatch = value.split('T')[1]?.match(/(\d{2}):(\d{2})/);
       if (timeMatch) {
-        const [, formattedHour, formattedMinute] = timeMatch;
-        const hourNum = parseInt(formattedHour, 10);
+        const [, hours, minutes] = timeMatch;
+        const hourNum = parseInt(hours, 10);
         const isPM = hourNum >= 12;
+
+        // 12시간제로 변환
+        const hour12 = isPM
+          ? hourNum === 12
+            ? 12
+            : hourNum - 12
+          : hourNum === 0
+            ? 12
+            : hourNum;
+
         setMeridian(isPM ? '오후' : '오전');
-        setHour(isPM ? hourNum - 12 || 12 : hourNum || 12);
-        setMinute(parseInt(formattedMinute, 10));
+        setHour(hour12);
+        setMinute(parseInt(minutes, 10));
       }
     } else {
       // value가 없을 경우 기본값 설정
@@ -105,7 +116,7 @@ export const TimeInput = ({
           onChange={(e) => handleMinuteChange(Number(e.target.value))}
           className="rounded-lg bg-gray-100 p-3"
         >
-          {Array.from({ length: 12 }, (_, i) => i * 10).map((m) => (
+          {Array.from({ length: 6 }, (_, i) => i * 10).map((m) => (
             <option key={m} value={m}>
               {String(m).padStart(2, '0')}
             </option>

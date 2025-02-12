@@ -1,4 +1,4 @@
-import { KAKAO_AUTH_URL } from '@/lib/constans/auth';
+import { KAKAO_AUTH_URL } from '@/lib/constants/auth';
 import { ChatBubbleOvalLeftIcon } from '@heroicons/react/24/solid';
 
 interface KakaoLoginButtonProps {

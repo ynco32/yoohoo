@@ -1,17 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CongestionDisplay } from '@/components/features/congestion/CongestionDisplay';
+import { CongestionMap } from '@/components/features/congestion/CongestionMap';
 import { congestionAPI } from '@/lib/api/congestion';
 import { useParams } from 'next/navigation';
+import { locationInfo } from '@/lib/constants/locationInfo';
+import { CongestionInfo } from '@/components/features/congestion/CongestionInfo';
+// import { CongestionInfo } from '@/components/features/congestion/CongestionInfo';
+// import Badge from '@/components/ui/Badge';
 
 interface LocationInfo {
   latitude: number;
   longitude: number;
 }
 
+interface Position {
+  latitude: number;
+  longitude: number;
+}
+
 interface ProcessedCongestion {
   congestion: number;
+  congestionLevel: number;
 }
 
 interface CongestionData {
@@ -23,10 +33,16 @@ export default function CongestionPage() {
   const params = useParams();
   const arenaId = Number(params.arenaId);
   const [congestions, setCongestions] = useState<CongestionData[]>([]);
+  const [position, setPosition] = useState<Position | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const locations = (await congestionAPI.getLocations(arenaId)).locations;
+      const arena = locationInfo.find((arena) => arena.arenaId === arenaId);
+
+      const locations = arena?.locations;
+      const position = arena?.position;
+
+      if (!locations || !position) return;
 
       const congestions = await Promise.all(
         locations.map(async (location) => {
@@ -39,15 +55,23 @@ export default function CongestionPage() {
       );
 
       setCongestions(congestions);
+      setPosition(position);
     };
 
     fetchData();
   }, [arenaId]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">실시간 혼잡도</h1>
-      <CongestionDisplay data={congestions} />
+    <div className="container relative mx-auto min-h-screen px-4">
+      {congestions.length > 0 && position ? (
+        <CongestionMap data={congestions} position={position} />
+      ) : (
+        <div>데이터가 없습니다.</div>
+      )}
+      {/* <CongestionInfo /> */}
+      <div>
+        <CongestionInfo />
+      </div>
     </div>
   );
 }

@@ -82,9 +82,11 @@ export const DraggableReviewSheet = ({
               <SightReviewCard
                 concertTitle={reviewData.concertTitle}
                 nickName={reviewData.nickName}
+                reviewId={reviewData.reviewId}
+                writerId={reviewData.writerId}
                 profilePicture={reviewData.profilePicture}
                 seatInfo={reviewData.seatInfo}
-                images={reviewData.images}
+                image={reviewData.photoUrl}
                 content={reviewData.content}
                 viewQuality={reviewData.viewQuality}
                 soundQuality={reviewData.soundQuality}

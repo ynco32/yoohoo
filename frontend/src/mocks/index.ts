@@ -6,10 +6,10 @@ import { concertSightHandlers } from './handler/concertSight.handler';
 import { seatsHandlers } from './handler/seats.handler';
 import { userHandlers } from './handler/user.handler';
 import { sectionHandlers } from './handler/sections.handler';
-// [MSW] 전체 핸들러 설정
 import { ticketingHandlers } from './handler/ticketing.handler';
 import { seatScrapHandlers } from './handler/seatScrap.handler';
 import { ticketTimeHandlers } from './handler/ticketTime.handler';
+import { sharingCommentHandlers } from './handler/sharingComment.handler';
 
 export const handlers = [
   ...sightHandlers,
@@ -23,4 +23,5 @@ export const handlers = [
   ...ticketingHandlers,
   ...seatScrapHandlers,
   ...ticketTimeHandlers,
+  ...sharingCommentHandlers,
 ];

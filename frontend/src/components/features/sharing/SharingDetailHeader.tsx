@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import {
   BookmarkIcon as BookmarkOutline,
   EllipsisVerticalIcon,
@@ -10,6 +11,9 @@ import { SharingStatus } from '@/types/sharing';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useSharingScrapStore } from '@/store/useSharingScrapStore';
 import { useUserStore } from '@/store/useUserStore';
+import { StatusDropdown } from './StatusDropdown';
+import { Modal } from '@/components/common/Modal';
+import { sharingAPI } from '@/lib/api/sharing';
 
 interface SharingDetailHeaderProps {
   sharingId: number;
@@ -19,6 +23,7 @@ interface SharingDetailHeaderProps {
   status: SharingStatus;
   profileImage?: string;
   startTime: string;
+  onStatusChange?: (newStatus: SharingStatus) => void;
 }
 
 export const SharingDetailHeader = ({
@@ -29,25 +34,48 @@ export const SharingDetailHeader = ({
   status,
   startTime,
   profileImage = '/images/profile.png',
+  onStatusChange,
 }: SharingDetailHeaderProps) => {
+  const params = useParams();
+  const concertId = Number(params.concertId);
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   const { isScraped, toggleScrap } = useSharingScrapStore();
   const [isToggling, setIsToggling] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const isAuthor = user?.userId === writerId;
   const scraped = isScraped(sharingId);
 
+  // 수정 삭제
   const handleMenuClick = () => {
     setShowMenu(!showMenu);
   };
 
   const handleEdit = () => {
-    // 수정 페이지로 이동 로직
+    router.push(`/sharing/${concertId}/${sharingId}/edit`);
+    setShowMenu(false);
   };
 
   const handleDelete = () => {
-    // 삭제 로직
+    setIsDeleteModalOpen(true);
+    setShowMenu(false);
+  }; 
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await sharingAPI.deleteSharing(sharingId);
+      router.replace(`/sharing/${concertId}`);
+    } catch (error) {
+      console.error('Failed to delete sharing:', error);
+      if (error) {
+      } else {
+        alert('게시글 삭제에 실패했습니다.');
+      }
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -63,6 +91,7 @@ export const SharingDetailHeader = ({
     };
   }, [showMenu]);
 
+  // 스크랩
   const handleScrapClick = async () => {
     if (isToggling) return;
 
@@ -73,6 +102,16 @@ export const SharingDetailHeader = ({
       console.error('Failed to toggle scrap:', error);
     } finally {
       setIsToggling(false);
+    }
+  };
+
+  // 상태 변경
+  const handleStatusChange = async (newStatus: SharingStatus) => {
+    try {
+      await sharingAPI.updateSharingStatus(sharingId, newStatus);
+      onStatusChange?.(newStatus);
+    } catch (error) {
+      console.error('Failed to update status:', error);
     }
   };
 
@@ -103,35 +142,36 @@ export const SharingDetailHeader = ({
   };
 
   return (
-    <div className="flex flex-col p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between gap-2">
-          <div className="relative h-10 w-10">
-            {/* 원형 프로필 */}
-            <Image
-              src={profileImage}
-              alt="프로필"
-              fill
-              sizes="40px"
-              className="rounded-full object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="font-medium">{title}</h1>
-            <p className="text-sm text-gray-600">{nickname}</p>
-            <div className="mt-1">
-              <div className="flex items-center gap-1 text-sm text-gray-900">
-                <ClockIcon className="h-6 w-6" />
-                {formatDateTime(startTime)}
+    <>
+      <div className="flex flex-col p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
+            <div className="relative h-10 w-10">
+              {/* 원형 프로필 */}
+              <Image
+                src={profileImage}
+                alt="프로필"
+                fill
+                sizes="40px"
+                className="rounded-full object-cover"
+              />
+            </div>
+            <div>
+              <h1 className="font-medium">{title}</h1>
+              <p className="text-sm text-gray-600">{nickname}</p>
+              <div className="mt-1">
+                <div className="flex items-center gap-1 text-sm text-gray-900">
+                  <ClockIcon className="h-6 w-6" />
+                  {formatDateTime(startTime)}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex-end flex flex-col items-end gap-2">
-          <div className="relative">
+          {/* 오른쪽 영역: 메뉴 버튼과 상태/스크랩 */}
+          <div className="flex flex-col items-end gap-4">
+            {/* 메뉴 버튼 또는 스크랩 버튼 */}
             {isAuthor ? (
-              <div className="menu-container">
-                {/* 외부 클릭 감지를 위한 클래스 추가 */}
+              <div className="menu-container relative">
                 <button
                   onClick={handleMenuClick}
                   className="rounded-full p-1 hover:bg-gray-100"
@@ -168,14 +208,32 @@ export const SharingDetailHeader = ({
                 )}
               </button>
             )}
+            {/* 상태 드롭다운 또는 상태 표시 */}
+            {isAuthor ? (
+              <StatusDropdown
+                currentStatus={status}
+                onStatusChange={handleStatusChange}
+                isAuthor={isAuthor}
+              />
+            ) : (
+              <span
+                className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+              >
+                {getStatusText(status)}
+              </span>
+            )}
           </div>
-          <span
-            className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
-          >
-            {getStatusText(status)}
-          </span>
         </div>
       </div>
-    </div>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="정말로 게시글을 삭제하시겠습니까?"
+        confirmText="삭제"
+        type="confirm"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+      />
+    </>
   );
 };

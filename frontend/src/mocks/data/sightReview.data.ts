@@ -7,8 +7,6 @@ import type {
   ApiSeatDistance,
   ApiSound,
   StageType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  UserLevel,
   SeatDistanceStatus,
   SoundStatus,
 } from '@/types/sightReviews';
@@ -29,7 +27,7 @@ export const mockApiReviews: ApiReview[] = [
     modifyTime: '2025-02-10T10:00:00',
     stageType: 1,
     userNickname: '관람자1',
-    userLevel: 'SEMI_PRO',
+    userLevel: '1',
     concertTitle: '2025 첫 번째 콘서트',
   },
   {
@@ -46,7 +44,7 @@ export const mockApiReviews: ApiReview[] = [
     modifyTime: '2025-02-09T15:30:00',
     stageType: 1,
     userNickname: '관람자2',
-    userLevel: 'PROFESSIONAL',
+    userLevel: '2',
     concertTitle: '2025 첫 번째 콘서트',
   },
   {
@@ -63,7 +61,7 @@ export const mockApiReviews: ApiReview[] = [
     modifyTime: '2025-02-08T20:15:00',
     stageType: 2,
     userNickname: '관람자3',
-    userLevel: 'AMATEUR',
+    userLevel: '1',
     concertTitle: '2025 첫 번째 콘서트',
   },
 ];

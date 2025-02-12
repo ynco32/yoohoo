@@ -22,15 +22,6 @@ public class Arena {
 	@Column(name = "arena_name", length = 100)
 	private String arenaName;
 
-	@Column(name = "hotspot_name", length = 100)
-	private String hotspotName;
-
-	@Column(name = "latitude")
-	private Double latitude;
-
-	@Column(name = "longitude")
-	private Double longitude;
-
 	@Column(name = "photo_url", length = 100)
 	private String photoUrl;
 }

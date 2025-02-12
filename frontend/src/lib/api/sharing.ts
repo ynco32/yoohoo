@@ -253,6 +253,27 @@ export const sharingAPI = {
   },
 
   /**
+   * 나눔 게시글을 삭제합니다.
+   * @param sharingId - 삭제할 나눔 게시글 ID
+   */
+  deleteSharing: async (sharingId: number): Promise<void> => {
+    try {
+      await api.delete(`/api/v1/sharing/${sharingId}`);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '게시글 삭제에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
+
+  /**
    * 나눔 게시글을 스크랩합니다.
    * @param sharingId - 나눔 게시글 ID
    * @returns Promise<{ isScraped: boolean }> - 스크랩 상태

@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { EditSightReviewFormContainer } from '@/components/features/sight/form/EditSightReviewFormContainer';
 import type { SightReviewFormData } from '@/types/sightReviews';
 import { getReview } from '@/lib/api/sightReview';
+import { useSightReviewStore } from '@/store/useSightReviewStore';
 
 export default function EditSightReviewPage() {
   const params = useParams();
@@ -14,12 +15,19 @@ export default function EditSightReviewPage() {
   >();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log(reviewId);
+
+  useEffect(() => {
+    // 페이지 마운트 시 store 초기화
+    useSightReviewStore.getState().reset();
+  }, []);
+
   useEffect(() => {
     const fetchReviewData = async () => {
       try {
         const data = await getReview(reviewId);
         setInitialData(data);
+        // 데이터 fetch 후 store 초기화
+        useSightReviewStore.getState().initialize(data);
         setError(null);
       } catch (error) {
         setError(

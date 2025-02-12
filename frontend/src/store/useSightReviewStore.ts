@@ -3,7 +3,7 @@ import { SightReviewFormData } from '@/types/sightReviews';
 
 export type ValidFields =
   | 'concertId'
-  | 'photo' // images -> photo로 변경
+  | 'photo'
   | 'viewScore'
   | 'seat'
   | 'seatDistance'
@@ -11,7 +11,7 @@ export type ValidFields =
 
 interface ValidationState {
   concertId: boolean;
-  photo: boolean; // images -> photo로 변경
+  photo: boolean;
   viewScore: boolean;
   seat: boolean;
   seatDistance: boolean;
@@ -20,7 +20,7 @@ interface ValidationState {
 
 interface TouchedState {
   concertId: boolean;
-  photo: boolean; // images -> photo로 변경
+  photo: boolean;
   viewScore: boolean;
   seat: boolean;
   seatDistance: boolean;
@@ -44,33 +44,35 @@ interface SightReviewState {
   clearErrors: () => void;
   setIsSubmitting: (isSubmitting: boolean) => void;
   isFormValid: () => boolean;
+  reset: () => void; // 새로운 reset 함수 추가
+  initialize: (initialData?: Partial<SightReviewFormData>) => void; // 초기화 함수 추가
 }
 
-const initialFormData: SightReviewFormData = {
+export const DEFAULT_FORM_DATA: SightReviewFormData = {
   concertId: 0,
   section: 0,
   rowLine: 0,
   columnLine: 0,
   stageType: 0,
-  photo: null, // images 배열 대신 photo: null
+  photo: null,
   viewScore: 0,
   seatDistance: '평범해요',
   sound: '평범해요',
   content: '',
 };
 
-const initialValidation: ValidationState = {
+const DEFAULT_VALIDATION: ValidationState = {
   concertId: false,
-  photo: false, // images -> photo로 변경
+  photo: false,
   viewScore: false,
   seat: false,
   seatDistance: false,
   content: false,
 };
 
-const initialTouched: TouchedState = {
+const DEFAULT_TOUCHED: TouchedState = {
   concertId: false,
-  photo: false, // images -> photo로 변경
+  photo: false,
   viewScore: false,
   seat: false,
   seatDistance: false,
@@ -78,11 +80,12 @@ const initialTouched: TouchedState = {
 };
 
 export const useSightReviewStore = create<SightReviewState>((set, get) => ({
-  formData: initialFormData,
+  formData: DEFAULT_FORM_DATA,
   errors: {},
   isSubmitting: false,
-  validation: initialValidation,
-  touched: initialTouched,
+  validation: DEFAULT_VALIDATION,
+  touched: DEFAULT_TOUCHED,
+
   setFormField: (field, value) =>
     set((state) => ({
       formData: {
@@ -90,6 +93,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: value,
       },
     })),
+
   setFormData: (data) => {
     console.log('=== Setting Form Data ===');
     console.log('Received data:', data);
@@ -103,25 +107,55 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
       content: data.content.length >= 10,
     };
 
-    console.log('=== Validation Checks ===');
-    console.log(
-      'photo check:',
-      data.photo instanceof File || typeof data.photo === 'string'
-    );
-    console.log('seat check:', {
-      section: data.section > 0,
-      rowLine: data.rowLine > 0,
-      columnLine: data.columnLine > 0,
-      final: data.section > 0 && data.rowLine > 0 && data.columnLine > 0,
-    });
-
     set({
       formData: data,
       validation: initialValidationState,
-      touched: initialTouched,
+      touched: DEFAULT_TOUCHED,
       errors: {},
     });
   },
+
+  // 새로운 초기화 함수
+  initialize: (initialData = {}) => {
+    const mergedData = {
+      ...DEFAULT_FORM_DATA,
+      ...initialData,
+    };
+
+    const initialValidationState = {
+      concertId: mergedData.concertId > 0,
+      photo:
+        mergedData.photo instanceof File ||
+        typeof mergedData.photo === 'string',
+      viewScore: mergedData.viewScore > 0,
+      seat:
+        mergedData.section > 0 &&
+        mergedData.rowLine > 0 &&
+        mergedData.columnLine > 0,
+      seatDistance: mergedData.seatDistance.length > 0,
+      content: mergedData.content.length >= 10,
+    };
+
+    set({
+      formData: mergedData,
+      validation: initialValidationState,
+      touched: DEFAULT_TOUCHED,
+      errors: {},
+      isSubmitting: false,
+    });
+  },
+
+  // 리셋 함수 추가
+  reset: () => {
+    set({
+      formData: DEFAULT_FORM_DATA,
+      errors: {},
+      isSubmitting: false,
+      validation: DEFAULT_VALIDATION,
+      touched: DEFAULT_TOUCHED,
+    });
+  },
+
   setError: (field, error) =>
     set((state) => ({
       errors: {
@@ -129,6 +163,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: error,
       },
     })),
+
   setValidation: (field, isValid) => {
     console.log(`Setting validation for ${field}:`, isValid);
     set((state) => {
@@ -140,6 +175,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
       return { validation: newValidation };
     });
   },
+
   setTouched: (field) =>
     set((state) => ({
       touched: {
@@ -147,17 +183,15 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: true,
       },
     })),
+
   clearErrors: () => set({ errors: {} }),
+
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
+
   isFormValid: () => {
     const validationState = get().validation;
     console.log('=== Validation State ===');
-    console.log('concertId:', validationState.concertId);
-    console.log('photo:', validationState.photo);
-    console.log('viewScore:', validationState.viewScore);
-    console.log('seat:', validationState.seat);
-    console.log('seatDistance:', validationState.seatDistance);
-    console.log('content:', validationState.content);
+    console.log(validationState);
 
     const isValid = Object.values(validationState).every((isValid) => isValid);
     console.log('Final validation result:', isValid);

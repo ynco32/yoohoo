@@ -25,6 +25,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 
 		// 클라이언트는 ws://도메인/ticketing 으로 웹소켓 연결
-		registry.addEndpoint("/ticketing-melon").setAllowedOrigins(frontendUrl);
+		registry.addEndpoint("/ticketing-melon").setAllowedOrigins(frontendUrl).withSockJS();
 	}
 }

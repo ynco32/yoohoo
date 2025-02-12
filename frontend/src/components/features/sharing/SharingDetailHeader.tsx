@@ -12,6 +12,7 @@ import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useSharingScrapStore } from '@/store/useSharingScrapStore';
 import { useUserStore } from '@/store/useUserStore';
 import { StatusDropdown } from './StatusDropdown';
+import { Modal } from '@/components/common/Modal';
 import { sharingAPI } from '@/lib/api/sharing';
 
 interface SharingDetailHeaderProps {
@@ -42,6 +43,7 @@ export const SharingDetailHeader = ({
   const { isScraped, toggleScrap } = useSharingScrapStore();
   const [isToggling, setIsToggling] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const isAuthor = user?.userId === writerId;
   const scraped = isScraped(sharingId);
@@ -57,7 +59,23 @@ export const SharingDetailHeader = ({
   };
 
   const handleDelete = () => {
-    // 삭제 로직
+    setIsDeleteModalOpen(true);
+    setShowMenu(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await sharingAPI.deleteSharing(sharingId);
+      router.replace('/sharing');
+    } catch (error) {
+      console.error('Failed to delete sharing:', error);
+      if (error) {
+      } else {
+        alert('게시글 삭제에 실패했습니다.');
+      }
+    } finally {
+      setIsDeleteModalOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -124,87 +142,98 @@ export const SharingDetailHeader = ({
   };
 
   return (
-    <div className="flex flex-col p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between gap-2">
-          <div className="relative h-10 w-10">
-            {/* 원형 프로필 */}
-            <Image
-              src={profileImage}
-              alt="프로필"
-              fill
-              sizes="40px"
-              className="rounded-full object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="font-medium">{title}</h1>
-            <p className="text-sm text-gray-600">{nickname}</p>
-            <div className="mt-1">
-              <div className="flex items-center gap-1 text-sm text-gray-900">
-                <ClockIcon className="h-6 w-6" />
-                {formatDateTime(startTime)}
+    <>
+      <div className="flex flex-col p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
+            <div className="relative h-10 w-10">
+              {/* 원형 프로필 */}
+              <Image
+                src={profileImage}
+                alt="프로필"
+                fill
+                sizes="40px"
+                className="rounded-full object-cover"
+              />
+            </div>
+            <div>
+              <h1 className="font-medium">{title}</h1>
+              <p className="text-sm text-gray-600">{nickname}</p>
+              <div className="mt-1">
+                <div className="flex items-center gap-1 text-sm text-gray-900">
+                  <ClockIcon className="h-6 w-6" />
+                  {formatDateTime(startTime)}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* 오른쪽 영역: 메뉴 버튼과 상태/스크랩 */}
-        <div className="flex flex-col items-end gap-4">
-          {/* 메뉴 버튼 또는 스크랩 버튼 */}
-          {isAuthor ? (
-            <div className="menu-container relative">
+          {/* 오른쪽 영역: 메뉴 버튼과 상태/스크랩 */}
+          <div className="flex flex-col items-end gap-4">
+            {/* 메뉴 버튼 또는 스크랩 버튼 */}
+            {isAuthor ? (
+              <div className="menu-container relative">
+                <button
+                  onClick={handleMenuClick}
+                  className="rounded-full p-1 hover:bg-gray-100"
+                >
+                  <EllipsisVerticalIcon className="h-6 w-6 text-gray-600" />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-8 z-10 min-w-[100px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                    <button
+                      onClick={handleEdit}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      수정
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
               <button
-                onClick={handleMenuClick}
-                className="rounded-full p-1 hover:bg-gray-100"
+                onClick={handleScrapClick}
+                disabled={isToggling}
+                className="transition-transform hover:scale-110 active:scale-95"
               >
-                <EllipsisVerticalIcon className="h-6 w-6 text-gray-600" />
+                {scraped ? (
+                  <BookmarkSolid className="text-primary h-6 w-6" />
+                ) : (
+                  <BookmarkOutline className="h-6 w-6" />
+                )}
               </button>
-              {showMenu && (
-                <div className="absolute right-0 top-8 z-10 min-w-[100px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                  <button
-                    onClick={handleEdit}
-                    className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    삭제
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={handleScrapClick}
-              disabled={isToggling}
-              className="transition-transform hover:scale-110 active:scale-95"
-            >
-              {scraped ? (
-                <BookmarkSolid className="text-primary h-6 w-6" />
-              ) : (
-                <BookmarkOutline className="h-6 w-6" />
-              )}
-            </button>
-          )}
-          {/* 상태 드롭다운 또는 상태 표시 */}
-          {isAuthor ? (
-            <StatusDropdown
-              currentStatus={status}
-              onStatusChange={handleStatusChange}
-              isAuthor={isAuthor}
-            />
-          ) : (
-            <span
-              className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
-            >
-              {getStatusText(status)}
-            </span>
-          )}
+            )}
+            {/* 상태 드롭다운 또는 상태 표시 */}
+            {isAuthor ? (
+              <StatusDropdown
+                currentStatus={status}
+                onStatusChange={handleStatusChange}
+                isAuthor={isAuthor}
+              />
+            ) : (
+              <span
+                className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+              >
+                {getStatusText(status)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="정말로 게시글을 삭제하시겠습니까?"
+        confirmText="삭제"
+        type="confirm"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+      />
+    </>
   );
 };

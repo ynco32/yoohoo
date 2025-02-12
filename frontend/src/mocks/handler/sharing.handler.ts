@@ -5,7 +5,9 @@ import {
   addSharing,
   getScrappedSharings,
   getWroteSharings,
+  ExtendedSharingPost,
 } from '../data/sharing.data';
+import { SharingStatus } from '@/types/sharing';
 
 type PathParams = {
   concertId: string;
@@ -16,126 +18,82 @@ export const sharingHandlers = [
   // 글 작성 API
   rest.post('/api/v1/sharing', async (req, res, ctx) => {
     try {
-      const data = await req.text();
-      const boundary = req.headers.get('content-type')?.split('boundary=')[1];
+      const body = req.body as { sharingRequestDTO: File; file: File };
+      console.log('Request received:', {
+        sharingRequestDTO: {
+          name: body.sharingRequestDTO?.name,
+          size: body.sharingRequestDTO?.size,
+          type: body.sharingRequestDTO?.type,
+        },
+        file: {
+          name: body.file?.name,
+          size: body.file?.size,
+          type: body.file?.type,
+        },
+      });
 
-      if (!boundary) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: 'Invalid content type' })
-        );
-      }
-
-      // FormData 파트 분리
-      const parts = data.split('--' + boundary);
-      let requestBody = null;
-      let hasFile = false;
-
-      for (const part of parts) {
-        if (part.includes('name="sharingRequestDTO"')) {
-          const jsonStr = part.split('\r\n\r\n')[1]?.split('\r\n')[0];
-          if (jsonStr) {
-            requestBody = JSON.parse(jsonStr);
-          }
-        }
-        if (part.includes('name="file"')) {
-          hasFile = true;
-        }
-      }
-
-      if (!requestBody || !hasFile) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: '필수 필드가 누락되었습니다.' })
-        );
-      }
-
-      // 필수 필드 검증
-      if (
-        !requestBody.title ||
-        !requestBody.content ||
-        typeof requestBody.latitude !== 'number' ||
-        typeof requestBody.longitude !== 'number' ||
-        !requestBody.startTime ||
-        typeof requestBody.concertId !== 'number'
-      ) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: '필수 필드가 누락되었습니다.' })
-        );
-      }
-
-      // 새로운 나눔 게시글 추가
-      const newSharing = addSharing({
-        ...requestBody,
-        status: 'UPCOMING',
+      // 임시 mock 데이터 생성 - 실제 환경에서는 요청 데이터를 사용해야 합니다
+      const mockSharingData: Omit<ExtendedSharingPost, 'sharingId'> = {
+        concertId: 1,
+        title: '테스트 게시글',
+        content: '테스트 내용입니다.',
+        latitude: 37.5665,
+        longitude: 126.978,
+        startTime: new Date().toISOString(),
+        status: 'UPCOMING' as SharingStatus,
         nickname: '닉네임',
         writerId: 100,
         photoUrl: '/images/card.png',
-      });
+      };
+
+      // 새로운 나눔 게시글 추가
+      const newSharing = addSharing(mockSharingData);
+      console.log('Created new sharing:', newSharing);
 
       return res(
         ctx.status(201),
         ctx.json({
-          message: '나눔 글 등록 성공',
           sharingId: newSharing.sharingId,
         })
       );
     } catch (error) {
-      console.error('❌ [MSW] 핸들러 내부 오류:', error);
+      console.error('❌ [MSW] createSharing 핸들러 오류:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+        });
+      }
       return res(ctx.status(500), ctx.json({ message: '서버 내부 오류' }));
     }
   }),
 
+  // 나눔 게시글 수정
   rest.put('/api/v1/sharing/:sharingId', async (req, res, ctx) => {
     try {
       const { sharingId } = req.params;
-      const data = await req.text();
-      const boundary = req.headers.get('content-type')?.split('boundary=')[1];
+      const body = req.body as { sharingUpdateRequestDTO: File; file?: File };
 
-      if (!boundary) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: 'Invalid content type' })
-        );
-      }
+      console.log('Update request:', {
+        sharingId,
+        sharingUpdateRequestDTO: {
+          name: body.sharingUpdateRequestDTO?.name,
+          size: body.sharingUpdateRequestDTO?.size,
+          type: body.sharingUpdateRequestDTO?.type,
+        },
+        file: body.file
+          ? {
+              name: body.file.name,
+              size: body.file.size,
+              type: body.file.type,
+            }
+          : undefined,
+      });
 
-      // FormData 파트 분리
-      const parts = data.split('--' + boundary);
-      let requestBody = null;
-      let hasFile = false;
-
-      for (const part of parts) {
-        if (part.includes('name="sharingUpdateRequestDTO"')) {
-          const jsonStr = part.split('\r\n\r\n')[1]?.split('\r\n')[0];
-          if (jsonStr) {
-            requestBody = JSON.parse(jsonStr);
-          }
-        }
-        if (part.includes('name="file"')) {
-          hasFile = true;
-        }
-      }
-
-      if (!requestBody || !hasFile) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: '필수 필드가 누락되었습니다.' })
-        );
-      }
-
-      // 필수 필드 검증
-      if (
-        !requestBody.title ||
-        !requestBody.content ||
-        typeof requestBody.latitude !== 'number' ||
-        typeof requestBody.longitude !== 'number' ||
-        !requestBody.startTime
-      ) {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: '필수 필드가 누락되었습니다.' })
-        );
+      let updatedPhotoUrl = '/images/original_image.png';
+      if (body.file) {
+        updatedPhotoUrl = '/images/new_uploaded_image.png';
       }
 
       return res(
@@ -143,10 +101,11 @@ export const sharingHandlers = [
         ctx.json({
           message: '나눔 글 수정 성공',
           sharingId: Number(sharingId),
+          photoUrl: updatedPhotoUrl,
         })
       );
     } catch (error) {
-      console.error('❌ [MSW] 핸들러 내부 오류:', error);
+      console.error('❌ [MSW] updateSharing 핸들러 오류:', error);
       return res(ctx.status(500), ctx.json({ message: '서버 내부 오류' }));
     }
   }),

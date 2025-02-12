@@ -90,13 +90,38 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: value,
       },
     })),
-  setFormData: (data) =>
+  setFormData: (data) => {
+    console.log('=== Setting Form Data ===');
+    console.log('Received data:', data);
+
+    const initialValidationState = {
+      concertId: data.concertId > 0,
+      photo: data.photo instanceof File || typeof data.photo === 'string',
+      viewScore: data.viewScore > 0,
+      seat: data.section > 0 && data.rowLine > 0 && data.columnLine > 0,
+      seatDistance: data.seatDistance.length > 0,
+      content: data.content.length >= 10,
+    };
+
+    console.log('=== Validation Checks ===');
+    console.log(
+      'photo check:',
+      data.photo instanceof File || typeof data.photo === 'string'
+    );
+    console.log('seat check:', {
+      section: data.section > 0,
+      rowLine: data.rowLine > 0,
+      columnLine: data.columnLine > 0,
+      final: data.section > 0 && data.rowLine > 0 && data.columnLine > 0,
+    });
+
     set({
       formData: data,
-      validation: initialValidation,
+      validation: initialValidationState,
       touched: initialTouched,
       errors: {},
-    }),
+    });
+  },
   setError: (field, error) =>
     set((state) => ({
       errors: {
@@ -104,13 +129,17 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         [field]: error,
       },
     })),
-  setValidation: (field, isValid) =>
-    set((state) => ({
-      validation: {
+  setValidation: (field, isValid) => {
+    console.log(`Setting validation for ${field}:`, isValid);
+    set((state) => {
+      const newValidation = {
         ...state.validation,
         [field]: isValid,
-      },
-    })),
+      };
+      console.log('Updated validation state:', newValidation);
+      return { validation: newValidation };
+    });
+  },
   setTouched: (field) =>
     set((state) => ({
       touched: {
@@ -120,6 +149,18 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     })),
   clearErrors: () => set({ errors: {} }),
   setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
-  isFormValid: () =>
-    Object.values(get().validation).every((isValid) => isValid),
+  isFormValid: () => {
+    const validationState = get().validation;
+    console.log('=== Validation State ===');
+    console.log('concertId:', validationState.concertId);
+    console.log('photo:', validationState.photo);
+    console.log('viewScore:', validationState.viewScore);
+    console.log('seat:', validationState.seat);
+    console.log('seatDistance:', validationState.seatDistance);
+    console.log('content:', validationState.content);
+
+    const isValid = Object.values(validationState).every((isValid) => isValid);
+    console.log('Final validation result:', isValid);
+    return isValid;
+  },
 }));

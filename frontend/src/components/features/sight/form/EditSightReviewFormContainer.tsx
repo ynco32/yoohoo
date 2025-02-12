@@ -21,14 +21,46 @@ export function EditSightReviewFormContainer({
   initialData,
 }: EditSightReviewFormContainerProps) {
   const router = useRouter();
-  const { setError, setIsSubmitting, setFormData } = useSightReviewStore();
+  const { setError, setIsSubmitting, setFormData, formData } =
+    useSightReviewStore();
 
   // 초기 데이터 설정
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      // photo가 URL인 경우 File 객체로 변환
+      const setInitialData = async () => {
+        try {
+          let photoFile = initialData.photo;
+
+          // photo가 문자열(URL)인 경우 File 객체로 변환
+          if (typeof initialData.photo === 'string') {
+            const response = await fetch(initialData.photo);
+            const blob = await response.blob();
+            photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+          }
+
+          setFormData({
+            ...initialData,
+            photo: photoFile,
+          });
+        } catch (error) {
+          console.error('Error setting initial photo:', error);
+          // 에러 발생 시에도 나머지 데이터는 설정
+          setFormData({
+            ...initialData,
+            photo: null, // 또는 기본 File 객체
+          });
+        }
+      };
+
+      setInitialData();
     }
   }, [initialData, setFormData]);
+
+  // initialData가 formData에 제대로 설정되었는지 확인
+  useEffect(() => {
+    console.log('Current form data:', formData);
+  }, [formData]);
 
   const handleSubmit = async (data: SightReviewFormData) => {
     try {

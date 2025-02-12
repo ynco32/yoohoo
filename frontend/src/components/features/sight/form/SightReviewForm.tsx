@@ -49,9 +49,10 @@ export const SightReviewForm = React.memo(
       setValidation,
       setError,
     });
-
     React.useEffect(() => {
-      validateStep(STEPS[currentStep].id);
+      // validation만 실행하고 submit은 하지 않도록 함
+      const validationOnly = true;
+      validateStep(STEPS[currentStep].id, validationOnly);
     }, [formData, currentStep, validateStep]);
 
     const handleFieldChange = <K extends keyof SightReviewFormData>(
@@ -64,24 +65,89 @@ export const SightReviewForm = React.memo(
         setTouched(validationField);
       }
     };
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+    const handleSubmit = async () => {
+      if (currentStep !== STEPS.length - 1) return;
+
       clearErrors();
 
-      // 디버깅을 위한 콘솔 로그 추가
-      console.log('Form validation:', validateStep(STEPS[currentStep].id));
-      console.log('Form is valid:', isFormValid());
-      console.log('onSubmit exists:', !!onSubmit);
+      console.log('=== Submit Handler Start ===');
+      console.log('Current Form Data:', {
+        concertId: formData.concertId,
+        section: formData.section,
+        rowLine: formData.rowLine,
+        columnLine: formData.columnLine,
+        photo: formData.photo,
+        viewScore: formData.viewScore,
+        seatDistance: formData.seatDistance,
+        content: formData.content,
+      });
 
-      if (!validateStep(STEPS[currentStep].id)) return;
-      if (!isFormValid() || !onSubmit) return;
+      // validation 상태를 수동으로 업데이트
+      setValidation(
+        'photo',
+        formData.photo instanceof File || typeof formData.photo === 'string'
+      );
+      setValidation(
+        'seat',
+        formData.section > 0 && formData.rowLine > 0 && formData.columnLine > 0
+      );
+
+      const stepValidation = validateStep(STEPS[currentStep].id);
+      console.log('Current Step Validation:', stepValidation);
+
+      const formValidation = isFormValid();
+      console.log('Form Validation:', formValidation);
+      console.log('onSubmit handler exists:', !!onSubmit);
+
+      // validation 체크
+      if (!stepValidation) {
+        console.log('Step validation failed');
+        setError('submit', '현재 단계의 모든 항목을 입력해주세요.');
+        return;
+      }
+
+      // validation 상세 정보 로깅
+      const validationDetails = {
+        concertId: formData.concertId > 0,
+        seat:
+          formData.section > 0 &&
+          formData.rowLine > 0 &&
+          formData.columnLine > 0,
+        photo:
+          formData.photo instanceof File || typeof formData.photo === 'string',
+        viewScore: formData.viewScore > 0,
+        seatDistance: formData.seatDistance.length > 0,
+        content: formData.content.length >= 10,
+      };
+
+      console.log('=== Validation Details ===', validationDetails);
+
+      if (!formValidation) {
+        console.log('Form validation failed:', validationDetails);
+        setError(
+          'submit',
+          '이전 단계의 필수 항목이 모두 입력되지 않았습니다. 처음부터 다시 확인해주세요.'
+        );
+        return;
+      }
+
+      // 이 시점에서 추가 확인
+      if (!validationDetails.photo || !validationDetails.seat) {
+        console.log('Critical validation check failed');
+        setError('submit', '사진과 좌석 정보를 다시 확인해주세요.');
+        return;
+      }
+
+      if (!onSubmit) {
+        console.log('No onSubmit handler provided');
+        return;
+      }
 
       try {
         setIsSubmitting(true);
-        // 디버깅을 위한 콘솔 로그 추가
         console.log('Submitting form data:', formData);
         const result = await onSubmit(formData);
-        console.log('Submit result:', result);
+        console.log('Submit success:', result);
         router.push(`/sight/success`);
       } catch (error) {
         console.error('Submit error:', error);
@@ -171,7 +237,16 @@ export const SightReviewForm = React.memo(
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        <form onSubmit={handleSubmit} className="flex flex-1 flex-col py-2xl">
+        <form
+          className="flex flex-1 flex-col py-2xl"
+          autoComplete="off"
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }}
+        >
           {/* 상단 고정 영역 */}
           <div className="bg-white px-md pt-2xl">
             <StepProgressBar
@@ -186,12 +261,12 @@ export const SightReviewForm = React.memo(
             <div className="w-full max-w-2xl">{renderStepContent()}</div>
           </div>
 
-          {/* 하단 고정 영역 */}
+          {/* 하단 버튼 영역 */}
           <div className="bg-white px-md py-md">
             {errors.submit && (
-              <p className="mb-md text-sm text-status-warning">
-                {errors.submit}
-              </p>
+              <div className="mb-md rounded-lg bg-status-warning/10 p-md">
+                <p className="text-sm text-status-warning">{errors.submit}</p>
+              </div>
             )}
             <div className="flex justify-between gap-md">
               {currentStep > 0 && (
@@ -203,20 +278,28 @@ export const SightReviewForm = React.memo(
                   이전
                 </button>
               )}
-              <button
-                type={currentStep === STEPS.length - 1 ? 'submit' : 'button'}
-                onClick={
-                  currentStep < STEPS.length - 1 ? handleNext : undefined
-                }
-                disabled={!canProceed || isSubmitting}
-                className="h-12 flex-1 rounded-lg bg-sight-button px-md py-2 text-white transition-colors hover:bg-sight-button disabled:bg-gray-300"
-              >
-                {currentStep === STEPS.length - 1
-                  ? isSubmitting
-                    ? '제출 중...'
-                    : '작성하기'
-                  : '다음'}
-              </button>
+              {currentStep === STEPS.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log('Submit button clicked manually');
+                    handleSubmit();
+                  }}
+                  disabled={!canProceed || isSubmitting}
+                  className="h-12 flex-1 rounded-lg bg-sight-button px-md py-2 text-white transition-colors hover:bg-sight-button disabled:bg-gray-300"
+                >
+                  {isSubmitting ? '제출 중...' : '작성하기'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!canProceed}
+                  className="h-12 flex-1 rounded-lg bg-sight-button px-md py-2 text-white transition-colors hover:bg-sight-button disabled:bg-gray-300"
+                >
+                  다음
+                </button>
+              )}
             </div>
           </div>
         </form>

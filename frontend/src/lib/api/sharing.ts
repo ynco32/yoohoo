@@ -91,12 +91,17 @@ export const sharingAPI = {
       );
 
       // 이미지 파일 추가
-      formData.append('file', file);
+      formData.append('file', file, file.name);
 
-      // Content-Type 자동 설정
+      // Content-Type은 브라우저가 자동으로 multipart/form-data로 설정
       const response = await api.post<{ sharingId: number }>(
         '/api/v1/sharing',
-        formData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
 
       return response.data.sharingId;
@@ -136,11 +141,15 @@ export const sharingAPI = {
 
       // 이미지 파일이 있을 경우 추가
       if (image) {
-        formData.append('file', image);
+        formData.append('file', image, image.name);
       }
 
-      // Content-Type 자동 설정
-      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData);
+      // Content-Type은 브라우저가 자동으로 multipart/form-data로 설정
+      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       return response.data;
     } catch (error) {

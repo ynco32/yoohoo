@@ -26,7 +26,7 @@ interface SightReviewCardProps {
   writerId: number;
   reviewId: number;
   seatInfo: string;
-  images: string[];
+  image: string | null;
   content: string;
   soundQuality: SoundStatus;
   seatQuality: SeatDistanceStatus;
@@ -40,7 +40,7 @@ export const SightReviewCard = ({
   nickName,
   profilePicture,
   seatInfo,
-  images,
+  image,
   content,
   soundQuality,
   seatQuality,
@@ -62,7 +62,7 @@ export const SightReviewCard = ({
         seatInfo={seatInfo}
       />
 
-      <ReviewImages images={images} />
+      <ReviewImages image={image} />
 
       <div className="mb-4 flex gap-2 font-pretendard text-sm">
         <span className="text-caption1-bold"></span>

@@ -121,10 +121,7 @@ export const createSightReview = (data: SightReviewFormData): ApiReview => {
     viewScore: data.viewScore,
     seatDistance: convertToApiSeatDistance(data.seatDistance),
     sound: convertToApiSound(data.sound),
-    photoUrl:
-      data.images.length > 0
-        ? `/images/uploaded-review-${Date.now()}.jpg`
-        : null,
+    photoUrl: data.photo ? `/images/uploaded-review-${Date.now()}.jpg` : null,
     writeTime: new Date().toISOString(),
     modifyTime: new Date().toISOString(),
     stageType: 1, // 기본값 설정

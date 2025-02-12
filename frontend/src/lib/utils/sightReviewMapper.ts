@@ -31,7 +31,7 @@ export const mapApiToSightReview = (
     nickName: apiReview.userNickname,
     profilePicture: getUserProfileImage(apiReview.userLevel),
     seatInfo: `${currentSectionId}구역 ${apiReview.seatId}번`,
-    images: apiReview.photoUrl ? [apiReview.photoUrl] : [],
+    photoUrl: apiReview.photoUrl,
     viewQuality: apiReview.viewScore,
     soundQuality: soundMap[apiReview.sound],
     seatQuality: seatDistanceMap[apiReview.seatDistance],

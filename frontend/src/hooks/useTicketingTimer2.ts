@@ -28,14 +28,28 @@ export const useTicketingTimer2 = () => {
 
   //2️⃣ 남은 시간 계산하기
   const calculateSecondsLeft = () => {
+    const now = Date.now(); // 현재 시간
+
+    // 티켓팅이 끝나거나 시간 정보가 없을 경우우
     if (timeInfo?.Finished || !timeInfo) {
-      return 0; // 이미 티켓팅을 할 수 없음
+      return 0;
     }
-    if (!timeInfo) {
-      return; // 시간 정보가 없음
+
+    // 시작 시간을 경과했을 때
+    const start = new Date(timeInfo.startTime).getTime();
+    if (start < now) {
+      return 0;
     }
-    if (!timeInfo.Finished) {
-      return 0; // 10분 이내
-    }
+
+    // 시간 정보도 있고 시간을 경과하지 않았을 때
+    console.log('⏰ now:', now); // 테스트 출력
+    const server = new Date(timeInfo.serverTime).getTime();
+    console.log('⏰ server:', new Date(server).toISOString()); // 테스트 출력
+    const timePassed = now - server;
+    const timeLeft =
+      new Date(timeInfo.startTime).getTime() - timePassed - server;
+    // 밀리초를 초로 변환 (Math.floor로 소수점 버림)
+    const secondsLeft = Math.floor(timeLeft / 1000);
+    return secondsLeft;
   };
 };

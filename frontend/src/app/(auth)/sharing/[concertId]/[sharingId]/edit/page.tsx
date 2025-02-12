@@ -30,7 +30,7 @@ export default function SharingEditPage() {
     title: '',
     content: '',
     startTime: '',
-    image: undefined,
+    image: null,
     latitude: 0,
     longitude: 0,
   });
@@ -59,7 +59,7 @@ export default function SharingEditPage() {
           startTime: data.startTime,
           latitude: data.latitude ?? 0,
           longitude: data.longitude ?? 0,
-          image: imageFile,
+          image: imageFile ?? null,
         });
 
         setLocation({

@@ -60,7 +60,7 @@ export const SharingWriteForm = ({
               description="나눔할 물건의 사진을 업로드해주세요"
             />
             <ImageUpload
-              value={formData?.image || undefined}
+              value={formData?.image || null}
               onChange={(image) => onFormChange({ image })}
               error={errors?.image}
             />
@@ -85,9 +85,9 @@ export const SharingWriteForm = ({
       )}
 
       <div className="space-y-2 p-4">
-          <TextButton variant="outline" onClick={onLocationReset}>
-            위치 다시 선택하기
-          </TextButton>
+        <TextButton variant="outline" onClick={onLocationReset}>
+          위치 다시 선택하기
+        </TextButton>
         <TextButton
           onClick={onSubmit}
           isLoading={isSubmitting}

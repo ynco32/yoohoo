@@ -31,7 +31,7 @@ export default function SharingWritePage() {
     title: '',
     content: '',
     startTime: '',
-    image: undefined,
+    image: null,
     latitude: 0,
     longitude: 0,
     concertId,

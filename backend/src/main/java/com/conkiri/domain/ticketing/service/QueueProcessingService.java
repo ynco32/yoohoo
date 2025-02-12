@@ -46,7 +46,7 @@ public class QueueProcessingService {
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
 		log.info(startTime.toString());

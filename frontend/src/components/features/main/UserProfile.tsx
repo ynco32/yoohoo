@@ -5,6 +5,7 @@ import { SVGIcons } from '@/assets/svgs';
 import { useRouter } from 'next/navigation';
 import { UserInfo } from './UserInfo';
 import { useUserStore } from '@/store/useUserStore';
+import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 
 /**
  * @component UserProfile
@@ -16,6 +17,9 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   const router = useRouter();
   const { user, isLoading, error } = useUserStore();
 
+  if (user) {
+    console.log(user.profileUrl);
+  }
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -70,7 +74,7 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
           <div className="relative h-4/5 w-full">
             <div className="z-10 flex h-full items-center justify-center">
               <Image
-                src={user.profileUrl || SVGIcons.Artwork}
+                src={getUserProfileImage(user.level || '') || SVGIcons.Artwork}
                 alt={user.nickname}
                 className="h-full w-auto object-contain"
                 width={0}

@@ -20,7 +20,7 @@ export const useSightReviewValidation = ({
       const validateConcertInfo = () => {
         const isConcertValid = formData.concertId > 0;
         const isSeatValid =
-          formData.section > 0 &&
+          formData.sectionNumber > 0 &&
           formData.rowLine > 0 &&
           formData.columnLine > 0;
 
@@ -121,7 +121,11 @@ export const useSightReviewValidation = ({
     ) {
       return field as ValidFields;
     }
-    if (field === 'section' || field === 'rowLine' || field === 'columnLine') {
+    if (
+      field === 'sectionNumber' ||
+      field === 'rowLine' ||
+      field === 'columnLine'
+    ) {
       return 'seat';
     }
     return null;

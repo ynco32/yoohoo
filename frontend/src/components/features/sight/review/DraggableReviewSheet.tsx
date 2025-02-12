@@ -2,12 +2,14 @@ import React from 'react';
 import { useParams } from 'next/navigation';
 import { useDraggableSheet } from '@/hooks/useDraggableSheet';
 import { SightReviewCard } from './SightReviewCard';
-import { SightReviewData } from '@/types/sightReviews';
+import {
+  SightReviewData,
+  SeatDistanceStatus,
+  SoundStatus,
+} from '@/types/sightReviews';
 import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
 import { useSeatsStore } from '@/store/useSeatStore';
-
-type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
-type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
+import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 
 interface DraggableReviewSheetProps {
   isOpen: boolean;
@@ -27,7 +29,7 @@ export const DraggableReviewSheet = ({
   isLoading,
 }: DraggableReviewSheetProps) => {
   const params = useParams();
-  const currentSectionId = Number(params.sectionId);
+  const currentSectionNumber = Number(params.sectionNumber);
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
 
@@ -68,29 +70,30 @@ export const DraggableReviewSheet = ({
       <div className="space-y-4 px-4">
         {reviewDataList.map((reviewData, index) => {
           if (
-            !isSoundStatus(reviewData.soundQuality) ||
-            !isSeatDistanceStatus(reviewData.seatQuality)
+            !isSoundStatus(reviewData.sound) ||
+            !isSeatDistanceStatus(reviewData.seatDistance)
           ) {
             return null;
           }
 
           return (
             <div
-              key={`${reviewData.sectionId}-${reviewData.seatId}-${index}`}
+              key={`${reviewData.seatId}-${reviewData.reviewId}-${index}`}
               className="flex flex-col rounded-t-3xl bg-white"
             >
               <SightReviewCard
-                concertTitle={reviewData.concertTitle}
-                nickName={reviewData.nickName}
+                profilePicture={getUserProfileImage(reviewData.level)}
+                writerId={reviewData.userId}
+                concertTitle={reviewData.concertName}
+                nickName={reviewData.nickname ?? 'Unknown'}
                 reviewId={reviewData.reviewId}
-                writerId={reviewData.writerId}
-                profilePicture={reviewData.profilePicture}
-                seatInfo={reviewData.seatInfo}
+                seatInfo={`${reviewData.rowLine}열 ${reviewData.columnLine}번`}
                 image={reviewData.photoUrl}
                 content={reviewData.content}
-                viewQuality={reviewData.viewQuality}
-                soundQuality={reviewData.soundQuality}
-                seatQuality={reviewData.seatQuality}
+                viewQuality={reviewData.viewScore}
+                soundQuality={reviewData.sound}
+                seatDistance={reviewData.seatDistance}
+                writeTime={reviewData.writeTime}
               />
               {index < reviewDataList.length - 1 && (
                 <hr className="my-4 border-t border-gray-100" />
@@ -119,7 +122,7 @@ export const DraggableReviewSheet = ({
               <div className="flex items-center gap-2">
                 <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
                 <span className="text-body-bold text-primary-main">
-                  {currentSectionId}구역
+                  {currentSectionNumber}구역
                 </span>
                 {typeof currentSeatId === 'number' &&
                   !Number.isNaN(currentSeatId) && (

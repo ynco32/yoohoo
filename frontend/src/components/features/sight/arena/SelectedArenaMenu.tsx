@@ -19,34 +19,32 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
   const getMenuByArenaId = (
     arenaId: number
   ): Array<Omit<StageMenuItemProps, 'arenaId'>> => {
-    // DUMMY_DATA: Arena venues - TO BE REMOVED
-    // TODO: Replace with real API data
     switch (arenaId) {
       case 1: // 올림픽체조경기장
         return [
           {
-            stageType: 1,
+            stageType: 0,
             name: '전체보기',
             description: '시야 및 직관 후기 모음',
             icon: 'StageTypeAll',
             className: '',
           },
           {
-            stageType: 2,
+            stageType: 3,
             name: '360도',
             description: '시야 및 직관 후기 모음',
             icon: 'StageTypeCircular',
             className: '',
           },
           {
-            stageType: 3,
+            stageType: 2,
             name: '돌출형',
             description: '시야 및 직관 후기 모음',
             icon: 'StageTypeExtended',
             className: '',
           },
           {
-            stageType: 4,
+            stageType: 1,
             name: '일반형',
             description: '시야 및 직관 후기 모음',
             icon: 'StageTypeBasic',

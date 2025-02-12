@@ -1,5 +1,6 @@
 import { rest } from 'msw';
 import { mockApiReviews } from '../data/sightReview.data';
+import { StageType } from '@/types/sightReviews';
 
 import type {
   ApiResponse,
@@ -7,9 +8,26 @@ import type {
   SightReviewFormData,
   ApiSeatDistance,
   ApiSound,
+  SeatDistanceStatus,
+  SoundStatus,
 } from '@/types/sightReviews';
+const convertSeatDistance = (status: SeatDistanceStatus): ApiSeatDistance => {
+  const mapping: Record<SeatDistanceStatus, ApiSeatDistance> = {
+    좁아요: 'NARROW',
+    평범해요: 'AVERAGE',
+    넓어요: 'WIDE',
+  };
+  return mapping[status];
+};
 
-// MSW Handlers
+const convertSound = (status: SoundStatus): ApiSound => {
+  const mapping: Record<SoundStatus, ApiSound> = {
+    '잘 안 들려요': 'POOR',
+    평범해요: 'AVERAGE',
+    선명해요: 'CLEAR',
+  };
+  return mapping[status];
+};
 export const sightReviewHandlers = [
   // GET Arena Reviews Handler
   rest.get('/api/v1/view/arenas/:arenaId/reviews', (req, res, ctx) => {
@@ -26,10 +44,11 @@ export const sightReviewHandlers = [
       );
     }
 
-    // 필터링된 리뷰 반환
+    const stageTypeEnum = StageType[Number(stageType)];
+
     const filteredReviews = mockApiReviews.filter(
       (review) =>
-        review.stageType === parseInt(stageType) &&
+        review.stageType === stageTypeEnum &&
         (!seatId || review.seatId === parseInt(seatId))
     );
 
@@ -44,8 +63,7 @@ export const sightReviewHandlers = [
   rest.post('/api/v1/view/reviews', async (req, res, ctx) => {
     const formData = req.body as SightReviewFormData;
 
-    // 필수 필드 검증
-    if (!formData.content || !formData.viewScore || !formData.section) {
+    if (!formData.content || !formData.viewScore || !formData.sectionNumber) {
       return res(
         ctx.status(400),
         ctx.json({
@@ -54,23 +72,24 @@ export const sightReviewHandlers = [
       );
     }
 
-    // 폼 데이터를 API 응답 형식으로 변환
     const newReview: ApiReview = {
       reviewId: Math.floor(Math.random() * 1000),
       seatId: formData.columnLine,
+      rowLine: formData.rowLine,
+      columnLine: formData.columnLine,
       concertId: formData.concertId,
-      stageType: formData.stageType,
       content: formData.content,
-      userId: 1,
       viewScore: formData.viewScore,
+      userId: 1,
       seatDistance: convertSeatDistance(formData.seatDistance),
       sound: convertSound(formData.sound),
       photoUrl: null,
       writeTime: new Date().toISOString(),
       modifyTime: new Date().toISOString(),
-      userNickname: '테스트유저',
-      userLevel: 'ROOKIE',
-      concertTitle: '테스트 콘서트',
+      stageType: StageType.STANDARD.toString(), // 기본값으로 STANDARD 설정
+      level: 'ROOKIE',
+      nickname: '테스트유저',
+      concertName: '테스트 콘서트',
     };
 
     return res(ctx.delay(500), ctx.status(201), ctx.json(newReview));
@@ -81,8 +100,7 @@ export const sightReviewHandlers = [
     const { reviewId } = req.params;
     const formData = req.body as SightReviewFormData;
 
-    // 필수 필드 검증
-    if (!formData.content || !formData.viewScore || !formData.section) {
+    if (!formData.content || !formData.viewScore || !formData.sectionNumber) {
       return res(
         ctx.status(400),
         ctx.json({
@@ -91,7 +109,6 @@ export const sightReviewHandlers = [
       );
     }
 
-    // 기존 리뷰 찾기
     const existingReview = mockApiReviews.find(
       (review) => review.reviewId === parseInt(reviewId as string)
     );
@@ -105,7 +122,6 @@ export const sightReviewHandlers = [
       );
     }
 
-    // 업데이트된 리뷰 데이터 생성
     const updatedReview: ApiReview = {
       ...existingReview,
       content: formData.content,
@@ -117,108 +133,4 @@ export const sightReviewHandlers = [
 
     return res(ctx.delay(500), ctx.status(200), ctx.json(updatedReview));
   }),
-
-  // GET Single Review Handler
-  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
-    const { reviewId } = req.params;
-
-    const review = mockApiReviews.find(
-      (review) => review.reviewId === parseInt(reviewId as string)
-    );
-
-    if (!review) {
-      return res(
-        ctx.status(404),
-        ctx.json({
-          message: '리뷰를 찾을 수 없습니다.',
-        })
-      );
-    }
-
-    return res(ctx.delay(300), ctx.status(200), ctx.json(review));
-  }),
-
-  // DELETE Review Handler
-  rest.delete('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
-    const { reviewId } = req.params;
-
-    const reviewIndex = mockApiReviews.findIndex(
-      (review) => review.reviewId === parseInt(reviewId as string)
-    );
-
-    if (reviewIndex === -1) {
-      return res(
-        ctx.status(404),
-        ctx.json({
-          message: '삭제할 리뷰를 찾을 수 없습니다.',
-        })
-      );
-    }
-
-    return res(
-      ctx.delay(300),
-      ctx.status(200),
-      ctx.json({
-        message: '리뷰가 성공적으로 삭제되었습니다.',
-      })
-    );
-  }),
 ];
-
-// 에러 케이스 핸들러
-export const errorHandlers = [
-  rest.get('/api/v1/view/arenas/:arenaId/reviews', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
-        message: '서버 오류가 발생했습니다.',
-      })
-    );
-  }),
-
-  rest.post('/api/v1/view/reviews', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
-        message: '리뷰 저장 중 오류가 발생했습니다.',
-      })
-    );
-  }),
-
-  rest.put('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
-        message: '리뷰 수정 중 오류가 발생했습니다.',
-      })
-    );
-  }),
-
-  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
-    return res(
-      ctx.status(500),
-      ctx.json({
-        message: '리뷰를 불러오는 중 오류가 발생했습니다.',
-      })
-    );
-  }),
-];
-
-// Utility functions for type conversion
-function convertSeatDistance(distance: string): ApiSeatDistance {
-  const mapping: Record<string, ApiSeatDistance> = {
-    좁아요: 'NARROW',
-    평범해요: 'AVERAGE',
-    넓어요: 'WIDE',
-  };
-  return mapping[distance] || 'AVERAGE';
-}
-
-function convertSound(sound: string): ApiSound {
-  const mapping: Record<string, ApiSound> = {
-    '잘 안 들려요': 'UNCLEAR',
-    평범해요: 'AVERAGE',
-    선명해요: 'CLEAR',
-  };
-  return mapping[sound] || 'AVERAGE';
-}

@@ -76,7 +76,7 @@ export function SightReviewList() {
         console.log('API 응답:', response);
 
         const mappedReviews = response.reviews.map((review) =>
-          mapApiToSightReview(review, arenaId, sectionId)
+          mapApiToSightReview(review)
         );
 
         setReviews(mappedReviews);

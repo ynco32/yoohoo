@@ -1,51 +1,63 @@
 // types/sightReview.ts
+
 export enum StageType {
+  ALL = 0,
   STANDARD = 1,
-  THEATER = 2,
-  CONCERT = 3,
+  EXTENDED = 2,
+  DEGREE_360 = 3,
 }
+
 // 기본 상태 타입들
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
-// export type UserLevel = '1' | '2' | '3' | '4';
 
 // API 응답에서 사용하는 상태값들
 export type ApiSeatDistance = 'NARROW' | 'AVERAGE' | 'WIDE';
-export type ApiSound = 'UNCLEAR' | 'AVERAGE' | 'CLEAR';
+export type ApiSound = 'POOR' | 'AVERAGE' | 'CLEAR';
 
 // API 응답 타입
 export interface SightReviewData {
   reviewId: number;
-  arenaId: number;
-  sectionId: number;
   seatId: number;
-  concertId: number;
-  concertTitle: string;
-  content: string;
-  writerId: number;
-  nickName: string;
-  profilePicture: string;
-  seatInfo: string;
-  photoUrl: string | null; // images 배열에서 단일 이미지로 변경
-  viewQuality: number;
-  soundQuality: SoundStatus;
-  seatQuality: SeatDistanceStatus;
-  writeTime?: string;
-  modifyTime?: string;
-  stageType?: number;
-}
-
-// 폼 관련 타입들
-export interface SightReviewFormData {
-  concertId: number;
-  section: number;
   rowLine: number;
   columnLine: number;
-  photo: File | null; // images 배열에서 단일 File로 변경
+  concertId: number;
+  content: string;
   viewScore: number;
   seatDistance: SeatDistanceStatus;
   sound: SoundStatus;
-  stageType: number;
+  photoUrl: string | null;
+  writeTime: string;
+  modifyTime: string;
+  stageType: StageType;
+  level: string;
+  nickname: string | null;
+  concertName: string;
+  userId: number;
+}
+
+// API 요청 타입
+export interface CreateSightReviewRequest {
+  concertId: number;
+  sectionNumber: number;
+  rowLine: number;
+  columnLine: number;
+  content: string;
+  viewScore: number;
+  seatDistance: ApiSeatDistance;
+  sound: ApiSound;
+}
+
+// 폼 데이터 타입
+export interface SightReviewFormData {
+  concertId: number;
+  sectionNumber: number;
+  rowLine: number;
+  columnLine: number;
+  photo: File | null;
+  viewScore: number;
+  seatDistance: SeatDistanceStatus;
+  sound: SoundStatus;
   content: string;
 }
 
@@ -53,6 +65,8 @@ export interface SightReviewFormData {
 export interface ApiReview {
   reviewId: number;
   seatId: number;
+  rowLine: number;
+  columnLine: number;
   concertId: number;
   content: string;
   viewScore: number;
@@ -62,43 +76,63 @@ export interface ApiReview {
   photoUrl: string | null;
   writeTime: string;
   modifyTime: string;
-  stageType: number;
-  userNickname: string;
-  userLevel: string;
-  concertTitle: string;
+  stageType: string;
+  level: string;
+  nickname: string | null;
+  concertName: string;
 }
 
 export interface ApiResponse {
   reviews: ApiReview[];
 }
 
-export interface SeatInfo {
-  section: number | null;
-  rowLine: number | null;
-  columnLine: number | null;
+// 폼 상태 관련 타입들
+export interface FormState {
+  values: SightReviewFormData;
+  errors: FormErrors;
+  touched: TouchedState;
+  isValid: boolean;
+  isSubmitting: boolean;
 }
 
 // 폼 유효성 검사 관련 타입들
 export type FormErrors = Partial<
-  Record<keyof SightReviewFormData | 'submit' | 'seat', string>
+  Record<keyof SightReviewFormData | 'submit', string>
 >;
 
 export interface ValidationState {
   concertId: boolean;
-  images: boolean;
+  photo: boolean;
   viewScore: boolean;
-  seat: boolean;
+  rowLine: boolean;
+  columnLine: boolean;
   seatDistance: boolean;
   content: boolean;
 }
 
 export interface TouchedState {
   concertId: boolean;
-  images: boolean;
+  photo: boolean;
   viewScore: boolean;
-  seat: boolean;
+  rowLine: boolean;
+  columnLine: boolean;
   seatDistance: boolean;
   content: boolean;
 }
 
 export type ValidFields = keyof ValidationState;
+
+type FieldValues = {
+  [K in keyof SightReviewFormData]: SightReviewFormData[K];
+};
+
+export type FormAction =
+  | {
+      type: 'SET_FIELD_VALUE';
+      field: keyof SightReviewFormData;
+      value: FieldValues[keyof SightReviewFormData];
+    }
+  | { type: 'SET_FIELD_ERROR'; field: keyof FormErrors; error: string }
+  | { type: 'SET_FIELD_TOUCHED'; field: keyof TouchedState }
+  | { type: 'SET_SUBMITTING'; isSubmitting: boolean }
+  | { type: 'RESET_FORM' };

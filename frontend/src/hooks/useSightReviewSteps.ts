@@ -25,7 +25,7 @@ export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
         case 'concertInfo':
           return (
             formData.concertId > 0 &&
-            formData.section > 0 &&
+            formData.sectionNumber > 0 &&
             formData.rowLine > 0 &&
             formData.columnLine > 0
           );

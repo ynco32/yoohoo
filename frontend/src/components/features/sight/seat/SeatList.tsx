@@ -1,61 +1,72 @@
-'use client';
-
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Seat from '@/components/ui/Seat';
 import { useSeatsStore } from '@/store/useSeatStore';
+import { useSeatsGrid } from '@/hooks/useSeatsGrid';
 
 interface SeatListProps {
   isScrapMode: boolean;
 }
 
-export const SeatList = ({ isScrapMode }: SeatListProps) => {
+const SeatList = ({ isScrapMode }: SeatListProps) => {
   const { seats, isLoading, fetchSeatsBySection } = useSeatsStore();
   const { arenaId, stageType, sectionId } = useParams();
   const router = useRouter();
+
+  const SEAT_WIDTH = 10;
+  const SEAT_HEIGHT = 10;
+  const SEAT_MARGIN = 2;
+
+  const { grid, dimensions } = useSeatsGrid(
+    seats,
+    SEAT_WIDTH,
+    SEAT_HEIGHT,
+    SEAT_MARGIN
+  );
 
   useEffect(() => {
     fetchSeatsBySection(Number(arenaId), Number(stageType), Number(sectionId));
   }, [arenaId, stageType, sectionId, fetchSeatsBySection]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-64 w-full items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  const SEAT_WIDTH = 30;
-  const SEAT_HEIGHT = 30;
-  const SEAT_MARGIN = 5;
-
-  const maxRow = Math.max(...seats.map((seat) => seat.row));
-  const maxCol = Math.max(...seats.map((seat) => seat.col));
-
-  const viewBoxWidth = (maxCol + 1) * (SEAT_WIDTH + SEAT_MARGIN);
-  const viewBoxHeight = (maxRow + 1) * (SEAT_HEIGHT + SEAT_MARGIN);
-
   return (
-    <svg
-      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-      width={viewBoxWidth}
-      height={viewBoxHeight}
-    >
-      {seats.map((seat) => (
-        <Seat
-          key={seat.seatId}
-          {...seat}
-          scrapped={seat.scrapped}
-          isScrapMode={isScrapMode}
-          x={seat.col * (SEAT_WIDTH + SEAT_MARGIN)}
-          y={seat.row * (SEAT_HEIGHT + SEAT_MARGIN)}
-          width={SEAT_WIDTH}
-          height={SEAT_HEIGHT}
-          onClick={() =>
-            router.push(
-              `/sight/${seat.arenaId}/${stageType}/${seat.sectionId}/${seat.seatId}`
-            )
-          }
-        />
-      ))}
-    </svg>
+    <div className="flex w-full justify-center">
+      <svg
+        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+        width={dimensions.width}
+        height={dimensions.height}
+        className="max-w-full"
+      >
+        {grid.map((row, rowIndex) =>
+          row.map(({ x, y, seat }, seatIndex) =>
+            seat ? (
+              <Seat
+                key={`${rowIndex}-${seatIndex}`}
+                {...seat}
+                scrapped={seat.scrapped}
+                isScrapMode={isScrapMode}
+                x={x}
+                y={y}
+                width={SEAT_WIDTH}
+                height={SEAT_HEIGHT}
+                onClick={() =>
+                  router.push(
+                    `/sight/${seat.arenaId}/${stageType}/${seat.sectionId}/${seat.seatId}`
+                  )
+                }
+              />
+            ) : null
+          )
+        )}
+      </svg>
+    </div>
   );
 };
 

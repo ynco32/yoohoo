@@ -29,8 +29,9 @@ interface SightReviewCardProps {
   image: string | null;
   content: string;
   soundQuality: SoundStatus;
-  seatQuality: SeatDistanceStatus;
+  seatDistance: SeatDistanceStatus;
   viewQuality: number;
+  writeTime: string;
 }
 
 export const SightReviewCard = ({
@@ -43,8 +44,9 @@ export const SightReviewCard = ({
   image,
   content,
   soundQuality,
-  seatQuality,
+  seatDistance,
   viewQuality,
+  writeTime,
 }: SightReviewCardProps) => {
   // 시야 점수를 별점으로 표시하는 함수
   const renderViewScore = (score: number) => {
@@ -72,7 +74,8 @@ export const SightReviewCard = ({
         <span className="text-gray-600">{soundQuality}</span>
         <span className="text-caption1-bold">|</span>
         <span className="text-caption1-bold text-sight-badge">좌석</span>
-        <span className="text-gray-600">{seatQuality}</span>
+        <span className="text-gray-600">{seatDistance}</span>
+        <span className="text-caption3">{writeTime}</span>
       </div>
 
       <ReviewContent content={content} />

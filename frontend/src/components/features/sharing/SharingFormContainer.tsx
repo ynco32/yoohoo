@@ -74,14 +74,18 @@ export function SharingFormContainer({
           longitude: location.longitude,
         }),
         ...(concertId && { concertId }),
+        // image 속성을 명시적으로 추가
+        image: formData.image || null,
       };
 
       if (mode === 'create') {
         if (formData.image && formData.image instanceof File) {
-          const { image, ...postDataWithoutImage } = formData; // image를 분리
           const sharingId = await sharingAPI.createSharing(
-            postDataWithoutImage, // image가 제외된 데이터
-            image // File 타입의 이미지
+            {
+              ...postData,
+              image: null, // 이미지 파일은 별도로 전달
+            },
+            formData.image // File 타입의 이미지
           );
           onSubmitComplete(sharingId);
         } else {
@@ -91,8 +95,8 @@ export function SharingFormContainer({
         // 수정 모드
         if (sharingId) {
           await sharingAPI.updateSharing(
-            sharingId, // 기존 ID 그대로 사용
-            postData,
+            sharingId,
+            postData, // image 속성 포함
             formData.image instanceof File ? formData.image : undefined
           );
           onSubmitComplete(sharingId);

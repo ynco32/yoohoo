@@ -1,42 +1,43 @@
 // utils/sightReviewMapper.ts
-import { SightReviewData, ApiReview } from '@/types/sightReviews';
-import { getUserProfileImage } from './profileCharacter';
+import {
+  SightReviewData,
+  ApiReview,
+  SeatDistanceStatus,
+  SoundStatus,
+  StageType,
+} from '@/types/sightReviews';
 
-export const mapApiToSightReview = (
-  apiReview: ApiReview,
-  currentArenaId: number,
-  currentSectionId: number
-): SightReviewData => {
-  const seatDistanceMap = {
+export const mapApiToSightReview = (apiReview: ApiReview): SightReviewData => {
+  // Map API values to frontend values
+  const seatDistanceMap: Record<string, SeatDistanceStatus> = {
     NARROW: '좁아요',
     AVERAGE: '평범해요',
     WIDE: '넓어요',
-  } as const;
+  };
 
-  const soundMap = {
-    UNCLEAR: '잘 안 들려요',
+  const soundMap: Record<string, SoundStatus> = {
+    POOR: '잘 안 들려요',
     AVERAGE: '평범해요',
     CLEAR: '선명해요',
-  } as const;
+  };
 
   return {
     reviewId: apiReview.reviewId,
-    arenaId: currentArenaId,
-    sectionId: currentSectionId,
     seatId: apiReview.seatId,
+    rowLine: apiReview.rowLine,
+    columnLine: apiReview.columnLine,
     concertId: apiReview.concertId,
-    concertTitle: apiReview.concertTitle,
     content: apiReview.content,
-    writerId: apiReview.userId,
-    nickName: apiReview.userNickname,
-    profilePicture: getUserProfileImage(apiReview.userLevel),
-    seatInfo: `${currentSectionId}구역 ${apiReview.seatId}번`,
+    viewScore: apiReview.viewScore,
+    seatDistance: seatDistanceMap[apiReview.seatDistance],
+    sound: soundMap[apiReview.sound],
     photoUrl: apiReview.photoUrl,
-    viewQuality: apiReview.viewScore,
-    soundQuality: soundMap[apiReview.sound],
-    seatQuality: seatDistanceMap[apiReview.seatDistance],
     writeTime: apiReview.writeTime,
     modifyTime: apiReview.modifyTime,
-    stageType: apiReview.stageType,
+    stageType: StageType[apiReview.stageType as keyof typeof StageType],
+    level: apiReview.level,
+    nickname: apiReview.nickname,
+    concertName: apiReview.concertName,
+    userId: apiReview.userId,
   };
 };

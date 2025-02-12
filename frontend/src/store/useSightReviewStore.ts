@@ -50,10 +50,10 @@ interface SightReviewState {
 
 export const DEFAULT_FORM_DATA: SightReviewFormData = {
   concertId: 0,
-  section: 0,
+  sectionNumber: 0,
   rowLine: 0,
   columnLine: 0,
-  stageType: 0,
+
   photo: null,
   viewScore: 0,
   seatDistance: '평범해요',
@@ -102,7 +102,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
       concertId: data.concertId > 0,
       photo: data.photo instanceof File || typeof data.photo === 'string',
       viewScore: data.viewScore > 0,
-      seat: data.section > 0 && data.rowLine > 0 && data.columnLine > 0,
+      seat: data.sectionNumber > 0 && data.rowLine > 0 && data.columnLine > 0,
       seatDistance: data.seatDistance.length > 0,
       content: data.content.length >= 10,
     };
@@ -129,7 +129,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
         typeof mergedData.photo === 'string',
       viewScore: mergedData.viewScore > 0,
       seat:
-        mergedData.section > 0 &&
+        mergedData.sectionNumber > 0 &&
         mergedData.rowLine > 0 &&
         mergedData.columnLine > 0,
       seatDistance: mergedData.seatDistance.length > 0,

@@ -1,11 +1,18 @@
 // types/sightReview.ts
+export enum StageType {
+  ALL = 0,
+  STANDARD = 1,
+  EXTENDED = 2,
+  DEGREE_360 = 3,
+}
 // 기본 상태 타입들
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';
+// export type UserLevel = '1' | '2' | '3' | '4';
 
 // API 응답에서 사용하는 상태값들
 export type ApiSeatDistance = 'NARROW' | 'AVERAGE' | 'WIDE';
-export type ApiSound = 'UNCLEAR' | 'AVERAGE' | 'CLEAR';
+export type ApiSound = 'POOR' | 'AVERAGE' | 'CLEAR';
 
 // API 응답 타입
 export interface SightReviewData {

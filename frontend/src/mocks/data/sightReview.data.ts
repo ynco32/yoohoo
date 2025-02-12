@@ -6,6 +6,7 @@ import type {
   SightReviewFormData,
   ApiSeatDistance,
   ApiSound,
+  StageType,
   SeatDistanceStatus,
   SoundStatus,
 } from '@/types/sightReviews';
@@ -68,7 +69,7 @@ export const mockApiReviews: ApiReview[] = [
 // 리뷰 필터링 헬퍼 함수
 export const getFilteredReviews = (
   arenaId: number,
-  stageType: number,
+  stageType: StageType,
   sectionId: number,
   seatId?: number
 ): ApiResponse => {
@@ -102,7 +103,7 @@ export const createSightReview = (data: SightReviewFormData): ApiReview => {
   // FormData의 SoundStatus를 ApiSound로 변환
   const convertToApiSound = (sound: SoundStatus): ApiSound => {
     const mapping: Record<SoundStatus, ApiSound> = {
-      '잘 안 들려요': 'UNCLEAR',
+      '잘 안 들려요': 'POOR',
       평범해요: 'AVERAGE',
       선명해요: 'CLEAR',
     };

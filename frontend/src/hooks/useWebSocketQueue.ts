@@ -1,4 +1,5 @@
 // hooks/useWebSocketQueue.ts
+import { useUserStore } from '@/store/useUserStore';
 import { AxiosError } from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
@@ -6,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api/axios';
 
 export const useWebSocketQueue = () => {
+  const { user } = useUserStore();
   const router = useRouter();
   const [queueNumber, setQueueNumber] = useState('');
   const [waitingTime, setWaitingTime] = useState('');
@@ -41,21 +43,29 @@ export const useWebSocketQueue = () => {
     client.onConnect = () => {
       console.log('🤝 웹소켓 연결 성공');
 
-      client.subscribe(`/user/book/waiting-time`, (message: IMessage) => {
-        console.log('🤝waiting-time 수신된 메세지:', message.body);
-        const response = JSON.parse(message.body);
-        setQueueNumber(response.position);
-        setWaitingTime(response.estimatedWaitingSeconds);
-        setPeopleBehind(response.usersAfter);
-      });
+      const userId = user?.userId;
 
-      client.subscribe(`/user/book/notification`, (message: IMessage) => {
-        console.log('🤝notification 수신된 메세지:', message.body);
-        const response = JSON.parse(message.body);
-        if (response === true) {
-          router.push('area');
+      client.subscribe(
+        `/user/${userId}/book/waiting-time`,
+        (message: IMessage) => {
+          console.log('🤝waiting-time 수신된 메세지:', message.body);
+          const response = JSON.parse(message.body);
+          setQueueNumber(response.position);
+          setWaitingTime(response.estimatedWaitingSeconds);
+          setPeopleBehind(response.usersAfter);
         }
-      });
+      );
+
+      client.subscribe(
+        `/user/${userId}/book/notification`,
+        (message: IMessage) => {
+          console.log('🤝notification 수신된 메세지:', message.body);
+          const response = JSON.parse(message.body);
+          if (response === true) {
+            router.push('area');
+          }
+        }
+      );
     };
 
     client.activate();

@@ -13,7 +13,6 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@stomp/stompjs": "^7.0.0",
-    "@types/sockjs-client": "^1.5.4",
     "axios": "^1.7.9",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
@@ -22,7 +21,6 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
-    "sockjs-client": "^1.6.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

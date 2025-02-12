@@ -1,5 +1,4 @@
 // hooks/useWebSocketQueue.ts
-import SockJS from 'sockjs-client';
 import { AxiosError } from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
@@ -25,9 +24,7 @@ export const useWebSocketQueue = () => {
       return;
     }
     const client = new Client({
-      webSocketFactory: () =>
-        new SockJS('https://i12b207.p.ssafy.io/ticketing-melon'),
-      // brokerURL: 'wss://i12b207.p.ssafy.io/ticketing-melon',
+      brokerURL: 'wss://i12b207.p.ssafy.io/ticketing-melon',
       connectHeaders: {
         Authorization: `Bearer ${getAccessToken()}`,
       },

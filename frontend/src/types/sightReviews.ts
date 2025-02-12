@@ -22,16 +22,31 @@ export interface SightReviewData {
   concertId: number;
   concertTitle: string;
   content: string;
+  writerId: number;
   nickName: string;
   profilePicture: string;
   seatInfo: string;
-  images: string[];
+  photoUrl: string | null; // images 배열에서 단일 이미지로 변경
   viewQuality: number;
   soundQuality: SoundStatus;
   seatQuality: SeatDistanceStatus;
   writeTime?: string;
   modifyTime?: string;
   stageType?: number;
+}
+
+// 폼 관련 타입들
+export interface SightReviewFormData {
+  concertId: number;
+  section: number;
+  rowLine: number;
+  columnLine: number;
+  photo: File | null; // images 배열에서 단일 File로 변경
+  viewScore: number;
+  seatDistance: SeatDistanceStatus;
+  sound: SoundStatus;
+  stageType: number;
+  content: string;
 }
 
 // API 응답 원본 타입
@@ -41,6 +56,7 @@ export interface ApiReview {
   concertId: number;
   content: string;
   viewScore: number;
+  userId: number;
   seatDistance: ApiSeatDistance;
   sound: ApiSound;
   photoUrl: string | null;
@@ -54,20 +70,6 @@ export interface ApiReview {
 
 export interface ApiResponse {
   reviews: ApiReview[];
-}
-
-// 폼 관련 타입들
-export interface SightReviewFormData {
-  concertId: number;
-  section: number;
-  rowLine: number;
-  columnLine: number;
-  images: File[];
-  viewScore: number;
-  seatDistance: SeatDistanceStatus;
-  sound: SoundStatus;
-  stageType: number;
-  content: string;
 }
 
 export interface SeatInfo {

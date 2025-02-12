@@ -9,7 +9,7 @@ export const concertHandlers = [
     );
     console.log('현재 lastConcertId:', req.url.searchParams.get('last'));
 
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 10;
     const lastParam = req.url.searchParams.get('last');
     const lastConcertId = lastParam !== null ? Number(lastParam) : null;
 

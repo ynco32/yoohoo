@@ -15,6 +15,9 @@ interface UseSightReviewStepsProps {
 
 export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  function isValidPhoto(photo: File | null): photo is File {
+    return photo instanceof File && photo.size > 0;
+  }
 
   const checkStepValidity = useCallback(
     (stepId: StepId): boolean => {
@@ -27,7 +30,7 @@ export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
             formData.columnLine > 0
           );
         case 'reviweSight':
-          return formData.images.length > 0 && formData.viewScore > 0;
+          return isValidPhoto(formData.photo) && formData.viewScore > 0;
         case 'reviewOthers':
           return (
             formData.seatDistance.length > 0 && formData.content.length >= 10

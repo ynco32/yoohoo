@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SharingMap } from '@/components/features/sharing/SharingMap';
 import { SharingPost } from '@/types/sharing';
-import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { VENUE_COORDINATES } from '@/lib/constants/venues';
 
 const meta: Meta<typeof SharingMap> = {
   title: 'Features/Sharing/SharingMap',

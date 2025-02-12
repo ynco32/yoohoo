@@ -32,7 +32,7 @@ export function SharingFormContainer({
     startTime: '',
     latitude: 0,
     longitude: 0,
-    image: undefined,
+    image: null,
     ...initialData,
   });
 
@@ -53,7 +53,7 @@ export function SharingFormContainer({
   const handleFormChange = (data: Partial<SharingFormData>) => {
     const updatedFormData = { ...formData, ...data };
     setFormData(updatedFormData);
-    
+
     // 부모 컴포넌트의 setFormData가 있다면 호출
     if (setParentFormData) {
       setParentFormData(updatedFormData);
@@ -77,10 +77,11 @@ export function SharingFormContainer({
       };
 
       if (mode === 'create') {
-        if (formData.image) {
+        if (formData.image && formData.image instanceof File) {
+          const { image, ...postDataWithoutImage } = formData; // image를 분리
           const sharingId = await sharingAPI.createSharing(
-            postData as SharingFormData,
-            formData.image
+            postDataWithoutImage, // image가 제외된 데이터
+            image // File 타입의 이미지
           );
           onSubmitComplete(sharingId);
         } else {

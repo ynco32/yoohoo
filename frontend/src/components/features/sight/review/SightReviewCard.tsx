@@ -23,8 +23,10 @@ interface SightReviewCardProps {
   concertTitle: string;
   nickName: string;
   profilePicture: string;
+  writerId: number;
+  reviewId: number;
   seatInfo: string;
-  images: string[];
+  image: string | null;
   content: string;
   soundQuality: SoundStatus;
   seatQuality: SeatDistanceStatus;
@@ -33,10 +35,12 @@ interface SightReviewCardProps {
 
 export const SightReviewCard = ({
   concertTitle,
+  writerId,
+  reviewId,
   nickName,
   profilePicture,
   seatInfo,
-  images,
+  image,
   content,
   soundQuality,
   seatQuality,
@@ -50,13 +54,15 @@ export const SightReviewCard = ({
   return (
     <div className="w-full rounded-lg p-4">
       <ReviewHeader
+        reviewId={reviewId}
+        writerId={writerId}
         concertTitle={concertTitle}
         nickName={nickName}
         profilePicture={profilePicture}
         seatInfo={seatInfo}
       />
 
-      <ReviewImages images={images} />
+      <ReviewImages image={image} />
 
       <div className="mb-4 flex gap-2 font-pretendard text-sm">
         <span className="text-caption1-bold"></span>

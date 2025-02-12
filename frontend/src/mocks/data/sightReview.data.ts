@@ -17,13 +17,14 @@ import type {
 export const mockApiReviews: ApiReview[] = [
   {
     reviewId: 1,
-    seatId: 101,
+    seatId: 1,
     concertId: 1,
+    userId: 1,
     content: '무대가 잘 보이고 음향도 좋았습니다.',
     viewScore: 4.5,
     seatDistance: 'AVERAGE',
     sound: 'CLEAR',
-    photoUrl: '/images/review1.jpg',
+    photoUrl: '/images/sight.png',
     writeTime: '2025-02-10T10:00:00',
     modifyTime: '2025-02-10T10:00:00',
     stageType: 1,
@@ -33,13 +34,14 @@ export const mockApiReviews: ApiReview[] = [
   },
   {
     reviewId: 2,
-    seatId: 102,
+    seatId: 1,
     concertId: 1,
+    userId: 2,
     content: '최고의 자리였습니다! 아티스트의 표정까지 선명하게 보였어요.',
     viewScore: 5,
     seatDistance: 'NARROW',
     sound: 'CLEAR',
-    photoUrl: '/images/review2.jpg',
+    photoUrl: '/images/sight.png',
     writeTime: '2025-02-09T15:30:00',
     modifyTime: '2025-02-09T15:30:00',
     stageType: 1,
@@ -51,6 +53,7 @@ export const mockApiReviews: ApiReview[] = [
     reviewId: 3,
     seatId: 103,
     concertId: 1,
+    userId: 1,
     content: '옆 시야는 좀 가렸지만 전반적으로 괜찮았습니다.',
     viewScore: 3.5,
     seatDistance: 'WIDE',
@@ -114,13 +117,11 @@ export const createSightReview = (data: SightReviewFormData): ApiReview => {
     seatId: Date.now(), // 임시 seatId 생성
     concertId: data.concertId,
     content: data.content,
+    userId: 1,
     viewScore: data.viewScore,
     seatDistance: convertToApiSeatDistance(data.seatDistance),
     sound: convertToApiSound(data.sound),
-    photoUrl:
-      data.images.length > 0
-        ? `/images/uploaded-review-${Date.now()}.jpg`
-        : null,
+    photoUrl: data.photo ? `/images/uploaded-review-${Date.now()}.jpg` : null,
     writeTime: new Date().toISOString(),
     modifyTime: new Date().toISOString(),
     stageType: 1, // 기본값 설정

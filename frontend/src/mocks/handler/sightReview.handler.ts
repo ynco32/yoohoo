@@ -1,51 +1,13 @@
 import { rest } from 'msw';
+import { mockApiReviews } from '../data/sightReview.data';
+
 import type {
   ApiResponse,
   ApiReview,
   SightReviewFormData,
   ApiSeatDistance,
   ApiSound,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  StageType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  UserLevel,
 } from '@/types/sightReviews';
-
-// Mock Data
-const mockReviews: ApiReview[] = [
-  {
-    reviewId: 1,
-    seatId: 1,
-    concertId: 456,
-    content: '시야가 매우 좋았고 무대가 잘 보였습니다. 특히 음향이 훌륭했어요.',
-    viewScore: 4.5,
-    seatDistance: 'AVERAGE',
-    sound: 'CLEAR',
-    photoUrl: '/images/sight.png',
-    writeTime: '2024-02-10T12:00:00Z',
-    modifyTime: '2024-02-10T12:00:00Z',
-    stageType: 1,
-    userNickname: '콘서트마스터',
-    userLevel: 'PROFESSIONAL',
-    concertTitle: '2024 봄 콘서트',
-  },
-  {
-    reviewId: 2,
-    seatId: 1,
-    concertId: 1,
-    content: '좌석 간격이 조금 좁았지만 시야는 괜찮았습니다.',
-    viewScore: 3.5,
-    seatDistance: 'NARROW',
-    sound: 'AVERAGE',
-    photoUrl: null,
-    writeTime: '2024-02-09T15:30:00Z',
-    modifyTime: '2024-02-09T15:30:00Z',
-    stageType: 1,
-    userNickname: '음악애호가',
-    userLevel: 'AMATEUR',
-    concertTitle: '2024 봄 콘서트',
-  },
-];
 
 // MSW Handlers
 export const sightReviewHandlers = [
@@ -64,8 +26,8 @@ export const sightReviewHandlers = [
       );
     }
 
-    // 필터링된 리뷰 반환F
-    const filteredReviews = mockReviews.filter(
+    // 필터링된 리뷰 반환
+    const filteredReviews = mockApiReviews.filter(
       (review) =>
         review.stageType === parseInt(stageType) &&
         (!seatId || review.seatId === parseInt(seatId))
@@ -80,7 +42,7 @@ export const sightReviewHandlers = [
 
   // POST Review Submission Handler
   rest.post('/api/v1/view/reviews', async (req, res, ctx) => {
-    const formData = (await req.json()) as SightReviewFormData;
+    const formData = req.body as SightReviewFormData;
 
     // 필수 필드 검증
     if (!formData.content || !formData.viewScore || !formData.section) {
@@ -99,10 +61,11 @@ export const sightReviewHandlers = [
       concertId: formData.concertId,
       stageType: formData.stageType,
       content: formData.content,
+      userId: 1,
       viewScore: formData.viewScore,
       seatDistance: convertSeatDistance(formData.seatDistance),
       sound: convertSound(formData.sound),
-      photoUrl: null, // 실제로는 이미지 업로드 처리가 필요
+      photoUrl: null,
       writeTime: new Date().toISOString(),
       modifyTime: new Date().toISOString(),
       userNickname: '테스트유저',
@@ -111,6 +74,94 @@ export const sightReviewHandlers = [
     };
 
     return res(ctx.delay(500), ctx.status(201), ctx.json(newReview));
+  }),
+
+  // PUT Review Update Handler
+  rest.put('/api/v1/view/reviews/:reviewId', async (req, res, ctx) => {
+    const { reviewId } = req.params;
+    const formData = req.body as SightReviewFormData;
+
+    // 필수 필드 검증
+    if (!formData.content || !formData.viewScore || !formData.section) {
+      return res(
+        ctx.status(400),
+        ctx.json({
+          message: '필수 입력 항목이 누락되었습니다.',
+        })
+      );
+    }
+
+    // 기존 리뷰 찾기
+    const existingReview = mockApiReviews.find(
+      (review) => review.reviewId === parseInt(reviewId as string)
+    );
+
+    if (!existingReview) {
+      return res(
+        ctx.status(404),
+        ctx.json({
+          message: '수정할 리뷰를 찾을 수 없습니다.',
+        })
+      );
+    }
+
+    // 업데이트된 리뷰 데이터 생성
+    const updatedReview: ApiReview = {
+      ...existingReview,
+      content: formData.content,
+      viewScore: formData.viewScore,
+      seatDistance: convertSeatDistance(formData.seatDistance),
+      sound: convertSound(formData.sound),
+      modifyTime: new Date().toISOString(),
+    };
+
+    return res(ctx.delay(500), ctx.status(200), ctx.json(updatedReview));
+  }),
+
+  // GET Single Review Handler
+  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    const { reviewId } = req.params;
+
+    const review = mockApiReviews.find(
+      (review) => review.reviewId === parseInt(reviewId as string)
+    );
+
+    if (!review) {
+      return res(
+        ctx.status(404),
+        ctx.json({
+          message: '리뷰를 찾을 수 없습니다.',
+        })
+      );
+    }
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(review));
+  }),
+
+  // DELETE Review Handler
+  rest.delete('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    const { reviewId } = req.params;
+
+    const reviewIndex = mockApiReviews.findIndex(
+      (review) => review.reviewId === parseInt(reviewId as string)
+    );
+
+    if (reviewIndex === -1) {
+      return res(
+        ctx.status(404),
+        ctx.json({
+          message: '삭제할 리뷰를 찾을 수 없습니다.',
+        })
+      );
+    }
+
+    return res(
+      ctx.delay(300),
+      ctx.status(200),
+      ctx.json({
+        message: '리뷰가 성공적으로 삭제되었습니다.',
+      })
+    );
   }),
 ];
 
@@ -130,6 +181,24 @@ export const errorHandlers = [
       ctx.status(500),
       ctx.json({
         message: '리뷰 저장 중 오류가 발생했습니다.',
+      })
+    );
+  }),
+
+  rest.put('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    return res(
+      ctx.status(500),
+      ctx.json({
+        message: '리뷰 수정 중 오류가 발생했습니다.',
+      })
+    );
+  }),
+
+  rest.get('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    return res(
+      ctx.status(500),
+      ctx.json({
+        message: '리뷰를 불러오는 중 오류가 발생했습니다.',
       })
     );
   }),

@@ -160,6 +160,12 @@ module.exports = {
           description: '#919191',
           nickname: '#444444',
         },
+        congestion: {
+          customRed: '#E85353',
+          customOrange: '#FFA500',
+          customYellow: '#FFFF00',
+          customGreen: '#00FF00',
+        },
       },
     },
   },

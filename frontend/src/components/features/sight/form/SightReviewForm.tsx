@@ -76,7 +76,7 @@ export const SightReviewForm = React.memo(
       console.log('=== Submit Handler Start ===');
       console.log('Current Form Data:', {
         concertId: formData.concertId,
-        section: formData.section,
+        section: formData.sectionNumber,
         rowLine: formData.rowLine,
         columnLine: formData.columnLine,
         photo: formData.photo,
@@ -92,7 +92,9 @@ export const SightReviewForm = React.memo(
       );
       setValidation(
         'seat',
-        formData.section > 0 && formData.rowLine > 0 && formData.columnLine > 0
+        formData.sectionNumber > 0 &&
+          formData.rowLine > 0 &&
+          formData.columnLine > 0
       );
 
       const stepValidation = validateStep(STEPS[currentStep].id);
@@ -113,7 +115,7 @@ export const SightReviewForm = React.memo(
       const validationDetails = {
         concertId: formData.concertId > 0,
         seat:
-          formData.section > 0 &&
+          formData.sectionNumber > 0 &&
           formData.rowLine > 0 &&
           formData.columnLine > 0,
         photo:
@@ -175,12 +177,12 @@ export const SightReviewForm = React.memo(
               <div className="mt-md">
                 <SeatSelect
                   value={{
-                    section: formData.section || null,
+                    section: formData.sectionNumber || null,
                     rowLine: formData.rowLine || null,
                     columnLine: formData.columnLine || null,
                   }}
                   onChange={(seatInfo) => {
-                    handleFieldChange('section', seatInfo.section ?? 0);
+                    handleFieldChange('sectionNumber', seatInfo.section ?? 0);
                     handleFieldChange('rowLine', seatInfo.rowLine ?? 0);
                     handleFieldChange('columnLine', seatInfo.columnLine ?? 0);
                   }}

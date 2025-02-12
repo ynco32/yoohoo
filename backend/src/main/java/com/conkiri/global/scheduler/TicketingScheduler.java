@@ -34,7 +34,7 @@ public class TicketingScheduler {
 	// 애플리케이션 시작 시 티켓팅 초기화
 	@EventListener(ApplicationReadyEvent.class)
 	public void onApplicationReady() {
-		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime todayStart = getTodayTicketingStartTime();
 		LocalDateTime endTime = todayStart.plusHours(TICKETING_DURATION_HOURS);
 

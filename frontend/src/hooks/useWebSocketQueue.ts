@@ -16,7 +16,7 @@ export const useWebSocketQueue = () => {
       return;
     }
     const client = new Client({
-      brokerURL: 'ws://i12b207p.ssafy.io/ticketing',
+      brokerURL: 'wss://i12b207p.ssafy.io/ticketing-melon',
       debug: (str) => console.log('🤝 STOMP: ' + str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,

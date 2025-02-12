@@ -41,12 +41,17 @@ public class QueueProcessingService {
 
 		String startTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "startTime");
 		String endTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "endTime");
+		log.info(startTimeStr);
+		log.info(endTimeStr);
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
+		log.info(startTime.toString());
+		log.info(endTime.toString());
+		log.info(now.toString());
 		return now.isAfter(startTime) && now.isBefore(endTime);
 	}
 

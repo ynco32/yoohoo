@@ -1,4 +1,5 @@
 // hooks/useWebSocketQueue.ts
+import { AxiosError } from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 import { useRouter } from 'next/navigation';
@@ -59,7 +60,12 @@ export const useWebSocketQueue = () => {
     try {
       const response = await api.post(`/api/v1/ticketing/queue`);
       setQueueNumber(response.data);
-    } catch (_error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 400) {
+          console.log(error.response.data.message);
+        }
+      }
       console.log('대기열 진입 실패');
     }
   };

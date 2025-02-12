@@ -137,6 +137,32 @@ export const sightReviewHandlers = [
 
     return res(ctx.delay(300), ctx.status(200), ctx.json(review));
   }),
+
+  // DELETE Review Handler
+  rest.delete('/api/v1/view/reviews/:reviewId', (req, res, ctx) => {
+    const { reviewId } = req.params;
+
+    const reviewIndex = mockApiReviews.findIndex(
+      (review) => review.reviewId === parseInt(reviewId as string)
+    );
+
+    if (reviewIndex === -1) {
+      return res(
+        ctx.status(404),
+        ctx.json({
+          message: '삭제할 리뷰를 찾을 수 없습니다.',
+        })
+      );
+    }
+
+    return res(
+      ctx.delay(300),
+      ctx.status(200),
+      ctx.json({
+        message: '리뷰가 성공적으로 삭제되었습니다.',
+      })
+    );
+  }),
 ];
 
 // 에러 케이스 핸들러

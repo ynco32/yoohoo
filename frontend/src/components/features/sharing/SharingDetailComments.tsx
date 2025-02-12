@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Comment } from '@/types/sharing';
-import { sharingAPI } from '@/lib/api/sharing';
+import { sharingCommentAPI } from '@/lib/api/sharingComment';
 import { CommentItem } from './CommentItem';
 import { useMswInit } from '@/hooks/useMswInit';
 
@@ -25,21 +25,28 @@ export const SharingDetailComments = ({
   const loadingRef = useRef<HTMLDivElement | null>(null);
 
   const fetchComments = useCallback(async () => {
-    if (!mswInitialized || !hasMore || isLoading) return; 
-    
+    if (!mswInitialized || !hasMore || isLoading) return;
+
     try {
       setIsLoading(true);
-      const response = await sharingAPI.getComments(sharingId, lastCommentId);
+      const response = await sharingCommentAPI.getComments(
+        sharingId,
+        lastCommentId
+      );
 
-      setComments(prev => [...prev, ...response.comments]);
+      setComments((prev) => [...prev, ...response.comments]);
       setHasMore(!response.lastPage);
 
       if (response.comments.length > 0) {
-        setLastCommentId(response.comments[response.comments.length - 1].commentId);
+        setLastCommentId(
+          response.comments[response.comments.length - 1].commentId
+        );
       }
     } catch (err) {
       console.error('Error fetching comments:', err);
-      setError(err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.');
+      setError(
+        err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -49,19 +56,23 @@ export const SharingDetailComments = ({
   useEffect(() => {
     const fetchInitialComments = async () => {
       if (!mswInitialized) return;
-      
+
       try {
         setIsLoading(true);
-        const response = await sharingAPI.getComments(sharingId);
+        const response = await sharingCommentAPI.getComments(sharingId);
         setComments(response.comments);
         setHasMore(!response.lastPage);
-        
+
         if (response.comments.length > 0) {
-          setLastCommentId(response.comments[response.comments.length - 1].commentId);
+          setLastCommentId(
+            response.comments[response.comments.length - 1].commentId
+          );
         }
       } catch (err) {
         console.error('Error fetching initial comments:', err);
-        setError(err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.');
+        setError(
+          err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.'
+        );
       } finally {
         setIsLoading(false);
       }

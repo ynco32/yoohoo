@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { SharingLocationSelect } from '@/components/features/sharing/SharingLocationSelect';
 import { Modal } from '@/components/common/Modal';
-import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { VENUE_COORDINATES } from '@/lib/constants/venues';
 import { SharingFormContainer } from '@/components/features/sharing/SharingFormContainer';
 import { SharingFormData } from '@/types/sharing';
 
@@ -18,7 +18,9 @@ export default function SharingWritePage() {
   const [step, setStep] = useState<'location' | 'form'>('location');
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-  const [completedSharingId, setCompletedSharingId] = useState<number | null>(null);
+  const [completedSharingId, setCompletedSharingId] = useState<number | null>(
+    null
+  );
 
   const params = useParams();
   const concertId =

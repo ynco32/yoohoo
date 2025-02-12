@@ -7,7 +7,7 @@ import { ViewTab } from './ViewTap';
 import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
-import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { VENUE_COORDINATES } from '@/lib/constants/venues';
 import { WriteButton } from '@/components/common/WriteButton';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { sharingAPI } from '@/lib/api/sharing';
@@ -30,7 +30,7 @@ export const SharingView = () => {
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // URL 파라미터
   const params = useParams();
   const concertId =
@@ -101,7 +101,7 @@ export const SharingView = () => {
   // 초기 데이터 로드
   useEffect(() => {
     if (!mswInitialized) return;
-    
+
     setCurrentPage(0);
     fetchData();
   }, [mswInitialized, currentTab, fetchData]);
@@ -144,7 +144,9 @@ export const SharingView = () => {
       className={`${viewMode === 'map' ? '-mt-[56px] h-screen' : 'flex h-[calc(100vh-56px)] flex-col'}`}
     >
       <div
-        className={viewMode === 'map' ? 'absolute top-[56px] z-10 w-full p-4' : 'p-4'}
+        className={
+          viewMode === 'map' ? 'absolute top-[56px] z-10 w-full p-4' : 'p-4'
+        }
       >
         <div className="flex items-center justify-between">
           <ViewModeToggle

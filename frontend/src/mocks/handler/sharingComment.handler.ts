@@ -38,6 +38,7 @@ export const sharingCommentHandlers = [
     );
   }),
 
+  // 댓글 등록
   rest.post('/api/v1/sharing/comment', async (req, res, ctx) => {
     const { content, sharingId } = await req.json();
 
@@ -59,5 +60,29 @@ export const sharingCommentHandlers = [
     };
 
     return res(ctx.status(201), ctx.json(newComment));
+  }),
+
+  // 댓글 수정
+  rest.put('/api/v1/sharing/comment/:commentId', async (req, res, ctx) => {
+    const { commentId } = req.params;
+    const { content } = await req.json();
+
+    if (!content || !content.trim()) {
+      return res(
+        ctx.status(400),
+        ctx.json({ message: '댓글 내용을 입력해주세요.' })
+      );
+    }
+
+    // 수정된 댓글 응답
+    const updatedComment: Comment = {
+      commentId: Number(commentId),
+      writer: '테스트 유저',
+      writerId: 123,
+      content,
+      modifyTime: new Date().toISOString(),
+    };
+
+    return res(ctx.status(200), ctx.json(updatedComment));
   }),
 ];

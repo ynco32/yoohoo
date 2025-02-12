@@ -7,8 +7,6 @@ import type {
   ApiSeatDistance,
   ApiSound,
   StageType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  UserLevel,
   SeatDistanceStatus,
   SoundStatus,
 } from '@/types/sightReviews';

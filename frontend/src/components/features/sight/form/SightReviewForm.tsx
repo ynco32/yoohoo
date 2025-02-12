@@ -50,8 +50,7 @@ export const SightReviewForm = React.memo(
       setError,
     });
     React.useEffect(() => {
-      // validation만 실행하고 submit은 하지 않도록 함
-      const validationOnly = true;
+      const validationOnly = false;
       validateStep(STEPS[currentStep].id, validationOnly);
     }, [formData, currentStep, validateStep]);
 
@@ -61,8 +60,12 @@ export const SightReviewForm = React.memo(
     ) => {
       setFormField(field, value);
       const validationField = getValidationField(field);
+      console.log('Field changed:', field);
+      console.log('Value:', value);
+      console.log('ValidationField:', validationField);
       if (validationField) {
         setTouched(validationField);
+        console.log('Touched set for:', validationField);
       }
     };
     const handleSubmit = async () => {
@@ -119,7 +122,7 @@ export const SightReviewForm = React.memo(
         seatDistance: formData.seatDistance.length > 0,
         content: formData.content.length >= 10,
       };
-
+      console.log('Form errors:', errors);
       console.log('=== Validation Details ===', validationDetails);
 
       if (!formValidation) {

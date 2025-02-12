@@ -21,12 +21,8 @@ export const congestionAPI = {
     location: LocationInfo
   ): Promise<ProcessedCongestion> => {
     try {
-      const url =
-        process.env.NEXT_PUBLIC_SKT_API_URL ??
-        `https://apis.openapi.sk.com/puzzle/place/congestion/rltm/pois/188633`;
-      console.log('Request Url:', url);
-      const appKey = process.env.NEXT_PUBLIC_SKT_API_KEY;
-      console.log('appKey:', appKey);
+      const url = process.env.NEXT_PUBLIC_SKT_API_URL ?? ``;
+      const appKey = process.env.NEXT_PUBLIC_SKT_API_KEY ?? '';
 
       const response = await axios.get(url, {
         params: {
@@ -35,36 +31,12 @@ export const congestionAPI = {
         },
         headers: {
           Accept: 'application/json',
-          appKey: appKey || '',
+          appKey: appKey,
         },
       });
 
       const data = response.data;
-      // const data = JSON.parse(`{
-      //                             "status": {
-      //                                 "code": "00",
-      //                                 "message": "success",
-      //                                 "totalCount": 1
-      //                             },
-      //                             "contents": {
-      //                                 "poiId": "188633",
-      //                                 "poiName": "올림픽공원",
-      //                                 "rltm": [
-      //                                     {
-      //                                         "datetime": "20250206154000",
-      //                                         "congestion": 0.0070319381,
-      //                                         "congestionLevel": 1,
-      //                                         "type": 1
-      //                                     },
-      //                                     {
-      //                                         "datetime": "20250206160500",
-      //                                         "congestion": 0.2005,
-      //                                         "congestionLevel": 1,
-      //                                         "type": 2
-      //                                     }
-      //                                 ]
-      //                             }
-      //                         }`);
+
       const processedData = processCongestionData(location, data);
 
       if (!processedData) {

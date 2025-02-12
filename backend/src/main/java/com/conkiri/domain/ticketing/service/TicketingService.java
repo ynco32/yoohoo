@@ -13,7 +13,6 @@ import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.entity.Status;
 import com.conkiri.global.exception.ticketing.AlreadyReservedSeatException;
-import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.InvalidSeatException;
 import com.conkiri.global.exception.ticketing.InvalidSectionException;
 import com.conkiri.global.util.RedisKeys;
@@ -173,10 +172,10 @@ public class TicketingService {
 	private void validateNoExistingReservation(Long userId) {
 
 		String historyKey = RedisKeys.getHistoryKey(userId);
-		if (redisTemplate.opsForHash().hasKey(historyKey, "seat")) {
-			log.info("User {} already has a reservation", userId);
-			throw new DuplicateTicketingException();
-		}
+		// if (redisTemplate.opsForHash().hasKey(historyKey, "seat")) {
+		// 	log.info("User {} already has a reservation", userId);
+		// 	throw new DuplicateTicketingException();
+		// }
 	}
 
 	// 유틸리티 메서드

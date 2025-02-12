@@ -11,7 +11,7 @@ export const ticketTimeHandlers = [
         startTime: '2025-02-11T19:00:00',
         serverTime: '2025-02-11T18:50:00',
         within10Minutes: true,
-        finished: false,
+        Finished: false,
       })
     );
   }),

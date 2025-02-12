@@ -86,6 +86,7 @@ public class TicketingScheduler {
 
 	// 현재 시간이 티켓팅 운영 시간 내인지 확인
 	private boolean isWithinTicketingHours(LocalDateTime now, LocalDateTime startTime, LocalDateTime endTime) {
+		log.info("with now: {}, start: {}, end: {}", now, startTime, endTime);
 		return now.isAfter(startTime) && now.isBefore(endTime);
 	}
 

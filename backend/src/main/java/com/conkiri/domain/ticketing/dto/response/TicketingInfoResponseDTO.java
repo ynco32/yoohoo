@@ -15,7 +15,7 @@ public class TicketingInfoResponseDTO {
 	public TicketingInfoResponseDTO () {
 		this.serverTime = LocalDateTime.now();
 		this.startTime = LocalDateTime.now()
-			.withHour(16)
+			.withHour(15)
 			.withMinute(0)
 			.withSecond(0)
 			.withNano(0);

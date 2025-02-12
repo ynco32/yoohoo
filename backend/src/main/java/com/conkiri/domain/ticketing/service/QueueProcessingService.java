@@ -42,17 +42,12 @@ public class QueueProcessingService {
 
 		String startTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "startTime");
 		String endTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "endTime");
-		log.info(startTimeStr);
-		log.info(endTimeStr);
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
 		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
-		log.info(startTime.toString());
-		log.info(endTime.toString());
-		log.info(now.toString());
 		return now.isAfter(startTime) && now.isBefore(endTime);
 	}
 
@@ -118,6 +113,7 @@ public class QueueProcessingService {
 	public void processWaitingQueue() {
 
 		if (!isTicketingActive()) {return;}
+		log.info("@@@@@@@@@@@@@@@@@@@@ 대기열 입장 @@@@@@@@@@@@@@@@");
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 		processNextBatch(batchSize);
@@ -127,6 +123,8 @@ public class QueueProcessingService {
 	private void processNextBatch(int batchSize) {
 
 		if (isQueueEmpty()) {return;}
+		log.info("!!!! 큐가 비어있나봐");
+		
 		Set<String> nextBatch = fetchNextBatch(batchSize);
 		if (!nextBatch.isEmpty()) {
 			processUsersEntrance(nextBatch);

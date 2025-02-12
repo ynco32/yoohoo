@@ -16,17 +16,19 @@ export default function SharingPage() {
 
   return (
     <div className="flex h-[calc(100vh-56px)] flex-col">
-    <div className="sticky top-0 z-10 bg-white px-4 py-4">
-      <SearchInput placeholder="공연명 검색" onSearch={handleSearch} />
-    </div>
-    
-    <div className="flex-1 overflow-auto px-4">
-      <div className="flex items-center justify-between py-3">
-        <h2 className="text-lg font-medium">다가오는 콘서트</h2>
+      <div className="sticky top-0 z-10 bg-white">
+        <div className="px-4 py-4">
+          <SearchInput placeholder="공연명 검색" onSearch={handleSearch} />
+        </div>
+        <div className="flex items-center justify-between px-4 py-3">
+          <h2 className="text-lg font-medium">다가오는 콘서트</h2>
+        </div>
       </div>
-      <ConcertList searchTerm={searchTerm} />
-      <div className="h-10" />
+
+      <div className="flex-1 overflow-y-auto px-4">
+        <ConcertList searchTerm={searchTerm} />
+        <div className="h-10" />
+      </div>
     </div>
-  </div>
   );
 }

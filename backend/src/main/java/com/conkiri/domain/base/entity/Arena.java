@@ -22,6 +22,6 @@ public class Arena {
 	@Column(name = "arena_name", length = 100)
 	private String arenaName;
 
-	@Column(name = "photo_url", length = 100)
+	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
 }

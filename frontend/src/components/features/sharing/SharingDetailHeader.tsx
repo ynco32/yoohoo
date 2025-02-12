@@ -61,12 +61,12 @@ export const SharingDetailHeader = ({
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
     setShowMenu(false);
-  };
+  }; 
 
   const handleDeleteConfirm = async () => {
     try {
       await sharingAPI.deleteSharing(sharingId);
-      router.replace('/sharing');
+      router.replace(`/sharing/${concertId}`);
     } catch (error) {
       console.error('Failed to delete sharing:', error);
       if (error) {

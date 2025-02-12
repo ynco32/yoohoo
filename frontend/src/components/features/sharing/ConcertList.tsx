@@ -5,7 +5,11 @@ import { ConcertItem } from './ConcertItem';
 import { Concert, concertAPI } from '@/lib/api/concert';
 import { useMswInit } from '@/hooks/useMswInit';
 
-export const ConcertList = () => {
+interface ConcertListProps {
+  searchTerm?: string;
+}
+
+export const ConcertList = ({ searchTerm = '' }: ConcertListProps) => {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +25,10 @@ export const ConcertList = () => {
 
   // MSW 초기화 상태
   const { mswInitialized } = useMswInit();
+
+  const filteredConcerts = concerts.filter((concert) =>
+    concert.concertName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   /**
    * 공연 데이터를 불러오는 함수
@@ -154,17 +162,24 @@ export const ConcertList = () => {
    */
   return (
     <div className="space-y-4">
-      {concerts.map((concert, index) => (
+      {filteredConcerts.map((concert, index) => (
         <div
           key={concert.concertId}
           ref={
-            index === concerts.length - 1 ? lastConcertElementRef : undefined
+            index === filteredConcerts.length - 1
+              ? lastConcertElementRef
+              : undefined
           }
         >
           <ConcertItem {...concert} />
         </div>
       ))}
       {isLoading && <div className="py-4 text-center">로딩 중...</div>}
+      {!isLoading && filteredConcerts.length === 0 && (
+        <div className="py-4 text-center text-gray-500">
+          검색 결과가 없습니다.
+        </div>
+      )}
     </div>
   );
 };

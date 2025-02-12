@@ -1,4 +1,5 @@
 // src/mocks/handlers/user.handlers.ts
+import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 import { rest } from 'msw';
 
 // 기본 mock 유저 데이터
@@ -7,9 +8,9 @@ export const mockUserData = {
   nickname: '장욱',
   email: 'janguk95@naver.com',
   userName: '장욱',
-  level: 5,
+  level: '2',
   tier: 'Gold',
-  profileUrl: null,
+  profileUrl: getUserProfileImage('1'),
 };
 
 export const userHandlers = [

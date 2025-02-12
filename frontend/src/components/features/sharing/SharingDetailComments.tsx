@@ -132,6 +132,38 @@ export const SharingDetailComments = ({
     }
   };
 
+  // 수정 삭제
+  const handleUpdateComment = async (commentId: number, content: string) => {
+    try {
+      const updatedComment = await sharingCommentAPI.updateComment(
+        commentId,
+        content
+      );
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.commentId === commentId ? updatedComment : comment
+        )
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : '댓글 수정에 실패했습니다.'
+      );
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      // await sharingCommentAPI.deleteComment(commentId);
+      setComments((prev) =>
+        prev.filter((comment) => comment.commentId !== commentId)
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : '댓글 삭제에 실패했습니다.'
+      );
+    }
+  };
+
   return (
     <div className="mx-4 mb-5 space-y-2 rounded-xl bg-gray-100 p-5">
       <h2 className="font-medium">
@@ -161,7 +193,12 @@ export const SharingDetailComments = ({
       {comments.length > 0 ? (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <CommentItem key={comment.commentId} comment={comment} />
+            <CommentItem
+              key={comment.commentId}
+              comment={comment}
+              onUpdate={handleUpdateComment}
+              onDelete={handleDeleteComment}
+            />
           ))}
           {/* 스크롤 감지를 위한 div */}
           <div ref={loadingRef} className="h-px" />

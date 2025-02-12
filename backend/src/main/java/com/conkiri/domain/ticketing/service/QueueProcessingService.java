@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
+import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
 import com.conkiri.global.util.RedisKeys;
 import com.conkiri.global.util.WebSocketConstants;
@@ -27,6 +29,7 @@ public class QueueProcessingService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ServerMonitorService serverMonitorService;
+	private final UserReadService userReadService;
 
 	private static final int ESTIMATED_PROCESSING_TIME = 3; // 1인당 평균 3초 예상
 
@@ -97,8 +100,9 @@ public class QueueProcessingService {
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
 		log.info("Sending waiting time to user {}, {}, {}, {}, {}", userId, waitingTime.getEstimatedWaitingSeconds(), waitingTime.getUsersAfter(), waitingTime.getUsersAhead(), waitingTime.getPosition());  // 로그 추가
+		User user = userReadService.findUserByIdOrElseThrow(userId);
 		messagingTemplate.convertAndSendToUser(
-			String.valueOf(userId),
+			user.getEmail(),
 			WebSocketConstants.WAITING_TIME_DESTINATION,
 			waitingTime
 		);
@@ -147,9 +151,10 @@ public class QueueProcessingService {
 	private void processUsersEntrance(Set<String> userIds) {
 
 		userIds.forEach(userId -> {
+			User user = userReadService.findUserByIdOrElseThrow(Long.parseLong(userId));
 			log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
 			messagingTemplate.convertAndSendToUser(
-				userId,
+				user.getEmail(),
 				WebSocketConstants.NOTIFICATION_DESTINATION,
 				true
 			);

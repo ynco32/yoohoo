@@ -1,4 +1,3 @@
-// 카카오맵 API로 지도 불러와서 보여주는 컴포넌트
 import { useRef, useEffect } from 'react';
 
 interface LocationInfo {
@@ -8,48 +7,70 @@ interface LocationInfo {
 
 interface ProcessedCongestion {
   congestion: number;
+  congestionLevel: number;
+}
+
+interface Position {
+  latitude: number;
+  longitude: number;
 }
 
 interface CongestionDisplayProps {
+  position: Position;
   data: {
     location: LocationInfo;
     congestion: ProcessedCongestion;
   }[];
 }
 
-export const CongestionMap = ({ data }: CongestionDisplayProps) => {
+export const CongestionMap = ({ position, data }: CongestionDisplayProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadKakaoMap = () => {
       if (window.kakao && window.kakao.maps) {
         const container = mapContainerRef.current;
-        const position = new window.kakao.maps.LatLng(37.519193, 127.127495);
+        const centerPosition = new window.kakao.maps.LatLng(
+          position.latitude,
+          position.longitude
+        );
 
         const options = {
-          center: position, // 현재 글의 위치를 중심으로
-          level: 6,
+          center: centerPosition, // 현재 글의 위치를 중심으로
+          level: 5,
         };
 
         const map = new window.kakao.maps.Map(container, options);
 
         // 히트맵 원 생성
         for (let i = 0; i < data.length; i++) {
-          const circle = new window.kakao.maps.Circle({
-            center: new window.kakao.maps.LatLng(
-              data[i].location.latitude,
-              data[i].location.longitude
-            ), // 원의 중심좌표 입니다
-            radius: 175, // 미터 단위의 원의 반지름입니다
-            strokeWeight: 1, // 선의 두께입니다
-            strokeColor: '#FF0000', // 선의 색깔입니다
-            strokeOpacity: data[i].congestion.congestion, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
-            strokeStyle: 'dashed', // 선의 스타일 입니다
-            fillColor: '#FF0000', // 채우기 색깔입니다
-            fillOpacity: data[i].congestion.congestion * 2, // 채우기 불투명도 입니다
-          });
+          const baseOpacity = 0.2;
+          const steps = 10; // 그라데이션 단계 수
+          const radiusStep = 15; // 각 단계마다 반지름 증가량
 
-          circle.setMap(map);
+          for (let j = 0; j < steps; j++) {
+            let fillColor = '#E85353';
+            if (data[i].congestion.congestionLevel === 1) {
+              fillColor = '#9CFF78';
+            } else if (data[i].congestion.congestionLevel === 2) {
+              fillColor = '#FFFb79';
+            } else if (data[i].congestion.congestionLevel === 3) {
+              fillColor = '#FFB575';
+            }
+
+            const circle = new window.kakao.maps.Circle({
+              center: new window.kakao.maps.LatLng(
+                data[i].location.latitude,
+                data[i].location.longitude
+              ), // 원의 중심좌표 입니다
+              radius: 150 + j * radiusStep, // 미터 단위의 원의 반지름입니다
+              strokeWeight: 0, // 선의 두께입니다
+              fillColor: fillColor, // 채우기 색깔입니다
+              fillOpacity: baseOpacity * (1 - j / steps), // 채우기 불투명도 입니다
+            });
+
+            circle.setMap(map);
+          }
         }
       }
     };
@@ -64,15 +85,11 @@ export const CongestionMap = ({ data }: CongestionDisplayProps) => {
     return () => {
       document.head.removeChild(script);
     };
-  }, [data]);
+  }, [data, position.latitude, position.longitude]);
 
   return (
     <div>
-      {' '}
-      {/* margin 추가 */}
-      <div className="h-[500px] w-full overflow-hidden rounded-xl">
-        {' '}
-        {/* rounded와 overflow-hidden 추가 */}
+      <div className="h-[90vh] w-full overflow-hidden rounded-xl">
         <div ref={mapContainerRef} className="h-full w-full" />
       </div>
     </div>

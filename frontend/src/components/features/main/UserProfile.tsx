@@ -68,7 +68,7 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
         <div className="relative z-10 flex h-full flex-col items-center justify-between p-4 mobile:p-3 tablet:p-4">
           {/* 프로필 이미지 */}
           <div className="relative h-4/5 w-full">
-            <div className="flex h-full items-center justify-center">
+            <div className="z-10 flex h-full items-center justify-center">
               <Image
                 src={user.profileUrl || SVGIcons.Artwork}
                 alt={user.nickname}

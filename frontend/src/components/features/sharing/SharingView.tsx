@@ -54,11 +54,10 @@ export const SharingView = () => {
 
         switch (currentTab) {
           case 'scrap':
-            response = await sharingAPI.getScrapSharings(lastId);
+            response = await sharingAPI.getScrapSharings(concertId, lastId);
             break;
           case 'my':
-            // TODO: 내가 쓴 글 API 추가 필요
-            response = await sharingAPI.getSharings(concertId, lastId);
+            response = await sharingAPI.getWroteSharings(concertId, lastId);
             break;
           default:
             response = await sharingAPI.getSharings(concertId, lastId);

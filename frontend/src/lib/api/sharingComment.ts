@@ -120,4 +120,28 @@ export const sharingCommentAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+
+  /**
+   * 댓글을 삭제합니다.
+   * @param commentId - 삭제할 댓글 ID
+   */
+  deleteComment: async (commentId: number): Promise<void> => {
+    try {
+      await api.delete(`/api/v1/sharing/comment/${commentId}`);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        if (error.response.status === 400) {
+          throw new ApiError(400, '댓글을 삭제할 수 없습니다.');
+        }
+        if (error.response.status === 401) {
+          throw new ApiError(401, '다시 로그인이 필요합니다.');
+        }
+        throw new ApiError(
+          error.response.status,
+          error.response.data?.message ?? '댓글 삭제에 실패했습니다.'
+        );
+      }
+      throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
+    }
+  },
 };

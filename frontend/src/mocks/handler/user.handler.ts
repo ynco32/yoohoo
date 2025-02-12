@@ -5,9 +5,9 @@ import { rest } from 'msw';
 // 기본 mock 유저 데이터
 export const mockUserData = {
   userId: 1,
-  nickname: '장욱',
-  email: 'janguk95@naver.com',
-  userName: '장욱',
+  nickname: '장',
+  email: 'jangu@naver.com',
+  userName: '장',
   level: '2',
   tier: 'Gold',
   profileUrl: getUserProfileImage('1'),

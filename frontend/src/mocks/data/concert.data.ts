@@ -25,7 +25,7 @@ export const mockConcerts = [
   },
   {
     concertId: 4,
-    concertName: '베몬4회차',
+    concertName: '포켓몬1',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
@@ -33,7 +33,7 @@ export const mockConcerts = [
   },
   {
     concertId: 5,
-    concertName: '베몬5회차',
+    concertName: '포켓몬2',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
@@ -41,7 +41,7 @@ export const mockConcerts = [
   },
   {
     concertId: 6,
-    concertName: '베몬6회차',
+    concertName: '아이유1',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
@@ -49,7 +49,7 @@ export const mockConcerts = [
   },
   {
     concertId: 7,
-    concertName: '베몬7회차',
+    concertName: '아이유2',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
@@ -57,7 +57,7 @@ export const mockConcerts = [
   },
   {
     concertId: 8,
-    concertName: '베몬8회차',
+    concertName: '아이유3',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',

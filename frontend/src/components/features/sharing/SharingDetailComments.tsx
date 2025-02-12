@@ -153,7 +153,7 @@ export const SharingDetailComments = ({
 
   const handleDeleteComment = async (commentId: number) => {
     try {
-      // await sharingCommentAPI.deleteComment(commentId);
+      await sharingCommentAPI.deleteComment(commentId);
       setComments((prev) =>
         prev.filter((comment) => comment.commentId !== commentId)
       );

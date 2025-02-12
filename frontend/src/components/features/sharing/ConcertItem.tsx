@@ -4,6 +4,7 @@
  */
 import { ContentCard } from '../../ui/ContentCard';
 import Link from 'next/link';
+import { formatDateTime } from '@/lib/utils/dateFormat';
 
 interface ConcertItemProps {
   concertId: number;
@@ -31,15 +32,19 @@ export const ConcertItem = ({
       ? concertName.slice(0, charsToFit - 3) + '...'
       : concertName;
 
+  // 날짜 포맷팅
+  const formattedDateTime = formatDateTime(startTime);
+
   return (
     <Link href={`/sharing/${concertId}`} className="block">
-      <ContentCard>
-        {/* 왼쪽: 공연 정보 */}
+      <ContentCard className="rounded-xl">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-bold">{truncatedTitle}</h3>
-          <p className="text-sm text-gray-600">{artist}</p>
-          <p className="mt-2 text-sm text-gray-500">{startTime}</p>
-          <p className="text-sm text-gray-500">{arena}</p>
+          <h3 className="mb-4 truncate text-lg font-bold">{truncatedTitle}</h3>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-600">{artist}</p>
+            <p className="text-sm text-gray-500">{arena}</p>
+            <p className="text-sm text-gray-500">{formattedDateTime}</p>
+          </div>
         </div>
       </ContentCard>
     </Link>

@@ -32,6 +32,7 @@ export const useWebSocketQueue = () => {
       console.log('🤝 웹소켓 연결 성공');
 
       client.subscribe(`/book/waiting-time`, (message: IMessage) => {
+        console.log('🤝waiting-time 수신된 메세지:', message.body);
         const response = JSON.parse(message.body);
         setQueueNumber(response.position);
         setWaitingTime(response.estimatedWaitingSeconds);
@@ -39,6 +40,7 @@ export const useWebSocketQueue = () => {
       });
 
       client.subscribe(`/user/book/notification`, (message: IMessage) => {
+        console.log('🤝notification 수신된 메세지:', message.body);
         const response = JSON.parse(message.body);
         if (response === true) {
           router.push('area');

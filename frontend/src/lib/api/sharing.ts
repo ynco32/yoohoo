@@ -276,13 +276,15 @@ export const sharingAPI = {
 
   /**
    * 스크랩한 게시글 목록을 가져옵니다.
+   * @param concertId - 공연 ID
    * @param lastSharingId - 마지막으로 불러온 나눔 게시글 ID
    */
   getScrapSharings: async (
+    concertId: number,
     lastSharingId?: number
   ): Promise<SharingResponse> => {
     try {
-      let url = '/api/v1/mypage/scrap';
+      let url = `/api/v1/sharing/scrap/${concertId}`;
 
       if (typeof lastSharingId === 'number') {
         url += `?last=${lastSharingId}`;

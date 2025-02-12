@@ -15,11 +15,11 @@ public class TicketingInfoResponseDTO {
 	public TicketingInfoResponseDTO () {
 		this.serverTime = LocalDateTime.now();
 		this.startTime = LocalDateTime.now()
-			.withHour(19)
+			.withHour(16)
 			.withMinute(0)
 			.withSecond(0)
 			.withNano(0);
 		this.isWithin10Minutes = startTime.minusMinutes(10).isBefore(serverTime) && startTime.isAfter(serverTime);
-		this.isFinished = serverTime.isAfter(startTime.plusHours(4));
+		this.isFinished = serverTime.isAfter(startTime.plusHours(9));
 	}
 }

@@ -12,6 +12,9 @@ export const useWebSocketQueue = () => {
   const stompClient = useRef<Client | null>(null);
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_DISABLE_WEBSOCKET === 'true') {
+      return;
+    }
     const client = new Client({
       brokerURL: 'ws://i12b207p.ssafy.io/ticketing',
       debug: (str) => console.log('🤝 STOMP: ' + str),

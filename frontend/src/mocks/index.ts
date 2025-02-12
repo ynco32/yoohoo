@@ -9,6 +9,7 @@ import { sectionHandlers } from './handler/sections.handler';
 // [MSW] 전체 핸들러 설정
 import { ticketingHandlers } from './handler/ticketing.handler';
 import { seatScrapHandlers } from './handler/seatScrap.handler';
+import { ticketTimeHandlers } from './handler/ticketTime.handler';
 
 export const handlers = [
   ...sightHandlers,
@@ -21,4 +22,5 @@ export const handlers = [
   ...sectionHandlers,
   ...ticketingHandlers,
   ...seatScrapHandlers,
+  ...ticketTimeHandlers,
 ];

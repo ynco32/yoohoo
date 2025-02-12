@@ -77,35 +77,29 @@ export const sharingAPI = {
 
   /**
    * 나눔 게시글을 등록합니다.
-   * @param data - 게시글 데이터 (JSON)
+   * @param data - 게시글 데이터 (전체 데이터)
    * @param file - 업로드할 이미지 파일
    */
-  createSharing: async (
-    data: Omit<SharingFormData, 'image'>,
-    file: File
-  ): Promise<number> => {
+  createSharing: async (data: SharingFormData, file: File): Promise<number> => {
     try {
       const formData = new FormData();
-      formData.append('sharingRequestDTO', JSON.stringify(data)); // 문자열로 추가
-      formData.append('file', file);
 
-      // FormData 내부 데이터 확인
-      console.log('[API 요청] 전송할 FormData:');
-      for (const [key, value] of formData.entries()) {
-        console.log(`  ${key}:`, value);
-      }
-
-      const response = await api.post<{ sharingId: number }>(
-        '/api/v1/sharing',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+      // JSON 데이터를 Blob으로 변환하여 FormData에 추가
+      formData.append(
+        'sharingRequestDTO',
+        new Blob([JSON.stringify(data)], { type: 'application/json' })
       );
 
-      return response.data.sharingId; // sharingId 반환
+      // 이미지 파일 추가
+      formData.append('file', file);
+
+      // Content-Type 자동 설정
+      const response = await api.post<{ sharingId: number }>(
+        '/api/v1/sharing',
+        formData
+      );
+
+      return response.data.sharingId;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {

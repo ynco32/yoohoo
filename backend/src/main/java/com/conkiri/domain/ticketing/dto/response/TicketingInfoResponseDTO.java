@@ -1,6 +1,7 @@
 package com.conkiri.domain.ticketing.dto.response;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ public class TicketingInfoResponseDTO {
 	private boolean isFinished;            // 티켓팅 종료 여부
 
 	public TicketingInfoResponseDTO () {
-		this.serverTime = LocalDateTime.now();
+		this.serverTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		this.startTime = LocalDateTime.now()
 			.withHour(15)
 			.withMinute(0)

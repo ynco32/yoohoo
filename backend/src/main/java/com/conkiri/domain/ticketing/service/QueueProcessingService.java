@@ -2,6 +2,7 @@ package com.conkiri.domain.ticketing.service;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.time.ZoneId;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -46,7 +47,7 @@ public class QueueProcessingService {
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
 		log.info(startTime.toString());

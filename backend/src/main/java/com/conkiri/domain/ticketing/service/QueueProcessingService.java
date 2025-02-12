@@ -60,15 +60,20 @@ public class QueueProcessingService {
 	// 사용자를 대기열에 추가
 	public void addToQueue(Long userId) {
 
+		log.info("검증전");
 		validateQueueRequest(userId);
+		log.info("검증후");
 
 		double score = System.currentTimeMillis();
 		Long position = addUserToQueue(userId, score);
+		log.info("포지션 획득 = " + position);
 		String historyKey = RedisKeys.getHistoryKey(userId);
 		saveUserQueueHistory(position, score, historyKey);
-
+		log.info("기록");
+		
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
+		log.info("대기시간");
 	}
 
 	// 사용자를 Redis Sorted Set 대기열에 추가합니다.
@@ -198,11 +203,11 @@ public class QueueProcessingService {
 
 	// 대기열 참여 요청의 유효성을 검증합니다.
 	public void validateQueueRequest(Long userId){
-
+		
 		if (!canJoinTicketing(userId)) {
 			throw new DuplicateTicketingException();
 		}
-
+		log.info("검증 중간");
 		if (!isTicketingActive()) {
 			throw new NotStartedTicketingException();
 		}

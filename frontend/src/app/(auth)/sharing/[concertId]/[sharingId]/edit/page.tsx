@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { SharingLocationSelect } from '@/components/features/sharing/SharingLocationSelect';
 import { Modal } from '@/components/common/Modal';
-import { VENUE_COORDINATES } from '@/lib/constans/venues';
+import { VENUE_COORDINATES } from '@/lib/constants/venues';
 import { SharingFormContainer } from '@/components/features/sharing/SharingFormContainer';
 import { SharingFormData } from '@/types/sharing';
 import { sharingAPI } from '@/lib/api/sharing';

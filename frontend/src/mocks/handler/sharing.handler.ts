@@ -2,7 +2,6 @@ import { rest } from 'msw';
 import {
   getSharingsByConcertId,
   getSharingById,
-  getCommentsByPage,
   addSharing,
   getScrappedSharings,
 } from '../data/sharing.data';
@@ -243,36 +242,6 @@ export const sharingHandlers = [
     }
 
     return res(ctx.delay(300), ctx.status(200), ctx.json(sharing));
-  }),
-
-  // 댓글 목록 조회
-  rest.get('/api/v1/sharing/:sharingId/comment', (req, res, ctx) => {
-    const params = req.params as PathParams;
-    const sharingIdNum = Number(params.sharingId);
-    const lastParam = req.url.searchParams.get('last');
-    const lastCommentId = lastParam !== null ? Number(lastParam) : undefined;
-
-    // 게시글이 존재하는지 먼저 확인
-    const sharing = getSharingById(sharingIdNum);
-    if (!sharing) {
-      return res(
-        ctx.delay(300),
-        ctx.status(400),
-        ctx.json({ message: '게시글을 찾을 수 없습니다.' })
-      );
-    }
-
-    // 댓글 페이지네이션 처리
-    const { comments, lastPage } = getCommentsByPage(lastCommentId);
-
-    return res(
-      ctx.delay(300),
-      ctx.status(200),
-      ctx.json({
-        comments,
-        lastPage,
-      })
-    );
   }),
 
   // 스크랩 추가

@@ -2,6 +2,7 @@ package com.conkiri.domain.ticketing.service;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.time.ZoneId;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -41,17 +42,12 @@ public class QueueProcessingService {
 
 		String startTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "startTime");
 		String endTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "endTime");
-		log.info(startTimeStr);
-		log.info(endTimeStr);
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
 		LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
-		log.info(startTime.toString());
-		log.info(endTime.toString());
-		log.info(now.toString());
 		return now.isAfter(startTime) && now.isBefore(endTime);
 	}
 
@@ -75,7 +71,7 @@ public class QueueProcessingService {
 		String historyKey = RedisKeys.getHistoryKey(userId);
 		saveUserQueueHistory(position, score, historyKey);
 		log.info("기록");
-		
+
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
 		log.info("대기시간");
@@ -117,6 +113,7 @@ public class QueueProcessingService {
 	public void processWaitingQueue() {
 
 		if (!isTicketingActive()) {return;}
+		log.info("@@@@@@@@@@@@@@@@@@@@ 대기열 입장 @@@@@@@@@@@@@@@@");
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 		processNextBatch(batchSize);
@@ -126,6 +123,8 @@ public class QueueProcessingService {
 	private void processNextBatch(int batchSize) {
 
 		if (isQueueEmpty()) {return;}
+		log.info("!!!! 큐가 비어있나봐");
+
 		Set<String> nextBatch = fetchNextBatch(batchSize);
 		if (!nextBatch.isEmpty()) {
 			processUsersEntrance(nextBatch);
@@ -208,7 +207,7 @@ public class QueueProcessingService {
 
 	// 대기열 참여 요청의 유효성을 검증합니다.
 	public void validateQueueRequest(Long userId){
-		
+
 		if (!canJoinTicketing(userId)) {
 			throw new DuplicateTicketingException();
 		}

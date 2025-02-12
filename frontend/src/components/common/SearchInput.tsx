@@ -52,7 +52,7 @@ export const SearchInput = ({
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={`w-full rounded-full bg-gray-50 py-2.5 pl-10 pr-12 text-sm outline-none focus:ring-1 focus:ring-gray-200 ${className}`}
+        className={`w-full rounded-xl bg-gray-50 py-2.5 pl-10 pr-12 text-sm outline-none focus:ring-1 focus:ring-gray-200 ${className}`}
       />
       {value && (
         <div className="absolute right-2 flex items-center">

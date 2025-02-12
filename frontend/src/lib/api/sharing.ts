@@ -117,48 +117,33 @@ export const sharingAPI = {
   /**
    * 나눔 게시글을 수정합니다.
    * @param sharingId - 수정할 나눔 게시글 ID
-   * @param data - 수정할 게시글 데이터 (제목, 내용, 위치, 시작 시간)
+   * @param data - 수정할 게시글 데이터
+   * @param image - 업로드할 이미지 파일
    */
   updateSharing: async (
     sharingId: number,
-    data: {
-      title: string;
-      content: string;
-      latitude: number;
-      longitude: number;
-      startTime: string;
-    },
+    data: SharingFormData,
     image?: File
   ) => {
-    const formData = new FormData();
-
-    // JSON 데이터를 문자열로 추가
-    formData.append(
-      'sharingUpdateRequestDTO',
-      JSON.stringify({
-        title: data.title,
-        content: data.content,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        startTime: data.startTime,
-      })
-    );
-
-    // 이미지 파일이 있다면 추가
-    if (image) {
-      formData.append('file', image);
-    }
-
     try {
-      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const formData = new FormData();
+
+      // JSON 데이터를 Blob으로 변환하여 FormData에 추가
+      formData.append(
+        'sharingUpdateRequestDTO',
+        new Blob([JSON.stringify(data)], { type: 'application/json' })
+      );
+
+      // 이미지 파일이 있을 경우 추가
+      if (image) {
+        formData.append('file', image);
+      }
+
+      // Content-Type 자동 설정
+      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData);
 
       return response.data;
     } catch (error) {
-      // 에러 처리 로직
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {
           throw new ApiError(401, '다시 로그인이 필요합니다.');

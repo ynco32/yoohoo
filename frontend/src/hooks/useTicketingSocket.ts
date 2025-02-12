@@ -28,7 +28,7 @@ export const useTicketingSocket = () => {
     // vue 로 치면 onMounted
     const ws = new WebSocket(
       process.env.NEXT_PUBLIC_WS_URL ||
-        'ws:http://i12b207.p.ssafy.io:8080/ticketing' // 임시 api 주소
+        'wss://i12b207.p.ssafy.io/ticketing' // 임시 api 주소
     ); // 웹소켓 연결
     setSocket(ws); // 웹소켓 초기화
 

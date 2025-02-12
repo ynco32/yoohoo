@@ -184,6 +184,28 @@ export const sharingHandlers = [
     }
   }),
 
+  // 게시글 삭제 핸들러
+  rest.delete('/api/v1/sharing/:sharingId', async (req, res, ctx) => {
+    try {
+      const { sharingId } = req.params;
+      console.log('[MSW] 게시글 삭제 요청:', sharingId);
+      return res(
+        ctx.delay(300),
+        ctx.status(200),
+        ctx.json({
+          message: '게시글이 성공적으로 삭제되었습니다.',
+          sharingId: Number(sharingId),
+        })
+      );
+    } catch (error) {
+      console.error('[MSW] 게시글 삭제 처리 중 오류:', error);
+      return res(
+        ctx.status(500),
+        ctx.json({ message: '서버 내부 오류가 발생했습니다.' })
+      );
+    }
+  }),
+
   // 나눔 글 전체 목록
   rest.get('/api/v1/sharing/:concertId', (req, res, ctx) => {
     const params = req.params as PathParams;

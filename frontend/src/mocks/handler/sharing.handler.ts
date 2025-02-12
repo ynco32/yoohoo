@@ -4,6 +4,7 @@ import {
   getSharingById,
   addSharing,
   getScrappedSharings,
+  getWroteSharings,
 } from '../data/sharing.data';
 
 type PathParams = {
@@ -291,11 +292,23 @@ export const sharingHandlers = [
   }),
 
   // 스크랩한 게시글 목록 조회
-  rest.get('/api/v1/mypage/scrap', (req, res, ctx) => {
+  rest.get('/api/v1/sharing/scrap', (req, res, ctx) => {
     const lastParam = req.url.searchParams.get('last');
     const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
 
     const result = getScrappedSharings(lastSharingId);
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(result));
+  }),
+
+  // 내가 작성한 글 목록 조회
+  rest.get('/api/v1/sharing/wrote/:concertId', (req, res, ctx) => {
+    const params = req.params as PathParams;
+    const concertIdNum = Number(params.concertId);
+    const lastParam = req.url.searchParams.get('last');
+    const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
+
+    const result = getWroteSharings(concertIdNum, lastSharingId);
 
     return res(ctx.delay(300), ctx.status(200), ctx.json(result));
   }),

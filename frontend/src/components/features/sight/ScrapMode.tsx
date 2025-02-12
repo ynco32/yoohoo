@@ -14,7 +14,11 @@ export const ScrapMode = () => {
     <>
       <StarButton />
       {!currentSectionId ? (
-        <SectionList isScrapMode={isScrapMode} />
+        <div className="flex h-full w-full max-w-3xl flex-col items-center justify-center">
+          <div className="relative h-[600px] w-full">
+            <SectionList isScrapMode={true} />
+          </div>
+        </div>
       ) : (
         <SeatList isScrapMode={isScrapMode} />
       )}

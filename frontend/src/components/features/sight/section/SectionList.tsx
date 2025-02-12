@@ -1,14 +1,8 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { Section as SectionComponent } from '../../../ui/Section';
 import { Section, fetchSections } from '@/lib/api/sections';
 import { useParams, useRouter } from 'next/navigation';
-
-/**
- * @component SectionList
- * @description 공연장 구역 전체를 표시하는 컴포넌트
- */
+import { useSectionPositions } from '@/hooks/useSectionPositions';
 
 interface SectionListProps {
   isScrapMode: boolean;
@@ -50,48 +44,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
     }
   }, [arenaId, stageType]);
 
-  const calculateSectionSize = (totalSections: number) => {
-    const BASE_INNER_RADIUS = 120;
-    const BASE_OUTER_RADIUS = 330;
-    const scaleFactor = Math.max(0.5, Math.min(1, 16 / totalSections));
-
-    return {
-      innerRadius: BASE_INNER_RADIUS * scaleFactor,
-      outerRadius: BASE_OUTER_RADIUS * scaleFactor,
-      angleSpread: Math.min(22, 360 / totalSections),
-    };
-  };
-
-  const getPositionForSection = (index: number, totalSections: number) => {
-    const { innerRadius, outerRadius, angleSpread } =
-      calculateSectionSize(totalSections);
-    const radiusRatio = (outerRadius - innerRadius) / 3;
-
-    if (index < 5) {
-      return {
-        startAngle: 150 + index * angleSpread,
-        endAngle: 170 + index * angleSpread,
-        innerRadius: innerRadius,
-        outerRadius: innerRadius + radiusRatio,
-      };
-    }
-    if (index < 11) {
-      const adjustedIndex = index - 5;
-      return {
-        startAngle: 145 + adjustedIndex * angleSpread,
-        endAngle: 165 + adjustedIndex * angleSpread,
-        innerRadius: innerRadius + radiusRatio,
-        outerRadius: innerRadius + 2 * radiusRatio,
-      };
-    }
-    const adjustedIndex = index - 11;
-    return {
-      startAngle: 140 + adjustedIndex * angleSpread,
-      endAngle: 160 + adjustedIndex * angleSpread,
-      innerRadius: innerRadius + 2 * radiusRatio,
-      outerRadius: outerRadius,
-    };
-  };
+  const { calculatePosition } = useSectionPositions(sections.length);
 
   if (isLoading) {
     return <div className="py-4 text-center">Loading sections...</div>;
@@ -103,13 +56,13 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
 
   return (
     <svg
-      viewBox="-400 -400 800 800"
+      viewBox="-350 -350 700 700"
       preserveAspectRatio="xMidYMid meet"
-      className="mx-auto h-full w-full"
+      className="h-full w-full"
     >
-      <g transform="translate(-500, -550) scale(1.3)">
+      <g transform="translate(-460, -300) scale(1.2)">
         {sections.map((section, index) => {
-          const position = getPositionForSection(index, sections.length);
+          const position = calculatePosition(index);
           return (
             <SectionComponent
               key={section.sectionId}

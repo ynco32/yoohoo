@@ -63,8 +63,8 @@ export const sharingCommentAPI = {
    * @param sharingId - 나눔 게시글 ID
    */
   createComment: async (
-    content: string,
-    sharingId: number
+    sharingId: number,
+    content: string
   ): Promise<Comment> => {
     try {
       const response = await api.post<Comment>('/api/v1/sharing/comment', {

@@ -2,7 +2,7 @@ import { SharingPost, Comment, SharingStatus } from '@/types/sharing';
 import { mockUserData } from '../handler/user.handler';
 
 // 실제 데이터에는 concertId가 있어야 합니다
-interface ExtendedSharingPost extends SharingPost {
+export interface ExtendedSharingPost extends SharingPost {
   concertId: number;
 }
 

@@ -87,6 +87,104 @@ export const sharingHandlers = [
     }
   }),
 
+  rest.put('/api/v1/sharing/:sharingId', async (req, res, ctx) => {
+    try {
+      const { sharingId } = req.params;
+      const data = await req.text();
+      const boundary = req.headers.get('content-type')?.split('boundary=')[1];
+
+      if (!boundary) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: 'Invalid content type' })
+        );
+      }
+
+      // FormData 파트 분리
+      const parts = data.split('--' + boundary);
+      let requestBody = null;
+      let hasFile = false;
+
+      for (const part of parts) {
+        if (part.includes('name="sharingUpdateRequestDTO"')) {
+          const jsonStr = part.split('\r\n\r\n')[1]?.split('\r\n')[0];
+          if (jsonStr) {
+            requestBody = JSON.parse(jsonStr);
+          }
+        }
+        if (part.includes('name="file"')) {
+          hasFile = true;
+        }
+      }
+
+      if (!requestBody || !hasFile) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: '필수 필드가 누락되었습니다.' })
+        );
+      }
+
+      // 필수 필드 검증
+      if (
+        !requestBody.title ||
+        !requestBody.content ||
+        typeof requestBody.latitude !== 'number' ||
+        typeof requestBody.longitude !== 'number' ||
+        !requestBody.startTime
+      ) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: '필수 필드가 누락되었습니다.' })
+        );
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          message: '나눔 글 수정 성공',
+          sharingId: Number(sharingId),
+        })
+      );
+    } catch (error) {
+      console.error('❌ [MSW] 핸들러 내부 오류:', error);
+      return res(ctx.status(500), ctx.json({ message: '서버 내부 오류' }));
+    }
+  }),
+
+  // 게시글 상태 변경
+  rest.put('/api/v1/sharing/:sharingId/status', async (req, res, ctx) => {
+    try {
+      const { sharingId } = req.params;
+      const { status } = await req.json();
+
+      // status 타입 확인 (UPCOMING, ONGOING, CLOSED)
+      if (!['UPCOMING', 'ONGOING', 'CLOSED'].includes(status)) {
+        return res(
+          ctx.status(400),
+          ctx.json({ message: '유효하지 않은 상태값입니다.' })
+        );
+      }
+
+      console.log('[MSW] 상태 변경:', { sharingId, status });
+
+      // 성공 응답
+      return res(
+        ctx.status(200),
+        ctx.json({
+          message: '상태가 성공적으로 변경되었습니다.',
+          sharingId: Number(sharingId),
+          status,
+        })
+      );
+    } catch (error) {
+      console.error('[MSW] 상태 변경 처리 중 오류:', error);
+      return res(
+        ctx.status(500),
+        ctx.json({ message: '서버 내부 오류가 발생했습니다.' })
+      );
+    }
+  }),
+
   // 나눔 글 전체 목록
   rest.get('/api/v1/sharing/:concertId', (req, res, ctx) => {
     const params = req.params as PathParams;

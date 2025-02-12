@@ -1,8 +1,8 @@
 package com.conkiri.domain.ticketing.service;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.time.ZoneId;
+import java.util.Set;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
-import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
 import com.conkiri.global.util.RedisKeys;
 import com.conkiri.global.util.WebSocketConstants;
@@ -96,6 +95,7 @@ public class QueueProcessingService {
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
+		log.info("Sending waiting time to user {}, {}, {}, {}, {}", userId, waitingTime.getEstimatedWaitingSeconds(), waitingTime.getUsersAfter(), waitingTime.getUsersAhead(), waitingTime.getPosition());  // 로그 추가
 		messagingTemplate.convertAndSendToUser(
 			String.valueOf(userId),
 			WebSocketConstants.WAITING_TIME_DESTINATION,
@@ -146,13 +146,14 @@ public class QueueProcessingService {
 	// 배치의 사용자들을 입장 처리합니다
 	private void processUsersEntrance(Set<String> userIds) {
 
-		userIds.forEach(userId ->
+		userIds.forEach(userId -> {
+			log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
 			messagingTemplate.convertAndSendToUser(
 				userId,
 				WebSocketConstants.NOTIFICATION_DESTINATION,
 				true
-			)
-		);
+			);
+		});
 		removeProcessedUsersFromQueue(userIds.size());
 	}
 
@@ -208,9 +209,9 @@ public class QueueProcessingService {
 	// 대기열 참여 요청의 유효성을 검증합니다.
 	public void validateQueueRequest(Long userId){
 
-		if (!canJoinTicketing(userId)) {
-			throw new DuplicateTicketingException();
-		}
+		// if (!canJoinTicketing(userId)) {
+		// 	throw new DuplicateTicketingException();
+		// }
 		log.info("검증 중간");
 		if (!isTicketingActive()) {
 			throw new NotStartedTicketingException();

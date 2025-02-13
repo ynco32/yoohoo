@@ -90,7 +90,7 @@ export const sharingHandlers = [
   }),
 
   // 게시글 상태 변경
-  rest.put('/api/v1/sharing/:sharingId/status', async (req, res, ctx) => {
+  rest.patch('/api/v1/sharing/:sharingId/status', async (req, res, ctx) => {
     try {
       const { sharingId } = req.params;
       const { status } = await req.json();

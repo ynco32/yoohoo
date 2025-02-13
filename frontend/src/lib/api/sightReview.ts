@@ -164,19 +164,24 @@ export async function updateSightReview(
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (key === 'images' && Array.isArray(value)) {
-        value.forEach((image) => {
-          formData.append(`images`, image);
-        });
+      console.log(`처리 중인 필드: ${key}, 값:`, value, '타입:', typeof value);
+
+      if (key === 'photo' && value instanceof File) {
+        console.log(`사진 추가:`, value);
+        formData.append('photo', value);
       } else if (typeof value === 'number') {
         formData.append(key, value.toString());
       } else if (typeof value === 'string') {
         formData.append(key, value);
-      } else if (value != null) {
+      } else if (value != null && !(value instanceof File)) {
         formData.append(key, JSON.stringify(value));
       }
     });
-
+    console.log(':::api/sightReviews.ts ::: 파일 정보:', {
+      isFile: data.photo instanceof File,
+      fileName: data.photo instanceof File ? data.photo.name : 'No file',
+      fileSize: data.photo instanceof File ? data.photo.size : 0,
+    });
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 

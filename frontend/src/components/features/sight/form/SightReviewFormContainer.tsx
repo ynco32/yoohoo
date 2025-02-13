@@ -19,6 +19,7 @@ export function SightReviewFormContainer({
   const { setError, setIsSubmitting } = useSightReviewStore();
 
   const handleSubmit = async (data: SightReviewFormData) => {
+    console.log(data);
     try {
       setIsSubmitting(true);
       const result = await submitSightReview(data);

@@ -10,6 +10,7 @@ import { ticketingHandlers } from './handler/ticketing.handler';
 import { seatScrapHandlers } from './handler/seatScrap.handler';
 import { ticketTimeHandlers } from './handler/ticketTime.handler';
 import { sharingCommentHandlers } from './handler/sharingComment.handler';
+import { arenaHandlers } from './handler/arena.handler';
 
 export const handlers = [
   ...sightHandlers,
@@ -24,4 +25,5 @@ export const handlers = [
   ...seatScrapHandlers,
   ...ticketTimeHandlers,
   ...sharingCommentHandlers,
+  ...arenaHandlers,
 ];

@@ -5,6 +5,9 @@ import {
   SeatDistanceStatus,
   SoundStatus,
   StageType,
+  CreateSightReviewRequest,
+  SightReviewFormData,
+  STATUS_MAPPINGS,
 } from '@/types/sightReviews';
 
 export const mapApiToSightReview = (apiReview: ApiReview): SightReviewData => {
@@ -39,5 +42,15 @@ export const mapApiToSightReview = (apiReview: ApiReview): SightReviewData => {
     nickname: apiReview.nickname,
     concertName: apiReview.concertName,
     userId: apiReview.userId,
+  };
+};
+
+export const mapFormDataToApiRequest = (
+  formData: Omit<SightReviewFormData, 'photo'>
+): CreateSightReviewRequest => {
+  return {
+    ...formData,
+    seatDistance: STATUS_MAPPINGS.seatDistance[formData.seatDistance],
+    sound: STATUS_MAPPINGS.sound[formData.sound],
   };
 };

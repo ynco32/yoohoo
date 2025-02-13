@@ -69,21 +69,19 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
         />
 
         {/* 컨텐츠 컨테이너 */}
-        <div className="relative z-10 flex h-full flex-col items-center justify-between p-4 mobile:p-3 tablet:p-4">
+        <div className="relative h-full p-4 mobile:p-3 tablet:p-4">
           {/* 프로필 이미지 */}
-          <div className="relative h-4/5 w-full">
-            <div className="z-10 flex h-full items-center justify-center">
-              <Image
-                src={getUserProfileImage(user.level || '')}
-                alt={user.nickname}
-                className="h-full w-auto object-contain"
-                priority
-              />
-            </div>
+          <div className="relative h-full w-full">
+            <Image
+              fill
+              src={getUserProfileImage(user.level || '')}
+              alt={user.nickname}
+              className="object-contain"
+            />
           </div>
 
-          {/* 유저 정보 섹션 */}
-          <div className="h-1/5 w-full">
+          {/* 유저 정보 섹션 - absolute로 이미지와 겹치게 배치 */}
+          <div className="absolute bottom-3 left-5 w-full">
             <UserInfo
               nickname={user.nickname}
               level={user.level || '0'}

@@ -30,16 +30,12 @@ export const concertAPI = {
    * @param artist - 아티스트 이름 (선택사항)
    * @throws {ApiError} API 요청 실패 시 발생
    */
-  getConcertsByArtist: async (
-    artist?: string
-  ): Promise<ConcertListResponse> => {
+  getConcertsByArtist: async (artist: string): Promise<ConcertListResponse> => {
     try {
       let url = '/api/v1/view/concerts';
       const params = new URLSearchParams();
 
-      if (typeof artist === 'string' && artist.trim().length > 0) {
-        params.append('artist', artist);
-      }
+      params.append('artist', artist);
 
       const queryString = params.toString();
       if (queryString.length > 0) {
@@ -55,8 +51,7 @@ export const concertAPI = {
         }
         throw new ApiError(
           error.response.status,
-          error.response.data?.message ??
-            '콘서트 목록을 불러오는데 실패했습니다.'
+          error.response.data?.message ?? '가수명을 정확히 입력해주세요.'
         );
       }
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');

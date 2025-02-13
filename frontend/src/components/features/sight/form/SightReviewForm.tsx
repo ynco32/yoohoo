@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ConcertSelect } from './ConcertSelect';
 import { SeatSelect } from './SeatSelect';
@@ -38,9 +38,12 @@ export const SightReviewForm = React.memo(
       isFormValid,
     } = useSightReviewStore();
 
+    const params = useParams();
+    const reviewId = params.reviewId;
     const { currentStep, canProceed, handleNext, handleBack } =
       useSightReviewSteps({
         formData,
+        initialStep: reviewId ? 1 : 0,
       });
 
     const { validateStep, getValidationField } = useSightReviewValidation({
@@ -60,12 +63,8 @@ export const SightReviewForm = React.memo(
     ) => {
       setFormField(field, value);
       const validationField = getValidationField(field);
-      // console.log('Field changed:', field);
-      // console.log('Value:', value);
-      // console.log('ValidationField:', validationField);
       if (validationField) {
         setTouched(validationField);
-        // console.log('Touched set for:', validationField);
       }
     };
     const handleSubmit = async () => {

@@ -5,13 +5,19 @@ import { useEffect } from 'react';
 import SightReviewForm from '@/components/features/sight/form/SightReviewForm';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 import { updateSightReview } from '@/lib/api/sightReview';
-import type { SightReviewFormData } from '@/types/sightReviews';
+import type { ApiReview, SightReviewFormData } from '@/types/sightReviews';
+import {
+  mapApiToSeatDistance,
+  mapApiToSound,
+  mapFormDataToApiRequest,
+} from '@/lib/utils/sightReviewMapper';
+import { useSeatsStore } from '@/store/useSeatStore';
 
 interface EditSightReviewFormContainerProps {
   className?: string;
   artist?: string;
   reviewId: number;
-  initialData?: SightReviewFormData; // 기존 리뷰 데이터
+  initialData?: ApiReview; // 기존 리뷰 데이터
 }
 
 export function EditSightReviewFormContainer({
@@ -24,30 +30,37 @@ export function EditSightReviewFormContainer({
   const { setError, setIsSubmitting, setFormData, formData } =
     useSightReviewStore();
 
+  const { getSectionBySeatId } = useSeatsStore();
   // 초기 데이터 설정
   useEffect(() => {
     if (initialData) {
       // photo가 URL인 경우 File 객체로 변환
       const setInitialData = async () => {
         try {
-          let photoFile = initialData.photo;
+          let photoFile;
 
           // photo가 문자열(URL)인 경우 File 객체로 변환
-          if (typeof initialData.photo === 'string') {
-            const response = await fetch(initialData.photo);
+          if (typeof initialData.photoUrl === 'string') {
+            const response = await fetch(initialData.photoUrl);
             const blob = await response.blob();
             photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
           }
 
           setFormData({
             ...initialData,
-            photo: photoFile,
+            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
+            seatDistance: mapApiToSeatDistance(initialData.seatDistance),
+            sound: mapApiToSound(initialData.sound),
+            photo: photoFile || null,
           });
         } catch (error) {
           console.error('Error setting initial photo:', error);
           // 에러 발생 시에도 나머지 데이터는 설정
           setFormData({
             ...initialData,
+            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
+            seatDistance: mapApiToSeatDistance(initialData.seatDistance),
+            sound: mapApiToSound(initialData.sound),
             photo: null, // 또는 기본 File 객체
           });
         }
@@ -55,7 +68,7 @@ export function EditSightReviewFormContainer({
 
       setInitialData();
     }
-  }, [initialData, setFormData]);
+  }, [getSectionBySeatId, initialData, setFormData]);
 
   // initialData가 formData에 제대로 설정되었는지 확인
   useEffect(() => {
@@ -69,7 +82,8 @@ export function EditSightReviewFormContainer({
       if (!photo) {
         throw new Error('사진을 선택해주세요.');
       }
-      await updateSightReview(reviewId, reviewData, photo);
+      const mappedData = mapFormDataToApiRequest(reviewData);
+      await updateSightReview(reviewId, mappedData, photo);
       return undefined;
     } catch (error) {
       console.error('Error updating review:', error);

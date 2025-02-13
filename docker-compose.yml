@@ -73,6 +73,7 @@ services:
       - MYSQL_DATABASE=conkiri
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TZ=Asia/Seoul
     ports:
       - "13309:3306"
     volumes:            # 데이터 영속성

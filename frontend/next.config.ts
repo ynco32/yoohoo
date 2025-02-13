@@ -12,10 +12,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com',
         port: '',
-        pathname: '/**',  // 모든 경로 허용
-      }
+        pathname: '/**',
+      },
     ],
   },
+
+  compiler: {
+    styledComponents: {
+      ssr: true,
+    },
+  },
+
+  output: 'standalone',
 
   webpack(config: WebpackConfig) {
     if (!config.module) {
@@ -27,27 +35,11 @@ const nextConfig: NextConfig = {
     if (!config.module.rules) {
       config.module.rules = [];
     }
+
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-    compiler: {
-      styledComponents: {
-        ssr: true,
-      },
-    },
-    output: 'standalone',
-          port: '',
-          pathname: '/private/img-**.png',
-        },
-      ],
-    },
-    compiler: {
-      styledComponents: {
-        ssr: true,
-      },
-    },
-    output: 'standalone',
 
     return config;
   },

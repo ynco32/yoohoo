@@ -51,7 +51,7 @@ export const concertAPI = {
         }
         throw new ApiError(
           error.response.status,
-          error.response.data?.message ?? '가수명을 정확히 입력력해주세요.'
+          error.response.data?.message ?? '가수명을 정확히 입력해주세요.'
         );
       }
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');

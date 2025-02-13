@@ -95,7 +95,12 @@ export const sharingAPI = {
 
       const response = await api.post<{ sharingId: number }>(
         '/api/v1/sharing',
-        formData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data', // 명시적으로 Content-Type 설정
+          },
+        }
       );
 
       return response.data.sharingId;
@@ -136,7 +141,11 @@ export const sharingAPI = {
         formData.append('file', image, image.name);
       }
 
-      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData);
+      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -152,6 +161,7 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
+  
   /**
    * 나눔 게시글의 상태를 변경합니다.
    * @param sharingId - 나눔 게시글 ID

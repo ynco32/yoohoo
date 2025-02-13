@@ -74,6 +74,9 @@ export const useWebSocketQueue = () => {
   };
 
   return {
+    // queueNumber,
+    // waitingTime,
+    // peopleBehind,
     enterQueue,
   };
 };

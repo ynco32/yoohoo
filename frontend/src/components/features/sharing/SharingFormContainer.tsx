@@ -67,25 +67,22 @@ export function SharingFormContainer({
     try {
       setIsSubmitting(true);
 
-      const postData = {
-        ...formData,
+      const { image, ...postData } = formData;
+
+      const updatedData = {
+        ...postData,
         ...(location && {
           latitude: location.latitude,
           longitude: location.longitude,
         }),
         ...(concertId && { concertId }),
-        // image 속성을 명시적으로 추가
-        image: formData.image || null,
       };
 
       if (mode === 'create') {
-        if (formData.image && formData.image instanceof File) {
+        if (image && image instanceof File) {
           const sharingId = await sharingAPI.createSharing(
-            {
-              ...postData,
-              image: null, // 이미지 파일은 별도로 전달
-            },
-            formData.image // File 타입의 이미지
+            updatedData, // image 제외된 데이터
+            image // File 타입의 이미지
           );
           onSubmitComplete(sharingId);
         } else {
@@ -96,8 +93,8 @@ export function SharingFormContainer({
         if (sharingId) {
           await sharingAPI.updateSharing(
             sharingId,
-            postData, // image 속성 포함
-            formData.image instanceof File ? formData.image : undefined
+            updatedData, // image 속성 제외
+            image instanceof File ? image : undefined
           );
           onSubmitComplete(sharingId);
         }

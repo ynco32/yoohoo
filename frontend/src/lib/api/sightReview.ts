@@ -40,7 +40,7 @@ export async function submitSightReview(
     );
 
     // 이미지 파일 추가
-    formData.append('photo', photo, photo.name);
+    formData.append('file', photo, photo.name);
     console.log(
       `[Sight Review API] 파일 추가: ${photo.name} (${photo.size} bytes)`
     );
@@ -48,7 +48,7 @@ export async function submitSightReview(
     // FormData 내용 로깅
     console.log('[Sight Review API] FormData 필드:');
     for (const [key, value] of formData.entries()) {
-      if (key === 'photo') {
+      if (key === 'file') {
         console.log(`- ${key}: [File]`);
       } else {
         console.log(`- ${key}: ${value}`);

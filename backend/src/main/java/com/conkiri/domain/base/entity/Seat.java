@@ -35,11 +35,11 @@ public class Seat {
 	@JoinColumn(name = "section_id", nullable = false)
 	private Section section;
 
-	public void increaseReviewCount() {
-		this.reviewCount++;
+	public void increaseReviewCount(long count) {
+		this.reviewCount = count + 1;
 	}
 
-	public void decreaseReviewCount() {
-		this.reviewCount--;
+	public void decreaseReviewCount(long count) {
+		this.reviewCount = count - 1;
 	}
 }

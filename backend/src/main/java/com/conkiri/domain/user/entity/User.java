@@ -48,13 +48,13 @@ public class User {
 		this.nickname = nickname;
 	}
 
-	public void incrementReviewCount() {
-		this.reviewCount++;
+	public void incrementReviewCount(int count) {
+		this.reviewCount = count + 1;
 		updateViewLevel();
 	}
 
-	public void decrementReviewCount() {
-		this.reviewCount--;
+	public void decrementReviewCount(int count) {
+		this.reviewCount = count - 1;
 		updateViewLevel();
 	}
 

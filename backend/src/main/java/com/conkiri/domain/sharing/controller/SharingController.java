@@ -43,12 +43,12 @@ public class SharingController {
 	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void writeSharing(
+	public Long writeSharing(
 		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
 		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		System.out.println(file.getSize());
-		sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
+		return sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
 	}
 
 	/**

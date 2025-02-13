@@ -93,7 +93,7 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
         />
 
         {/* 댓글 */}
-        <SharingDetailComments sharingId={id} writerId={detailData.writerId} />
+        <SharingDetailComments sharingId={id} />
       </div>
     </div>
   );

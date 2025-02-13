@@ -14,4 +14,4 @@ spring:
         - cloud
         - redis
     include: oauth, db, cloud, redis
-
+  

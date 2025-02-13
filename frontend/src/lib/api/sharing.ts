@@ -99,17 +99,13 @@ export const sharingAPI = {
 
       formData.append('file', file, file.name);
 
-      const response = await api.post<{ sharingId: number }>(
-        '/api/v1/sharing',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data', // 명시적으로 Content-Type 설정
-          },
-        }
-      );
+      const response = await api.post<number>('/api/v1/sharing', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // 명시적으로 Content-Type 설정
+        },
+      });
 
-      return response.data.sharingId;
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         console.error('상세 에러:', error.response.data);
@@ -182,7 +178,7 @@ export const sharingAPI = {
     status: SharingStatus
   ): Promise<void> => {
     try {
-      await api.put(`/api/v1/sharing/${sharingId}/status`, { status });
+      await api.patch(`/api/v1/sharing/${sharingId}/status`, { status });
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {

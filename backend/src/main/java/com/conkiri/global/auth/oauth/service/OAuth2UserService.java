@@ -30,7 +30,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oauth2User = super.loadUser(userRequest);
-		log.info("OAuth2 Request: {}", userRequest);
+		//log.info("OAuth2 Request: {}", userRequest);
 
 		String provider = userRequest.getClientRegistration().getRegistrationId();  // "kakao"
 		String providerId = oauth2User.getName();  // OAuth2 제공자의 고유 ID
@@ -58,6 +58,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			.email(email)
 			.userName(nickname)
 			.profileUrl(profileImageUrl)
+			.level("1")
+			.reviewCount(0)
 			.build();
 		return userRepository.save(user);
 	}

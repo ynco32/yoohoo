@@ -1,29 +1,32 @@
-import { Comment } from '@/types/sharing';
+// import { Comment } from '@/types/sharing';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useState } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 import { Modal } from '@/components/common/Modal';
+import { useSharingCommentStore } from '@/store/useSharingCommentStore';
 
-interface CommentItemProps {
-  comment: Comment;
-  onUpdate: (commentId: number, newContent: string) => Promise<void>;
-  onDelete: (commentId: number) => Promise<void>;
-}
-
-export const CommentItem = ({
-  comment,
-  onUpdate,
-  onDelete,
-}: CommentItemProps) => {
+export const CommentItem = ({ commentId }: { commentId: number }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // store에서 필요한 데이터와 액션 구독
+  const comment = useSharingCommentStore((state) =>
+    state.comments.find((c) => c.commentId === commentId)
+  );
+  const { updateComment, deleteComment } = useSharingCommentStore();
+  const [editContent, setEditContent] = useState(comment?.content || '');
+
   const user = useUserStore((state) => state.user);
-  const isMyComment = user?.userId === comment.writerId;
+  const isMyComment = user?.userId === comment?.writerId;
+
+  // comment가 없는 경우 렌더링하지 않음
+  if (!comment) return null;
 
   const handleUpdate = async () => {
+    if (!editContent.trim()) return;
+
     try {
-      await onUpdate(comment.commentId, editContent);
+      await updateComment(commentId, editContent);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -32,7 +35,8 @@ export const CommentItem = ({
 
   const handleDelete = async () => {
     try {
-      await onDelete(comment.commentId);
+      await deleteComment(commentId);
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting comment:', error);
     }

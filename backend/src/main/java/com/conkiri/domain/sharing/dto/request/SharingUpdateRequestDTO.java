@@ -19,4 +19,5 @@ public class SharingUpdateRequestDTO {
 	private Double latitude;
 	private Double longitude;
 	private LocalDateTime startTime;
+	private Long concertId;
 }

@@ -36,6 +36,10 @@ public class QueueProcessingService {
 		log.info("Setting method ");
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
+
+		String dummyId = "dummy_user";
+		double dummyScore = Double.MIN_VALUE;
+		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, dummyId, dummyScore);
 	}
 
 	// 현재 시간이 티켓팅 가능 시간 범위 내인지 확인합니다.
@@ -73,21 +77,22 @@ public class QueueProcessingService {
 
 		validateQueueRequest(userId);
 
-		double score = System.currentTimeMillis();
-		Long position = addUserToQueue(userId, score);
+		double score = System.nanoTime();
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
-		saveUserQueueHistory(position, score, historyKey);
+		addUserToQueue(userId, score);
+
+		Long zeroBasedRank = redisTemplate.opsForZSet().rank(RedisKeys.QUEUE, String.valueOf(userId));
+		saveUserQueueHistory(zeroBasedRank, score, historyKey);
 
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
 	}
 
 	// 사용자를 Redis Sorted Set 대기열에 추가합니다.
-	private Long addUserToQueue(Long userId, double score) {
+	private void addUserToQueue(Long userId, double score) {
 
 		String userIdStr = String.valueOf(userId);
 		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, userIdStr, score);
-		return getQueuePosition(Long.parseLong(userIdStr));
 	}
 
 	// 사용자의 대기열 정보를 Redis 에 저장합니다
@@ -95,6 +100,7 @@ public class QueueProcessingService {
 
 		redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
 		redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
+		log.info("Saved user history - position: {}, score: {}", position, score);
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
@@ -146,20 +152,22 @@ public class QueueProcessingService {
 	// 다음 처리할 배치의 사용자들을 조회합니다.
 	private Set<String> fetchNextBatch(int batchSize) {
 		return redisTemplate.opsForZSet()
-			.range(RedisKeys.QUEUE, 0, batchSize - 1);
+			.range(RedisKeys.QUEUE, 1, batchSize);
 	}
 
 	// 배치의 사용자들을 입장 처리합니다
 	private void processUsersEntrance(Set<String> userIds) {
 
 		userIds.forEach(userId -> {
-			User user = userReadService.findUserByIdOrElseThrow(Long.parseLong(userId));
-			log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
-			messagingTemplate.convertAndSendToUser(
-				user.getEmail(),
-				WebSocketConstants.NOTIFICATION_DESTINATION,
-				true
-			);
+			if (!userId.equals("dummy_user")) {  // 더미 유저 체크 필요
+				User user = userReadService.findUserByIdOrElseThrow(Long.parseLong(userId));
+				log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
+				messagingTemplate.convertAndSendToUser(
+					user.getEmail(),
+					WebSocketConstants.NOTIFICATION_DESTINATION,
+					true
+				);
+			}
 		});
 		removeProcessedUsersFromQueue(userIds.size());
 	}
@@ -203,20 +211,12 @@ public class QueueProcessingService {
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 
 		// 대기번호는 1부터 시작하도록
-		Long waitingNumber = position + 1L;
-		Long usersAhead = position;  // 앞에 있는 사람 수는 position 그대로
-		boolean isInFirstBatch = usersAhead < batchSize;
+		Long waitingNumber = position;
+		Long usersAhead = position - 1;
 
 		// 대기 시간 계산
-		Long estimatedSeconds;
-		if (isInFirstBatch) {
-			estimatedSeconds = 5L;
-		} else {
-			Long myBatchNumber = (usersAhead + batchSize - 1) / batchSize;
-			estimatedSeconds = myBatchNumber * 5L;
-		}
-
-		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE);
+		Long estimatedSeconds = position * 3L;
+		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE) - 1;
 		// 뒤에 있는 사람 수 계산 수정
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);
 

@@ -42,10 +42,10 @@ public class ServerMonitorService {
 
 	private void logServerMetrics(ServerMetricsDTO metrics) {
 
-		log.info("Server Load - CPU: {}, Memory: {}, Total: {}",
-			String.format("%.2f", metrics.cpuLoad()),
-			String.format("%.2f", metrics.memoryLoad()),
-			String.format("%.2f", metrics.totalLoad()));
+		// log.info("Server Load - CPU: {}, Memory: {}, Total: {}",
+		// 	String.format("%.2f", metrics.cpuLoad()),
+		// 	String.format("%.2f", metrics.memoryLoad()),
+		// 	String.format("%.2f", metrics.totalLoad()));
 	}
 
 	public int calculateBatchSize(ServerMetricsDTO metrics) {
@@ -54,8 +54,8 @@ public class ServerMonitorService {
 			return 1;  // 높은 부하
 		}
 		if (metrics.totalLoad() > MEDIUM_LOAD_THRESHOLD) {
-			return 2; // 중간 부하
+			return 1; // 중간 부하
 		}
-		return 3;    // 낮은 부하
+		return 1;    // 낮은 부하
 	}
 }

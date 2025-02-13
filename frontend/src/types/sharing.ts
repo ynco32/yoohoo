@@ -143,5 +143,5 @@ export interface SharingFormData {
   longitude: number; // 경도
   startTime: string; // 시작 시간 (ISO8601 형식)
   concertId?: number; // 콘서트 ID
-  image: File | string | null; // 업로드할 이미지 파일
+  image?: File | string | null; // 업로드할 이미지 파일
 }

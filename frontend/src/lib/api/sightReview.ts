@@ -46,8 +46,88 @@ export async function submitSightReview(
       throw new Error('리뷰 데이터는 필수입니다.');
     }
 
-    console.log('[Sight Review API] 제출 시작');
-    console.log('[Sight Review API] 요청 데이터:', {
+    // console.log('[Sight Review API] 제출 시작');
+    // console.log('[Sight Review API] 요청 데이터:', {
+    //   ...data,
+    //   photo: {
+    //     name: photo.name,
+    //     size: photo.size,
+    //     type: photo.type,
+    //   },
+    // });
+
+    const formData = new FormData();
+
+    // JSON 데이터를 Blob으로 변환하여 추가
+    formData.append(
+      'reviewRequestDTO',
+      new Blob([JSON.stringify(data)], { type: 'application/json' })
+    );
+
+    // 이미지 파일 추가
+    formData.append('file', photo, photo.name);
+    // console.log(
+    //   `[Sight Review API] 파일 추가: ${photo.name} (${photo.size} bytes)`
+    // );
+
+    // // FormData 내용 로깅
+    // console.log('[Sight Review API] FormData 필드:');
+    // for (const [key, value] of formData.entries()) {
+    //   if (key === 'file') {
+    //     console.log(`- ${key}: [File]`);
+    //   } else {
+    //     console.log(`- ${key}: ${value}`);
+    //   }
+    // }
+
+    // console.log('[Sight Review API] 요청 시작:', SIGHT_REVIEW_API.REVIEWS);
+    const response = await withTimeout(
+      fetch(SIGHT_REVIEW_API.REVIEWS, {
+        method: 'POST',
+        body: formData,
+      })
+    );
+
+    // console.log('[Sight Review API] 응답 상태:', response.status);
+    // console.log(
+    //   '[Sight Review API] 응답 헤더:',
+    //   Object.fromEntries(response.headers.entries())
+    // );
+
+    if (!response.ok) {
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
+      // console.error('[Sight Review API] 요청 실패:', errorData);
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+  } catch (error) {
+    // console.error('제출 중 에러 발생:', error);
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('요청 시간이 초과되었습니다.');
+      }
+      throw error;
+    }
+    throw new Error('알 수 없는 에러가 발생했습니다.');
+  }
+}
+
+export async function updateSightReview(
+  reviewId: number,
+  data: CreateSightReviewRequest,
+  photo: File
+): Promise<void> {
+  try {
+    if (!photo) {
+      throw new Error('사진 파일은 필수입니다.');
+    }
+    if (!data) {
+      throw new Error('리뷰 데이터는 필수입니다.');
+    }
+
+    console.log('[Sight Review API UPDATE] 제출 시작');
+    console.log('[Sight Review API UPDATE] 요청 데이터:', {
       ...data,
       photo: {
         name: photo.name,
@@ -67,11 +147,11 @@ export async function submitSightReview(
     // 이미지 파일 추가
     formData.append('file', photo, photo.name);
     console.log(
-      `[Sight Review API] 파일 추가: ${photo.name} (${photo.size} bytes)`
+      `[Sight Review API UPDATE] 파일 추가: ${photo.name} (${photo.size} bytes)`
     );
 
     // FormData 내용 로깅
-    console.log('[Sight Review API] FormData 필드:');
+    console.log('[Sight Review API UPDATE] FormData 필드:');
     for (const [key, value] of formData.entries()) {
       if (key === 'file') {
         console.log(`- ${key}: [File]`);
@@ -80,62 +160,10 @@ export async function submitSightReview(
       }
     }
 
-    console.log('[Sight Review API] 요청 시작:', SIGHT_REVIEW_API.REVIEWS);
-    const response = await withTimeout(
-      fetch(SIGHT_REVIEW_API.REVIEWS, {
-        method: 'POST',
-        body: formData,
-      })
-    );
-
-    console.log('[Sight Review API] 응답 상태:', response.status);
     console.log(
-      '[Sight Review API] 응답 헤더:',
-      Object.fromEntries(response.headers.entries())
+      '[Sight Review API UPDATE] 요청 시작:',
+      SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId)
     );
-
-    if (!response.ok) {
-      const errorData = (await response
-        .json()
-        .catch(() => ({}))) as ErrorResponse;
-      console.error('[Sight Review API] 요청 실패:', errorData);
-      throw new Error(errorData.message || `서버 에러: ${response.status}`);
-    }
-  } catch (error) {
-    console.error('제출 중 에러 발생:', error);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new Error('요청 시간이 초과되었습니다.');
-      }
-      throw error;
-    }
-    throw new Error('알 수 없는 에러가 발생했습니다.');
-  }
-}
-
-export async function updateSightReview(
-  reviewId: number,
-  data: Omit<SightReviewFormData, 'photo'>,
-  photo: File
-): Promise<void> {
-  try {
-    if (!photo) {
-      throw new Error('사진 파일은 필수입니다.');
-    }
-    if (!data) {
-      throw new Error('리뷰 데이터는 필수입니다.');
-    }
-
-    const formData = new FormData();
-
-    // JSON 데이터를 Blob으로 변환하여 추가
-    formData.append(
-      'reviewRequestDTO',
-      new Blob([JSON.stringify(data)], { type: 'application/json' })
-    );
-
-    // 이미지 파일 추가
-    formData.append('file', photo, photo.name);
 
     const response = await withTimeout(
       fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
@@ -144,13 +172,22 @@ export async function updateSightReview(
       })
     );
 
+    console.log('[Sight Review API UPDATE] 응답 상태:', response.status);
+    console.log(
+      '[Sight Review API UPDATE] 응답 헤더:',
+      Object.fromEntries(response.headers.entries())
+    );
     if (!response.ok) {
       const errorData = (await response
         .json()
         .catch(() => ({}))) as ErrorResponse;
+      console.error('[Sight Review API UPDATE] 요청 실패:', errorData);
+
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
   } catch (error) {
+    console.error('UPDATE 제출 중 에러 발생:', error);
+
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
         throw new Error('요청 시간이 초과되었습니다.');

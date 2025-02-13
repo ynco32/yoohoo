@@ -10,6 +10,7 @@ import {
   mapApiToSeatDistance,
   mapApiToSound,
 } from '@/lib/utils/sightReviewMapper';
+import { useSeatsStore } from '@/store/useSeatStore';
 
 interface EditSightReviewFormContainerProps {
   className?: string;
@@ -28,6 +29,7 @@ export function EditSightReviewFormContainer({
   const { setError, setIsSubmitting, setFormData, formData } =
     useSightReviewStore();
 
+  const { getSectionBySeatId } = useSeatsStore();
   // 초기 데이터 설정
   useEffect(() => {
     if (initialData) {
@@ -45,7 +47,7 @@ export function EditSightReviewFormContainer({
 
           setFormData({
             ...initialData,
-            sectionNumber: 0,
+            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
             seatDistance: mapApiToSeatDistance(initialData.seatDistance),
             sound: mapApiToSound(initialData.sound),
             photo: photoFile || null,
@@ -55,7 +57,7 @@ export function EditSightReviewFormContainer({
           // 에러 발생 시에도 나머지 데이터는 설정
           setFormData({
             ...initialData,
-            sectionNumber: 0,
+            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
             seatDistance: mapApiToSeatDistance(initialData.seatDistance),
             sound: mapApiToSound(initialData.sound),
             photo: null, // 또는 기본 File 객체

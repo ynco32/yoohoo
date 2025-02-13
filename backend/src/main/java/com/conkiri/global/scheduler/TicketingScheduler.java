@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TicketingScheduler {
 
-	private static final int TICKETING_START_HOUR = 15;
-	private static final int TICKETING_DURATION_HOURS = 9;
+	private static final int TICKETING_START_HOUR = 13;
+	private static final int TICKETING_DURATION_HOURS = 10;
 	private static final String TICKETING_KEY_PATTERN = "ticketing:*";
 
 	private final RedisTemplate<String, String> redisTemplate;
@@ -48,7 +48,7 @@ public class TicketingScheduler {
 	}
 
 	// 매일 지정된 시작 시간(19시)에 티켓팅 시작
-	@Scheduled(cron = "0 0 15 * * *")
+	@Scheduled(cron = "0 0 13 * * *")
 	public void startTicketing() {
 		LocalDateTime startTime = getCurrentHourDateTime();
 		LocalDateTime endTime = startTime.plusHours(TICKETING_DURATION_HOURS);

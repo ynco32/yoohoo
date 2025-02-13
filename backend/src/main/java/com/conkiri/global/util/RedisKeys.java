@@ -13,8 +13,12 @@ public class RedisKeys {
 		return SEATS + section;
 	}
 
-	public static String getHistoryKey(Long userId) {
-		return HISTORY + userId;
+	public static String getSeatHistoryKey(String section, String seat) {
+		return HISTORY + section + ":" + seat;
+	}
+
+	public static String getUserHistoryKey(Long userId) {
+		return HISTORY + "user:" + userId;  // "ticketing:history:user:1"
 	}
 
 	public static String getSeatLockKey(String section, String seat) {

@@ -51,11 +51,11 @@ public class ServerMonitorService {
 	public int calculateBatchSize(ServerMetricsDTO metrics) {
 
 		if (metrics.totalLoad() > HIGH_LOAD_THRESHOLD) {
-			return 5;  // 높은 부하
+			return 1;  // 높은 부하
 		}
 		if (metrics.totalLoad() > MEDIUM_LOAD_THRESHOLD) {
-			return 10; // 중간 부하
+			return 2; // 중간 부하
 		}
-		return 15;    // 낮은 부하
+		return 3;    // 낮은 부하
 	}
 }

@@ -56,15 +56,15 @@ public class QueueProcessingService {
 	// 사용자가 티켓팅에 참여 가능한지 확인합니다.
 	public boolean canJoinTicketing(Long userId) {
 
-		String userHistoryKey  = RedisKeys.getUserHistoryKey(userId);
+		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
 
 		// history가 없으면 당연히 참여 가능
-		if (!redisTemplate.hasKey(userHistoryKey )) {
+		if (!redisTemplate.hasKey(userHistoryKey)) {
 			return true;
 		}
 
 		// history가 있더라도, 예매 내역이 없으면(reserveTime이 없으면) 참여 가능
-		String reserveTime = (String) redisTemplate.opsForHash().get(userHistoryKey, "reserveTime");
+		String reserveTime = (String)redisTemplate.opsForHash().get(userHistoryKey, "reserveTime");
 		return reserveTime == null;
 	}
 

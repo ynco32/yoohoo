@@ -13,14 +13,16 @@ public class TicketingInfoResponseDTO {
 	private boolean isWithin10Minutes;      // 시작 10분 전 여부
 	private boolean isFinished;            // 티켓팅 종료 여부
 
-	public TicketingInfoResponseDTO () {
+	public TicketingInfoResponseDTO() {
 		this.serverTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-		this.startTime = LocalDateTime.now()
-			.withHour(13)
-			.withMinute(40)
+		this.startTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
+			.withHour(14)
+			.withMinute(30)
 			.withSecond(0)
 			.withNano(0);
-		this.isWithin10Minutes = startTime.minusMinutes(10).isBefore(serverTime) && startTime.isAfter(serverTime);
+		this.isWithin10Minutes = serverTime.isAfter(startTime.minusMinutes(10))
+			&& serverTime.isBefore(startTime);
+		;
 		this.isFinished = serverTime.isAfter(startTime.plusHours(10));
 	}
 }

@@ -26,10 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TicketingService {
 
-	private final RedisTemplate<String, String> redisTemplate;
-
 	private static final int MAX_ROW = 7;
 	private static final int MAX_COL = 10;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	// 특정 구역의 모든 좌석을 초기화
 	public void initializeSeatsForSection(String section) {

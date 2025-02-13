@@ -1,87 +1,41 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Comment } from '@/types/sharing';
+import { useState, useEffect, useRef } from 'react';
 import { sharingCommentAPI } from '@/lib/api/sharingComment';
 import { CommentItem } from './CommentItem';
 import { useMswInit } from '@/hooks/useMswInit';
+import { useSharingCommentStore } from '@/store/useSharingCommentStore';
 
 interface SharingDetailCommentsProps {
   sharingId: number;
-  writerId: number;
 }
 
 export const SharingDetailComments = ({
   sharingId,
 }: SharingDetailCommentsProps) => {
-  const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastCommentId, setLastCommentId] = useState<number | undefined>(
-    undefined
-  );
   const { mswInitialized } = useMswInit();
+  const {
+    comments,
+    isLoading,
+    error,
+    hasMore,
+    fetchComments,
+    fetchMoreComments,
+    addComment,
+  } = useSharingCommentStore();
 
   // IntersectionObserver용 ref
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadingRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchComments = useCallback(async () => {
-    if (!mswInitialized || !hasMore || isLoading) return;
-
-    try {
-      setIsLoading(true);
-      const response = await sharingCommentAPI.getComments(
-        sharingId,
-        lastCommentId
-      );
-
-      setComments((prev) => [...prev, ...response.comments]);
-      setHasMore(!response.lastPage);
-
-      if (response.comments.length > 0) {
-        setLastCommentId(
-          response.comments[response.comments.length - 1].commentId
-        );
-      }
-    } catch (err) {
-      console.error('Error fetching comments:', err);
-      setError(
-        err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [mswInitialized, hasMore, isLoading, sharingId, lastCommentId]);
-
   // 초기 데이터 로딩
   useEffect(() => {
-    const fetchInitialComments = async () => {
-      if (!mswInitialized) return;
+    if (!mswInitialized) return;
+    fetchComments(sharingId);
 
-      try {
-        setIsLoading(true);
-        const response = await sharingCommentAPI.getComments(sharingId);
-        setComments(response.comments);
-        setHasMore(!response.lastPage);
-
-        if (response.comments.length > 0) {
-          setLastCommentId(
-            response.comments[response.comments.length - 1].commentId
-          );
-        }
-      } catch (err) {
-        console.error('Error fetching initial comments:', err);
-        setError(
-          err instanceof Error ? err.message : '댓글을 불러오는데 실패했습니다.'
-        );
-      } finally {
-        setIsLoading(false);
-      }
+    return () => {
+      useSharingCommentStore.getState().reset();
     };
-
-    fetchInitialComments();
-  }, [mswInitialized, sharingId]);
+  }, [fetchComments, mswInitialized, sharingId]);
 
   // IntersectionObserver 설정
   useEffect(() => {
@@ -90,7 +44,7 @@ export const SharingDetailComments = ({
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
-          fetchComments();
+          fetchMoreComments(sharingId);
         }
       },
       { threshold: 0.1 }
@@ -104,67 +58,31 @@ export const SharingDetailComments = ({
         observerRef.current.disconnect();
       }
     };
-  }, [fetchComments, hasMore, isLoading]);
-
-  // 댓글 작성 핸들러
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!commentContent.trim()) return;
-
-    try {
-      const newComment = await sharingCommentAPI.createComment(
-        sharingId,
-        commentContent
-      );
-      setComments((prev) => [newComment, ...prev]);
-      setCommentContent('');
-    } catch (err) {
-      console.error('Error posting comment:', err);
-      setError(
-        err instanceof Error ? err.message : '댓글 작성에 실패했습니다.'
-      );
-    }
-  };
-
-  // 수정 삭제
-  const handleUpdateComment = async (commentId: number, content: string) => {
-    try {
-      const updatedComment = await sharingCommentAPI.updateComment(
-        commentId,
-        content
-      );
-      setComments((prev) =>
-        prev.map((comment) =>
-          comment.commentId === commentId ? updatedComment : comment
-        )
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '댓글 수정에 실패했습니다.'
-      );
-    }
-  };
-
-  const handleDeleteComment = async (commentId: number) => {
-    try {
-      await sharingCommentAPI.deleteComment(commentId);
-      setComments((prev) =>
-        prev.filter((comment) => comment.commentId !== commentId)
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : '댓글 삭제에 실패했습니다.'
-      );
-    }
-  };
+  }, [fetchMoreComments, hasMore, isLoading, sharingId]);
 
   return (
     <div className="mx-4 mb-5 space-y-2 rounded-xl bg-gray-100 p-5">
       <h2 className="font-medium">
         댓글 {comments.length > 0 && `(${comments.length})`}
       </h2>
-      <form onSubmit={handleSubmitComment} className="mb-4">
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!commentContent.trim()) return;
+
+          try {
+            const newComment = await sharingCommentAPI.createComment(
+              sharingId,
+              commentContent
+            );
+            addComment(newComment);
+            setCommentContent('');
+          } catch (err) {
+            console.error('Error posting comment:', err);
+          }
+        }}
+        className="mb-4"
+      >
         <div className="flex flex-col gap-2">
           <textarea
             value={commentContent}
@@ -186,14 +104,8 @@ export const SharingDetailComments = ({
       {comments.length > 0 ? (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <CommentItem
-              key={comment.commentId}
-              comment={comment}
-              onUpdate={handleUpdateComment}
-              onDelete={handleDeleteComment}
-            />
+            <CommentItem key={comment.commentId} comment={comment} />
           ))}
-          {/* 스크롤 감지를 위한 div */}
           <div ref={loadingRef} className="h-px" />
         </div>
       ) : (

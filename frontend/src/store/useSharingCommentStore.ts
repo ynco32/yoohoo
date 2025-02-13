@@ -11,13 +11,14 @@ interface CommentStore {
 
   // Actions
   fetchComments: (sharingId: number, lastCommentId?: number) => Promise<void>;
+  fetchMoreComments: (sharingId: number) => Promise<void>;
   addComment: (comment: Comment) => void;
   updateComment: (commentId: number, content: string) => Promise<void>;
   deleteComment: (commentId: number) => Promise<void>;
   reset: () => void;
 }
 
-export const useSharingCommentStore = create<CommentStore>((set) => ({
+export const useSharingCommentStore = create<CommentStore>((set, get) => ({
   comments: [],
   hasMore: true,
   lastCommentId: undefined,
@@ -36,6 +37,37 @@ export const useSharingCommentStore = create<CommentStore>((set) => ({
         comments: lastCommentId
           ? [...state.comments, ...response.comments]
           : response.comments,
+        hasMore: !response.lastPage,
+        lastCommentId:
+          response.comments.length > 0
+            ? response.comments[response.comments.length - 1].commentId
+            : state.lastCommentId,
+      }));
+    } catch (err) {
+      set({
+        error:
+          err instanceof Error
+            ? err.message
+            : '댓글을 불러오는데 실패했습니다.',
+      });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchMoreComments: async (sharingId: number) => {
+    const { lastCommentId, isLoading, hasMore } = get();
+    if (!hasMore || isLoading) return;
+
+    try {
+      set({ isLoading: true });
+      const response = await sharingCommentAPI.getComments(
+        sharingId,
+        lastCommentId
+      );
+
+      set((state) => ({
+        comments: [...state.comments, ...response.comments],
         hasMore: !response.lastPage,
         lastCommentId:
           response.comments.length > 0

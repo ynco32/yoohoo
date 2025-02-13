@@ -97,6 +97,7 @@ export interface ApiReview {
 
 export interface ApiResponse {
   reviews: ApiReview[];
+  review?: ApiReview;
 }
 
 // 폼 상태 관련 타입들

@@ -33,7 +33,7 @@ public class User {
 	private String userName;
 
 	@Column(name = "review_count")
-	private Integer reviewCount = 0;
+	private Integer reviewCount;
 
 	@Column(name = "level", length = 100)
 	private String level = "1";
@@ -48,13 +48,13 @@ public class User {
 		this.nickname = nickname;
 	}
 
-	public void incrementReviewCount(int count) {
-		this.reviewCount = count + 1;
+	public void incrementReviewCount() {
+		this.reviewCount++;
 		updateViewLevel();
 	}
 
-	public void decrementReviewCount(int count) {
-		this.reviewCount = count - 1;
+	public void decrementReviewCount() {
+		this.reviewCount++;
 		updateViewLevel();
 	}
 

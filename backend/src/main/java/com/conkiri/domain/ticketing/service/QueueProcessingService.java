@@ -44,6 +44,7 @@ public class QueueProcessingService {
 
 		String startTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "startTime");
 		String endTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "endTime");
+		System.out.println(startTimeStr + " " + endTimeStr);
 		if (startTimeStr == null || endTimeStr == null)
 			return false;
 

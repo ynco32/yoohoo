@@ -40,7 +40,7 @@ export const useWebSocketQueue = () => {
       client.subscribe(`/user/book/notification`, (message: IMessage) => {
         const response = JSON.parse(message.body);
         if (response === true) {
-          router.push('area');
+          router.push('./area');
         }
       });
     };

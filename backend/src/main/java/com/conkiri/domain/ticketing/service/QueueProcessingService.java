@@ -73,28 +73,33 @@ public class QueueProcessingService {
 
 		validateQueueRequest(userId);
 
-		double score = System.currentTimeMillis();
-		Long position = addUserToQueue(userId, score);
+		double score = System.nanoTime();
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
-		saveUserQueueHistory(position, score, historyKey);
+		addUserToQueue(userId, score);
+
+		// 실제 위치를 가져와서 1을 더해 1부터 시작하도록 함
+		Long position = getQueuePosition(userId);
+		Long oneBasedPosition = position != null ? position + 1 : null;
+		saveUserQueueHistory(oneBasedPosition, score, historyKey);
 
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
 	}
 
 	// 사용자를 Redis Sorted Set 대기열에 추가합니다.
-	private Long addUserToQueue(Long userId, double score) {
+	private void addUserToQueue(Long userId, double score) {
 
 		String userIdStr = String.valueOf(userId);
 		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, userIdStr, score);
-		return getQueuePosition(Long.parseLong(userIdStr));
 	}
 
 	// 사용자의 대기열 정보를 Redis 에 저장합니다
 	private void saveUserQueueHistory(Long position, double score, String historyKey) {
-
-		redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
-		redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
+		if (position != null) {
+			redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
+			redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
+			log.info("User queue position saved: {}, score: {}", position, score);
+		}
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {

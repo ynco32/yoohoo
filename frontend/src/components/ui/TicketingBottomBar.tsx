@@ -1,17 +1,20 @@
+'use client';
 import TicketingBottomGreenButton from './TicketingBottomGreenButton';
-import TicketingRefreshButton from './TicketingRefreshButton';
+// import TicketingRefreshButton from './TicketingRefreshButton';
+import ArrowPathButton from './ArrowPathButton';
 
 interface TicketingBottomBarProps {
-  selectedSeat: number;
-  isActiive: boolean;
+  selectedSeat?: number;
+  isActive: boolean;
+  children?: string;
 }
-
 export default function TicketingBottomBar({
   selectedSeat,
-  isActiive,
+  isActive,
+  children,
 }: TicketingBottomBarProps) {
   const refresh = () => {
-    // 리프레시 코드
+    window.location.reload();
   };
 
   return (
@@ -22,9 +25,10 @@ export default function TicketingBottomBar({
     // - pb-4: 하단 패딩
     <div className="fixed bottom-0 w-full max-w-[430px] bg-white px-4 pb-4">
       <div className="flex gap-2">
-        <TicketingRefreshButton onClick={refresh} />
-        <TicketingBottomGreenButton type={isActiive ? 'active' : 'nonActive'}>
-          다음 {selectedSeat}석
+        <ArrowPathButton onClick={refresh} />
+        <TicketingBottomGreenButton type={isActive ? 'active' : 'nonActive'}>
+          {children}
+          {selectedSeat}
         </TicketingBottomGreenButton>
       </div>
     </div>

@@ -9,6 +9,7 @@ import type { ApiReview, SightReviewFormData } from '@/types/sightReviews';
 import {
   mapApiToSeatDistance,
   mapApiToSound,
+  mapFormDataToApiRequest,
 } from '@/lib/utils/sightReviewMapper';
 import { useSeatsStore } from '@/store/useSeatStore';
 
@@ -67,7 +68,7 @@ export function EditSightReviewFormContainer({
 
       setInitialData();
     }
-  }, [initialData, setFormData]);
+  }, [getSectionBySeatId, initialData, setFormData]);
 
   // initialData가 formData에 제대로 설정되었는지 확인
   useEffect(() => {
@@ -81,7 +82,8 @@ export function EditSightReviewFormContainer({
       if (!photo) {
         throw new Error('사진을 선택해주세요.');
       }
-      await updateSightReview(reviewId, reviewData, photo);
+      const mappedData = mapFormDataToApiRequest(reviewData);
+      await updateSightReview(reviewId, mappedData, photo);
       return undefined;
     } catch (error) {
       console.error('Error updating review:', error);

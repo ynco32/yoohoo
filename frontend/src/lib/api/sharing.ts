@@ -80,7 +80,10 @@ export const sharingAPI = {
    * @param data - 게시글 데이터 (전체 데이터)
    * @param file - 업로드할 이미지 파일
    */
-  createSharing: async (data: SharingFormData, file: File): Promise<number> => {
+  createSharing: async (
+    data: Omit<SharingFormData, 'image'>,
+    file: File
+  ): Promise<number> => {
     try {
       const formData = new FormData();
 
@@ -90,11 +93,15 @@ export const sharingAPI = {
       // 이미지 파일 추가
       formData.append('file', file, file.name);
 
-      const response = await api.post<number>('/api/v1/sharing', formData);
+      const response = await api.post<{ sharingId: number }>(
+        '/api/v1/sharing',
+        formData
+      );
 
-      return response.data;
+      return response.data.sharingId;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
+        console.error('상세 에러:', error.response.data);
         if (error.response.status === 401) {
           throw new ApiError(401, '다시 로그인이 필요합니다.');
         }

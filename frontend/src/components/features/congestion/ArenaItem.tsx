@@ -5,10 +5,19 @@ import Link from 'next/link';
 export const ArenaItem = ({ arenaId, arenaName, photoUrl }: ArenaData) => {
   return (
     <Link href={`congestion/${arenaId}`}>
-      <div>
-        <h3>{arenaId}</h3>
-        <p>{arenaName}</p>
-        <Image src={photoUrl ?? '/images/card.png'} alt={arenaName} />
+      <div className="mx-2 mb-3 flex w-[330px] rounded-lg border border-white bg-background-default p-2 shadow-card">
+        <Image
+          className="w-26 mr-2 h-24 rounded-lg"
+          src={photoUrl}
+          alt={arenaName}
+          width={100}
+          height={100}
+        />
+        <div className="flex flex-1 items-center justify-center">
+          <span className="font-['Pretendard'] text-sm font-bold leading-[19.18px] text-[#505050]">
+            {arenaName}
+          </span>
+        </div>
       </div>
     </Link>
   );

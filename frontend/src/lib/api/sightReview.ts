@@ -60,6 +60,11 @@ export async function submitSightReview(
   data: SightReviewFormData
 ): Promise<SubmitResponse> {
   try {
+    console.log('::: api/sightReview.ts ::: Submit 시작: 원본 데이터', {
+      ...data,
+      images: data.photo?.size, // 이미지는 길이만 로깅
+    });
+
     console.log('Submit 시작: 원본 데이터', data);
     const formData = new FormData();
 
@@ -92,9 +97,13 @@ export async function submitSightReview(
     });
 
     // FormData 내용 확인
-    console.log('최종 FormData 내용:');
+    console.log('::: FormData 내용 확인 :::');
     for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
+      console.log(
+        'FormData entry:',
+        pair[0],
+        pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]
+      );
     }
 
     const controller = new AbortController();
@@ -106,7 +115,13 @@ export async function submitSightReview(
       body: formData,
       signal: controller.signal,
     });
-
+    console.log('::: api/sightReview.ts ::: 요청 헤더:', {
+      'Content-Type': response.headers.get('Content-Type'),
+    });
+    console.log(
+      '::: api/sightReview.ts ::: API 응답 헤더:',
+      Object.fromEntries(response.headers.entries())
+    );
     clearTimeout(timeoutId);
 
     console.log('API 응답 상태:', response.status);

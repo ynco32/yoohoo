@@ -15,7 +15,7 @@ import { useSightReviewValidation } from '@/hooks/useSightReviewValidation';
 import StepProgressBar from './StepProgressBar';
 
 interface SightReviewFormProps {
-  onSubmit?: (data: SightReviewFormData) => Promise<{ id: string }>;
+  onSubmit?: (data: SightReviewFormData) => Promise<void>;
   artist?: string;
   className?: string;
   onClose?: () => void;
@@ -151,9 +151,11 @@ export const SightReviewForm = React.memo(
       try {
         setIsSubmitting(true);
         console.log('Submitting form data:', formData);
-        const result = await onSubmit(formData);
-        console.log('Submit success:', result);
-        router.push(`/sight/success`);
+        if (onSubmit) {
+          await onSubmit(formData);
+          console.log('Submit success');
+          router.push(`/sight/success`);
+        }
       } catch (error) {
         console.error('Submit error:', error);
         setError('submit', '제출 중 오류가 발생했습니다. 다시 시도해주세요.');

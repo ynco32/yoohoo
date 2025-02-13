@@ -65,8 +65,12 @@ export function EditSightReviewFormContainer({
   const handleSubmit = async (data: SightReviewFormData) => {
     try {
       setIsSubmitting(true);
-      const _result = await updateSightReview(reviewId, data);
-      return { id: reviewId.toString() };
+      const { photo, ...reviewData } = data;
+      if (!photo) {
+        throw new Error('사진을 선택해주세요.');
+      }
+      await updateSightReview(reviewId, reviewData, photo);
+      return undefined;
     } catch (error) {
       console.error('Error updating review:', error);
       if (error instanceof Error) {

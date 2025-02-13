@@ -22,8 +22,14 @@ export function SightReviewFormContainer({
     console.log(data);
     try {
       setIsSubmitting(true);
-      const result = await submitSightReview(data);
-      return { id: result.id };
+      const { photo, ...reviewData } = data;
+      if (!photo) {
+        throw new Error('사진을 선택해주세요.');
+      }
+
+      await submitSightReview(reviewData, photo);
+
+      return undefined;
     } catch (error) {
       console.error('Error submitting review:', error);
       if (error instanceof Error) {

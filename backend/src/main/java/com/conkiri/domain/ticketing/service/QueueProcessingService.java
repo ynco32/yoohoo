@@ -13,6 +13,7 @@ import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
+import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
 import com.conkiri.global.util.RedisKeys;
 import com.conkiri.global.util.WebSocketConstants;
@@ -29,8 +30,6 @@ public class QueueProcessingService {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final ServerMonitorService serverMonitorService;
 	private final UserReadService userReadService;
-
-	private static final int ESTIMATED_PROCESSING_TIME = 3; // 1인당 평균 3초 예상
 
 	// 티켓팅 시작 및 종료 시간을 Redis 에 설정합니다
 	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime) {
@@ -56,27 +55,30 @@ public class QueueProcessingService {
 	// 사용자가 티켓팅에 참여 가능한지 확인합니다.
 	public boolean canJoinTicketing(Long userId) {
 
-		String historyKey = RedisKeys.getHistoryKey(userId);
-		return !redisTemplate.hasKey(historyKey);
+		String userHistoryKey  = RedisKeys.getUserHistoryKey(userId);
+
+		// history가 없으면 당연히 참여 가능
+		if (!redisTemplate.hasKey(userHistoryKey )) {
+			return true;
+		}
+
+		// history가 있더라도, 예매 내역이 없으면(reserveTime이 없으면) 참여 가능
+		String reserveTime = (String) redisTemplate.opsForHash().get(userHistoryKey, "reserveTime");
+		return reserveTime == null;
 	}
 
 	// 사용자를 대기열에 추가
 	public void addToQueue(Long userId) {
 
-		log.info("검증전");
 		validateQueueRequest(userId);
-		log.info("검증후");
 
 		double score = System.currentTimeMillis();
 		Long position = addUserToQueue(userId, score);
-		log.info("포지션 획득 = " + position);
-		String historyKey = RedisKeys.getHistoryKey(userId);
+		String historyKey = RedisKeys.getUserHistoryKey(userId);
 		saveUserQueueHistory(position, score, historyKey);
-		log.info("기록");
 
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
-		log.info("대기시간");
 	}
 
 	// 사용자를 Redis Sorted Set 대기열에 추가합니다.
@@ -92,13 +94,11 @@ public class QueueProcessingService {
 
 		redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
 		redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
-		redisTemplate.opsForHash().put(historyKey, "totalQueue",
-			String.valueOf(redisTemplate.opsForZSet().size(RedisKeys.QUEUE)));
-
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
-		log.info("Sending waiting time to user {}, {}, {}, {}, {}", userId, waitingTime.getEstimatedWaitingSeconds(), waitingTime.getUsersAfter(), waitingTime.getUsersAhead(), waitingTime.getPosition());  // 로그 추가
+		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.getEstimatedWaitingSeconds(),
+			waitingTime.getUsersAfter(), waitingTime.getPosition());  // 로그 추가
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		messagingTemplate.convertAndSendToUser(
 			user.getEmail(),
@@ -116,8 +116,9 @@ public class QueueProcessingService {
 	@Scheduled(fixedRate = 5000)  // 5초마다 체크
 	public void processWaitingQueue() {
 
-		if (!isTicketingActive()) {return;}
-		log.info("@@@@@@@@@@@@@@@@@@@@ 대기열 입장 @@@@@@@@@@@@@@@@");
+		if (!isTicketingActive()) {
+			return;
+		}
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 		processNextBatch(batchSize);
@@ -126,8 +127,9 @@ public class QueueProcessingService {
 	// 지정된 배치 크기만큼 대기열에서 사용자를 처리합니다.
 	private void processNextBatch(int batchSize) {
 
-		if (isQueueEmpty()) {return;}
-		log.info("!!!! 큐가 비어있나봐");
+		if (isQueueEmpty()) {
+			return;
+		}
 		Set<String> nextBatch = fetchNextBatch(batchSize);
 		if (!nextBatch.isEmpty()) {
 			processUsersEntrance(nextBatch);
@@ -178,7 +180,6 @@ public class QueueProcessingService {
 		return redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 0, -1);
 	}
 
-
 	// 개별 사용자의 대기 시간을 업데이트합니다.
 	private void updateUserWaitingTime(String userIdStr) {
 
@@ -198,25 +199,37 @@ public class QueueProcessingService {
 			return null;
 		}
 
+		position += 1L;
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 
 		Long usersAhead = position;
-		Long batchesRequired = (usersAhead / batchSize) + 1;
-		Long estimatedSeconds = batchesRequired * batchSize * ESTIMATED_PROCESSING_TIME;
+		boolean isInFirstBatch = usersAhead < batchSize;
+
+		// 대기 시간 계산시 스케줄러 간격(5초) 고려
+		Long estimatedSeconds;
+		if (isInFirstBatch) {
+			// 첫 배치는 다음 스케줄러 실행까지 남은 시간
+			estimatedSeconds = 5L;  // 최대 5초
+		} else {
+			// 내 배치 번호
+			Long myBatchNumber = (usersAhead + batchSize - 1) / batchSize;
+			// 각 배치마다 5초씩 소요
+			estimatedSeconds = myBatchNumber * 5L;
+		}
+
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE);
-		Long usersAfter = totalWaiting - position - 1;  // 내 뒤의 대기자 수
+		Long usersAfter = totalWaiting - position - 1;
 
 		return WaitingTimeResponseDTO.of(position, usersAhead, estimatedSeconds, usersAfter);
 	}
 
 	// 대기열 참여 요청의 유효성을 검증합니다.
-	public void validateQueueRequest(Long userId){
+	public void validateQueueRequest(Long userId) {
 
-		// if (!canJoinTicketing(userId)) {
-		// 	throw new DuplicateTicketingException();
-		// }
-		log.info("검증 중간");
+		if (!canJoinTicketing(userId)) {
+			throw new DuplicateTicketingException();
+		}
 		if (!isTicketingActive()) {
 			throw new NotStartedTicketingException();
 		}

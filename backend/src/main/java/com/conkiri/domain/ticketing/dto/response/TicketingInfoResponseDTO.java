@@ -16,11 +16,11 @@ public class TicketingInfoResponseDTO {
 	public TicketingInfoResponseDTO () {
 		this.serverTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		this.startTime = LocalDateTime.now()
-			.withHour(15)
+			.withHour(13)
 			.withMinute(0)
 			.withSecond(0)
 			.withNano(0);
 		this.isWithin10Minutes = startTime.minusMinutes(10).isBefore(serverTime) && startTime.isAfter(serverTime);
-		this.isFinished = serverTime.isAfter(startTime.plusHours(9));
+		this.isFinished = serverTime.isAfter(startTime.plusHours(10));
 	}
 }

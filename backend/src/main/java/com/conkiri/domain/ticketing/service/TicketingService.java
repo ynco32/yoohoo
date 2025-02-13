@@ -13,6 +13,7 @@ import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.entity.Status;
 import com.conkiri.global.exception.ticketing.AlreadyReservedSeatException;
+import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.InvalidSeatException;
 import com.conkiri.global.exception.ticketing.InvalidSectionException;
 import com.conkiri.global.util.RedisKeys;
@@ -108,19 +109,22 @@ public class TicketingService {
 	// * 2. 예매 히스토리 저장
 	private void processSeatReservation(Long userId, String section, String seat, String sectionKey) {
 
-		String historyKey = RedisKeys.getHistoryKey(userId);
+		String historyKey = RedisKeys.getUserHistoryKey(userId);
 		redisTemplate.opsForHash().put(sectionKey, seat, Status.RESERVED.getValue());
 		saveReservationHistory(historyKey, userId, section, seat);
 	}
 
 	// 예매 정보 저장
-	private void saveReservationHistory(String historyKey, Long userId, String section, String seat) {
+	private void saveReservationHistory(String userHistoryKey, Long userId, String section, String seat) {
+		// 사용자의 예매 내역 저장
+		redisTemplate.opsForHash().put(userHistoryKey, "section", section);
+		redisTemplate.opsForHash().put(userHistoryKey, "seat", seat);
+		redisTemplate.opsForHash().put(userHistoryKey, "reserveTime", String.valueOf(System.currentTimeMillis()));
 
-		redisTemplate.opsForHash().put(historyKey, "section", section);
-		redisTemplate.opsForHash().put(historyKey, "seat", seat);
-		redisTemplate.opsForHash().put(historyKey, "userId", String.valueOf(userId));
-		redisTemplate.opsForHash().put(historyKey, "reserveTime",
-			String.valueOf(System.currentTimeMillis()));
+		// 해당 좌석의 예매 내역 저장
+		String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
+		redisTemplate.opsForHash().put(seatHistoryKey, "userId", String.valueOf(userId));
+		redisTemplate.opsForHash().put(seatHistoryKey, "reserveTime", String.valueOf(System.currentTimeMillis()));
 	}
 
 	//  좌석 상태 유효성 검사
@@ -170,12 +174,11 @@ public class TicketingService {
 	}
 
 	private void validateNoExistingReservation(Long userId) {
-
-		String historyKey = RedisKeys.getHistoryKey(userId);
-		// if (redisTemplate.opsForHash().hasKey(historyKey, "seat")) {
-		// 	log.info("User {} already has a reservation", userId);
-		// 	throw new DuplicateTicketingException();
-		// }
+		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
+		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
+			log.info("User {} already has a reservation", userId);
+			throw new DuplicateTicketingException();
+		}
 	}
 
 	// 유틸리티 메서드

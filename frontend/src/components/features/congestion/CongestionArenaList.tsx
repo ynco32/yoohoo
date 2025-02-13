@@ -21,7 +21,7 @@ export const ArenaListContainer = () => {
 
 export const CongestionArenaList = ({ arenas }: ArenaResponse) => {
   return (
-    <div>
+    <div className="flex flex-col items-center pt-5">
       {arenas.map((arena) => (
         <ArenaItem
           key={arena.arenaId}

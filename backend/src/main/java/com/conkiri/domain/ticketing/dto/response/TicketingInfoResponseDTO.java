@@ -16,7 +16,7 @@ public class TicketingInfoResponseDTO {
 	public TicketingInfoResponseDTO() {
 		this.serverTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		this.startTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"))
-			.withHour(16)
+			.withHour(21)
 			.withMinute(0)
 			.withSecond(0)
 			.withNano(0);

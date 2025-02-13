@@ -33,6 +33,7 @@ export default function SharingEditPage() {
     image: null,
     latitude: 0,
     longitude: 0,
+    concertId,
   });
 
   // 기존 데이터 불러오기
@@ -60,6 +61,7 @@ export default function SharingEditPage() {
           latitude: data.latitude ?? 0,
           longitude: data.longitude ?? 0,
           image: imageFile ?? null,
+          concertId: concertId,
         });
 
         setLocation({
@@ -74,7 +76,7 @@ export default function SharingEditPage() {
     };
 
     fetchSharingDetail();
-  }, [sharingId, router]);
+  }, [sharingId, concertId, router]);
 
   const handleLocationSelect = (locationInfo: LocationInfo) => {
     setLocation(locationInfo);

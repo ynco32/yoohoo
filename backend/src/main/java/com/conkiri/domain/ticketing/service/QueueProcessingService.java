@@ -37,6 +37,10 @@ public class QueueProcessingService {
 		log.info("Setting method ");
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
+
+		String dummyId = "dummy_user";
+		double dummyScore = Double.MIN_VALUE;
+		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, dummyId, dummyScore);
 	}
 
 	// 현재 시간이 티켓팅 가능 시간 범위 내인지 확인합니다.
@@ -149,20 +153,22 @@ public class QueueProcessingService {
 	// 다음 처리할 배치의 사용자들을 조회합니다.
 	private Set<String> fetchNextBatch(int batchSize) {
 		return redisTemplate.opsForZSet()
-			.range(RedisKeys.QUEUE, 0, batchSize - 1);
+			.range(RedisKeys.QUEUE, 1, batchSize);
 	}
 
 	// 배치의 사용자들을 입장 처리합니다
 	private void processUsersEntrance(Set<String> userIds) {
 
 		userIds.forEach(userId -> {
-			User user = userReadService.findUserByIdOrElseThrow(Long.parseLong(userId));
-			log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
-			messagingTemplate.convertAndSendToUser(
-				user.getEmail(),
-				WebSocketConstants.NOTIFICATION_DESTINATION,
-				true
-			);
+			if (!userId.equals("dummy_user")) {  // 더미 유저 체크 필요
+				User user = userReadService.findUserByIdOrElseThrow(Long.parseLong(userId));
+				log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
+				messagingTemplate.convertAndSendToUser(
+					user.getEmail(),
+					WebSocketConstants.NOTIFICATION_DESTINATION,
+					true
+				);
+			}
 		});
 		removeProcessedUsersFromQueue(userIds.size());
 	}
@@ -207,11 +213,10 @@ public class QueueProcessingService {
 
 		// 대기번호는 1부터 시작하도록
 		Long waitingNumber = position;
-		Long usersAhead = position - 1;  // 앞에 있는 사람 수는 position 그대로
-		boolean isInFirstBatch = usersAhead < batchSize;
+		Long usersAhead = position - 1;
 
 		// 대기 시간 계산
-		Long estimatedSeconds = isInFirstBatch ? 5L : ((usersAhead + batchSize - 1) / batchSize) * 5L;
+		Long estimatedSeconds = position * 3L;
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE) - 1;
 		// 뒤에 있는 사람 수 계산 수정
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);

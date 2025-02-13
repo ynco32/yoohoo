@@ -4,9 +4,9 @@ interface QueuePopupProps {
   isOpen: boolean;
   title: string;
   onClose: () => void;
-  queueNumber: string;
-  behindMe: number;
-  expectedTime: string; //4시간 58분 29초
+  queueNumber: string | number;
+  behindMe: number | string;
+  expectedTime: string | number; //4시간 58분 29초
 }
 
 export default function QueuePopup({

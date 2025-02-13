@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useTicketintPracticeResultStore } from '@/store/ticketintPracticeResult';
+import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
 
 export default function ResultPage() {
   const router = useRouter();

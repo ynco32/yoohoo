@@ -20,6 +20,11 @@ import com.conkiri.global.exception.sharing.FileNotEmptyException;
 import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
 import com.conkiri.global.exception.sharing.SharingNotFoundException;
 import com.conkiri.global.exception.sharing.StatusInvalidException;
+import com.conkiri.global.exception.ticketing.AlreadyReservedSeatException;
+import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
+import com.conkiri.global.exception.ticketing.InvalidSeatException;
+import com.conkiri.global.exception.ticketing.InvalidSectionException;
+import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
 import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
@@ -196,6 +201,36 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(FileNotEmptyException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse fileNotEmptyExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(AlreadyReservedSeatException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public ExceptionResponse alreadyReservedSeatExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.CONFLICT, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(DuplicateTicketingException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse duplicateTicketingExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(NotStartedTicketingException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse notStartedTicketingExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(InvalidSectionException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse invalidSectionExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(InvalidSeatException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse invalidSeatExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

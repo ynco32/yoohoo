@@ -16,10 +16,10 @@ export function SightReviewFormContainer({
   artist,
 }: SightReviewFormContainerProps) {
   const router = useRouter();
-  const { setError, setIsSubmitting } = useSightReviewStore();
+  const store = useSightReviewStore(); // store를 컴포넌트 최상위에서 호출
+  const { setError, setIsSubmitting } = store;
 
   const handleSubmit = async (data: SightReviewFormData) => {
-    console.log(data);
     try {
       setIsSubmitting(true);
       const { photo, ...reviewData } = data;

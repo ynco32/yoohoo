@@ -1,4 +1,8 @@
-import type { ApiResponse, SightReviewFormData } from '@/types/sightReviews';
+import type {
+  ApiResponse,
+  CreateSightReviewRequest,
+  SightReviewFormData,
+} from '@/types/sightReviews';
 
 interface ErrorResponse {
   message: string;
@@ -31,7 +35,7 @@ const withTimeout = async <T>(
 };
 
 export async function submitSightReview(
-  data: Omit<SightReviewFormData, 'photo'>,
+  data: CreateSightReviewRequest,
   photo: File
 ): Promise<void> {
   try {

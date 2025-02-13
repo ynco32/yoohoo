@@ -3,16 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { EditSightReviewFormContainer } from '@/components/features/sight/form/EditSightReviewFormContainer';
-import type { SightReviewFormData } from '@/types/sightReviews';
+import type { ApiResponse, ApiReview } from '@/types/sightReviews';
 import { getReview } from '@/lib/api/sightReview';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 
 export default function EditSightReviewPage() {
   const params = useParams();
   const reviewId = Number(params.reviewId);
-  const [initialData, setInitialData] = useState<
-    SightReviewFormData | undefined
-  >();
+  const [initialData, setInitialData] = useState<ApiReview | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,10 +22,15 @@ export default function EditSightReviewPage() {
   useEffect(() => {
     const fetchReviewData = async () => {
       try {
-        const data = await getReview(reviewId);
-        setInitialData(data);
-        // 데이터 fetch 후 store 초기화
-        useSightReviewStore.getState().initialize(data);
+        const response: ApiResponse = await getReview(reviewId);
+        const apiReview = response.review; // API에서 받아온 리뷰 데이터
+
+        if (!apiReview) {
+          throw new Error('Review not found');
+        }
+
+        setInitialData(apiReview); // ApiReview 형태로 그대로 전달
+
         setError(null);
       } catch (error) {
         setError(

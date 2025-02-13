@@ -178,7 +178,7 @@ export const sharingAPI = {
     status: SharingStatus
   ): Promise<void> => {
     try {
-      await api.put(`/api/v1/sharing/${sharingId}/status`, { status });
+      await api.patch(`/api/v1/sharing/${sharingId}/status`, { status });
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {

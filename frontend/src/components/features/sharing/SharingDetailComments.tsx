@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { sharingCommentAPI } from '@/lib/api/sharingComment';
 import { CommentItem } from './CommentItem';
 import { useMswInit } from '@/hooks/useMswInit';
 import { useSharingCommentStore } from '@/store/useSharingCommentStore';
@@ -71,11 +70,7 @@ export const SharingDetailComments = ({
           if (!commentContent.trim()) return;
 
           try {
-            const newComment = await sharingCommentAPI.createComment(
-              sharingId,
-              commentContent
-            );
-            addComment(newComment);
+            await addComment(sharingId, commentContent);
             setCommentContent('');
           } catch (err) {
             console.error('Error posting comment:', err);

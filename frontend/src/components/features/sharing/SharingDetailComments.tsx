@@ -3,7 +3,6 @@ import { Comment } from '@/types/sharing';
 import { sharingCommentAPI } from '@/lib/api/sharingComment';
 import { CommentItem } from './CommentItem';
 import { useMswInit } from '@/hooks/useMswInit';
-import { useUserStore } from '@/store/useUserStore';
 
 interface SharingDetailCommentsProps {
   sharingId: number;
@@ -12,7 +11,6 @@ interface SharingDetailCommentsProps {
 
 export const SharingDetailComments = ({
   sharingId,
-  writerId,
 }: SharingDetailCommentsProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentContent, setCommentContent] = useState('');
@@ -23,9 +21,6 @@ export const SharingDetailComments = ({
     undefined
   );
   const { mswInitialized } = useMswInit();
-
-  const user = useUserStore((state) => state.user);
-  const isAuthor = user?.userId === writerId;
 
   // IntersectionObserver용 ref
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -169,26 +164,24 @@ export const SharingDetailComments = ({
       <h2 className="font-medium">
         댓글 {comments.length > 0 && `(${comments.length})`}
       </h2>
-      {!isAuthor && (
-        <form onSubmit={handleSubmitComment} className="mb-4">
-          <div className="flex flex-col gap-2">
-            <textarea
-              value={commentContent}
-              onChange={(e) => setCommentContent(e.target.value)}
-              rows={2}
-              placeholder="댓글을 입력하세요"
-              className="focus:border-primary flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            />
-            <button
-              type="submit"
-              disabled={!commentContent.trim()}
-              className="ml-auto rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
-            >
-              등록
-            </button>
-          </div>
-        </form>
-      )}
+      <form onSubmit={handleSubmitComment} className="mb-4">
+        <div className="flex flex-col gap-2">
+          <textarea
+            value={commentContent}
+            onChange={(e) => setCommentContent(e.target.value)}
+            rows={2}
+            placeholder="댓글을 입력하세요"
+            className="focus:border-primary flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            disabled={!commentContent.trim()}
+            className="ml-auto rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
+          >
+            등록
+          </button>
+        </div>
+      </form>
       {error && <p className="text-sm text-red-500">{error}</p>}
       {comments.length > 0 ? (
         <div className="space-y-3">

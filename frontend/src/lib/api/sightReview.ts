@@ -4,8 +4,10 @@ import type {
   SightReviewFormData,
 } from '@/types/sightReviews';
 
-interface SubmitResponse extends ApiResponse {
-  id: string;
+interface ErrorResponse {
+  message: string;
+  code?: string;
+  details?: unknown;
 }
 
 const SIGHT_REVIEW_API = {
@@ -16,11 +18,34 @@ const SIGHT_REVIEW_API = {
 
 const TIMEOUT_MS = 10000;
 
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  ms: number = TIMEOUT_MS
+): Promise<T> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ms);
+  try {
+    const result = await promise;
+    clearTimeout(timeoutId);
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+};
+
 export async function submitSightReview(
   data: CreateSightReviewRequest,
   photo: File
-): Promise<SubmitResponse> {
+): Promise<void> {
   try {
+    if (!photo) {
+      throw new Error('사진 파일은 필수입니다.');
+    }
+    if (!data) {
+      throw new Error('리뷰 데이터는 필수입니다.');
+    }
+
     console.log('[Sight Review API] 제출 시작');
     console.log('[Sight Review API] 요청 데이터:', {
       ...data,
@@ -55,17 +80,13 @@ export async function submitSightReview(
       }
     }
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
     console.log('[Sight Review API] 요청 시작:', SIGHT_REVIEW_API.REVIEWS);
-    const response = await fetch(SIGHT_REVIEW_API.REVIEWS, {
-      method: 'POST',
-      body: formData,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
+    const response = await withTimeout(
+      fetch(SIGHT_REVIEW_API.REVIEWS, {
+        method: 'POST',
+        body: formData,
+      })
+    );
 
     console.log('[Sight Review API] 응답 상태:', response.status);
     console.log(
@@ -74,14 +95,12 @@ export async function submitSightReview(
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
       console.error('[Sight Review API] 요청 실패:', errorData);
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
-
-    const result = await response.json();
-    console.log('[Sight Review API] 성공 응답:', result);
-    return result;
   } catch (error) {
     console.error('제출 중 에러 발생:', error);
     if (error instanceof Error) {
@@ -98,8 +117,15 @@ export async function updateSightReview(
   reviewId: number,
   data: Omit<SightReviewFormData, 'photo'>,
   photo: File
-): Promise<ApiResponse> {
+): Promise<void> {
   try {
+    if (!photo) {
+      throw new Error('사진 파일은 필수입니다.');
+    }
+    if (!data) {
+      throw new Error('리뷰 데이터는 필수입니다.');
+    }
+
     const formData = new FormData();
 
     // JSON 데이터를 Blob으로 변환하여 추가
@@ -109,25 +135,21 @@ export async function updateSightReview(
     );
 
     // 이미지 파일 추가
-    formData.append('photo', photo, photo.name);
+    formData.append('file', photo, photo.name);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
-      method: 'PUT',
-      body: formData,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
+    const response = await withTimeout(
+      fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
+        method: 'PUT',
+        body: formData,
+      })
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
-
-    return response.json();
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
@@ -154,20 +176,14 @@ export async function getArenaReviews(
       ...(params.seatId && { seatId: params.seatId.toString() }),
     });
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(
-      `${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`,
-      {
-        signal: controller.signal,
-      }
+    const response = await withTimeout(
+      fetch(`${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`)
     );
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 
@@ -187,18 +203,16 @@ export async function deleteSightReview(
   reviewId: number
 ): Promise<ApiResponse> {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
-      method: 'DELETE',
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
+    const response = await withTimeout(
+      fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
+        method: 'DELETE',
+      })
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 
@@ -218,17 +232,14 @@ export async function getReview(
   reviewId: number
 ): Promise<SightReviewFormData> {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
+    const response = await withTimeout(
+      fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId))
+    );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response
+        .json()
+        .catch(() => ({}))) as ErrorResponse;
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 

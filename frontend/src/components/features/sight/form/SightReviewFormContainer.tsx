@@ -22,18 +22,14 @@ export function SightReviewFormContainer({
   const handleSubmit = async (data: SightReviewFormData) => {
     try {
       setIsSubmitting(true);
-      // 먼저 store의 formData를 업데이트
-      store.setFormData(data);
-
-      const apiData = store.getAPIRequestData();
-      const photo = data.photo; // store 대신 파라미터에서 받은 data 사용
-
-      if (!photo || !(photo instanceof File)) {
-        throw new Error('사진이 필요합니다.');
+      const { photo, ...reviewData } = data;
+      if (!photo) {
+        throw new Error('사진을 선택해주세요.');
       }
 
-      const result = await submitSightReview(apiData, photo); // result 변수 추가
-      return { id: result.id };
+      await submitSightReview(reviewData, photo);
+
+      return undefined;
     } catch (error) {
       console.error('Error submitting review:', error);
       if (error instanceof Error) {

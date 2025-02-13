@@ -10,7 +10,124 @@ const SIGHT_REVIEW_API = {
   REVIEW_BY_ID: (reviewId: number) => `/api/v1/view/reviews/${reviewId}`,
 } as const;
 
-const TIMEOUT_MS = 10000; // 10초
+const TIMEOUT_MS = 10000;
+
+export async function submitSightReview(
+  data: SightReviewFormData
+): Promise<SubmitResponse> {
+  try {
+    if (!data.photo) {
+      throw new Error('사진은 필수입니다.');
+    }
+
+    console.log('Submit 시작:', {
+      ...data,
+      photo:
+        data.photo instanceof File
+          ? {
+              name: data.photo.name,
+              size: data.photo.size,
+              type: data.photo.type,
+            }
+          : null,
+    });
+
+    const formData = new FormData();
+
+    // 데이터 필드들을 FormData에 추가
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'photo' && value instanceof File) {
+        formData.append('photo', value);
+      } else if (typeof value === 'number') {
+        formData.append(key, value.toString());
+      } else if (typeof value === 'string') {
+        formData.append(key, value);
+      } else if (value != null) {
+        formData.append(key, JSON.stringify(value));
+      }
+    });
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const response = await fetch(SIGHT_REVIEW_API.REVIEWS, {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('성공 응답:', result);
+    return result;
+  } catch (error) {
+    console.error('제출 중 에러 발생:', error);
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('요청 시간이 초과되었습니다.');
+      }
+      throw error;
+    }
+    throw new Error('알 수 없는 에러가 발생했습니다.');
+  }
+}
+
+export async function updateSightReview(
+  reviewId: number,
+  data: SightReviewFormData
+): Promise<ApiResponse> {
+  try {
+    if (!data.photo) {
+      throw new Error('사진은 필수입니다.');
+    }
+
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'photo' && value instanceof File) {
+        formData.append('photo', value);
+      } else if (typeof value === 'number') {
+        formData.append(key, value.toString());
+      } else if (typeof value === 'string') {
+        formData.append(key, value);
+      } else if (value != null) {
+        formData.append(key, JSON.stringify(value));
+      }
+    });
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
+      method: 'PUT',
+      body: formData,
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('요청 시간이 초과되었습니다.');
+      }
+      throw error;
+    }
+    throw new Error('알 수 없는 에러가 발생했습니다.');
+  }
+}
 
 export async function getArenaReviews(
   arenaId: number,
@@ -56,161 +173,6 @@ export async function getArenaReviews(
   }
 }
 
-export async function submitSightReview(
-  data: SightReviewFormData
-): Promise<SubmitResponse> {
-  try {
-    console.log('::: api/sightReview.ts ::: Submit 시작: 원본 데이터', {
-      ...data,
-      images: data.photo?.size, // 이미지는 길이만 로깅
-    });
-
-    console.log('Submit 시작: 원본 데이터', data);
-    const formData = new FormData();
-
-    // SightReviewFormData의 모든 필드를 FormData에 추가
-    Object.entries(data).forEach(([key, value]) => {
-      console.log(`처리 중인 필드: ${key}, 값:`, value, '타입:', typeof value);
-
-      // 이미지 파일들 처리
-      if (key === 'images' && Array.isArray(value)) {
-        value.forEach((image, index) => {
-          console.log(`이미지 ${index} 추가:`, image);
-          formData.append(`images`, image);
-        });
-      }
-      // 숫자 타입 처리
-      else if (typeof value === 'number') {
-        console.log(`숫자 필드 ${key} 추가:`, value);
-        formData.append(key, value.toString());
-      }
-      // 문자열 타입 처리
-      else if (typeof value === 'string') {
-        console.log(`문자열 필드 ${key} 추가:`, value);
-        formData.append(key, value);
-      }
-      // null이나 undefined가 아닌 경우에만 추가
-      else if (value != null) {
-        console.log(`기타 필드 ${key} 추가:`, value);
-        formData.append(key, JSON.stringify(value));
-      }
-    });
-
-    // FormData 내용 확인
-    console.log('::: FormData 내용 확인 :::');
-    for (const pair of formData.entries()) {
-      console.log(
-        'FormData entry:',
-        pair[0],
-        pair[1] instanceof File ? `File: ${pair[1].name}` : pair[1]
-      );
-    }
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    console.log('API 요청 시작:', SIGHT_REVIEW_API.REVIEWS);
-    const response = await fetch(SIGHT_REVIEW_API.REVIEWS, {
-      method: 'POST',
-      body: formData,
-      signal: controller.signal,
-    });
-    console.log('::: api/sightReview.ts ::: 요청 헤더:', {
-      'Content-Type': response.headers.get('Content-Type'),
-    });
-    console.log(
-      '::: api/sightReview.ts ::: API 응답 헤더:',
-      Object.fromEntries(response.headers.entries())
-    );
-    clearTimeout(timeoutId);
-
-    console.log('API 응답 상태:', response.status);
-    console.log(
-      'API 응답 헤더:',
-      Object.fromEntries(response.headers.entries())
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch((e) => {
-        console.error('에러 응답 파싱 실패:', e);
-        return {};
-      });
-      console.error('서버 에러 응답:', errorData);
-      throw new Error(errorData.message || `서버 에러: ${response.status}`);
-    }
-
-    const result = await response.json();
-    console.log('성공 응답:', result);
-    return result;
-  } catch (error) {
-    console.error('제출 중 에러 발생:', error);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('요청 타임아웃');
-        throw new Error('요청 시간이 초과되었습니다.');
-      }
-      throw error;
-    }
-    throw new Error('알 수 없는 에러가 발생했습니다.');
-  }
-}
-
-// 수정 함수
-export async function updateSightReview(
-  reviewId: number,
-  data: SightReviewFormData
-): Promise<ApiResponse> {
-  try {
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      console.log(`처리 중인 필드: ${key}, 값:`, value, '타입:', typeof value);
-
-      if (key === 'photo' && value instanceof File) {
-        console.log(`사진 추가:`, value);
-        formData.append('photo', value);
-      } else if (typeof value === 'number') {
-        formData.append(key, value.toString());
-      } else if (typeof value === 'string') {
-        formData.append(key, value);
-      } else if (value != null && !(value instanceof File)) {
-        formData.append(key, JSON.stringify(value));
-      }
-    });
-    console.log(':::api/sightReviews.ts ::: 파일 정보:', {
-      isFile: data.photo instanceof File,
-      fileName: data.photo instanceof File ? data.photo.name : 'No file',
-      fileSize: data.photo instanceof File ? data.photo.size : 0,
-    });
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
-      method: 'PUT',
-      body: formData,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `서버 에러: ${response.status}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new Error('요청 시간이 초과되었습니다.');
-      }
-      throw error;
-    }
-    throw new Error('알 수 없는 에러가 발생했습니다.');
-  }
-}
-
-// 삭제 함수
 export async function deleteSightReview(
   reviewId: number
 ): Promise<ApiResponse> {
@@ -242,7 +204,6 @@ export async function deleteSightReview(
   }
 }
 
-// 단일 리뷰 조회
 export async function getReview(
   reviewId: number
 ): Promise<SightReviewFormData> {
@@ -251,7 +212,6 @@ export async function getReview(
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     const response = await fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
-      method: 'GET',
       signal: controller.signal,
     });
 

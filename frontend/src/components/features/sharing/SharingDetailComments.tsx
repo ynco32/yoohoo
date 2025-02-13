@@ -99,7 +99,7 @@ export const SharingDetailComments = ({
       {comments.length > 0 ? (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <CommentItem key={comment.commentId} comment={comment} />
+            <CommentItem key={comment.commentId} commentId={comment.commentId} />
           ))}
           <div ref={loadingRef} className="h-px" />
         </div>

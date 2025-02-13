@@ -12,8 +12,8 @@ interface CommentStore {
   // Actions
   fetchComments: (sharingId: number, lastCommentId?: number) => Promise<void>;
   fetchMoreComments: (sharingId: number) => Promise<void>;
-  addComment: (comment: Comment) => void;
-  updateComment: (commentId: number, content: string) => Promise<void>;
+  addComment: (sharingId: number, content: string) => Promise<Comment>;
+  updateComment: (commentId: number, content: string) => Promise<Comment>;
   deleteComment: (commentId: number) => Promise<void>;
   reset: () => void;
 }
@@ -86,8 +86,20 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
     }
   },
 
-  addComment: (comment: Comment) => {
-    set((state) => ({ comments: [comment, ...state.comments] }));
+  addComment: async (sharingId: number, content: string) => {
+    try {
+      const newComment = await sharingCommentAPI.createComment(
+        sharingId,
+        content
+      );
+      set((state) => ({ comments: [newComment, ...state.comments] }));
+      return newComment;
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : '댓글 작성에 실패했습니다.',
+      });
+      throw err;
+    }
   },
 
   updateComment: async (commentId: number, content: string) => {
@@ -101,6 +113,7 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
           comment.commentId === commentId ? updatedComment : comment
         ),
       }));
+      return updatedComment;
     } catch (err) {
       set({
         error: err instanceof Error ? err.message : '댓글 수정에 실패했습니다.',

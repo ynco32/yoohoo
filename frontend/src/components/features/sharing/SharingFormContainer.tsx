@@ -20,7 +20,6 @@ export function SharingFormContainer({
   mode,
   sharingId,
   location,
-  concertId,
   initialData = {},
   setFormData: setParentFormData,
   onSubmitComplete,
@@ -75,7 +74,6 @@ export function SharingFormContainer({
           latitude: location.latitude,
           longitude: location.longitude,
         }),
-        ...(concertId && { concertId }),
       };
 
       if (mode === 'create') {

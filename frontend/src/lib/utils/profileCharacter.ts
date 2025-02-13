@@ -1,22 +1,17 @@
-import Level1Image from '../../../public/images/profile/level1.png';
-import Level2Image from '../../../public/images/profile/level2.png';
-import Level3Image from '../../../public/images/profile/level3.png';
-import Level4Image from '../../../public/images/profile/level4.png';
-import CatImage from '../../../public/images/cat.png';
-import { StaticImageData } from 'next/image';
+import { Images } from '@/assets/images';
 
 export const getUserProfileImage = (userLevel: string): string => {
   const idx = Number(userLevel);
-  const profileImages: Record<1 | 2 | 3 | 4, StaticImageData> = {
-    1: Level1Image,
-    2: Level2Image,
-    3: Level3Image,
-    4: Level4Image,
+  const profileImages: Record<1 | 2 | 3 | 4, string> = {
+    1: Images.Level1,
+    2: Images.Level2,
+    3: Images.Level3,
+    4: Images.Level4,
   };
 
   if (idx in profileImages) {
-    return profileImages[idx as 1 | 2 | 3 | 4].src;
+    return profileImages[idx as 1 | 2 | 3 | 4];
   }
 
-  return CatImage.src;
+  return Images.Cat;
 };

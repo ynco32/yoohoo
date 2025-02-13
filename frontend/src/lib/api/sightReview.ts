@@ -20,7 +20,8 @@ export async function submitSightReview(
       throw new Error('사진은 필수입니다.');
     }
 
-    console.log('Submit 시작:', {
+    console.log('[Sight Review API] 제출 시작');
+    console.log('[Sight Review API] 요청 데이터:', {
       ...data,
       photo:
         data.photo instanceof File
@@ -38,6 +39,9 @@ export async function submitSightReview(
     Object.entries(data).forEach(([key, value]) => {
       if (key === 'photo' && value instanceof File) {
         formData.append('photo', value);
+        console.log(
+          `[Sight Review API] 파일 추가: ${value.name} (${value.size} bytes)`
+        );
       } else if (typeof value === 'number') {
         formData.append(key, value.toString());
       } else if (typeof value === 'string') {
@@ -47,9 +51,20 @@ export async function submitSightReview(
       }
     });
 
+    // FormData 내용 로깅
+    console.log('[Sight Review API] FormData 필드:');
+    for (const [key, value] of formData.entries()) {
+      if (key === 'photo') {
+        console.log(`- ${key}: [File]`);
+      } else {
+        console.log(`- ${key}: ${value}`);
+      }
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
+    console.log('[Sight Review API] 요청 시작:', SIGHT_REVIEW_API.REVIEWS);
     const response = await fetch(SIGHT_REVIEW_API.REVIEWS, {
       method: 'POST',
       body: formData,
@@ -58,13 +73,20 @@ export async function submitSightReview(
 
     clearTimeout(timeoutId);
 
+    console.log('[Sight Review API] 응답 상태:', response.status);
+    console.log(
+      '[Sight Review API] 응답 헤더:',
+      Object.fromEntries(response.headers.entries())
+    );
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('[Sight Review API] 요청 실패:', errorData);
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('성공 응답:', result);
+    console.log('[Sight Review API] 성공 응답:', result);
     return result;
   } catch (error) {
     console.error('제출 중 에러 발생:', error);

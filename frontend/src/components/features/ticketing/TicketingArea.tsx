@@ -88,7 +88,7 @@ const TicketingArea: React.FC<VenueSectionProps> = ({
   };
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center p-4">
+    <div className="z-0 flex w-full max-w-xl flex-col items-center justify-center p-4">
       <div className="relative w-full">
         <svg width="0" height="0">
           <defs>

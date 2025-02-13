@@ -47,7 +47,7 @@ public class SharingController {
 		@Valid @RequestPart SharingRequestDTO sharingRequestDTO,
 		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		System.out.println(file.getSize());
+		System.out.println(sharingRequestDTO.getStartTime());
 		return sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
 	}
 

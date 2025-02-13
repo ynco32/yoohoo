@@ -13,6 +13,8 @@ interface SeatsState {
 
   // Helper selectors
   getSeatScrapStatus: (seatId: number) => boolean;
+  getSeatById: (seatId: number) => SeatProps | undefined;
+  getSectionBySeatId: (seatId: number) => number | undefined;
 
   // Actions
   fetchSeatsBySection: (
@@ -33,6 +35,17 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
   selectedSeatId: null,
   isScrapProcessing: false,
   currentStageType: null,
+
+  // 좌석 아이디로 좌석 전체 정보 찾기
+  getSeatById: (seatId: number) => {
+    return get().seats.find((seat) => seat.seatId === seatId);
+  },
+
+  // 좌석 아이디로 해당 좌석의 구역 찾기
+  getSectionBySeatId: (seatId: number) => {
+    const seat = get().seats.find((seat) => seat.seatId === seatId);
+    return seat?.sectionId;
+  },
 
   fetchSeatsBySection: async (
     arenaId: number,

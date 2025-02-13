@@ -37,20 +37,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 
 		if (shouldNotFilter(request)) {
-			System.out.println("필터 X");
+			//System.out.println("필터 X");
 			filterChain.doFilter(request, response);
 			return;
 		}
-		log.info("JwtAuthenticationFilter - Processing request to: {}", request.getServletPath());
+		//log.info("JwtAuthenticationFilter - Processing request to: {}", request.getServletPath());
 		// 토큰 추출 시도
 		String token = extractTokenFromRequest(request);
-		log.info("Extracted token: {}", token);  // 디버깅용
+		//log.info("Extracted token: {}", token);  // 디버깅용
 
 		if (token != null) {
 			try {
 				if (jwtUtil.validateToken(token)) {
 					String email = jwtUtil.getEmailFromToken(token);
-					log.info("Email from token: {}", email);  // 디버깅용
+					//log.info("Email from token: {}", email);  // 디버깅용
 
 					User user = userRepository.findByEmail(email)
 						.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -70,13 +70,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 					SecurityContextHolder.getContext().setAuthentication(authentication);
-					log.info("Authentication set in SecurityContext");  // 디버깅용
+					//log.info("Authentication set in SecurityContext");  // 디버깅용
 				}
 			} catch (Exception e) {
-				log.error("Cannot set user authentication: {}", e.getMessage());
+				//log.error("Cannot set user authentication: {}", e.getMessage());
 			}
 		} else {
-			log.info("No token found in request");  // 디버깅용
+			//log.info("No token found in request");  // 디버깅용
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
@@ -108,8 +108,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getServletPath();
-		System.out.println("필터 검증");
-		System.out.println(path);
 		return path.startsWith("/oauth2") ||
 			path.startsWith("/login") ||
 			path.equals("/api/v1/auth/refresh");

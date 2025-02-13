@@ -186,7 +186,7 @@ public class QueueProcessingService {
 
 	// 현재 대기 중인 모든 사용자를 조회합니다.
 	private Set<String> getAllWaitingUsers() {
-		return redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 0, -1);
+		return redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 1, -1);
 	}
 
 	// 개별 사용자의 대기 시간을 업데이트합니다.

@@ -77,13 +77,18 @@ public class QueueProcessingService {
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
 		addUserToQueue(userId, score);
 
-		// 실제 위치를 가져와서 1을 더해 1부터 시작하도록 함
-		Long position = getQueuePosition(userId);
-		Long oneBasedPosition = position != null ? position + 1 : null;
+		// Redis의 rank를 이용해 정확한 position 획득 (0-based에서 1-based로 변환)
+		Long zeroBasedRank = redisTemplate.opsForZSet().rank(RedisKeys.QUEUE, String.valueOf(userId));
+		Long oneBasedPosition = zeroBasedRank != null ? zeroBasedRank + 1 : null;
 		saveUserQueueHistory(oneBasedPosition, score, historyKey);
 
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(userId);
 		notifyWaitingTime(userId, waitingTimeResponseDTO);
+
+		// 1등이면 대기번호를 보여준 후 입장 처리
+		if (oneBasedPosition != null && oneBasedPosition == 1) {
+			processUsersEntrance(Set.of(String.valueOf(userId)));
+		}
 	}
 
 	// 사용자를 Redis Sorted Set 대기열에 추가합니다.
@@ -95,11 +100,10 @@ public class QueueProcessingService {
 
 	// 사용자의 대기열 정보를 Redis 에 저장합니다
 	private void saveUserQueueHistory(Long position, double score, String historyKey) {
-		if (position != null) {
-			redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
-			redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
-			log.info("User queue position saved: {}, score: {}", position, score);
-		}
+
+		redisTemplate.opsForHash().put(historyKey, "queueTime", String.valueOf(score));
+		redisTemplate.opsForHash().put(historyKey, "position", String.valueOf(position));
+		log.info("Saved user history - position: {}, score: {}", position, score);
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
@@ -213,14 +217,7 @@ public class QueueProcessingService {
 		boolean isInFirstBatch = usersAhead < batchSize;
 
 		// 대기 시간 계산
-		Long estimatedSeconds;
-		if (isInFirstBatch) {
-			estimatedSeconds = 5L;
-		} else {
-			Long myBatchNumber = (usersAhead + batchSize - 1) / batchSize;
-			estimatedSeconds = myBatchNumber * 5L;
-		}
-
+		Long estimatedSeconds = isInFirstBatch ? 5L : ((usersAhead + batchSize - 1) / batchSize) * 5L;
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE);
 		// 뒤에 있는 사람 수 계산 수정
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);

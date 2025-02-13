@@ -6,6 +6,25 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+
+  compiler: {
+    styledComponents: {
+      ssr: true,
+    },
+  },
+
+  output: 'standalone',
+
   webpack(config: WebpackConfig) {
     if (!config.module) {
       config.module = {
@@ -16,20 +35,11 @@ const nextConfig: NextConfig = {
     if (!config.module.rules) {
       config.module.rules = [];
     }
+
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-
-    // 스토리북 파일 제외
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        ...config.resolve?.alias,
-        // stories 디렉토리를 빈 모듈로 대체
-        '^.+\\.stories\\.[jt]sx?$': false,
-      },
-    };
 
     return config;
   },

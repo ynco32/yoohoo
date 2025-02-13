@@ -13,33 +13,46 @@ type PathParams = {
   concertId: string;
   sharingId: string;
 };
+interface SharingRequestBody {
+  sharingRequestDTO: string;
+  file: File;
+}
+
+interface SharingUpdateRequestBody {
+  sharingUpdateRequestDTO: string;
+  file?: File;
+}
 
 export const sharingHandlers = [
   // 글 작성 API
   rest.post('/api/v1/sharing', async (req, res, ctx) => {
     try {
-      const body = req.body as { sharingRequestDTO: File; file: File };
+      // body를 any로 타입 단언
+      const body = req.body as SharingRequestBody;
+
+      const sharingRequestDTOString = body.sharingRequestDTO;
+      const file = body.file;
+
       console.log('Request received:', {
-        sharingRequestDTO: {
-          name: body.sharingRequestDTO?.name,
-          size: body.sharingRequestDTO?.size,
-          type: body.sharingRequestDTO?.type,
-        },
+        sharingRequestDTO: sharingRequestDTOString,
         file: {
-          name: body.file?.name,
-          size: body.file?.size,
-          type: body.file?.type,
+          name: file?.name,
+          size: file?.size,
+          type: file?.type,
         },
       });
 
-      // 임시 mock 데이터 생성 - 실제 환경에서는 요청 데이터를 사용해야 합니다
+      // JSON 문자열을 파싱
+      const sharingRequestDTO = JSON.parse(sharingRequestDTOString);
+
+      // 실제 요청 데이터 사용
       const mockSharingData: Omit<ExtendedSharingPost, 'sharingId'> = {
-        concertId: 1,
-        title: '테스트 게시글',
-        content: '테스트 내용입니다.',
-        latitude: 37.5665,
-        longitude: 126.978,
-        startTime: new Date().toISOString(),
+        concertId: sharingRequestDTO.concertId || 1,
+        title: sharingRequestDTO.title,
+        content: sharingRequestDTO.content,
+        latitude: sharingRequestDTO.latitude,
+        longitude: sharingRequestDTO.longitude,
+        startTime: sharingRequestDTO.startTime,
         status: 'UPCOMING' as SharingStatus,
         nickname: '닉네임',
         writerId: 100,
@@ -73,26 +86,29 @@ export const sharingHandlers = [
   rest.put('/api/v1/sharing/:sharingId', async (req, res, ctx) => {
     try {
       const { sharingId } = req.params;
-      const body = req.body as { sharingUpdateRequestDTO: File; file?: File };
+
+      const body = req.body as SharingUpdateRequestBody;
+
+      const sharingUpdateRequestDTOString = body.sharingUpdateRequestDTO;
+      const file = body.file;
 
       console.log('Update request:', {
         sharingId,
-        sharingUpdateRequestDTO: {
-          name: body.sharingUpdateRequestDTO?.name,
-          size: body.sharingUpdateRequestDTO?.size,
-          type: body.sharingUpdateRequestDTO?.type,
-        },
-        file: body.file
+        sharingUpdateRequestDTO: sharingUpdateRequestDTOString,
+        file: file
           ? {
-              name: body.file.name,
-              size: body.file.size,
-              type: body.file.type,
+              name: file.name,
+              size: file.size,
+              type: file.type,
             }
           : undefined,
       });
 
+      // JSON 문자열을 파싱하고 사용
+      const sharingUpdateRequestDTO = JSON.parse(sharingUpdateRequestDTOString);
+
       let updatedPhotoUrl = '/images/original_image.png';
-      if (body.file) {
+      if (file) {
         updatedPhotoUrl = '/images/new_uploaded_image.png';
       }
 
@@ -102,6 +118,8 @@ export const sharingHandlers = [
           message: '나눔 글 수정 성공',
           sharingId: Number(sharingId),
           photoUrl: updatedPhotoUrl,
+          // 파싱된 데이터 중 일부 활용 예시
+          title: sharingUpdateRequestDTO.title,
         })
       );
     } catch (error) {

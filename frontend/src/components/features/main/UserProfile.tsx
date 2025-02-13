@@ -74,12 +74,9 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
           <div className="relative h-4/5 w-full">
             <div className="z-10 flex h-full items-center justify-center">
               <Image
-                src={getUserProfileImage(user.level || '') || SVGIcons.Artwork}
+                src={getUserProfileImage(user.level || '')}
                 alt={user.nickname}
                 className="h-full w-auto object-contain"
-                width={0}
-                height={0}
-                sizes="(max-width: 640px) 60vw, (max-width: 768px) 50vw, 40vw"
                 priority
               />
             </div>

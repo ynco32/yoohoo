@@ -1,3 +1,4 @@
+'use client';
 // hooks/useWebSocketQueue.ts
 import { useState, useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
@@ -40,7 +41,7 @@ export const useWebSocketQueue = () => {
       client.subscribe(`/user/book/notification`, (message: IMessage) => {
         const response = JSON.parse(message.body);
         if (response === true) {
-          router.push('./area');
+          router.push('./real/areaSelect');
         }
       });
     };

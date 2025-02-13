@@ -6,6 +6,17 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com',
+        port: '',
+        pathname: '/**',  // 모든 경로 허용
+      }
+    ],
+  },
+
   webpack(config: WebpackConfig) {
     if (!config.module) {
       config.module = {
@@ -20,16 +31,23 @@ const nextConfig: NextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
-
-    // 스토리북 파일 제외
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        ...config.resolve?.alias,
-        // stories 디렉토리를 빈 모듈로 대체
-        '^.+\\.stories\\.[jt]sx?$': false,
+    compiler: {
+      styledComponents: {
+        ssr: true,
       },
-    };
+    },
+    output: 'standalone',
+          port: '',
+          pathname: '/private/img-**.png',
+        },
+      ],
+    },
+    compiler: {
+      styledComponents: {
+        ssr: true,
+      },
+    },
+    output: 'standalone',
 
     return config;
   },

@@ -27,9 +27,9 @@ export function SightReviewFormContainer({
         throw new Error('사진을 선택해주세요.');
       }
 
-      const result = await submitSightReview(reviewData, photo);
+      await submitSightReview(reviewData, photo);
 
-      return { id: result.id };
+      return undefined;
     } catch (error) {
       console.error('Error submitting review:', error);
       if (error instanceof Error) {

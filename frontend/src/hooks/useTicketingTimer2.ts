@@ -20,13 +20,17 @@ export const useTicketingTimer2 = () => {
   //1️⃣ 시간 정보 가져오기
   const fetchTimeInfo = async () => {
     try {
-      const { data } = await api.get(`/api/v1/ticketing/time-info`);
-      setTimeInfo(data); // 시간 정보 등록
-      return;
+      console.log('[Timer] Fetching time info...'); // 디버깅 로그 추가
+      const { data } = await api.get('/api/v1/ticketing/time-info');
+      console.log('[Timer] Time info received:', data); // 응답 데이터 확인
+      setTimeInfo(data);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        // 에러 처리
-        console.error('시간 정보 불러오기 실패', error);
+        console.error('[Timer] Error fetching time info:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          config: error.config, // 요청 설정 확인
+        });
       }
     }
   };
@@ -47,7 +51,7 @@ export const useTicketingTimer2 = () => {
     }
 
     // 시간 정보도 있고 시간을 경과하지 않았을 때
-    console.log('⏰ now:', now); // 테스트 출력
+    console.log('⏰ now:', new Date(now).toISOString()); // 테스트 출력
     const server = new Date(timeInfo.serverTime).getTime();
     console.log('⏰ server:', new Date(server).toISOString()); // 테스트 출력
     const timePassed = now - server;
@@ -101,6 +105,7 @@ export const useTicketingTimer2 = () => {
   };
 
   useEffect(() => {
+    changeButtonMessage();
     const intervalId = setInterval(changeButtonMessage, 300000); // 5분마다 실행
     return () => clearInterval(intervalId);
   }, []);

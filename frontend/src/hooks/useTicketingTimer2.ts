@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 interface TimeInfo {
   startTime: string;
   serverTime: string;
-  Finished: boolean;
+  finished: boolean;
   within10Minutes: boolean;
 }
 
@@ -40,7 +40,7 @@ export const useTicketingTimer2 = () => {
     const now = Date.now(); // 현재 시간
 
     // 티켓팅이 끝나거나 시간 정보가 없을 경우우
-    if (timeInfo?.Finished || !timeInfo) {
+    if (timeInfo?.finished || !timeInfo) {
       return 0;
     }
 
@@ -64,7 +64,7 @@ export const useTicketingTimer2 = () => {
 
   // 3️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
   const changeButtonMessage = () => {
-    fetchTimeInfo();
+    // fetchTimeInfo(); // 빌드될 때 한 번만 가져오기
 
     // 이전 인터벌 제거
     if (intervalId) {
@@ -74,26 +74,26 @@ export const useTicketingTimer2 = () => {
     const secondsLeft = calculateSecondsLeft();
 
     if (timeInfo) {
-      if (timeInfo.Finished) {
+      if (timeInfo.finished) {
         // 티켓팅이 끝났을 때
         setButtonDisabled(true);
         setButtonMessage('마감되었습니다.');
-      } else if (secondsLeft <= 0 && !timeInfo.Finished) {
+      } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
         setButtonDisabled(false);
         setButtonMessage('예매하기.');
-      } else if (secondsLeft <= 60 && !timeInfo.Finished) {
+      } else if (secondsLeft <= 60 && !timeInfo.finished) {
         // 60초 이하 남았을 때
         setButtonDisabled(true);
         setButtonMessage(secondsLeft + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초마다 실행
-      } else if (secondsLeft < 600 && !timeInfo.Finished) {
+      } else if (secondsLeft < 600 && !timeInfo.finished) {
         // 10분 이하 남았을 때
         setButtonDisabled(true);
         const min = Math.floor(secondsLeft / 60);
         setButtonMessage(min + '분 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 60000) as number); // 1분마다 실행
-      } else if (secondsLeft >= 600 && !timeInfo.Finished) {
+      } else if (secondsLeft >= 600 && !timeInfo.finished) {
         // 10분 이상 남았을 때
         setButtonDisabled(true);
         const start = new Date(timeInfo.startTime);
@@ -101,10 +101,13 @@ export const useTicketingTimer2 = () => {
         const minutes = start.getMinutes().toString().padStart(2, '0');
         setButtonMessage(`${hours}시 ${minutes}분 오픈`);
       }
+    } else {
+      console.log('timeInfo is null');
     }
   };
 
   useEffect(() => {
+    fetchTimeInfo();
     changeButtonMessage();
     const intervalId = setInterval(changeButtonMessage, 300000); // 5분마다 실행
     return () => clearInterval(intervalId);

@@ -1,33 +1,43 @@
 import { rest } from 'msw';
 import { mockApiReviews } from '../data/sightReview.data';
 import { StageType } from '@/types/sightReviews';
-
 import type {
   ApiResponse,
   ApiReview,
   SightReviewFormData,
   ApiSeatDistance,
   ApiSound,
-  SeatDistanceStatus,
-  SoundStatus,
+  CreateSightReviewRequest, // 추가
 } from '@/types/sightReviews';
-const convertSeatDistance = (status: SeatDistanceStatus): ApiSeatDistance => {
-  const mapping: Record<SeatDistanceStatus, ApiSeatDistance> = {
+
+// API 요청 형식으로 변환하는 함수
+const mapFormDataToApiRequest = (
+  formData: SightReviewFormData
+): CreateSightReviewRequest => {
+  const seatDistanceMap: Record<string, ApiSeatDistance> = {
     좁아요: 'NARROW',
     평범해요: 'AVERAGE',
     넓어요: 'WIDE',
   };
-  return mapping[status];
-};
 
-const convertSound = (status: SoundStatus): ApiSound => {
-  const mapping: Record<SoundStatus, ApiSound> = {
+  const soundMap: Record<string, ApiSound> = {
     '잘 안 들려요': 'POOR',
     평범해요: 'AVERAGE',
     선명해요: 'CLEAR',
   };
-  return mapping[status];
+
+  return {
+    concertId: formData.concertId,
+    sectionNumber: formData.sectionNumber,
+    rowLine: formData.rowLine,
+    columnLine: formData.columnLine,
+    content: formData.content,
+    viewScore: formData.viewScore,
+    seatDistance: seatDistanceMap[formData.seatDistance],
+    sound: soundMap[formData.sound],
+  };
 };
+
 export const sightReviewHandlers = [
   // GET Arena Reviews Handler
   rest.get('/api/v1/view/arenas/:arenaId/reviews', (req, res, ctx) => {
@@ -72,21 +82,24 @@ export const sightReviewHandlers = [
       );
     }
 
+    // 폼 데이터를 API 요청 형식으로 변환
+    const apiRequest = mapFormDataToApiRequest(formData);
+
     const newReview: ApiReview = {
       reviewId: Math.floor(Math.random() * 1000),
       seatId: formData.columnLine,
-      rowLine: formData.rowLine,
-      columnLine: formData.columnLine,
-      concertId: formData.concertId,
-      content: formData.content,
-      viewScore: formData.viewScore,
+      rowLine: apiRequest.rowLine,
+      columnLine: apiRequest.columnLine,
+      concertId: apiRequest.concertId,
+      content: apiRequest.content,
+      viewScore: apiRequest.viewScore,
       userId: 1,
-      seatDistance: convertSeatDistance(formData.seatDistance),
-      sound: convertSound(formData.sound),
+      seatDistance: apiRequest.seatDistance,
+      sound: apiRequest.sound,
       photoUrl: null,
       writeTime: new Date().toISOString(),
       modifyTime: new Date().toISOString(),
-      stageType: StageType.STANDARD.toString(), // 기본값으로 STANDARD 설정
+      stageType: StageType.STANDARD.toString(),
       level: 'ROOKIE',
       nickname: '테스트유저',
       concertName: '테스트 콘서트',
@@ -122,12 +135,15 @@ export const sightReviewHandlers = [
       );
     }
 
+    // 폼 데이터를 API 요청 형식으로 변환
+    const apiRequest = mapFormDataToApiRequest(formData);
+
     const updatedReview: ApiReview = {
       ...existingReview,
-      content: formData.content,
-      viewScore: formData.viewScore,
-      seatDistance: convertSeatDistance(formData.seatDistance),
-      sound: convertSound(formData.sound),
+      content: apiRequest.content,
+      viewScore: apiRequest.viewScore,
+      seatDistance: apiRequest.seatDistance,
+      sound: apiRequest.sound,
       modifyTime: new Date().toISOString(),
     };
 

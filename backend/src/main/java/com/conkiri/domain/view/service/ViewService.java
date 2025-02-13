@@ -173,7 +173,7 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
-
+	@Transactional
 	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
@@ -193,12 +193,8 @@ public class ViewService {
 		}
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
-
-		seat.increaseReviewCount(seat.getReviewCount());
-		seatRepository.save(seat);
-
-		user.incrementReviewCount(user.getReviewCount());
-		userRepository.save(user);
+		seat.increaseReviewCount();
+		user.incrementReviewCount();
 	}
 
 	public ReviewDetailResponseDTO getReview(Long reviewId, Long userId) {
@@ -212,6 +208,7 @@ public class ViewService {
 		return ReviewDetailResponseDTO.from(review);
 	}
 
+	@Transactional
 	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
@@ -245,6 +242,7 @@ public class ViewService {
 		}
 	}
 
+	@Transactional
 	public void deleteReview(Long reviewId, Long userId) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
@@ -258,12 +256,8 @@ public class ViewService {
 		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
-
-		seat.decreaseReviewCount(seat.getReviewCount());
-		seatRepository.save(seat);
-
-		user.decrementReviewCount(user.getReviewCount());
-		userRepository.save(user);
+		seat.decreaseReviewCount();
+		user.decrementReviewCount();
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

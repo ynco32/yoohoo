@@ -58,6 +58,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			.email(email)
 			.userName(nickname)
 			.profileUrl(profileImageUrl)
+			.level("1")
+			.reviewCount(0)
 			.build();
 		return userRepository.save(user);
 	}

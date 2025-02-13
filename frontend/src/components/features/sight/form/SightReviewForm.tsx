@@ -60,12 +60,12 @@ export const SightReviewForm = React.memo(
     ) => {
       setFormField(field, value);
       const validationField = getValidationField(field);
-      console.log('Field changed:', field);
-      console.log('Value:', value);
-      console.log('ValidationField:', validationField);
+      // console.log('Field changed:', field);
+      // console.log('Value:', value);
+      // console.log('ValidationField:', validationField);
       if (validationField) {
         setTouched(validationField);
-        console.log('Touched set for:', validationField);
+        // console.log('Touched set for:', validationField);
       }
     };
     const handleSubmit = async () => {

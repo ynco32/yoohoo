@@ -34,11 +34,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
-		log.info("OAuth2 Success Handler 진입");
-		log.info("Authentication Principal: {}", authentication.getPrincipal());
-		log.info("Received State: {}", request.getParameter("state"));
-		log.info("Received Code: {}", request.getParameter("code"));
-		log.info("OAuth2 Success: {}", authentication);
+		//log.info("OAuth2 Success Handler 진입");
+		//log.info("Authentication Principal: {}", authentication.getPrincipal());
+		//log.info("Received State: {}", request.getParameter("state"));
+		//log.info("Received Code: {}", request.getParameter("code"));
+		//log.info("OAuth2 Success: {}", authentication);
 		UserPrincipal oAuth2User = (UserPrincipal) authentication.getPrincipal();
 		String email = oAuth2User.getEmail();
 		User user = userReadService.findUserByEmailOrElseThrow(email);
@@ -61,7 +61,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 		boolean isNewUser = oAuth2User.getNickname() == null;
 		String targetUrl = isNewUser ? frontendUrl + "/login/nick" : frontendUrl + "/main";
-		log.info("Redirecting to: {}", targetUrl);  // 로그 추가
+		//log.info("Redirecting to: {}", targetUrl);  // 로그 추가
 		response.sendRedirect(targetUrl);
 
 	}

@@ -191,37 +191,35 @@ public class QueueProcessingService {
 		}
 	}
 
-	// 사용자의 예상 대기 시간을 계산합니다.
 	public WaitingTimeResponseDTO getEstimatedWaitingTime(Long userId) {
-
 		Long position = getQueuePosition(userId);
 		if (position == null) {
-			return null;
+			// 대기열에 없는 경우 0으로 초기화된 응답 반환
+			return WaitingTimeResponseDTO.of(0L, 0L, 0L, 0L);
 		}
 
-		position += 1L;
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 
-		Long usersAhead = position;
+		// 대기번호는 1부터 시작하도록
+		Long waitingNumber = position + 1L;
+		Long usersAhead = position;  // 앞에 있는 사람 수는 position 그대로
 		boolean isInFirstBatch = usersAhead < batchSize;
 
-		// 대기 시간 계산시 스케줄러 간격(5초) 고려
+		// 대기 시간 계산
 		Long estimatedSeconds;
 		if (isInFirstBatch) {
-			// 첫 배치는 다음 스케줄러 실행까지 남은 시간
-			estimatedSeconds = 5L;  // 최대 5초
+			estimatedSeconds = 5L;
 		} else {
-			// 내 배치 번호
 			Long myBatchNumber = (usersAhead + batchSize - 1) / batchSize;
-			// 각 배치마다 5초씩 소요
 			estimatedSeconds = myBatchNumber * 5L;
 		}
 
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE);
-		Long usersAfter = totalWaiting - position - 1;
+		// 뒤에 있는 사람 수 계산 수정
+		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);
 
-		return WaitingTimeResponseDTO.of(position, usersAhead, estimatedSeconds, usersAfter);
+		return WaitingTimeResponseDTO.of(waitingNumber, usersAhead, estimatedSeconds, usersAfter);
 	}
 
 	// 대기열 참여 요청의 유효성을 검증합니다.

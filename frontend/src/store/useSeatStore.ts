@@ -3,8 +3,17 @@ import { fetchSeats } from '@/lib/api/seats';
 import { scrapSeat, unscrapSeat } from '@/lib/api/seatScrap';
 import { SeatProps } from '@/types/seats';
 
+const CACHE_TTL = 30 * 100 * 1000; // 30초
+const MAX_CACHED_SECTIONS = 10; // 최대 5개 구역만 캐시
+
+interface CachedData {
+  seats: SeatProps[];
+  timestamp: number;
+  lastAccessed: number;
+}
+
 interface SectionCache {
-  [key: string]: SeatProps[]; // "{arenaId}-{stageType}-{sectionId}" : seats[]
+  [key: string]: CachedData;
 }
 
 interface SeatsState {
@@ -37,6 +46,7 @@ interface SeatsState {
   reset: () => void;
   updateSeatScrapStatus: (seatId: number, isScraped: boolean) => void;
   clearCache: () => void;
+  cleanupCache: () => void;
 }
 
 const getCacheKey = (arenaId: number, stageType: number, sectionId: number) =>
@@ -53,7 +63,8 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
 
   getCachedSeats: (arenaId: number, stageType: number, sectionId: number) => {
     const cacheKey = getCacheKey(arenaId, stageType, sectionId);
-    return get().sectionCache[cacheKey];
+    const cachedData = get().sectionCache[cacheKey];
+    return cachedData?.seats;
   },
 
   // 좌석 아이디로 좌석 전체 정보 찾기
@@ -74,15 +85,22 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
   ) => {
     // 해당 공연장, 무대 유형, 구역이 불러온 적 있는 정보인지 확인
     const cacheKey = getCacheKey(arenaId, stageType, sectionId);
-    const cachedSeats = get().sectionCache[cacheKey];
+    const now = Date.now();
+    const cachedData = get().sectionCache[cacheKey];
 
     // 불러왔던 적 있으면 불러왔던 데이터 사용
-    if (cachedSeats) {
-      set({
-        seats: cachedSeats,
-        isLoading: false,
+    if (cachedData && now - cachedData.timestamp < CACHE_TTL) {
+      set((state) => ({
+        seats: cachedData.seats,
         currentStageType: stageType,
-      });
+        sectionCache: {
+          ...state.sectionCache,
+          [cacheKey]: {
+            ...cachedData,
+            lastAccessed: now,
+          },
+        },
+      }));
       return;
     }
 
@@ -91,14 +109,31 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
       set({ isLoading: true, error: null, currentStageType: stageType });
       const seatsData = await fetchSeats(arenaId, stageType, sectionId);
 
-      set((state) => ({
-        seats: seatsData,
-        sectionCache: {
-          ...state.sectionCache,
-          [cacheKey]: seatsData,
-        },
-        isLoading: false,
-      }));
+      // 캐시 크기 제한 관리리
+      set((state) => {
+        const cache = { ...state.sectionCache };
+        const cacheEntries = Object.entries(cache);
+        // 캐시가 가득 찼다면 가장 오래된 항목 제거
+        if (cacheEntries.length >= MAX_CACHED_SECTIONS) {
+          const oldestEntry = cacheEntries.reduce((oldest, current) =>
+            current[1].lastAccessed < oldest[1].lastAccessed ? current : oldest
+          );
+          delete cache[oldestEntry[0]];
+        }
+
+        return {
+          seats: seatsData,
+          sectionCache: {
+            ...cache,
+            [cacheKey]: {
+              seats: seatsData,
+              timestamp: now,
+              lastAccessed: now,
+            },
+          },
+          isLoading: false,
+        };
+      });
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : 'Failed to fetch seats',
@@ -146,7 +181,11 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
             seats: updatedSeats,
             sectionCache: {
               ...state.sectionCache,
-              [cacheKey]: updatedSeats,
+              [cacheKey]: {
+                seats: updatedSeats,
+                timestamp: Date.now(),
+                lastAccessed: Date.now(),
+              },
             },
             isScrapProcessing: false,
           };
@@ -192,12 +231,29 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
           seats: updatedSeats,
           sectionCache: {
             ...state.sectionCache,
-            [cacheKey]: updatedSeats,
+            [cacheKey]: {
+              seats: updatedSeats,
+              timestamp: Date.now(),
+              lastAccessed: Date.now(),
+            },
           },
         };
       }
 
       return { seats: updatedSeats };
+    });
+  },
+
+  cleanupCache: () => {
+    const now = Date.now();
+    set((state) => {
+      const cache = { ...state.sectionCache };
+      Object.entries(cache).forEach(([key, value]) => {
+        if (now - value.timestamp > CACHE_TTL) {
+          delete cache[key];
+        }
+      });
+      return { sectionCache: cache };
     });
   },
 
@@ -208,6 +264,7 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
   reset: () => {
     set({
       seats: [],
+      sectionCache: {}, // 이 부분이 빠졌음
       isLoading: false,
       error: null,
       selectedSeatId: null,

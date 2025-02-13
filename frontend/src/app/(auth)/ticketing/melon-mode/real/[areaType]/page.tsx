@@ -3,7 +3,7 @@ import TicketingBottomBar from '@/components/ui/TicketingBottomBar';
 import { useState } from 'react';
 
 export default function Seat() {
-  const [isActiive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(false);
   const [seat, setSeat] = useState(0);
 
   const handleSelectSeat = () => {
@@ -17,7 +17,7 @@ export default function Seat() {
       <span onClick={handleSelectSeat} className="m-5 inline-block">
         임시 좌석
       </span>
-      <TicketingBottomBar isActiive={isActiive} selectedSeat={seat} />
+      <TicketingBottomBar isActive={isActive} selectedSeat={seat} />
     </div>
   );
 }

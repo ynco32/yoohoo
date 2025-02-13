@@ -17,7 +17,7 @@ public class TicketingInfoResponseDTO {
 		this.serverTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 		this.startTime = LocalDateTime.now()
 			.withHour(13)
-			.withMinute(30)
+			.withMinute(40)
 			.withSecond(0)
 			.withNano(0);
 		this.isWithin10Minutes = startTime.minusMinutes(10).isBefore(serverTime) && startTime.isAfter(serverTime);

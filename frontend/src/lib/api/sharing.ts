@@ -84,27 +84,15 @@ export const sharingAPI = {
     try {
       const formData = new FormData();
 
-      // JSON 데이터를 Blob으로 변환하여 FormData에 추가
-      formData.append(
-        'sharingRequestDTO',
-        new Blob([JSON.stringify(data)], { type: 'application/json' })
-      );
+      // JSON 데이터를 문자열로 직접 추가
+      formData.append('sharingRequestDTO', JSON.stringify(data));
 
       // 이미지 파일 추가
       formData.append('file', file, file.name);
 
-      // Content-Type은 브라우저가 자동으로 multipart/form-data로 설정
-      const response = await api.post<{ sharingId: number }>(
-        '/api/v1/sharing',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const response = await api.post<number>('/api/v1/sharing', formData);
 
-      return response.data.sharingId;
+      return response.data;
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
         if (error.response.status === 401) {
@@ -133,23 +121,15 @@ export const sharingAPI = {
     try {
       const formData = new FormData();
 
-      // JSON 데이터를 Blob으로 변환하여 FormData에 추가
-      formData.append(
-        'sharingUpdateRequestDTO',
-        new Blob([JSON.stringify(data)], { type: 'application/json' })
-      );
+      // JSON 데이터를 문자열로 직접 추가
+      formData.append('sharingUpdateRequestDTO', JSON.stringify(data));
 
       // 이미지 파일이 있을 경우 추가
       if (image) {
         formData.append('file', image, image.name);
       }
 
-      // Content-Type은 브라우저가 자동으로 multipart/form-data로 설정
-      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.put(`/api/v1/sharing/${sharingId}`, formData);
 
       return response.data;
     } catch (error) {
@@ -165,7 +145,6 @@ export const sharingAPI = {
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');
     }
   },
-
   /**
    * 나눔 게시글의 상태를 변경합니다.
    * @param sharingId - 나눔 게시글 ID

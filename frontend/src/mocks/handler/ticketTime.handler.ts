@@ -9,9 +9,9 @@ export const ticketTimeHandlers = [
       ctx.status(200),
       ctx.json({
         startTime: '2025-02-11T19:00:00',
-        serverTime: '2025-02-11T18:50:00',
-        within10Minutes: true,
-        finished: false,
+        serverTime: '2025-02-11T17:45:44.2540147',
+        within10Minutes: false,
+        Finished: false,
       })
     );
   }),

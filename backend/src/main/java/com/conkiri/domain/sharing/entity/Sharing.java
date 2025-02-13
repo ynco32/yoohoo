@@ -79,15 +79,10 @@ public class Sharing extends BaseTime {
 		this.longitude = sharingRequestDTO.getLongitude();
 		this.title = sharingRequestDTO.getTitle();
 		this.content = sharingRequestDTO.getContent();
-		this.startTime = concert
-							.getStartTime()
-							.atZone(ZoneId.of("Asia/Seoul"))
-							.toLocalDate()
-							.atTime(
-								sharingRequestDTO
-									.getStartTime()
-									.atZone(ZoneId.of("Asia/Seoul"))
-									.toLocalTime());
+		LocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
+			.atTime(sharingRequestDTO.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
+		System.out.println("엔티티 생성할 때 시간 : " + startTime);
+		this.startTime = startTime;
 		this.photoUrl = photoUrl;
 		this.concert = concert;
 		this.user = user;

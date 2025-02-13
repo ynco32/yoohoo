@@ -1,22 +1,15 @@
-import Level1Image from '../../../public/images/profile/level1.png';
-import Level2Image from '../../../public/images/profile/level2.png';
-import Level3Image from '../../../public/images/profile/level3.png';
-import Level4Image from '../../../public/images/profile/level4.png';
-import CatImage from '../../../public/images/cat.png';
-import { StaticImageData } from 'next/image';
-
 export const getUserProfileImage = (userLevel: string): string => {
   const idx = Number(userLevel);
-  const profileImages: Record<1 | 2 | 3 | 4, StaticImageData> = {
-    1: Level1Image,
-    2: Level2Image,
-    3: Level3Image,
-    4: Level4Image,
+  const profileImages: Record<1 | 2 | 3 | 4, string> = {
+    1: 'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level1.PNG',
+    2: 'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level2.PNG',
+    3: 'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level3.PNG',
+    4: 'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level4.PNG',
   };
 
   if (idx in profileImages) {
-    return profileImages[idx as 1 | 2 | 3 | 4].src;
+    return profileImages[idx as 1 | 2 | 3 | 4];
   }
 
-  return CatImage.src;
+  return 'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level2.PNG';
 };

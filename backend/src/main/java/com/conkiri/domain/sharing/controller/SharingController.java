@@ -1,5 +1,7 @@
 package com.conkiri.domain.sharing.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +50,7 @@ public class SharingController {
 		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		System.out.println("요청이 왔을 때 시간 : " + sharingRequestDTO.getStartTime());
+		System.out.println("시스템 현재 시간 : " + LocalDateTime.now());
 		return sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file);
 	}
 

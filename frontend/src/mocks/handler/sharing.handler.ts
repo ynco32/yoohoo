@@ -2,82 +2,43 @@ import { rest } from 'msw';
 import {
   getSharingsByConcertId,
   getSharingById,
-  addSharing,
+  // addSharing,
   getScrappedSharings,
   getWroteSharings,
-  ExtendedSharingPost,
+  // ExtendedSharingPost,
 } from '../data/sharing.data';
-import { SharingStatus } from '@/types/sharing';
+// import { SharingStatus } from '@/types/sharing';
 
 type PathParams = {
   concertId: string;
   sharingId: string;
 };
-interface SharingRequestBody {
-  sharingRequestDTO: string;
-  file: File;
-}
+// interface SharingRequestBody {
+//   sharingRequestDTO: string;
+//   file: File;
+// }
 
 interface SharingUpdateRequestBody {
   sharingUpdateRequestDTO: string;
   file?: File;
 }
 
+let mockSharingId = 100; // 초기 ID 값 설정
+
 export const sharingHandlers = [
   // 글 작성 API
   rest.post('/api/v1/sharing', async (req, res, ctx) => {
     try {
-      // body를 any로 타입 단언
-      const body = req.body as SharingRequestBody;
+      console.log('📩 [MSW] 나눔 게시글 등록 테스트 요청 도착');
 
-      const sharingRequestDTOString = body.sharingRequestDTO;
-      const file = body.file;
+      // 임의의 `sharingId` 반환 (실제 API와 동일한 숫자 형태로 응답)
+      const newSharingId = mockSharingId++;
 
-      console.log('Request received:', {
-        sharingRequestDTO: sharingRequestDTOString,
-        file: {
-          name: file?.name,
-          size: file?.size,
-          type: file?.type,
-        },
-      });
+      console.log('✅ [MSW] 생성된 sharingId:', newSharingId);
 
-      // JSON 문자열을 파싱
-      const sharingRequestDTO = JSON.parse(sharingRequestDTOString);
-
-      // 실제 요청 데이터 사용
-      const mockSharingData: Omit<ExtendedSharingPost, 'sharingId'> = {
-        concertId: sharingRequestDTO.concertId || 1,
-        title: sharingRequestDTO.title,
-        content: sharingRequestDTO.content,
-        latitude: sharingRequestDTO.latitude,
-        longitude: sharingRequestDTO.longitude,
-        startTime: sharingRequestDTO.startTime,
-        status: 'UPCOMING' as SharingStatus,
-        nickname: '닉네임',
-        writerId: 100,
-        photoUrl: '/images/card.png',
-      };
-
-      // 새로운 나눔 게시글 추가
-      const newSharing = addSharing(mockSharingData);
-      console.log('Created new sharing:', newSharing);
-
-      return res(
-        ctx.status(201),
-        ctx.json({
-          sharingId: newSharing.sharingId,
-        })
-      );
+      return res(ctx.status(201), ctx.json(newSharingId));
     } catch (error) {
       console.error('❌ [MSW] createSharing 핸들러 오류:', error);
-      if (error instanceof Error) {
-        console.error('Error details:', {
-          name: error.name,
-          message: error.message,
-          stack: error.stack,
-        });
-      }
       return res(ctx.status(500), ctx.json({ message: '서버 내부 오류' }));
     }
   }),
@@ -129,7 +90,7 @@ export const sharingHandlers = [
   }),
 
   // 게시글 상태 변경
-  rest.put('/api/v1/sharing/:sharingId/status', async (req, res, ctx) => {
+  rest.patch('/api/v1/sharing/:sharingId/status', async (req, res, ctx) => {
     try {
       const { sharingId } = req.params;
       const { status } = await req.json();

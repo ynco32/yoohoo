@@ -5,13 +5,17 @@ import { useEffect } from 'react';
 import SightReviewForm from '@/components/features/sight/form/SightReviewForm';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 import { updateSightReview } from '@/lib/api/sightReview';
-import type { SightReviewFormData } from '@/types/sightReviews';
+import type { ApiReview, SightReviewFormData } from '@/types/sightReviews';
+import {
+  mapApiToSeatDistance,
+  mapApiToSound,
+} from '@/lib/utils/sightReviewMapper';
 
 interface EditSightReviewFormContainerProps {
   className?: string;
   artist?: string;
   reviewId: number;
-  initialData?: SightReviewFormData; // 기존 리뷰 데이터
+  initialData?: ApiReview; // 기존 리뷰 데이터
 }
 
 export function EditSightReviewFormContainer({
@@ -30,24 +34,30 @@ export function EditSightReviewFormContainer({
       // photo가 URL인 경우 File 객체로 변환
       const setInitialData = async () => {
         try {
-          let photoFile = initialData.photo;
+          let photoFile;
 
           // photo가 문자열(URL)인 경우 File 객체로 변환
-          if (typeof initialData.photo === 'string') {
-            const response = await fetch(initialData.photo);
+          if (typeof initialData.photoUrl === 'string') {
+            const response = await fetch(initialData.photoUrl);
             const blob = await response.blob();
             photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
           }
 
           setFormData({
             ...initialData,
-            photo: photoFile,
+            sectionNumber: 0,
+            seatDistance: mapApiToSeatDistance(initialData.seatDistance),
+            sound: mapApiToSound(initialData.sound),
+            photo: photoFile || null,
           });
         } catch (error) {
           console.error('Error setting initial photo:', error);
           // 에러 발생 시에도 나머지 데이터는 설정
           setFormData({
             ...initialData,
+            sectionNumber: 0,
+            seatDistance: mapApiToSeatDistance(initialData.seatDistance),
+            sound: mapApiToSound(initialData.sound),
             photo: null, // 또는 기본 File 객체
           });
         }

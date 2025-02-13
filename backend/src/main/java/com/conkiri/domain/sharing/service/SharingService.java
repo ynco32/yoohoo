@@ -82,9 +82,11 @@ public class SharingService {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 		validateAuthorizedAccessToSharing(sharing, userId);
 
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingUpdateRequestDTO.getConcertId());
+
 		s3Service.deleteImage(sharing.getPhotoUrl());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
-		sharing.update(sharingUpdateRequestDTO, photoUrl);
+		sharing.update(sharingUpdateRequestDTO, concert, photoUrl);
 	}
 
 	/**

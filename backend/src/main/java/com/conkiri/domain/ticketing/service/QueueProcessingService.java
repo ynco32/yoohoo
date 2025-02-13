@@ -174,7 +174,7 @@ public class QueueProcessingService {
 
 	// 처리 완료된 사용자들을 대기열에서 제거합니다, batchSize = 제거할 배치 크기
 	private void removeProcessedUsersFromQueue(int batchSize) {
-		redisTemplate.opsForZSet().removeRange(RedisKeys.QUEUE, 0, batchSize - 1);
+		redisTemplate.opsForZSet().removeRange(RedisKeys.QUEUE, 1, batchSize);
 	}
 
 	// 모든 대기 중인 사용자들의 대기 시간을 업데이트합니다.
@@ -215,7 +215,7 @@ public class QueueProcessingService {
 		Long usersAhead = position - 1;
 
 		// 대기 시간 계산
-		Long estimatedSeconds = position * 3L;
+		Long estimatedSeconds = position * 2L;
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE) - 1;
 		// 뒤에 있는 사람 수 계산 수정
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);

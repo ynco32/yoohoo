@@ -55,7 +55,7 @@ export const useWebSocketQueue = () => {
         console.log('🤝notification 수신된 메세지:', message.body);
         const response = JSON.parse(message.body);
         if (response === true) {
-          router.push('area');
+          router.push('./area');
         }
       });
     };

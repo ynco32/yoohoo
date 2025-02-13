@@ -165,7 +165,7 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     })),
 
   setValidation: (field, isValid) => {
-    console.log(`Setting validation for ${field}:`, isValid);
+    // console.log(`Setting validation for ${field}:`, isValid);
     set((state) => {
       const newValidation = {
         ...state.validation,

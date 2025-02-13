@@ -1,9 +1,5 @@
 import type { ApiResponse, SightReviewFormData } from '@/types/sightReviews';
 
-interface SubmitResponse extends ApiResponse {
-  id: string;
-}
-
 const SIGHT_REVIEW_API = {
   ARENA_REVIEWS: (arenaId: number) => `/api/v1/view/arenas/${arenaId}/reviews`,
   REVIEWS: '/api/v1/view/reviews',
@@ -15,7 +11,7 @@ const TIMEOUT_MS = 10000;
 export async function submitSightReview(
   data: Omit<SightReviewFormData, 'photo'>,
   photo: File
-): Promise<SubmitResponse> {
+): Promise<ApiResponse> {
   try {
     console.log('[Sight Review API] 제출 시작');
     console.log('[Sight Review API] 요청 데이터:', {
@@ -75,9 +71,7 @@ export async function submitSightReview(
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 
-    const result = await response.json();
-    console.log('[Sight Review API] 성공 응답:', result);
-    return result;
+    return {} as ApiResponse;
   } catch (error) {
     console.error('제출 중 에러 발생:', error);
     if (error instanceof Error) {

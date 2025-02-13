@@ -65,7 +65,15 @@ export function EditSightReviewFormContainer({
   const handleSubmit = async (data: SightReviewFormData) => {
     try {
       setIsSubmitting(true);
-      const _result = await updateSightReview(reviewId, data);
+
+      // photo 필드를 분리
+      const { photo, ...reviewData } = data;
+
+      if (!photo || !(photo instanceof File)) {
+        throw new Error('사진은 필수입니다.');
+      }
+
+      const _result = await updateSightReview(reviewId, reviewData, photo);
       return { id: reviewId.toString() };
     } catch (error) {
       console.error('Error updating review:', error);

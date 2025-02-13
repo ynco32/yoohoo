@@ -19,10 +19,18 @@ export function SightReviewFormContainer({
   const { setError, setIsSubmitting } = useSightReviewStore();
 
   const handleSubmit = async (data: SightReviewFormData) => {
-    console.log(data);
+    console.log('제출할 데이터:', data);
     try {
       setIsSubmitting(true);
-      const result = await submitSightReview(data);
+
+      // photo 필드를 분리
+      const { photo, ...reviewData } = data;
+
+      if (!photo || !(photo instanceof File)) {
+        throw new Error('사진은 필수입니다.');
+      }
+
+      const result = await submitSightReview(reviewData, photo);
       return { id: result.id };
     } catch (error) {
       console.error('Error submitting review:', error);

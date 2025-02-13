@@ -1,4 +1,8 @@
-import type { ApiResponse, SightReviewFormData } from '@/types/sightReviews';
+import type {
+  ApiResponse,
+  CreateSightReviewRequest,
+  SightReviewFormData,
+} from '@/types/sightReviews';
 
 interface SubmitResponse extends ApiResponse {
   id: string;
@@ -13,7 +17,7 @@ const SIGHT_REVIEW_API = {
 const TIMEOUT_MS = 10000;
 
 export async function submitSightReview(
-  data: Omit<SightReviewFormData, 'photo'>,
+  data: CreateSightReviewRequest,
   photo: File
 ): Promise<SubmitResponse> {
   try {

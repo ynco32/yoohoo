@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { SightReviewFormData } from '@/types/sightReviews';
+import {
+  CreateSightReviewRequest,
+  SightReviewFormData,
+  STATUS_MAPPINGS,
+} from '@/types/sightReviews';
 
 export type ValidFields =
   | 'concertId'
@@ -46,6 +50,7 @@ interface SightReviewState {
   isFormValid: () => boolean;
   reset: () => void; // 새로운 reset 함수 추가
   initialize: (initialData?: Partial<SightReviewFormData>) => void; // 초기화 함수 추가
+  getAPIRequestData: () => CreateSightReviewRequest; // api 형식으로 변환
 }
 
 export const DEFAULT_FORM_DATA: SightReviewFormData = {
@@ -196,5 +201,20 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     const isValid = Object.values(validationState).every((isValid) => isValid);
     console.log('Final validation result:', isValid);
     return isValid;
+  },
+
+  // API 요청용 데이터 변환 메서드 추가
+  getAPIRequestData: (): CreateSightReviewRequest => {
+    const formData = get().formData;
+    return {
+      concertId: formData.concertId,
+      sectionNumber: formData.sectionNumber,
+      rowLine: formData.rowLine,
+      columnLine: formData.columnLine,
+      content: formData.content,
+      viewScore: formData.viewScore,
+      seatDistance: STATUS_MAPPINGS.seatDistance[formData.seatDistance],
+      sound: STATUS_MAPPINGS.sound[formData.sound],
+    };
   },
 }));

@@ -7,6 +7,19 @@ export enum StageType {
   DEGREE_360 = 3,
 }
 
+export const STATUS_MAPPINGS = {
+  seatDistance: {
+    좁아요: 'NARROW',
+    평범해요: 'AVERAGE',
+    넓어요: 'WIDE',
+  },
+  sound: {
+    '잘 안 들려요': 'POOR',
+    평범해요: 'AVERAGE',
+    선명해요: 'CLEAR',
+  },
+} as const;
+
 // 기본 상태 타입들
 export type SeatDistanceStatus = '좁아요' | '평범해요' | '넓어요';
 export type SoundStatus = '잘 안 들려요' | '평범해요' | '선명해요';

@@ -5,6 +5,7 @@
 import { ContentCard } from '../../ui/ContentCard';
 import Link from 'next/link';
 import { formatDateTime } from '@/lib/utils/dateFormat';
+import Image from 'next/image';
 
 interface ConcertItemProps {
   concertId: number;
@@ -13,6 +14,7 @@ interface ConcertItemProps {
   startTime: string;
   stageType: string;
   arena: string;
+  photoUrl: string;
 }
 export const ConcertItem = ({
   concertId,
@@ -20,6 +22,7 @@ export const ConcertItem = ({
   artist,
   startTime,
   arena,
+  photoUrl,
 }: ConcertItemProps) => {
   // 이미지와 겹치지 않는 최대 텍스트 길이 계산
   const maxWidth = 380;
@@ -37,13 +40,24 @@ export const ConcertItem = ({
 
   return (
     <Link href={`/sharing/${concertId}`} className="block">
-      <ContentCard className="rounded-xl">
-        <div className="min-w-0 flex-1">
-          <h3 className="mb-4 truncate text-lg font-bold">{truncatedTitle}</h3>
-          <div className="space-y-1">
-            <p className="text-sm text-gray-600">{artist}</p>
-            <p className="text-sm text-gray-500">{arena}</p>
-            <p className="text-sm text-gray-500">{formattedDateTime}</p>
+      <ContentCard className="overflow-hidden rounded-xl p-0">
+        <div className="flex items-center">
+          <div className="relative h-16 w-16 flex-shrink-0">
+            <Image
+              src={photoUrl}
+              alt={concertName}
+              className="object-cover"
+              fill
+              sizes="(max-width: 64px) 100vw"
+            />
+          </div>
+          <div className="min-w-0 flex-1 p-2">
+            <h3 className="truncate text-sm font-bold">{truncatedTitle}</h3>
+            <div className="mt-0.5">
+              <p className="text-xs text-gray-600">{artist}</p>
+              <p className="text-xs text-gray-500">{arena}</p>
+              <p className="text-xs text-gray-500">{formattedDateTime}</p>
+            </div>
           </div>
         </div>
       </ContentCard>

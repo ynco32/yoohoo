@@ -173,6 +173,7 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
+
 	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
@@ -193,10 +194,10 @@ public class ViewService {
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
 
-		seat.increaseReviewCount();
+		seat.increaseReviewCount(seat.getReviewCount());
 		seatRepository.save(seat);
 
-		user.incrementReviewCount();
+		user.incrementReviewCount(user.getReviewCount());
 		userRepository.save(user);
 	}
 
@@ -258,10 +259,10 @@ public class ViewService {
 
 		reviewRepository.deleteById(reviewId);
 
-		seat.decreaseReviewCount();
+		seat.decreaseReviewCount(seat.getReviewCount());
 		seatRepository.save(seat);
 
-		user.decrementReviewCount();
+		user.decrementReviewCount(user.getReviewCount());
 		userRepository.save(user);
 
 		if (photoUrl != null) {

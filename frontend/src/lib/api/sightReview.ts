@@ -13,43 +13,33 @@ const SIGHT_REVIEW_API = {
 const TIMEOUT_MS = 10000;
 
 export async function submitSightReview(
-  data: SightReviewFormData
+  data: Omit<SightReviewFormData, 'photo'>,
+  photo: File
 ): Promise<SubmitResponse> {
   try {
-    if (!data.photo) {
-      throw new Error('사진은 필수입니다.');
-    }
-
     console.log('[Sight Review API] 제출 시작');
     console.log('[Sight Review API] 요청 데이터:', {
       ...data,
-      photo:
-        data.photo instanceof File
-          ? {
-              name: data.photo.name,
-              size: data.photo.size,
-              type: data.photo.type,
-            }
-          : null,
+      photo: {
+        name: photo.name,
+        size: photo.size,
+        type: photo.type,
+      },
     });
 
     const formData = new FormData();
 
-    // 데이터 필드들을 FormData에 추가
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'photo' && value instanceof File) {
-        formData.append('photo', value);
-        console.log(
-          `[Sight Review API] 파일 추가: ${value.name} (${value.size} bytes)`
-        );
-      } else if (typeof value === 'number') {
-        formData.append(key, value.toString());
-      } else if (typeof value === 'string') {
-        formData.append(key, value);
-      } else if (value != null) {
-        formData.append(key, JSON.stringify(value));
-      }
-    });
+    // JSON 데이터를 Blob으로 변환하여 추가
+    formData.append(
+      'reviewRequestDTO',
+      new Blob([JSON.stringify(data)], { type: 'application/json' })
+    );
+
+    // 이미지 파일 추가
+    formData.append('photo', photo, photo.name);
+    console.log(
+      `[Sight Review API] 파일 추가: ${photo.name} (${photo.size} bytes)`
+    );
 
     // FormData 내용 로깅
     console.log('[Sight Review API] FormData 필드:');
@@ -102,26 +92,20 @@ export async function submitSightReview(
 
 export async function updateSightReview(
   reviewId: number,
-  data: SightReviewFormData
+  data: Omit<SightReviewFormData, 'photo'>,
+  photo: File
 ): Promise<ApiResponse> {
   try {
-    if (!data.photo) {
-      throw new Error('사진은 필수입니다.');
-    }
-
     const formData = new FormData();
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'photo' && value instanceof File) {
-        formData.append('photo', value);
-      } else if (typeof value === 'number') {
-        formData.append(key, value.toString());
-      } else if (typeof value === 'string') {
-        formData.append(key, value);
-      } else if (value != null) {
-        formData.append(key, JSON.stringify(value));
-      }
-    });
+    // JSON 데이터를 Blob으로 변환하여 추가
+    formData.append(
+      'reviewRequestDTO',
+      new Blob([JSON.stringify(data)], { type: 'application/json' })
+    );
+
+    // 이미지 파일 추가
+    formData.append('photo', photo, photo.name);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);

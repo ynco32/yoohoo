@@ -2,7 +2,7 @@
 import Page1 from '@/components/features/ticketing/pages/1';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTicketintPracticeResultStore } from '@/store/ticketintPracticeResult';
+import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
 
 export default function Entrance() {
   const router = useRouter();

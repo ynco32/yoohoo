@@ -61,7 +61,7 @@ export const useWebSocketQueue = () => {
       const response = await api.post(`/api/v1/ticketing/queue`);
       setQueueNumber(response.data);
     } catch (_error) {
-      console.log('대기열 진입 실패');
+      console.log('🤝 대기열 진입 실패');
     }
   };
 

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 import { Modal } from '@/components/common/Modal';
 import { useSharingCommentStore } from '@/store/useSharingCommentStore';
+import Image from 'next/image';
+import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 
 export const CommentItem = ({ comment }: { comment: Comment }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -41,48 +43,67 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
 
   return (
     <>
-      <div className="space-y-1">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">{updatedComment.writer}</span>
+      <div className="flex gap-3">
+        {/* 프로필 이미지 */}
+        <div className="relative h-8 w-8 flex-shrink-0">
+          <Image
+            src={getUserProfileImage(updatedComment.writerLevel)}
+            alt="프로필"
+            fill
+            sizes="32px"
+            className="rounded-full object-cover"
+          />
+        </div>
+
+        {/* 댓글 내용 */}
+        <div className="flex-1 space-y-1">
+          {/* 상단 영역: 닉네임과 날짜 */}
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">{updatedComment.writer}</span>
+            <span className="text-xs text-gray-500">
+              {formatDateTime(updatedComment.modifyTime)}
+            </span>
+          </div>
+
+          {/* 중간 영역: 댓글 내용 */}
+          {isEditing ? (
+            <div className="flex gap-2">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="focus:border-primary w-full resize-none rounded-lg border border-gray-300 p-2 text-sm focus:outline-none"
+                rows={2}
+              />
+              <button
+                onClick={handleUpdate}
+                disabled={!editContent.trim()}
+                className="h-fit rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
+              >
+                완료
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm">{updatedComment.content}</p>
+          )}
+
+          {/* 하단 영역: 수정/삭제 버튼 */}
           {isMyComment && (
-            <div className="space-x-2">
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-xs text-gray-500 hover:text-gray-700"
               >
                 {isEditing ? '취소' : '수정'}
               </button>
               <button
                 onClick={() => setIsDeleteModalOpen(true)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-xs text-gray-500 hover:text-gray-700"
               >
                 삭제
               </button>
             </div>
           )}
         </div>
-        {isEditing ? (
-          <div className="flex gap-2">
-            <textarea
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-              className="focus:border-primary w-full resize-none rounded-lg border border-gray-300 p-2 text-sm focus:outline-none"
-              rows={2}
-            />
-            <button
-              onClick={handleUpdate}
-              disabled={!editContent.trim()}
-              className="h-fit rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
-            >
-              완료
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm">{updatedComment.content}</p>
-        )}
-        <p className="text-xs text-gray-500">
-          {formatDateTime(updatedComment.modifyTime)}
-        </p>
       </div>
 
       <Modal

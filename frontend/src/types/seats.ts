@@ -4,6 +4,7 @@ export interface SeatProps {
   sectionId: number;
   row: number;
   col: number;
+  reviewCount: number;
   scrapped: boolean;
   isScrapMode: boolean;
   isSelected: boolean;

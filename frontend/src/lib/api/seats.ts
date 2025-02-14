@@ -42,6 +42,7 @@ export async function fetchSeats(
       row: seat.rowLine,
       col: seat.columnLine,
       scrapped: seat.scrapped,
+      reviewCount: seat.reviewCount,
       isScrapMode: false, // 기본값으로 설정
       isSelected: false, // 기본값으로 설정
     }));

@@ -27,6 +27,7 @@ interface SeatsState {
 
   // Helper selectors
   getSeatScrapStatus: (seatId: number) => boolean;
+  getSeatReviewCount: (seatId: number) => number | undefined;
   getSeatById: (seatId: number) => SeatProps | undefined;
   getSectionBySeatId: (seatId: number) => number | undefined;
   getCachedSeats: (
@@ -70,6 +71,11 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
   // 좌석 아이디로 좌석 전체 정보 찾기
   getSeatById: (seatId: number) => {
     return get().seats.find((seat) => seat.seatId === seatId);
+  },
+
+  getSeatReviewCount: (seatId: number) => {
+    const seat = get().seats.find((seat) => seat.seatId === seatId);
+    return seat?.reviewCount;
   },
 
   // 좌석 아이디로 해당 좌석의 구역 찾기

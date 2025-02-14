@@ -51,7 +51,7 @@ export function SightReviewList() {
     });
 
     const fetchReviews = async () => {
-      if (!stageType || !sectionId) {
+      if (stageType === undefined || sectionId === undefined) {
         console.log('필수 파라미터 누락');
         return;
       }

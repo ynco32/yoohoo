@@ -14,12 +14,16 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
   const { updateComment, deleteComment } = useSharingCommentStore();
   const user = useUserStore((state) => state.user);
   const isMyComment = user?.userId === comment.writerId;
+  const updatedComment = useSharingCommentStore(
+    (state) =>
+      state.comments.find((c) => c.commentId === comment.commentId) || comment
+  );
 
   const handleUpdate = async () => {
     if (!editContent.trim()) return;
 
     try {
-      await updateComment(comment.commentId, editContent);
+      await updateComment(updatedComment.commentId, editContent);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -28,7 +32,7 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
 
   const handleDelete = async () => {
     try {
-      await deleteComment(comment.commentId);
+      await deleteComment(updatedComment.commentId);
       setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting comment:', error);
@@ -39,7 +43,7 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
     <>
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium">{comment.writer}</span>
+          <span className="font-medium">{updatedComment.writer}</span>
           {isMyComment && (
             <div className="space-x-2">
               <button
@@ -74,10 +78,10 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
             </button>
           </div>
         ) : (
-          <p className="text-sm">{comment.content}</p>
+          <p className="text-sm">{updatedComment.content}</p>
         )}
         <p className="text-xs text-gray-500">
-          {formatDateTime(comment.modifyTime)}
+          {formatDateTime(updatedComment.modifyTime)}
         </p>
       </div>
 

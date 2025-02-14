@@ -8,7 +8,7 @@ export interface Section {
   sectionNumber: number;
   available: boolean;
   scrapped: boolean;
-  arenaId?: string;
+  arenaId: number;
 }
 
 export interface SectionsResponse {

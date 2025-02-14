@@ -1,18 +1,6 @@
 'use client';
 
-interface SectionProps {
-  sectionId: number;
-  sectionNumber: number; // API에서 제공하는 필드
-  available: boolean; // API에서 제공하는 필드
-  scrapped: boolean; // API에서 제공하는 필드
-  arenaId?: string; // API 응답에는 없지만 부모로부터 받는 필드
-  onClick?: () => void;
-  startAngle: number;
-  endAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  isScrapMode: boolean;
-}
+import { SectionComponentProps } from '@/types/sections';
 
 export const Section = ({
   sectionId,
@@ -26,7 +14,7 @@ export const Section = ({
   innerRadius,
   outerRadius,
   isScrapMode,
-}: SectionProps) => {
+}: SectionComponentProps) => {
   const createArc = () => {
     const startRadians = ((startAngle - 90) * Math.PI) / 180;
     const endRadians = ((endAngle - 90) * Math.PI) / 180;

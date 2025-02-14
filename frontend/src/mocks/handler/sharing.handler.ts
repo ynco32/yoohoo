@@ -6,6 +6,7 @@ import {
   getScrappedSharings,
   getWroteSharings,
   // ExtendedSharingPost,
+  mockScrappedSharingIds,
 } from '../data/sharing.data';
 // import { SharingStatus } from '@/types/sharing';
 
@@ -188,22 +189,32 @@ export const sharingHandlers = [
     );
   }),
 
-  // 나눔 게시글 상세 조회
-  rest.get('/api/v1/sharing/detail/:sharingId', (req, res, ctx) => {
-    const params = req.params as PathParams;
-    const sharingIdNum = Number(params.sharingId);
-    const sharing = getSharingById(sharingIdNum);
+// 나눔 게시글 상세 조회
+rest.get('/api/v1/sharing/detail/:sharingId', (req, res, ctx) => {
+  const params = req.params as PathParams;
+  const sharingIdNum = Number(params.sharingId);
+  const sharing = getSharingById(sharingIdNum);
 
-    if (!sharing) {
-      return res(
-        ctx.delay(300),
-        ctx.status(404),
-        ctx.json({ message: '게시글을 찾을 수 없습니다.' })
-      );
-    }
+  if (!sharing) {
+    return res(
+      ctx.delay(300),
+      ctx.status(404),
+      ctx.json({ message: '게시글을 찾을 수 없습니다.' })
+    );
+  }
 
-    return res(ctx.delay(300), ctx.status(200), ctx.json(sharing));
-  }),
+  // 스크랩 상태 추가
+  const isScraped = mockScrappedSharingIds.has(sharingIdNum);
+
+  return res(
+    ctx.delay(300),
+    ctx.status(200),
+    ctx.json({
+      ...sharing,
+      isScraped  // 스크랩 상태 포함
+    })
+  );
+}),
 
   // 스크랩 추가
   rest.post('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {

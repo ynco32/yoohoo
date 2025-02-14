@@ -1,135 +1,155 @@
-// hooks/useTicketingTimer.ts
-import { useState, useEffect } from 'react';
 import api from '@/lib/api/axios';
+import { AxiosError } from 'axios';
+import { useEffect, useState } from 'react';
+
 interface TimeInfo {
   startTime: string;
   serverTime: string;
   finished: boolean;
   within10Minutes: boolean;
 }
-// const calculateTimeLeft = ({ startTime, serverTime, finished }: TimeInfo) => {
-//   const start = new Date(startTime).getTime();
-//   const server = new Date(serverTime).getTime();
-//   if (finished) {
-//     // 이미 티켓팅이 끝났으면
-//     return 0;
-//   } else {
-//     return Math.floor((start - server) / 1000);
-//   }
-// };
 
-export const useTicketingTimer = () => {
+export const useTicketingTimer2 = () => {
+  // 넘겨줘야 하는 값들들
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [buttonMessage, setButtonMessage] = useState('잠시만 기다려주세요...');
-  const [timeInfo, setTimeInfo] = useState<TimeInfo | null>(null);
-  const [finished, setFinished] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [intervalId, setIntervalId] = useState<number | null>(null);
 
-  // 서버 시간 정보 가져오기
+  const [timeInfo, setTimeInfo] = useState<TimeInfo | null>(null);
+
+  //1️⃣ 시간 정보 가져오기
   const fetchTimeInfo = async () => {
     try {
-      const { data } = await api.get(`/api/v1/ticketing/time-info`);
+      console.log('[Timer] Fetching time info...'); // 디버깅 로그 추가
+      const { data } = await api.get('/api/v1/ticketing/time-info');
+      console.log('[Timer] Time info received:', data); // 응답 데이터 확인
       setTimeInfo(data);
-      return data;
-    } catch (error) {
-      console.error('시간 정보 불러오기 실패', error);
-      setButtonMessage('fetchTimeInfo에서 일시적인 오류가 발생했습니다');
-      return null;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error('[Timer] Error fetching time info:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          config: error.config, // 요청 설정 확인
+        });
+      }
     }
   };
 
+  //2️⃣ 남은 시간 계산하기
+  // const calculateSecondsLeft = () => {
+  //   const now = Date.now(); // 현재 시간
+
+  //   // 티켓팅이 끝나거나 시간 정보가 없을 경우우
+  //   if (timeInfo?.finished || !timeInfo) {
+  //     return 0;
+  //   }
+
+  //   // 시작 시간을 경과했을 때
+  //   const start = new Date(timeInfo.startTime).getTime();
+  //   if (start < now) {
+  //     return 0;
+  //   }
+
+  //   // 시간 정보도 있고 시간을 경과하지 않았을 때
+  //   console.log('⏰ now:', new Date(now).toISOString()); // 테스트 출력
+  //   const server = new Date(timeInfo.serverTime).getTime();
+  //   console.log('⏰ server:', new Date(server).toISOString()); // 테스트 출력
+  //   const timePassed = now - server;
+  //   const timeLeft =
+  //     new Date(timeInfo.startTime).getTime() - timePassed - server;
+  //   // 밀리초를 초로 변환 (Math.floor로 소수점 버림)
+  //   const secondsLeft = Math.floor(timeLeft / 1000);
+  //   return secondsLeft;
+  // };
+  const calculateSecondsLeft = () => {
+    if (!timeInfo || timeInfo.finished) return 0; // 예외 처리
+
+    const now = Date.now();
+    const start = new Date(timeInfo.startTime).getTime();
+    const server = new Date(timeInfo.serverTime).getTime();
+
+    if (start < now) return 0; // 시작 시간이 지났으면 0 반환
+
+    const timePassed = now - server; // 서버 기준으로 경과한 시간
+    const timeLeft = start - server - timePassed; // 정확한 남은 시간 계산
+
+    return Math.floor(timeLeft / 1000); // 초 단위 변환
+  };
+
+  // 3️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
+  const changeButtonMessage = () => {
+    // fetchTimeInfo(); // 빌드될 때 한 번만 가져오기
+
+    // 이전 인터벌 제거
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+
+    const secondsLeft = calculateSecondsLeft();
+
+    if (timeInfo) {
+      if (timeInfo.finished) {
+        // 티켓팅이 끝났을 때
+        setButtonDisabled(true);
+        setButtonMessage('마감되었습니다.');
+      } else if (secondsLeft <= 0 && !timeInfo.finished) {
+        // 시간이 안 남고 티켓팅이 끝나지 않았을 때
+        setButtonDisabled(false);
+        setButtonMessage('예매하기');
+      } else if (secondsLeft <= 60 && !timeInfo.finished) {
+        // 60초 이하 남았을 때
+        setButtonDisabled(true);
+        setButtonMessage(secondsLeft + '초 후 예매 시작');
+        setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초마다 실행
+      } else if (secondsLeft < 600 && !timeInfo.finished) {
+        // 10분 이하 남았을 때
+        setButtonDisabled(true);
+        const min = Math.floor(secondsLeft / 60);
+        const sec = secondsLeft % 60;
+        setButtonMessage(min + '분 ' + sec + '후 예매 시작');
+        setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초초마다 실행
+      } else if (secondsLeft >= 600 && !timeInfo.finished) {
+        // 10분 이상 남았을 때
+        setButtonDisabled(true);
+        const start = new Date(timeInfo.startTime);
+        const hours = start.getHours().toString().padStart(2, '0');
+        const minutes = start.getMinutes().toString().padStart(2, '0');
+        setButtonMessage(`${hours}시 ${minutes}분 오픈`);
+      }
+    } else {
+      console.log('timeInfo is null');
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchTimeInfo();
+  //   changeButtonMessage();
+  //   const intervalId = setInterval(changeButtonMessage, 300000); // 5분마다 실행
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
+  // return {
+  //   buttonDisabled,
+  //   buttonMessage,
+  // };
+  // ✅ 처음 마운트될 때 API 요청 실행
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    let startTimeStamp: number;
-
-    const updateTimer = async () => {
-      // 초기 시간 정보를 서버에서 가져옴
-      const info = await fetchTimeInfo();
-      if (!info) return;
-
-      if (info.finished) {
-        setFinished(true);
-        return;
-      }
-
-      // 서버 시간을 기준으로 설정
-      startTimeStamp = new Date(info.serverTime + 'Z').getTime();
-      console.log('⌛ startTimeStamp:', new Date(startTimeStamp).toISOString());
-
-      // 프론트엔드에서 시간 계산을 위한 내부 함수
-      const calculateRemainingTime = () => {
-        const now = Date.now();
-        const elapsedTime = now - startTimeStamp;
-        const remainingTime = 10 * 60 * 1000 - elapsedTime; // 10분에서 경과 시간을 뺌
-        const howManySecondsLeft = Math.ceil(remainingTime / 1000);
-        setSecondsLeft(howManySecondsLeft);
-
-        // 종료 조건 체크
-        if (secondsLeft <= 0) {
-          clearInterval(interval);
-          return;
-        }
-
-        // timeInfo 업데이트
-        setTimeInfo({
-          ...info,
-          serverTime: new Date(now).toISOString(),
-          within10Minutes: secondsLeft <= 600, // 10분 = 600초
-        });
-      };
-
-      // 초기 계산 실행
-      calculateRemainingTime();
-
-      // 남은 시간이 10분 이상일 때는 1분마다 갱신
-      if (secondsLeft > 600) {
-        interval = setInterval(calculateRemainingTime, 60000); // 1분
-      } else {
-        // 10분 이내일 때는 1초마다 갱신
-        interval = setInterval(calculateRemainingTime, 1000);
-      }
-    };
-
-    updateTimer();
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    fetchTimeInfo();
   }, []);
 
-  // timeInfo가 업데이트될 때마다 버튼 상태 업데이트
+  // ❌ 기존에는 `fetchTimeInfo()`만 실행하고 `timeInfo`가 변경되어도 `changeButtonMessage()`가 실행되지 않음
+  // 🔄 수정: `useEffect`에서 `timeInfo` 변경 감지하여 버튼 메시지 업데이트
   useEffect(() => {
-    if (!timeInfo) return;
-
-    const { startTime, within10Minutes } = timeInfo;
-    // const secondsLeft = calculateTimeLeft({
-    //   startTime,
-    //   serverTime,
-    //   within10Minutes,
-    //   finished: timeInfo.finished,
-    // });
-
-    setButtonDisabled(secondsLeft > 0);
-
-    if (!within10Minutes && !finished) {
-      const openTime = new Date(startTime);
-      setButtonMessage(
-        `${openTime.getHours()}시 ${openTime.getMinutes()}분 오픈`
-      );
-    } else if (secondsLeft > 60 && !finished) {
-      setButtonMessage(`${Math.floor(secondsLeft / 60)}분 후 오픈`);
-    } else if (secondsLeft > 0 && !finished) {
-      setButtonMessage(`${secondsLeft}초 후 오픈`);
-    } else if (secondsLeft <= 0 && !finished) {
-      setButtonMessage('예매하기');
-    } else if (finished) {
-      setButtonMessage('예매 종료');
-      setButtonDisabled(true);
+    if (timeInfo) {
+      changeButtonMessage();
     }
   }, [timeInfo]);
 
-  return {
-    buttonDisabled,
-    buttonMessage,
-  };
+  // ✅ 3분마다 `fetchTimeInfo()` 실행하여 최신 데이터 유지
+  useEffect(() => {
+    const interval = setInterval(fetchTimeInfo, 180000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return { buttonDisabled, buttonMessage };
 };

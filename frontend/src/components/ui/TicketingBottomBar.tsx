@@ -4,14 +4,16 @@ import TicketingBottomGreenButton from './TicketingBottomGreenButton';
 import ArrowPathButton from './ArrowPathButton';
 
 interface TicketingBottomBarProps {
-  selectedSeat?: number;
+  selectedSeat?: number | string;
   isActive: boolean;
   children?: string;
+  onClick?: () => void;
 }
 export default function TicketingBottomBar({
   selectedSeat,
   isActive,
   children,
+  onClick,
 }: TicketingBottomBarProps) {
   const refresh = () => {
     window.location.reload();
@@ -23,12 +25,15 @@ export default function TicketingBottomBar({
     // - max-w-[430px]: 부모 컨테이너 너비에 맞춤
     // - px-4: 좌우 패딩
     // - pb-4: 하단 패딩
-    <div className="fixed bottom-0 w-full max-w-[430px] bg-white px-4 pb-4">
+    <div
+      onClick={onClick}
+      className="fixed bottom-0 w-full max-w-[430px] bg-white px-4 pb-4"
+    >
       <div className="flex gap-2">
         <ArrowPathButton onClick={refresh} />
         <TicketingBottomGreenButton type={isActive ? 'active' : 'nonActive'}>
           {children}
-          {selectedSeat}
+          {selectedSeat}번 좌석 선택
         </TicketingBottomGreenButton>
       </div>
     </div>

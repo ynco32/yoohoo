@@ -1,5 +1,6 @@
 import type {
   ApiResponse,
+  ApiReview,
   CreateSightReviewRequest,
 } from '@/types/sightReviews';
 
@@ -264,7 +265,7 @@ export async function deleteSightReview(
   }
 }
 
-export async function getReview(reviewId: number): Promise<ApiResponse> {
+export async function getReview(reviewId: number): Promise<ApiReview> {
   try {
     const response = await withTimeout(
       fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId))

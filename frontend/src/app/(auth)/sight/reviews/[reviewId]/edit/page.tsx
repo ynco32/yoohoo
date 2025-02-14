@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { EditSightReviewFormContainer } from '@/components/features/sight/form/EditSightReviewFormContainer';
-import type { ApiResponse, ApiReview } from '@/types/sightReviews';
+import type { ApiReview } from '@/types/sightReviews'; // ApiResponse import 제거
 import { getReview } from '@/lib/api/sightReview';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 
@@ -15,22 +15,14 @@ export default function EditSightReviewPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 페이지 마운트 시 store 초기화
     useSightReviewStore.getState().reset();
   }, []);
 
   useEffect(() => {
     const fetchReviewData = async () => {
       try {
-        const response: ApiResponse = await getReview(reviewId);
-        const apiReview = response.review; // API에서 받아온 리뷰 데이터
-
-        if (!apiReview) {
-          throw new Error('Review not found');
-        }
-
-        setInitialData(apiReview); // ApiReview 형태로 그대로 전달
-
+        const apiReview = await getReview(reviewId);
+        setInitialData(apiReview);
         setError(null);
       } catch (error) {
         setError(

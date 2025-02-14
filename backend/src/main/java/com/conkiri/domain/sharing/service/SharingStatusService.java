@@ -28,7 +28,7 @@ public class SharingStatusService {
 	 * Concert의 startTime을 기준으로 Sharing의 status를 CLOSED로 전환
 	 * 매일 00:30에 그날의 Concert에 대해 관련 작업을 예약
 	 */
-	@Scheduled(cron = "0 30 0 * * *")
+	@Scheduled(cron = "0 50 9 * * *")
 	@Transactional
 	public void scheduleConcertBasedStatusUpdates() {
 

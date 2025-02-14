@@ -216,6 +216,11 @@ export async function getArenaReviews(
     const response = await withTimeout(
       fetch(`${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`)
     );
+    console.log(`아레나 아이디 ::: ${arenaId}`);
+    console.log(`쿼리파람:::: ${queryParams}`);
+    console.log(
+      `?????? :: ${SIGHT_REVIEW_API.ARENA_REVIEWS(arenaId)}?${queryParams}`
+    );
 
     if (!response.ok) {
       const errorData = (await response

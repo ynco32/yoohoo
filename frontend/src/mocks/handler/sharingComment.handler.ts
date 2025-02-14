@@ -67,6 +67,7 @@ export const sharingCommentHandlers = [
       commentId: Date.now(),
       writer: '테스트 유저',
       writerId: 123,
+      writerLevel: "1",
       content,
       modifyTime: new Date().toISOString(),
     };

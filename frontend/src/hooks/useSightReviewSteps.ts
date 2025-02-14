@@ -11,10 +11,14 @@ export type StepId = (typeof STEPS)[number]['id'];
 
 interface UseSightReviewStepsProps {
   formData: SightReviewFormData;
+  initialStep: number;
 }
 
-export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
-  const [currentStep, setCurrentStep] = useState<number>(0);
+export const useSightReviewSteps = ({
+  formData,
+  initialStep = 0,
+}: UseSightReviewStepsProps) => {
+  const [currentStep, setCurrentStep] = useState<number>(initialStep);
   function isValidPhoto(photo: File | null): photo is File {
     return photo instanceof File && photo.size > 0;
   }
@@ -47,13 +51,10 @@ export const useSightReviewSteps = ({ formData }: UseSightReviewStepsProps) => {
   }, [currentStep, checkStepValidity]);
 
   const handleNext = useCallback(() => {
-    if (
-      checkStepValidity(STEPS[currentStep].id) &&
-      currentStep < STEPS.length - 1
-    ) {
+    if (currentStep < STEPS.length - 1) {
       setCurrentStep((prev) => prev + 1);
     }
-  }, [currentStep, checkStepValidity]);
+  }, [currentStep]);
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) {

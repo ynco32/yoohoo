@@ -370,7 +370,7 @@ export const getCommentsByPage = (
 };
 
 // 스크랩한 게시글 목록 조회용 헬퍼 함수 추가
-const mockScrappedSharingIds = new Set([1, 3, 5]); // 임의로 몇 개의 게시글을 스크랩된 상태로 설정
+export const mockScrappedSharingIds = new Set([1, 3, 5]); // 임의로 몇 개의 게시글을 스크랩된 상태로 설정
 
 export const getScrappedSharings = (
   lastSharingId?: number,

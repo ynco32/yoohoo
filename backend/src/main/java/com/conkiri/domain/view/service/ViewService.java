@@ -19,9 +19,11 @@ import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.base.service.ArenaReadService;
 import com.conkiri.domain.base.service.ConcertReadService;
 import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.SeatResponseDTO;
@@ -59,6 +61,7 @@ public class ViewService {
 	private final ArenaReadService arenaReadService;
 	private final ConcertReadService concertReadService;
 	private final S3Service s3Service;
+	private final UserRepository userRepository;
 
 	public ArenaResponseDTO getArenas() {
 
@@ -170,6 +173,7 @@ public class ViewService {
 		return ViewConcertResponseDTO.from(concerts);
 	}
 
+	@Transactional
 	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
@@ -188,12 +192,23 @@ public class ViewService {
 			throw new DuplicateReviewException();
 		}
 
-		seat.increaseReviewCount();
-		seatRepository.save(seat);
-
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
+		seat.increaseReviewCount();
+		user.incrementReviewCount();
 	}
 
+	public ReviewDetailResponseDTO getReview(Long reviewId, Long userId) {
+
+		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+
+		if(!review.getUser().getUserId().equals(userId)) {
+			throw new UnauthorizedAccessException();
+		}
+
+		return ReviewDetailResponseDTO.from(review);
+	}
+
+	@Transactional
 	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
@@ -227,9 +242,11 @@ public class ViewService {
 		}
 	}
 
+	@Transactional
 	public void deleteReview(Long reviewId, Long userId) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
+		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if(!review.getUser().getUserId().equals(userId)) {
 			throw new UnauthorizedAccessException();
@@ -239,9 +256,8 @@ public class ViewService {
 		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
-
 		seat.decreaseReviewCount();
-		seatRepository.save(seat);
+		user.decrementReviewCount();
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

@@ -3,27 +3,23 @@ import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useState } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 import { Modal } from '@/components/common/Modal';
+import { useSharingCommentStore } from '@/store/useSharingCommentStore';
 
-interface CommentItemProps {
-  comment: Comment;
-  onUpdate: (commentId: number, newContent: string) => Promise<void>;
-  onDelete: (commentId: number) => Promise<void>;
-}
-
-export const CommentItem = ({
-  comment,
-  onUpdate,
-  onDelete,
-}: CommentItemProps) => {
+export const CommentItem = ({ comment }: { comment: Comment }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
+
+  // 액션만 가져오기
+  const { updateComment, deleteComment } = useSharingCommentStore();
   const user = useUserStore((state) => state.user);
   const isMyComment = user?.userId === comment.writerId;
 
   const handleUpdate = async () => {
+    if (!editContent.trim()) return;
+
     try {
-      await onUpdate(comment.commentId, editContent);
+      await updateComment(comment.commentId, editContent);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -32,7 +28,8 @@ export const CommentItem = ({
 
   const handleDelete = async () => {
     try {
-      await onDelete(comment.commentId);
+      await deleteComment(comment.commentId);
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting comment:', error);
     }

@@ -41,5 +41,13 @@ public final class ExceptionMessage {
 	public static final String DUPLICATE_REVIEW = "이미 해당 공연, 좌석에 대한 리뷰를 남겼습니다.";
 	public static final String REVIEW_NOT_FOUND = "리뷰를 찾을 수 없습니다.";
 	public static final String UNAUTHORIZED_ACCESS = "해당 사용자에게 권한이 없습니다.";
-	public static final String INVALID_STAGETYPE = "유효하지 않은 무대 유형입니다.";
+	public static final String INVALID_STAGE_TYPE = "유효하지 않은 무대 유형입니다.";
+
+	//ticketing
+	public static final String DUPLICATE_TICKETING = "티켓팅에 참여한 내역이 있어 참여할 수 없습니다.";
+	public static final String ALREADY_RESERVED_SEAT = "이미 선택된 좌석입니다.";
+	public static final String NOT_START_TICKETING = "티켓팅이 아직 시작되지 않았습니다.";
+	public static final String INVALID_SECTION = "유효하지 않은 구역입니다.";
+	public static final String INVALID_SEAT = "유효하지 않은 좌석입니다.";
+
 }

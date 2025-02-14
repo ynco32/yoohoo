@@ -5,6 +5,7 @@ import SightReviewForm from '@/components/features/sight/form/SightReviewForm';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 import { submitSightReview } from '@/lib/api/sightReview';
 import type { SightReviewFormData } from '@/types/sightReviews';
+import { mapFormDataToApiRequest } from '@/lib/utils/sightReviewMapper';
 
 interface SightReviewFormContainerProps {
   className?: string;
@@ -16,14 +17,20 @@ export function SightReviewFormContainer({
   artist,
 }: SightReviewFormContainerProps) {
   const router = useRouter();
-  const { setError, setIsSubmitting } = useSightReviewStore();
+  const store = useSightReviewStore(); // store를 컴포넌트 최상위에서 호출
+  const { setError, setIsSubmitting } = store;
 
   const handleSubmit = async (data: SightReviewFormData) => {
-    console.log(data);
     try {
       setIsSubmitting(true);
-      const result = await submitSightReview(data);
-      return { id: result.id };
+      const { photo, ...reviewData } = data;
+      if (!photo) {
+        throw new Error('사진을 선택해주세요.');
+      }
+
+      const mappedData = mapFormDataToApiRequest(reviewData);
+      await submitSightReview(mappedData, photo);
+      return undefined;
     } catch (error) {
       console.error('Error submitting review:', error);
       if (error instanceof Error) {

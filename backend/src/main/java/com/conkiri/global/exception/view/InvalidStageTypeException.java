@@ -4,6 +4,6 @@ import com.conkiri.global.exception.dto.ExceptionMessage;
 
 public class InvalidStageTypeException extends RuntimeException {
 	public InvalidStageTypeException() {
-		super(ExceptionMessage.INVALID_STAGETYPE);
+		super(ExceptionMessage.INVALID_STAGE_TYPE);
 	}
 }

@@ -8,6 +8,7 @@ export interface Concert {
   startTime: string;
   stageType: string;
   arena: string;
+  photoUrl: string;
 }
 
 export interface ConcertResponse {

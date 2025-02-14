@@ -19,6 +19,7 @@ public class ConcertDetailResponseDTO {
 	private String concertName;
 	private String artist;
 	private LocalDateTime startTime;
+	private String photoUrl;
 	private String stageType;
 	private String arena;
 
@@ -28,6 +29,7 @@ public class ConcertDetailResponseDTO {
 			.concertName(concert.getConcertName())
 			.artist(concert.getArtist())
 			.startTime(concert.getStartTime())
+			.photoUrl(concert.getPhotoUrl())
 			.stageType(concert.getStageType().name())
 			.arena(concert.getArena().getArenaName())
 			.build();

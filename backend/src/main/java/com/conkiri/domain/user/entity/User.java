@@ -32,8 +32,11 @@ public class User {
 	@Column(name = "user_name", length = 100)
 	private String userName;
 
+	@Column(name = "review_count")
+	private Integer reviewCount;
+
 	@Column(name = "level", length = 100)
-	private String level;
+	private String level = "1";
 
 	@Column(name = "tier", length = 100)
 	private String tier;
@@ -43,5 +46,27 @@ public class User {
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void incrementReviewCount() {
+		this.reviewCount++;
+		updateViewLevel();
+	}
+
+	public void decrementReviewCount() {
+		this.reviewCount++;
+		updateViewLevel();
+	}
+
+	private void updateViewLevel() {
+		if (reviewCount >= 30) {
+			this.level = "4";
+		} else if (reviewCount >= 20) {
+			this.level = "3";
+		} else if (reviewCount >= 10) {
+			this.level = "2";
+		} else {
+			this.level = "1";
+		}
 	}
 }

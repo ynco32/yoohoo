@@ -22,6 +22,7 @@ export interface SharingPost {
   photoUrl: string | null;
   latitude?: number;
   longitude?: number;
+  isScraped?: boolean;
 }
 
 /**

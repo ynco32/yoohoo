@@ -40,8 +40,6 @@ const TicketingInfo = ({
         <SeatType seat_color="normal" seat_name="일반석" />
         <span>154,000원</span>
       </div>
-      {/* <TicketingButton onReservationStart={reservationStart} />
-       */}
       <FixedButton
         fixedButtonOnClick={fixedButtonOnClick}
         isfixedButtonDisabled={isfixedButtonDisabled}

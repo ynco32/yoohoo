@@ -6,6 +6,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 2,
@@ -14,6 +15,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 3,
@@ -22,6 +24,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 4,
@@ -30,6 +33,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 5,
@@ -38,6 +42,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 6,
@@ -46,6 +51,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 7,
@@ -54,6 +60,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 8,
@@ -62,6 +69,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 9,
@@ -70,6 +78,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 10,
@@ -78,6 +87,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   {
     concertId: 11,
@@ -86,6 +96,7 @@ export const mockConcerts = [
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',
     arena: '체조',
+    photoUrl: '/images/poster.png',
   },
   // ... 더 많은 데이터
 ];

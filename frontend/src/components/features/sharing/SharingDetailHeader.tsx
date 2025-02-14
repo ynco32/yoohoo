@@ -18,7 +18,7 @@ import { sharingAPI } from '@/lib/api/sharing';
 interface SharingDetailHeaderProps {
   sharingId: number;
   title: string;
-  nickname: string;
+  writer: string;
   writerId: number;
   status: SharingStatus;
   profileImage?: string;
@@ -29,7 +29,7 @@ interface SharingDetailHeaderProps {
 export const SharingDetailHeader = ({
   sharingId,
   title,
-  nickname,
+  writer,
   writerId,
   status,
   startTime,
@@ -175,7 +175,7 @@ export const SharingDetailHeader = ({
             </div>
             <div>
               <h1 className="font-medium">{title}</h1>
-              <p className="text-sm text-gray-600">{nickname}</p>
+              <p className="text-sm text-gray-600">{writer}</p>
               <div className="mt-1">
                 <div className="flex items-center gap-1 text-sm text-gray-900">
                   <ClockIcon className="h-6 w-6" />

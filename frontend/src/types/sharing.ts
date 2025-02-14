@@ -15,7 +15,7 @@ export interface SharingPost {
   sharingId: number;
   title: string;
   content: string;
-  nickname: string;
+  writer: string;
   writerId: number;
   status: SharingStatus;
   startTime: string;

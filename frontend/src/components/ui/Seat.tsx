@@ -1,6 +1,7 @@
 'use client';
 
 import { SeatProps } from '@/types/seats';
+import { useState } from 'react';
 
 interface SeatComponentProps extends SeatProps {
   x: number;
@@ -14,21 +15,31 @@ const Seat = ({
   seatId,
   arenaId,
   sectionId,
-  row,
-  col,
   scrapped,
   isScrapMode,
   isSelected,
+  reviewCount,
   x,
   y,
   width,
   height,
   onClick,
 }: SeatComponentProps) => {
+  const [seatColor, setSeatColor] = useState('#4A90E2');
+
   const getFillColor = () => {
     if (isSelected) return '#2C3A8B';
-    if (!isScrapMode) return '#4A90E2';
-    return scrapped ? '#FF6B6B' : '#4A90E2';
+
+    if (reviewCount == 0) {
+      setSeatColor('#e0f6ff');
+    } else if (reviewCount < 5) {
+      setSeatColor('#63beff');
+    } else {
+      setSeatColor('#4788ff');
+    }
+
+    if (!isScrapMode) return seatColor;
+    return scrapped ? '#FF6B6B' : seatColor;
   };
 
   return (

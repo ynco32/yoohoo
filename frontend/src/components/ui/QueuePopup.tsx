@@ -6,7 +6,7 @@ interface QueuePopupProps {
   onClose: () => void;
   queueNumber: string | number;
   behindMe: number | string;
-  expectedTime: string | number; //4시간 58분 29초
+  expectedTime: number; //4시간 58분 29초
 }
 
 export default function QueuePopup({
@@ -18,6 +18,23 @@ export default function QueuePopup({
   isOpen,
 }: QueuePopupProps) {
   if (!isOpen) return null; // isOpen 이 거짓이면 아무것도 리턴 안 함.
+
+  const timeFormat = (expectedSeconds: number): string => {
+    const hours = Math.floor(expectedSeconds / 3600);
+    const minutes = Math.floor((expectedSeconds % 3600) / 60);
+    const seconds = Math.floor(expectedSeconds % 60);
+
+    if (hours > 0) {
+      return `${hours}시 ${minutes}분 ${seconds}초`;
+    } else if (minutes > 0) {
+      return `${minutes}분 ${seconds}초`;
+    } else {
+      return `${seconds}초`;
+    }
+  };
+
+  const expectedTimeInForm = timeFormat(expectedTime);
+
   return (
     //검은 배경
     <div className="fixed inset-0 bottom-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
@@ -39,7 +56,7 @@ export default function QueuePopup({
             내 대기 순서 {queueNumber}번째
           </p>
           <p>
-            뒤에 {behindMe}명 / {expectedTime} 소요 예상
+            뒤에 {behindMe}명 / {expectedTimeInForm} 소요 예상
           </p>
         </div>
         <div className="text-left text-caption2">

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { sharingAPI } from '@/lib/api/sharing';
+import { SharingPost } from '@/types/sharing';
 
 interface ScrapState {
   scrappedSharingIds: Set<number>;
@@ -7,10 +8,17 @@ interface ScrapState {
   deleteScrap: (sharingId: number) => Promise<void>;
   toggleScrap: (sharingId: number) => Promise<void>;
   isScraped: (sharingId: number) => boolean;
+  initScrappedSharings: (sharings: SharingPost[]) => void; 
 }
 
 export const useSharingScrapStore = create<ScrapState>((set, get) => ({
   scrappedSharingIds: new Set<number>(),
+
+  // 스크랩 목록으로 초기화하는 함수
+  initScrappedSharings: (sharings) => {
+    const ids = sharings.map(sharing => sharing.sharingId);
+    set({ scrappedSharingIds: new Set(ids) });
+  },
 
   isScraped: (sharingId: number) => {
     return get().scrappedSharingIds.has(sharingId);

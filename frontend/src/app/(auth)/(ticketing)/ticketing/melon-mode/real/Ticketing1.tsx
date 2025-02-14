@@ -7,11 +7,11 @@ import { ScheduleSelection } from '@/components/features/ticketing/ScheduleSelec
 import QueuePopup from '@/components/ui/QueuePopup';
 import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
 // import { useTicketingTimer } from '@/hooks/useTicketingTimer';
-import { useTicketingTimer2 } from '@/hooks/useTicketingTimer2';
+import { useTicketingTimer2 } from '@/hooks/useTicketingTimer';
 import { useQueueStore } from '@/store/useQueueStore';
 
 export default function Ticketing1() {
-  const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(true);
+  const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
   const { queueNumber, waitingTime, peopleBehind } = useQueueStore();
 

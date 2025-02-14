@@ -8,7 +8,7 @@ export default function SeatSelectPage() {
       <div className="relative z-20 flex h-full flex-col items-center">
         <ScrapMode />
         <SightReviewList />
-        <WriteButton path="/sight/write" />
+        <WriteButton path="/sight/reviews/write" />
       </div>
     </main>
   );

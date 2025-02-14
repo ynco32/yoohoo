@@ -40,7 +40,8 @@ export const SharingDetailHeader = ({
   const concertId = Number(params.concertId);
   const router = useRouter();
   const user = useUserStore((state) => state.user);
-  const { isScraped, toggleScrap } = useSharingScrapStore();
+  const { isScraped, toggleScrap, initScrappedSharings } =
+    useSharingScrapStore();
   const [isToggling, setIsToggling] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -61,7 +62,7 @@ export const SharingDetailHeader = ({
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
     setShowMenu(false);
-  }; 
+  };
 
   const handleDeleteConfirm = async () => {
     try {
@@ -104,6 +105,22 @@ export const SharingDetailHeader = ({
       setIsToggling(false);
     }
   };
+
+  // 컴포넌트 마운트 시 스크랩 목록 조회해서 초기화
+  useEffect(() => {
+    const initializeScrapStatus = async () => {
+      if (!user) return;
+
+      try {
+        const response = await sharingAPI.getScrapSharings(concertId);
+        initScrappedSharings(response.sharings);
+      } catch (error) {
+        console.error('Failed to fetch scrap status:', error);
+      }
+    };
+
+    initializeScrapStatus();
+  }, [concertId, user, initScrappedSharings]);
 
   // 상태 변경
   const handleStatusChange = async (newStatus: SharingStatus) => {

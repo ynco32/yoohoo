@@ -2,11 +2,11 @@ import { create } from 'zustand';
 
 interface QueueStore {
   queueNumber: number | string;
-  waitingTime: number | string;
+  waitingTime: number;
   peopleBehind: number | string;
   setQueueInfo: (
     queueNumber: number | string,
-    waitingTime: string | number,
+    waitingTime: number,
     peopleBehind: string | number
   ) => void;
 }

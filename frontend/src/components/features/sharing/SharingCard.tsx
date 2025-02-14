@@ -17,7 +17,7 @@ interface SharingCardProps extends SharingPost {
 export const SharingCard = ({
   sharingId,
   title,
-  nickname,
+  writer,
   status,
   startTime,
   photoUrl,
@@ -71,7 +71,7 @@ export const SharingCard = ({
               {getStatusText(status)}
             </span>
           </div>
-          <div className="mt-1 text-sm text-gray-600">{nickname}</div>
+          <div className="mt-1 text-sm text-gray-600">{writer}</div>
           <div className="mt-1 flex items-center gap-1 text-sm text-gray-900">
             <ClockIcon className="h-4 w-4" />
             {startTime}

@@ -56,6 +56,6 @@ public class ServerMonitorService {
 		if (metrics.totalLoad() > MEDIUM_LOAD_THRESHOLD) {
 			return 1; // 중간 부하
 		}
-		return 1;    // 낮은 부하
+		return 2;    // 낮은 부하
 	}
 }

@@ -9,6 +9,7 @@ interface UseSightReviewValidationProps {
   setValidation: (field: ValidFields, isValid: boolean) => void;
   setError: (field: ValidFields | 'submit' | 'seat', message?: string) => void;
 }
+
 export const useSightReviewValidation = ({
   formData,
   touched,
@@ -45,17 +46,27 @@ export const useSightReviewValidation = ({
       };
 
       const validateReviewSight = () => {
-        // File 객체이거나 string(URL)인 경우 모두 유효하도록 수정
-        const isPhotoValid =
-          formData.photo instanceof File || typeof formData.photo === 'string';
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
+        // 파일 크기 검증 추가
+        let isPhotoValid = typeof formData.photo === 'string'; // URL인 경우는 유효
+        let isPhotoSizeValid = true;
+
+        if (formData.photo instanceof File) {
+          isPhotoSizeValid = formData.photo.size <= MAX_FILE_SIZE;
+          isPhotoValid = isPhotoSizeValid && Boolean(formData.photo);
+        }
+
         const isViewScoreValid = formData.viewScore > 0;
 
         if (!validationOnly) {
           setValidation('photo', isPhotoValid);
           setValidation('viewScore', isViewScoreValid);
 
-          if (!isPhotoValid && touched.photo) {
+          if (!formData.photo && touched.photo) {
             setError('photo', '이미지를 업로드해주세요');
+          } else if (!isPhotoSizeValid && touched.photo) {
+            setError('photo', '이미지 크기는 5MB 이하여야 합니다');
           } else {
             setError('photo', undefined);
           }
@@ -108,7 +119,6 @@ export const useSightReviewValidation = ({
     [formData, touched, setValidation, setError]
   );
 
-  // getValidationField는 변경 없음
   const getValidationField = (
     field: keyof SightReviewFormData
   ): ValidFields | null => {

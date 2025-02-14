@@ -1,6 +1,6 @@
 /**
  * @file sections.ts
- * @description API utilities for fetching section data
+ * @description 구역(section) 데이터를 가져오기 위한 API 유틸리티
  */
 
 export interface Section {
@@ -8,7 +8,7 @@ export interface Section {
   sectionNumber: number;
   available: boolean;
   scrapped: boolean;
-  arenaId?: string; // Added for compatibility with existing code
+  arenaId?: string;
 }
 
 export interface SectionsResponse {
@@ -16,14 +16,14 @@ export interface SectionsResponse {
 }
 
 /**
- * Fetches sections data for a specific arena and stage type
- * @param arenaId - The ID of the arena
- * @param stageType - The type of stage
- * @returns Promise containing the sections data
+ * 특정 공연장과 무대 유형에 대한 구역 데이터를 가져옵니다
+ * @param arenaId - 공연장 ID
+ * @param stageType - 무대 유형
+ * @returns 구역 데이터를 포함한 Promise
  */
 export async function fetchSections(
-  arenaId: string | string[] | number,
-  stageType: string | string[] | number
+  arenaId: number,
+  stageType: number
 ): Promise<Section[]> {
   try {
     const response = await fetch(
@@ -41,12 +41,7 @@ export async function fetchSections(
     }
 
     const data: SectionsResponse = await response.json();
-
-    // Add arenaId to each section for compatibility with existing code
-    return data.sections.map((section) => ({
-      ...section,
-      arenaId: arenaId.toString(),
-    }));
+    return data.sections;
   } catch (error) {
     console.error('Error fetching sections:', error);
     throw error;

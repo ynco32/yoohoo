@@ -13,7 +13,7 @@ interface IconWrapperProps {
 export const IconWrapper = ({ icon, label, description }: IconWrapperProps) => {
   return (
     <div className="relative flex h-full w-full flex-col items-start gap-[1.023px]">
-      <div className="flex flex-col">
+      <div className="z-50 flex flex-col">
         {/* Pretendard 폰트 적용 */}
         <span className="font-pretendard text-menu text-text-menu">
           {label}
@@ -24,14 +24,19 @@ export const IconWrapper = ({ icon, label, description }: IconWrapperProps) => {
       </div>
 
       {/* 아이콘 (우측 하단 정렬 - absolute로 위치 조정) */}
-      <div className="absolute bottom-0" style={{ right: '0%' }}>
-        <Image
-          src={SVGIcons[icon]}
-          alt={label}
-          width={icon === 'SightIcon' ? 100 : 40} // 예시로 아이콘별 크기 조정
-          height={icon === 'SightIcon' ? 100 : 40} // 예시로 아이콘별 크기 조정
-          className="object-contain"
-        />
+      <div className="absolute -bottom-4 -right-4" /*style={{ right: '0%' }}*/>
+        <div className="relative h-full w-full">
+          <Image
+            src={SVGIcons[icon]}
+            alt={label}
+            // fill
+            width={icon === 'SightIcon' ? 130 : icon === 'TicketIcon' ? 90 : 80} // 예시로 아이콘별 크기 조정
+            height={
+              icon === 'SightIcon' ? 130 : icon === 'TicketIcon' ? 90 : 80
+            } // 예시로 아이콘별 크기 조정
+            className="object-contain"
+          />
+        </div>
       </div>
     </div>
   );

@@ -92,7 +92,13 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
         sharingId,
         content
       );
-      set((state) => ({ comments: [newComment, ...state.comments] }));
+      // 새로운 참조 생성을 명시적으로 보장
+      set((state) => ({
+        comments: [
+          { ...newComment }, // 스프레드로 새 참조 생성
+          ...state.comments,
+        ],
+      }));
       return newComment;
     } catch (err) {
       set({
@@ -108,9 +114,12 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
         commentId,
         content
       );
+      // 새로운 참조 생성을 명시적으로 보장
       set((state) => ({
         comments: state.comments.map((comment) =>
-          comment.commentId === commentId ? updatedComment : comment
+          comment.commentId === commentId
+            ? { ...comment, ...updatedComment } // 스프레드로 새 참조 생성
+            : comment
         ),
       }));
       return updatedComment;

@@ -14,6 +14,7 @@ import { useUserStore } from '@/store/useUserStore';
 import { StatusDropdown } from './StatusDropdown';
 import { Modal } from '@/components/common/Modal';
 import { sharingAPI } from '@/lib/api/sharing';
+import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 
 interface SharingDetailHeaderProps {
   sharingId: number;
@@ -35,7 +36,6 @@ export const SharingDetailHeader = ({
   writerLevel,
   status,
   startTime,
-  profileImage = '/images/profile.png',
   onStatusChange,
 }: SharingDetailHeaderProps) => {
   const params = useParams();
@@ -168,7 +168,7 @@ export const SharingDetailHeader = ({
             <div className="relative h-10 w-10">
               {/* 원형 프로필 */}
               <Image
-                src={profileImage}
+                src={getUserProfileImage(writerLevel)}
                 alt="프로필"
                 fill
                 sizes="40px"

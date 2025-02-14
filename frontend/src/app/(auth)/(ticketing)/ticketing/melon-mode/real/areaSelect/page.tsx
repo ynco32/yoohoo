@@ -16,7 +16,7 @@ export default function Area() {
     <div>
       <SecurityMessagePopup
         isOpen={isSecurityMessageOpen}
-        onPostpone={() => {}} // 미루기 기능 없애기
+        onPostpone={() => setisSecurityMessageOpen(false)} // 미루기 기능 활성화 추후 상태 저장 추가
         onSuccess={() => setisSecurityMessageOpen(false)}
       />
       <TicketingArea />

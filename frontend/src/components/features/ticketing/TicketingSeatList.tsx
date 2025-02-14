@@ -1,23 +1,28 @@
+// components/features/ticketing/TicketingSeatList.tsx
 import React, { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import TicketingSeat from '@/components/ui/TicketingSeat';
 import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
-import { useSeatsGrid } from '@/hooks/useSeatsGrid';
+import { useTicketingGrid } from '@/hooks/useTicketingSeatsGrid';
+import TicketingSeat from '@/components/ui/TicketingSeat';
 
-interface SeatListProps {
-  isScrapMode: boolean;
+interface TicketingSeatListProps {
+  areaId: string; // A, B, C 같은거
 }
 
-const TicketingSeatList = ({ isScrapMode }: SeatListProps) => {
-  const { seats, isLoading, fetchSeatsBySection } = useTicketingSeatStore();
-  const { arenaId, stageType, sectionId } = useParams();
-  const router = useRouter();
+const TicketingSeatList = ({ areaId }: TicketingSeatListProps) => {
+  const {
+    seats,
+    isLoading,
+    fetchSeatsByArea,
+    selectSeat,
+    selectedSeatNumber,
+    isSeatAvailable,
+  } = useTicketingSeatStore();
 
-  const SEAT_WIDTH = 10;
-  const SEAT_HEIGHT = 10;
-  const SEAT_MARGIN = 2;
+  const SEAT_WIDTH = 40;
+  const SEAT_HEIGHT = 40;
+  const SEAT_MARGIN = 5;
 
-  const { grid, dimensions } = useSeatsGrid(
+  const { grid, dimensions } = useTicketingGrid(
     seats,
     SEAT_WIDTH,
     SEAT_HEIGHT,
@@ -25,19 +30,25 @@ const TicketingSeatList = ({ isScrapMode }: SeatListProps) => {
   );
 
   useEffect(() => {
-    fetchSeatsBySection(Number(arenaId), Number(stageType), Number(sectionId));
-  }, [arenaId, stageType, sectionId, fetchSeatsBySection]);
+    fetchSeatsByArea(areaId);
+  }, [areaId, fetchSeatsByArea]);
 
   if (isLoading) {
     return (
       <div className="flex h-64 w-full items-center justify-center">
-        Loading...
+        <p>좌석 정보를 불러오는 중...</p>
       </div>
     );
   }
 
+  const handleSeatClick = (seatNumber: string) => {
+    if (isSeatAvailable(seatNumber)) {
+      selectSeat(seatNumber);
+    }
+  };
+
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex w-full justify-center overflow-auto">
       <svg
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         width={dimensions.width}
@@ -45,22 +56,18 @@ const TicketingSeatList = ({ isScrapMode }: SeatListProps) => {
         className="max-w-full"
       >
         {grid.map((row, rowIndex) =>
-          row.map(({ x, y, seat }, seatIndex) =>
+          row.map(({ x, y, seat }, colIndex) =>
             seat ? (
               <TicketingSeat
-                key={`${rowIndex}-${seatIndex}`}
-                {...seat}
-                scrapped={seat.scrapped}
-                isScrapMode={isScrapMode}
+                key={`${rowIndex}-${colIndex}`}
                 x={x}
                 y={y}
                 width={SEAT_WIDTH}
                 height={SEAT_HEIGHT}
-                onClick={() =>
-                  router.push(
-                    `/sight/${seat.arenaId}/${stageType}/${seat.sectionId}/${seat.seatId}`
-                  )
-                }
+                number={seat.seatNumber}
+                status={seat.status}
+                isSelected={seat.seatNumber === selectedSeatNumber}
+                onClick={() => handleSeatClick(seat.seatNumber)}
               />
             ) : null
           )

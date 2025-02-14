@@ -1,23 +1,37 @@
 'use client';
 import TicketingBottomBar from '@/components/ui/TicketingBottomBar';
 import { useState } from 'react';
+import TicketingSeatList from '@/components/features/ticketing/TicketingSeatList';
+import { useParams } from 'next/navigation';
+import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
+import { useEffect } from 'react';
 
 export default function Seat() {
   const [isActive, setIsActive] = useState(false);
-  const [seat, setSeat] = useState(0);
+  const [seat, setSeat] = useState('');
+  const { selectedSeatNumber } = useTicketingSeatStore();
+  const areaId = useParams().id as string;
 
-  const handleSelectSeat = () => {
-    setIsActive(true);
-    /// 더미 데이터
-    setSeat(5);
+  // selectedSeatNumber가 변경될 때마다 상태 업데이트
+  useEffect(() => {
+    if (selectedSeatNumber) {
+      setIsActive(true);
+      setSeat(selectedSeatNumber);
+    }
+  }, [selectedSeatNumber]); // 의존성 배열에 selectedSeatNumber 추가
+
+  const handleClick = () => {
+    // 결과 페이지로 이동하기
   };
 
   return (
     <div>
-      <span onClick={handleSelectSeat} className="m-5 inline-block">
-        임시 좌석
-      </span>
-      <TicketingBottomBar isActive={isActive} selectedSeat={seat} />
+      <TicketingSeatList areaId={areaId} />
+      <TicketingBottomBar
+        onClick={handleClick}
+        isActive={isActive}
+        selectedSeat={seat}
+      />
     </div>
   );
 }

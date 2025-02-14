@@ -20,6 +20,7 @@ interface SharingDetailHeaderProps {
   title: string;
   writer: string;
   writerId: number;
+  writerLevel: string;
   status: SharingStatus;
   profileImage?: string;
   startTime: string;
@@ -31,6 +32,7 @@ export const SharingDetailHeader = ({
   title,
   writer,
   writerId,
+  writerLevel,
   status,
   startTime,
   profileImage = '/images/profile.png',

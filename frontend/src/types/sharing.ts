@@ -17,6 +17,7 @@ export interface SharingPost {
   content: string;
   writer: string;
   writerId: number;
+  writerLevel:string;
   status: SharingStatus;
   startTime: string;
   photoUrl: string | null;
@@ -113,6 +114,7 @@ export interface Comment {
   commentId: number;
   writer: string; // 작성자
   writerId: number;
+  writerLevel:string;
   content: string; // 댓글 내용
   modifyTime: string; // 작성 시간
 }

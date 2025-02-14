@@ -4,7 +4,7 @@ import { WriteButton } from '@/components/common/WriteButton';
 
 export default function SeatSelectPage() {
   return (
-    <main className="h-[calc(100vh-64px)] bg-background-default">
+    <main className="-mt-16 min-h-screen bg-background-default">
       <div className="relative z-20 flex h-full flex-col items-center">
         <ScrapMode />
         <SightReviewList />

@@ -61,8 +61,7 @@ export const useSectionStore = create<SectionState>((set, get) => ({
 
   getCachedSections: (arenaId: number, stageType: number) => {
     const cacheKey = getCacheKey(arenaId, stageType);
-    const cachedData = get().arenaCache[cacheKey];
-    return cachedData?.sections;
+    return get().arenaCache[cacheKey]?.sections;
   },
 
   getSectionById: (sectionId: number) => {
@@ -74,38 +73,30 @@ export const useSectionStore = create<SectionState>((set, get) => ({
     const now = Date.now();
     const cachedData = get().arenaCache[cacheKey];
 
-    //캐시 된 데이터가 유효한 경우 사용
+    // 캐시가 유효한 경우 lastAccessed 업데이트 없이 바로 반환
     if (cachedData && now - cachedData.timestamp < CACHE_TTL) {
-      set((state) => ({
+      set({
         sections: cachedData.sections,
         currentStageType: stageType,
-        arenaCache: {
-          ...state.arenaCache,
-          [cacheKey]: {
-            ...cachedData,
-            lastAccessed: now,
-          },
-        },
-      }));
+      });
       return;
     }
 
     try {
       set({ isLoading: true, error: null, currentStageType: stageType });
       const sectionData = await fetchSections(arenaId, stageType);
-
-      // API 응답을 SectionProps 형태로 변환
       const convertedSections = sectionData.map(convertToSectionProps);
 
       set((state) => {
         const cache = { ...state.arenaCache };
         const cacheEntries = Object.entries(cache);
 
+        // 캐시 크기 제한 로직
         if (cacheEntries.length >= MAX_CACHED_ARENA_TYPES) {
-          const oldestEntry = cacheEntries.reduce((oldest, current) =>
-            current[1].lastAccessed < oldest[1].lastAccessed ? current : oldest
+          const oldestKey = Object.keys(cache).reduce((oldest, key) =>
+            cache[key].timestamp < cache[oldest].timestamp ? key : oldest
           );
-          delete cache[oldestEntry[0]];
+          delete cache[oldestKey];
         }
 
         return {
@@ -126,7 +117,7 @@ export const useSectionStore = create<SectionState>((set, get) => ({
         error:
           error instanceof Error
             ? error.message
-            : '구역 데이터를 가져 오는데 실패했습니다.',
+            : '구역 데이터를 가져오는데 실패했습니다.',
         isLoading: false,
       });
     }

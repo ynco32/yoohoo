@@ -8,8 +8,8 @@ interface SectionPosition {
 }
 
 export const useSectionPositions = (totalSections: number) => {
-  const BASE_INNER_RADIUS = 100;
-  const BASE_OUTER_RADIUS = 300;
+  const BASE_INNER_RADIUS = 70;
+  const BASE_OUTER_RADIUS = 200;
   const INNER_CIRCLE_SECTIONS = 22;
   return useMemo(() => {
     const calculatePosition = (index: number): SectionPosition => {

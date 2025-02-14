@@ -203,21 +203,23 @@ public class QueueProcessingService {
 	public WaitingTimeResponseDTO getEstimatedWaitingTime(Long userId) {
 		Long position = getQueuePosition(userId);
 		if (position == null) {
-			// 대기열에 없는 경우 0으로 초기화된 응답 반환
 			return WaitingTimeResponseDTO.of(0L, 0L, 0L, 0L);
 		}
 
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
 		int batchSize = serverMonitorService.calculateBatchSize(serverLoad);
 
-		// 대기번호는 1부터 시작하도록
+		// 대기번호는 1부터 시작
 		Long waitingNumber = position;
 		Long usersAhead = position - 1;
 
-		// 대기 시간 계산
-		Long estimatedSeconds = position * 2L;
+		// 대기 시간 계산 (5초 주기, 배치 크기 고려)
+		// 자신의 순서가 처리될 배치 번호 계산 (올림)
+		Long myBatchNumber = (usersAhead + batchSize - 1) / batchSize;
+		// 배치 번호 * 5초
+		Long estimatedSeconds = myBatchNumber * 5L;
+
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE) - 1;
-		// 뒤에 있는 사람 수 계산 수정
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);
 
 		return WaitingTimeResponseDTO.of(waitingNumber, usersAhead, estimatedSeconds, usersAfter);

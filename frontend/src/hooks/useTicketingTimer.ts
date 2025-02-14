@@ -7,6 +7,7 @@ interface TimeInfo {
   serverTime: string;
   finished: boolean;
   within10Minutes: boolean;
+  frontStartTime: string;
 }
 
 export const useTicketingTimer2 = () => {
@@ -23,7 +24,14 @@ export const useTicketingTimer2 = () => {
       console.log('[Timer] Fetching time info...'); // 디버깅 로그 추가
       const { data } = await api.get('/api/v1/ticketing/time-info');
       console.log('[Timer] Time info received:', data); // 응답 데이터 확인
-      setTimeInfo(data);
+      // setTimeInfo(data);
+      setTimeInfo({
+        startTime: data.startTime,
+        serverTime: data.serverTime,
+        finished: data.finished,
+        within10Minutes: data.within10Minutes,
+        frontStartTime: Date.now().toString(), // 프론트 측에서 잰 시작 시간
+      });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         console.error('[Timer] Error fetching time info:', {
@@ -42,10 +50,11 @@ export const useTicketingTimer2 = () => {
     const now = Date.now();
     const start = new Date(timeInfo.startTime).getTime();
     const server = new Date(timeInfo.serverTime).getTime();
+    const frontStart = new Date(timeInfo.frontStartTime).getTime();
 
     if (start < now) return 0; // 시작 시간이 지났으면 0 반환
 
-    const timePassed = now - server; // 서버 기준으로 경과한 시간
+    const timePassed = frontStart - now; // 서버 기준으로 경과한 시간
     const timeLeft = start - server - timePassed; // 정확한 남은 시간 계산
 
     return Math.floor(timeLeft / 1000); // 초 단위 변환

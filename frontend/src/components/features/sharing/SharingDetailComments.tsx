@@ -12,15 +12,12 @@ export const SharingDetailComments = ({
 }: SharingDetailCommentsProps) => {
   const [commentContent, setCommentContent] = useState('');
   const { mswInitialized } = useMswInit();
-  const {
-    comments,
-    isLoading,
-    error,
-    hasMore,
-    fetchComments,
-    fetchMoreComments,
-    addComment,
-  } = useSharingCommentStore();
+  const comments = useSharingCommentStore((state) => state.comments);
+  const isLoading = useSharingCommentStore((state) => state.isLoading);
+  const error = useSharingCommentStore((state) => state.error);
+  const hasMore = useSharingCommentStore((state) => state.hasMore);
+  const { fetchComments, fetchMoreComments, addComment } =
+    useSharingCommentStore();
 
   // IntersectionObserver용 ref
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -99,7 +96,7 @@ export const SharingDetailComments = ({
       {comments.length > 0 ? (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <CommentItem key={comment.commentId} commentId={comment.commentId} />
+            <CommentItem key={comment.commentId} comment={comment} />
           ))}
           <div ref={loadingRef} className="h-px" />
         </div>

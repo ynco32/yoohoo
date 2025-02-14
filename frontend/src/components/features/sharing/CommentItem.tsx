@@ -1,32 +1,25 @@
-// import { Comment } from '@/types/sharing';
+import { Comment } from '@/types/sharing';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useState } from 'react';
 import { useUserStore } from '@/store/useUserStore';
 import { Modal } from '@/components/common/Modal';
 import { useSharingCommentStore } from '@/store/useSharingCommentStore';
 
-export const CommentItem = ({ commentId }: { commentId: number }) => {
+export const CommentItem = ({ comment }: { comment: Comment }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
 
-  // store에서 필요한 데이터와 액션 구독
-  const comment = useSharingCommentStore((state) =>
-    state.comments.find((c) => c.commentId === commentId)
-  );
+  // 액션만 가져오기
   const { updateComment, deleteComment } = useSharingCommentStore();
-  const [editContent, setEditContent] = useState(comment?.content || '');
-
   const user = useUserStore((state) => state.user);
-  const isMyComment = user?.userId === comment?.writerId;
-
-  // comment가 없는 경우 렌더링하지 않음
-  if (!comment) return null;
+  const isMyComment = user?.userId === comment.writerId;
 
   const handleUpdate = async () => {
     if (!editContent.trim()) return;
 
     try {
-      await updateComment(commentId, editContent);
+      await updateComment(comment.commentId, editContent);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating comment:', error);
@@ -35,7 +28,7 @@ export const CommentItem = ({ commentId }: { commentId: number }) => {
 
   const handleDelete = async () => {
     try {
-      await deleteComment(commentId);
+      await deleteComment(comment.commentId);
       setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting comment:', error);

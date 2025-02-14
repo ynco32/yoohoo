@@ -1,40 +1,60 @@
-'use client';
+// components/ui/TicketingSeat.tsx
+import React from 'react';
 
-import { TicketingSeatProps } from '@/types/ticketingSeat';
-
-interface TicketingSeatComponentProps extends TicketingSeatProps {
+interface TicketingSeatProps {
   x: number;
   y: number;
   width: number;
   height: number;
+  number: string;
+  status: 'AVAILABLE' | 'RESERVED';
+  isSelected: boolean;
   onClick: () => void;
 }
 
-const Seat = ({
-  seatNumber,
-  status,
-  row,
-  col,
+const TicketingSeat = ({
   x,
   y,
   width,
   height,
+  number,
+  status,
+  isSelected,
   onClick,
-}: TicketingSeatComponentProps) => {
+}: TicketingSeatProps) => {
   const getFillColor = () => {
-    if (status === 'AVAILABLE') return '#2C3A8B';
-    if (status === 'RESERVED') return '#4A90E2';
+    if (isSelected) return '#4CAF50';
+    if (status === 'RESERVED') return '#9E9E9E';
+    return '#2196F3';
   };
 
   return (
     <g
-      onClick={onClick}
-      style={{ cursor: 'pointer' }}
-      data-seat-id={seatNumber}
+      transform={`translate(${x},${y})`}
+      onClick={status === 'AVAILABLE' ? onClick : undefined}
+      className={
+        status === 'AVAILABLE' ? 'cursor-pointer' : 'cursor-not-allowed'
+      }
     >
-      <rect x={x} y={y} width={width} height={height} fill={getFillColor()} />
+      <rect
+        width={width}
+        height={height}
+        rx={4}
+        fill={getFillColor()}
+        className="transition-colors duration-200"
+      />
+      <text
+        x={width / 2}
+        y={height / 2}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill="white"
+        fontSize={10}
+      >
+        {number}
+      </text>
     </g>
   );
 };
 
-export default Seat;
+export default TicketingSeat;

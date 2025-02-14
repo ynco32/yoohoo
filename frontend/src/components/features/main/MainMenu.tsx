@@ -37,20 +37,20 @@ export default function MainMenu() {
       className: 'bg-sharing-menu rounded-menu shadow-menu',
     },
     {
-      icon: 'TicketIcon',
-      label: '티켓팅 연습',
-      href: '/ticketing',
-      description: '시야 후기 보기',
-      layout: 'default',
-      className: 'bg-ticket-menu rounded-menu shadow-menu',
-    },
-    {
       icon: 'CongestionIcon',
       label: '혼잡도 보기',
       href: '/congestion',
       description: '시야 후기 보기',
-      layout: 'wide',
+      layout: 'default',
       className: 'bg-congestion-menu rounded-menu shadow-menu',
+    },
+    {
+      icon: 'TicketIcon',
+      label: '티켓팅 연습',
+      href: '/ticketing',
+      description: '시야 후기 보기',
+      layout: 'wide',
+      className: 'bg-ticket-menu rounded-menu shadow-menu',
     },
   ];
 

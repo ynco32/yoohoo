@@ -142,7 +142,6 @@ export const DraggableReviewSheet = ({
                     stageType={currentStageType}
                     initialScrapState={isScraped}
                     size="lg"
-                    variant="contained"
                     onScrap={handleScrap}
                   />
                 )}

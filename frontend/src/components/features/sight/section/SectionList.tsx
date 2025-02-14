@@ -13,21 +13,22 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
   const { arenaId, stageType } = useParams();
   const router = useRouter();
 
-  // Zustand store에서 필요한 상태와 액션 가져오기
-  const { sections, isLoading, error, fetchSectionsByArena } = useSectionStore(
-    (state) => ({
-      sections: state.sections,
-      isLoading: state.isLoading,
-      error: state.error,
-      fetchSectionsByArena: state.fetchSectionsByArena,
-    })
+  // 각각의 상태를 개별적으로 가져오기
+  const sections = useSectionStore((state) => state.sections);
+  const isLoading = useSectionStore((state) => state.isLoading);
+  const error = useSectionStore((state) => state.error);
+  const fetchSectionsByArena = useSectionStore(
+    (state) => state.fetchSectionsByArena
   );
 
   useEffect(() => {
-    if (!arenaId || !stageType) return;
+    const fetchData = async () => {
+      if (!arenaId || !stageType) return;
+      await fetchSectionsByArena(Number(arenaId), Number(stageType));
+    };
 
-    fetchSectionsByArena(Number(arenaId), Number(stageType));
-  }, [arenaId, stageType, fetchSectionsByArena]);
+    fetchData();
+  }, [arenaId, stageType]); // fetchSectionsByArena 제거
 
   const { calculatePosition } = useSectionPositions(sections.length);
 
@@ -49,11 +50,10 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
         {sections.map((section, index) => {
           const position = calculatePosition(index);
 
-          // API 응답을 컴포넌트 props로 변환
           const sectionProps: SectionComponentProps = {
             sectionId: section.sectionId,
-            sectionNumber: parseInt(section.sectionName), // sectionName을 다시 number로 변환
-            available: true, // API에서 available 정보가 없다면 기본값 설정
+            sectionNumber: parseInt(section.sectionName),
+            available: true,
             scrapped: section.isScraped,
             arenaId: section.arenaId,
             ...position,

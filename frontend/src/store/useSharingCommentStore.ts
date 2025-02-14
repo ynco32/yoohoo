@@ -8,6 +8,7 @@ interface CommentStore {
   lastCommentId?: number;
   isLoading: boolean;
   error: string | null;
+  currentSharingId?: number;
 
   // Actions
   fetchComments: (sharingId: number, lastCommentId?: number) => Promise<void>;
@@ -27,7 +28,7 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
 
   fetchComments: async (sharingId: number, lastCommentId?: number) => {
     try {
-      set({ isLoading: true });
+      set({ isLoading: true, currentSharingId: sharingId });
       const response = await sharingCommentAPI.getComments(
         sharingId,
         lastCommentId
@@ -92,13 +93,14 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
         sharingId,
         content
       );
-      // 새로운 참조 생성을 명시적으로 보장
+      // 상태 먼저 업데이트
       set((state) => ({
-        comments: [
-          { ...newComment }, // 스프레드로 새 참조 생성
-          ...state.comments,
-        ],
+        comments: [newComment, ...state.comments],
       }));
+
+      // 서버에서 최신 데이터 다시 가져오기
+      await get().fetchComments(sharingId);
+
       return newComment;
     } catch (err) {
       set({
@@ -114,14 +116,19 @@ export const useSharingCommentStore = create<CommentStore>((set, get) => ({
         commentId,
         content
       );
-      // 새로운 참조 생성을 명시적으로 보장
+      // 상태 먼저 업데이트
       set((state) => ({
         comments: state.comments.map((comment) =>
-          comment.commentId === commentId
-            ? { ...comment, ...updatedComment } // 스프레드로 새 참조 생성
-            : comment
+          comment.commentId === commentId ? updatedComment : comment
         ),
       }));
+
+      // 서버에서 최신 데이터 다시 가져오기
+      const sharingId = get().currentSharingId;
+      if (sharingId) {
+        await get().fetchComments(sharingId);
+      }
+
       return updatedComment;
     } catch (err) {
       set({

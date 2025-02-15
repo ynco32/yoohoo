@@ -12,7 +12,7 @@ interface TicketingSeatState {
   fetchSeatsByArea: (area: string) => Promise<void>;
   selectSeat: (seatNumber: string) => void;
   isSeatAvailable: (seatNumber: string) => boolean;
-  tryReserveSeat: (seatNumber: string, userId: number) => Promise<void>;
+  tryReserveSeat: (section: string, seat: string) => Promise<void>;
   reset: () => void;
 }
 
@@ -94,8 +94,8 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
     return seat?.status === 'AVAILABLE'; // true false
   },
 
-  tryReserveSeat: async (seatNumber: string, userId: number) => {
-    if (!get().isSeatAvailable(seatNumber)) {
+  tryReserveSeat: async (section: string, seat: string) => {
+    if (!get().isSeatAvailable(seat)) {
       throw new Error('이미 예약된 좌석입니다.');
     }
 
@@ -105,7 +105,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ seatNumber, userId }),
+        body: JSON.stringify({ section, seat }),
       });
 
       if (!response.ok) {
@@ -113,10 +113,10 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
       }
 
       set((state) => ({
-        seats: state.seats.map((seat) =>
-          seat.seatNumber === seatNumber
-            ? { ...seat, status: 'RESERVED', userId }
-            : seat
+        seats: state.seats.map((seatItem) =>
+          seatItem.seatNumber === seat
+            ? { ...seatItem, status: 'RESERVED' }
+            : seatItem
         ),
       }));
     } catch (error) {

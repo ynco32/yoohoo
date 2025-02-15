@@ -34,7 +34,8 @@ export const DraggableReviewSheet = ({
   const currentSeatId = Number(params.seatId);
 
   // Zustand store hooks
-  const { getSeatScrapStatus, updateSeatScrapStatus } = useSeatsStore();
+  const { getSeatScrapStatus, updateSeatScrapStatus, getSeatById } =
+    useSeatsStore();
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
   const { handlers, style } = useDraggableSheet({
@@ -56,6 +57,8 @@ export const DraggableReviewSheet = ({
       updateSeatScrapStatus(currentSeatId, isScrapped);
     }
   };
+
+  const currentRow = getSeatById(currentSeatId)?.row;
 
   const renderReviewContent = () => {
     if (isLoading) {
@@ -129,7 +132,7 @@ export const DraggableReviewSheet = ({
                     <>
                       <div className="h-1 w-1 rounded-full bg-gray-300" />
                       <span className="text-body text-gray-600">
-                        {currentSeatId}열
+                        {currentRow}열
                       </span>
                     </>
                   )}

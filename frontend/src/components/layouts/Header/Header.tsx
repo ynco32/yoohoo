@@ -33,9 +33,9 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-header mx-auto w-full max-w-[430px]">
-      <header className="h-[56px]">
-        <div className="flex h-full items-center justify-between px-md">
+    <div className="container left-0 top-0 z-header">
+      <header className="h-16">
+        <div className="flex h-full items-center justify-between">
           {shouldShowLogo ? (
             <Link href="/main" className="h-8 w-auto">
               <Image

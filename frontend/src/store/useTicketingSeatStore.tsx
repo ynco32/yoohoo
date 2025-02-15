@@ -100,7 +100,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
     }
 
     try {
-      const response = await fetch('/api/v1/ticketing/seats', {
+      const response = await fetch('/api/v1/ticketing/sections/seats', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

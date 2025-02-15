@@ -50,7 +50,7 @@ export default function Seat() {
 
     try {
       // 여기서 실제 예매 API 호출
-      await tryReserveSeat(selectedSeatNumber, userId);
+      await tryReserveSeat(areaId, selectedSeatNumber);
       // 성공하면 결제 페이지로 이동
       router.push('payment1');
     } catch (error) {

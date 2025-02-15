@@ -12,7 +12,8 @@ export const mockApiReviews: ApiReview[] = [
     userId: 2001,
     seatDistance: 'NARROW',
     sound: 'POOR',
-    photoUrl: 'https://example.com/review1.jpg',
+    photoUrl:
+      'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level4.PNG',
     writeTime: '2025-02-12T10:30:00',
     modifyTime: '2025-02-12T10:30:00',
     stageType: 'DEGREE_360',
@@ -50,7 +51,8 @@ export const mockApiReviews: ApiReview[] = [
     userId: 2003,
     seatDistance: 'AVERAGE',
     sound: 'CLEAR',
-    photoUrl: 'https://example.com/review3.jpg',
+    photoUrl:
+      'https://ssfafy-common-pjt-conkiri.s3.ap-northeast-2.amazonaws.com/conkiri/level4.PNGg',
     writeTime: '2025-02-12T12:00:00',
     modifyTime: '2025-02-12T12:00:00',
     stageType: 'THEATER',

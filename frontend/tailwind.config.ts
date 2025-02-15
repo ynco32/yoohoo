@@ -5,6 +5,9 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    maxWidth: {
+      layout: '430px', // 레이아웃 최대 너비 추가
+    },
     screens: {
       mobile: '375px',
       'mobile-l': '425px',
@@ -14,6 +17,7 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
+        web: "url('/images/cat.png')",
         'congestion-menu':
           'radial-gradient(50% 100% at 50% 0%, #DEFFE8 0%, #FFF 100%)',
         'ticket-menu':

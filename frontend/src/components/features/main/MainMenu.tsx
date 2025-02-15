@@ -55,8 +55,8 @@ export default function MainMenu() {
   ];
 
   return (
-    <div className="h-[50vh] w-full flex-grow mobile:h-[65vh] tablet:h-[60vh]">
-      <div className="grid h-full grid-cols-2 gap-sm bg-white p-sm tablet:gap-md tablet:p-md">
+    <div className="h-[65vh] w-full flex-grow">
+      <div className="grid h-full grid-cols-2 gap-md bg-white py-md">
         {menuItems.map((item) => (
           <MenuItem
             key={item.href}

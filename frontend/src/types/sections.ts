@@ -15,6 +15,7 @@ export interface SectionProps {
   isScraped: boolean;
   startAngle: number;
   endAngle: number;
+  available: boolean;
   innerRadius: number;
   outerRadius: number;
   isScrapMode: boolean;

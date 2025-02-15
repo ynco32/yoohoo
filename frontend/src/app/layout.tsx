@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import HeaderWrapper from './header-wrapper';
 import MSWProvider from '@/provider/MSWProvider';
+import { AuthGuard } from '@/provider/authGuard';
 
 export const metadata: Metadata = {
   title: 'CONKIRI',
@@ -22,7 +23,9 @@ export default function RootLayout({
         {' '}
         <MSWProvider /> {/* MSWProvider를 정상적으로 사용 */}
         <div className="relative h-dvh min-h-screen w-full max-w-[430px] bg-background-default shadow-lg">
-          <HeaderWrapper>{children}</HeaderWrapper>
+          <AuthGuard>
+            <HeaderWrapper>{children}</HeaderWrapper>
+          </AuthGuard>
         </div>
       </body>
     </html>

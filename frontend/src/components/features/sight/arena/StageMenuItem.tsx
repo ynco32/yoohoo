@@ -27,7 +27,7 @@ export const StageMenuItem = ({
   return (
     <MenuCard
       onClick={() => router.push(`/sight/${arenaId}/${stageType}`)}
-      className={`relative flex h-64 flex-col items-center justify-between bg-white p-6 text-center ${className}`}
+      className={`relative flex h-64 flex-col items-center justify-between rounded-card bg-white p-2 text-center ${className}`}
     >
       <div className="flex flex-col items-center gap-4">
         <div className="relative flex h-32 w-32 items-center justify-center">

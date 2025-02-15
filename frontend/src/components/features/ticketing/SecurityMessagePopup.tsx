@@ -56,7 +56,7 @@ export default function SecurityMessagePopup({
   };
 
   return (
-    <Popup isOpen>
+    <Popup isOpen className="z-50">
       <div className="text-center">
         <h2 className="text-xl font-bold text-primary-main">인증예매</h2>
       </div>

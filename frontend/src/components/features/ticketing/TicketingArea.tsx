@@ -80,15 +80,27 @@ const TicketingArea: React.FC<VenueSectionProps> = ({
     setSelectedSection(null);
   };
 
-  const handleMove = () => {
+  const handleMove = async () => {
+    console.log('handleMove 시작');
     if (selectedSection) {
-      router.push(`${selectedSection}`);
+      const targetPath = `/ticketing/melon-mode/real/${selectedSection}`;
+      console.log('이동하려는 경로:', targetPath);
+
+      try {
+        // 1. 기본 router.push
+        await router.push(targetPath);
+        console.log('router.push 완료');
+      } catch (error) {
+        console.error('라우팅 에러:', error);
+        // 2. 에러 발생시 window.location 사용
+        window.location.href = targetPath;
+      }
     }
     setIsPopupOpen(false);
   };
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-center justify-center p-4">
+    <div className="z-0 flex w-full max-w-xl flex-col items-center justify-center p-4">
       <div className="relative w-full">
         <svg width="0" height="0">
           <defs>

@@ -53,10 +53,7 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   }
 
   return (
-    <div
-      className="h-[35vh] w-full px-4 py-2 mobile:h-[30vh] mobile:px-6 mobile:py-3 tablet:h-[35vh] tablet:px-8 tablet:py-4"
-      onClick={handleClick}
-    >
+    <div className="h-[30vh]" onClick={handleClick}>
       <div className="relative h-full w-full overflow-hidden rounded-userProfile bg-secondary-300">
         {/* 배경 이미지 */}
         <Image

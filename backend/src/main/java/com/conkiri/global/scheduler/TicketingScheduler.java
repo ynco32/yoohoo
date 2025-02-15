@@ -48,7 +48,7 @@ public class TicketingScheduler {
 		}
 	}
 
-	// 매일 지정된 시작 시간(19시)에 티켓팅 시작
+	// 매일 지정된 시작 시간(0시)에 티켓팅 시작
 	@Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
 	public void startTicketing() {
 		LocalDateTime startTime = getTodayTicketingStartTime();

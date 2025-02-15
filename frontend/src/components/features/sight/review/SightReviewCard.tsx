@@ -75,6 +75,8 @@ export const SightReviewCard = ({
         <span className="text-caption1-bold">|</span>
         <span className="text-caption1-bold text-sight-badge">좌석</span>
         <span className="text-gray-600">{seatDistance}</span>
+      </div>
+      <div className="text-sm text-gray-600">
         <span className="text-caption3">{writeTime}</span>
       </div>
 

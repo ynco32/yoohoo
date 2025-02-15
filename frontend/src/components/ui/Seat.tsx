@@ -1,7 +1,7 @@
 'use client';
 
 import { SeatProps } from '@/types/seats';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SeatComponentProps extends SeatProps {
   x: number;
@@ -27,17 +27,19 @@ const Seat = ({
 }: SeatComponentProps) => {
   const [seatColor, setSeatColor] = useState('#4A90E2');
 
-  const getFillColor = () => {
-    if (isSelected) return '#2C3A8B';
-
-    if (reviewCount == 0) {
+  useEffect(() => {
+    // reviewCount에 따라 색상 설정
+    if (reviewCount === 0) {
       setSeatColor('#e0f6ff');
     } else if (reviewCount < 5) {
       setSeatColor('#63beff');
     } else {
       setSeatColor('#4788ff');
     }
+  }, [reviewCount]); // reviewCount가 변경될 때만 실행
 
+  const getFillColor = () => {
+    if (isSelected) return '#2C3A8B';
     if (!isScrapMode) return seatColor;
     return scrapped ? '#FF6B6B' : seatColor;
   };

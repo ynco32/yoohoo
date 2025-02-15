@@ -2,6 +2,7 @@ package com.conkiri.domain.sharing.entity;
 
 import com.conkiri.domain.user.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,11 +25,11 @@ public class ScrapSharing {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long scrapSharingId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "sharing_id")
 	private Sharing sharing;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private User user;
 

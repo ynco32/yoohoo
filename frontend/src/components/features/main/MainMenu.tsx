@@ -53,10 +53,9 @@ export default function MainMenu() {
       className: 'bg-ticket-menu rounded-menu shadow-menu',
     },
   ];
-
   return (
-    <div className="h-[65vh] w-full flex-grow">
-      <div className="grid h-full grid-cols-2 gap-md bg-white py-md">
+    <div className="flex-1 py-4">
+      <div className="grid h-full w-full grid-cols-2 gap-md">
         {menuItems.map((item) => (
           <MenuItem
             key={item.href}

@@ -45,6 +45,7 @@ const convertToSectionProps = (section: Section): SectionProps => ({
   arenaId: section.arenaId,
   sectionName: section.sectionNumber.toString(),
   isScraped: section.scrapped,
+  available: section.available,
   startAngle: 0,
   endAngle: 0,
   innerRadius: 0,

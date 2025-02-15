@@ -16,7 +16,7 @@ export const ScrapMode = () => {
       {!currentSectionId ? (
         <div className="flex h-full w-full max-w-3xl flex-col items-center justify-center">
           <div className="relative h-[600px] w-full">
-            <SectionList isScrapMode={true} />
+            <SectionList isScrapMode={isScrapMode} />
           </div>
         </div>
       ) : (

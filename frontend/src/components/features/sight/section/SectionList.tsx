@@ -126,7 +126,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
               const sectionProps: SectionComponentProps = {
                 sectionId: section.sectionId,
                 sectionNumber: parseInt(section.sectionName),
-                available: true,
+                available: section.available,
                 scrapped: section.isScraped,
                 arenaId: section.arenaId,
                 ...position,

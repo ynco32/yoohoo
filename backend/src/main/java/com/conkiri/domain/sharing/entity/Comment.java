@@ -5,6 +5,7 @@ import com.conkiri.domain.sharing.dto.request.CommentUpdateRequestDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.domain.BaseTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,11 +33,11 @@ public class Comment extends BaseTime {
 	@Column(name = "content", length = 250)
 	private String content;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "sharing_id")
 	private Sharing sharing;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
 	private User user;
 

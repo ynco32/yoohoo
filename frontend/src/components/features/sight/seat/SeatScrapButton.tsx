@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookmarkButton } from '@/components/ui/BookmarkButton';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useSeatsStore } from '@/store/useSeatStore';
@@ -22,12 +22,23 @@ const SeatScrapButton: React.FC<SeatScrapButtonProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isScraped, setIsScraped] = useState(initialScrapState);
 
-  // store에서 액션 가져오기
+  // store에서 상태와 액션 가져오기
   const updateSeatScrapStatus = useSeatsStore(
     (state) => state.updateSeatScrapStatus
   );
+  const seatScrapStatus = useSeatsStore(
+    (state) => state.seats[seatId]?.scrapped
+  );
+
+  // store의 상태가 변경될 때마다 UI 업데이트
+  const [isScraped, setIsScraped] = useState(initialScrapState);
+
+  useEffect(() => {
+    if (seatScrapStatus !== undefined) {
+      setIsScraped(seatScrapStatus);
+    }
+  }, [seatScrapStatus]);
 
   const sizeClasses = {
     sm: 'p-1',
@@ -46,6 +57,10 @@ const SeatScrapButton: React.FC<SeatScrapButtonProps> = ({
       setIsLoading(true);
       setError(null);
 
+      // 낙관적 업데이트: API 호출 전에 UI 먼저 업데이트
+      setIsScraped(newScrapState);
+      updateSeatScrapStatus(seatId, newScrapState);
+
       const response = await fetch(
         `/api/v1/view/scraps/${seatId}?stageType=${stageType}`,
         {
@@ -57,15 +72,15 @@ const SeatScrapButton: React.FC<SeatScrapButtonProps> = ({
       );
 
       if (!response.ok) {
+        // API 호출이 실패하면 상태를 원래대로 되돌림
+        setIsScraped(!newScrapState);
+        updateSeatScrapStatus(seatId, !newScrapState);
         throw new Error(
           newScrapState ? 'Failed to add scrap' : 'Failed to remove scrap'
         );
       }
 
       const data = await response.json();
-      setIsScraped(data.isScraped);
-      // store의 좌석 상태 업데이트
-      updateSeatScrapStatus(seatId, data.isScraped);
       onScrap?.(data.isScraped);
     } catch (err) {
       setError(

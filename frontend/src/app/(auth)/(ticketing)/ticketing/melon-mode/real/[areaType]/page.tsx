@@ -7,7 +7,7 @@ import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SeatTakenPopup } from '@/components/features/ticketing/SeatTakenPopup';
-import { ErrorPopup } from '@/components/features/ticketing/errorPopup';
+import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
 import { useUserStore } from '@/store/useUserStore';
 
 export default function Seat() {

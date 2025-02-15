@@ -21,9 +21,9 @@ export const useTicketingTimer2 = () => {
   //1️⃣ 시간 정보 가져오기
   const fetchTimeInfo = async () => {
     try {
-      console.log('[Timer] Fetching time info...'); // 디버깅 로그 추가
+      console.log('⏰ [Timer] Fetching time info...'); // 디버깅 로그 추가
       const { data } = await api.get('/api/v1/ticketing/time-info');
-      console.log('[Timer] Time info received:', data); // 응답 데이터 확인
+      console.log('⏰ [Timer] Time info received:', data); // 응답 데이터 확인
       // setTimeInfo(data);
       const now = Date.now(); // 프론트 측에서 잰 현재 시간
       setTimeInfo({
@@ -35,7 +35,7 @@ export const useTicketingTimer2 = () => {
       });
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        console.error('[Timer] Error fetching time info:', {
+        console.error('⏰ [Timer] Error fetching time info:', {
           status: error.response?.status,
           data: error.response?.data,
           config: error.config, // 요청 설정 확인
@@ -55,7 +55,7 @@ export const useTicketingTimer2 = () => {
 
     if (start < now) return 0; // 시작 시간이 지났으면 0 반환
 
-    const timePassed = frontStart - now; // 서버 기준으로 경과한 시간
+    const timePassed = now - frontStart; // 서버 기준으로 경과한 시간
     const timeLeft = start - server - timePassed; // 정확한 남은 시간 계산
 
     return Math.floor(timeLeft / 1000); // 초 단위 변환
@@ -100,6 +100,9 @@ export const useTicketingTimer2 = () => {
         const hours = start.getHours().toString().padStart(2, '0');
         const minutes = start.getMinutes().toString().padStart(2, '0');
         setButtonMessage(`${hours}시 ${minutes}분 오픈`);
+        setIntervalId(
+          window.setInterval(changeButtonMessage, 300000) as number
+        ); // 5분마다 실행
       }
     } else {
       console.log('timeInfo is null');

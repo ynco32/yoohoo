@@ -10,6 +10,7 @@ import {
 import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
 import { useSeatsStore } from '@/store/useSeatStore';
 import { getUserProfileImage } from '@/lib/utils/profileCharacter';
+import { useSectionStore } from '@/store/useSectionStore';
 
 interface DraggableReviewSheetProps {
   isOpen: boolean;
@@ -28,8 +29,9 @@ export const DraggableReviewSheet = ({
   error,
   isLoading,
 }: DraggableReviewSheetProps) => {
+  const { getSectionById } = useSectionStore();
   const params = useParams();
-  const currentSectionNumber = Number(params.sectionNumber);
+  const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
 

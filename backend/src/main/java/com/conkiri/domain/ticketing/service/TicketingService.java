@@ -118,7 +118,7 @@ public class TicketingService {
 	private void processSeatReservation(Long userId, String section, String seat, String sectionKey) {
 
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
-		Long rank = redisTemplate.opsForValue().increment(RedisKeys.RESERVATION) + 1;
+		Long rank = redisTemplate.opsForValue().increment(RedisKeys.RESERVATION);
 		redisTemplate.opsForHash().put(sectionKey, seat, Status.RESERVED.getValue());
 		saveReservationHistory(historyKey, userId, section, seat, rank);
 	}

@@ -173,9 +173,12 @@ public class TicketingService {
 			throw new RecordNotFoundException();
 		}
 
+		System.out.println("save 전!!");
+		System.out.println(resultDTO + " " + resultDTO.getSeat());
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Result result = Result.of(resultDTO, user);
 		resultRepository.save(result);
+		System.out.println("save 후!!");
 	}
 
 	// 마이페이지용 전체 결과 조회

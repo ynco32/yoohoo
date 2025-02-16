@@ -4,8 +4,8 @@ import { WriteButton } from '@/components/common/WriteButton';
 
 export default function SeatSelectPage() {
   return (
-    <main className="-mt-16 min-h-screen bg-background-default">
-      <div className="relative z-20 flex h-full flex-col items-center">
+    <main className="flex min-h-screen w-full flex-col">
+      <div className="z-20 mt-8 flex w-full flex-col items-center justify-center">
         <ScrapMode />
         <SightReviewList />
         <WriteButton path="/sight/reviews/write" />

@@ -36,6 +36,7 @@ module.exports = {
         userProfile: '30px',
         card: '15px',
         layout: '20px',
+        arena: '26px',
       },
       boxShadow: {
         menu: '3.068px 3.068px 20.455px 0px rgba(106, 160, 205, 0.25)',

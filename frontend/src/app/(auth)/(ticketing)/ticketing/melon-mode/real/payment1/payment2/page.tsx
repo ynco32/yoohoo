@@ -111,11 +111,13 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="flex min-h-full w-full flex-col bg-white">
-      <StepIndicator currentStep={3} />
+    <div className="flex h-[calc(100vh-56px)] flex-col">
+      <div className="sticky top-0 z-10 bg-white">
+        <StepIndicator currentStep={3} />
+      </div>
 
-      <main className="pb-4">
-        <div className="space-y-6 p-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-24">
+        <div className="space-y-6 py-4">
           {/* 예매 정보 섹션 */}
           <section>
             <h2 className="mb-2 text-lg">예매정보</h2>
@@ -211,18 +213,18 @@ export default function PaymentPage() {
             onAgreementChange={handleSingleAgreement}
             onAllAgreementChange={handleAllAgreements}
           />
-
-          {/* 하단 버튼 */}
-          <div className="mt-8 border-t pt-4">
-            <button
-              onClick={handleSubmit}
-              className="w-full rounded-md bg-primary-main py-4 text-lg text-white"
-            >
-              79,000원 결제하기
-            </button>
-          </div>
         </div>
-      </main>
+      </div>
+
+      {/* 결제 버튼 */}
+      <div className="fixed bottom-0 left-1/2 z-10 w-full max-w-[430px] -translate-x-1/2 border-t bg-white px-4 py-4">
+        <button
+          onClick={handleSubmit}
+          className="w-full rounded-md bg-primary-main py-4 text-lg text-white"
+        >
+          79,000원 결제하기
+        </button>
+      </div>
 
       {/* 모달 */}
       <Modal

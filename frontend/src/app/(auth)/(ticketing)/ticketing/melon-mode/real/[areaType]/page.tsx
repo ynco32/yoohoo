@@ -7,15 +7,23 @@ import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SeatTakenPopup } from '@/components/features/ticketing/SeatTakenPopup';
-import { ErrorPopup } from '@/components/features/ticketing/errorPopup';
+import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
 import { useUserStore } from '@/store/useUserStore';
+import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
+import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessagePopup';
 
 export default function Seat() {
   const [isActive, setIsActive] = useState(false);
   const [_seat, setSeat] = useState('');
-  const { selectedSeatNumber, tryReserveSeat } = useTicketingSeatStore();
   const [isSeatTakenPopupOpen, setIsSeatTakenPopupOpen] = useState(false);
-  const [reservationError, setReservationError] = useState<string | null>(null); // 에러 뜰 경우
+  const [reservationError, setReservationError] = useState<string | null>(null); // 에러 뜰 경우\
+  const [isSecurityMessageOpen, setisSecurityMessageOpen] = useState(false);
+  const { selectedSeatNumber, tryReserveSeat } = useTicketingSeatStore();
+  // const { onSuccess } = useSecurityPopupStore();
+  const onSuccess = useSecurityPopupStore((state) => state.onSuccess);
+  const setSecurityPopupState = useSecurityPopupStore(
+    (state) => state.setSecurityPopupState
+  );
   const router = useRouter();
 
   const userId = useUserStore((state) => state.user?.userId);
@@ -48,6 +56,12 @@ export default function Seat() {
       return;
     }
 
+    // 보안 문자 안했으면 지금 하기
+    if (!onSuccess) {
+      setisSecurityMessageOpen(true);
+      return;
+    }
+
     try {
       // 여기서 실제 예매 API 호출
       await tryReserveSeat(selectedSeatNumber, userId);
@@ -61,13 +75,16 @@ export default function Seat() {
     }
   };
 
-  // let children: string = '';
+  const handleOnPostpone = () => {
+    setisSecurityMessageOpen(false);
+  };
 
-  // if (selectedSeatNumber) {
-  //   children = ' 번 좌석 선택';
-  // } else {
-  //   children = '선택된 좌석 없음';
-  // }
+  const handleOnSuccess = () => {
+    console.log('Seat의 handleOnSuccess 실행됨');
+    setisSecurityMessageOpen(false);
+    setSecurityPopupState(true);
+  };
+
   const bottomBarContent = selectedSeatNumber
     ? `${areaId}구역 ${selectedSeatNumber}번 좌석 예매하기`
     : '선택된 좌석 없음';
@@ -97,6 +114,11 @@ export default function Seat() {
       <ErrorPopup isOpen={reservationError != null} onClick={errorOnClick}>
         {reservationError}
       </ErrorPopup>
+      <SecurityMessagePopup
+        isOpen={isSecurityMessageOpen}
+        onPostpone={handleOnPostpone}
+        onSuccess={handleOnSuccess}
+      />
     </div>
   );
 }

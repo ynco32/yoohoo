@@ -69,21 +69,19 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
   const menuItems = getMenuByArenaId(arenaId);
 
   return (
-    <div className="mt-4">
-      <div className="container mx-auto max-w-6xl">
-        <div className="grid grid-cols-2 gap-8">
-          {menuItems.map((item) => (
-            <StageMenuItem
-              key={item.stageType}
-              icon={item.icon}
-              name={item.name}
-              description={item.description}
-              arenaId={arenaId}
-              className={item.className}
-              stageType={item.stageType}
-            />
-          ))}
-        </div>
+    <div className="max-w-6xl">
+      <div className="grid grid-cols-2 gap-4">
+        {menuItems.map((item) => (
+          <StageMenuItem
+            key={item.stageType}
+            icon={item.icon}
+            name={item.name}
+            description={item.description}
+            arenaId={arenaId}
+            className={item.className}
+            stageType={item.stageType}
+          />
+        ))}
       </div>
     </div>
   );

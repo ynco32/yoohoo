@@ -3,8 +3,9 @@ import Image from 'next/image';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
-  value: File | string | null; // string 타입 추가
+  value: File | string | null;
   onChange: (file: File | null) => void;
+  onError?: (message: string) => void;
   className?: string;
   error?: string;
 }
@@ -12,6 +13,7 @@ interface ImageUploadProps {
 export const ImageUpload = ({
   value,
   onChange,
+  onError,
   className = '',
   error,
 }: ImageUploadProps) => {
@@ -36,10 +38,24 @@ export const ImageUpload = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (!file) {
       onChange(null);
       return;
     }
+
+    // 5MB = 5 * 1024 * 1024 bytes
+    const maxSize = 5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      // error prop이 있다면 에러 메시지 표시
+      onError?.('파일 크기는 5MB를 초과할 수 없습니다.');
+      if (inputRef.current) {
+        inputRef.current.value = ''; // 입력 필드 초기화
+      }
+      return;
+    }
+
     onChange(file);
   };
 

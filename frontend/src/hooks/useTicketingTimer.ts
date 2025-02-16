@@ -10,7 +10,7 @@ interface TimeInfo {
   frontStartTime: number;
 }
 
-export const useTicketingTimer2 = () => {
+export const useTicketingTimer = () => {
   // 넘겨줘야 하는 값들들
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [buttonMessage, setButtonMessage] = useState('잠시만 기다려주세요...');
@@ -61,8 +61,24 @@ export const useTicketingTimer2 = () => {
     return Math.floor(timeLeft / 1000); // 초 단위 변환
   };
 
-  // 3️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
-  const changeButtonMessage = () => {
+  // 3️⃣ 티켓팅이 시작됐는지 확인하기
+  const checkIfTicketingStarted = async () => {
+    try {
+      const ticketingStarted = await api.get('/api/v1/ticketing/status');
+      return ticketingStarted.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error('⏰ [Timer] 티켓팅이 시작했는지 불러오지 못했습니다.', {
+          status: error.response?.status,
+          data: error.response?.data,
+          config: error.config, // 요청 설정 확인
+        });
+      }
+    }
+  };
+
+  // 4️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
+  const changeButtonMessage = async () => {
     // fetchTimeInfo(); // 빌드될 때 한 번만 가져오기
 
     // 이전 인터벌 제거
@@ -76,22 +92,30 @@ export const useTicketingTimer2 = () => {
       if (timeInfo.finished) {
         // 티켓팅이 끝났을 때
         setButtonDisabled(true);
-        setButtonMessage('마감되었습니다.');
+        setButtonMessage('마감되었습니다');
       } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
-        setButtonDisabled(false);
-        setButtonMessage('예매하기');
-      } else if (secondsLeft <= 60 && !timeInfo.finished) {
-        // 60초 이하 남았을 때
+        if (!(await checkIfTicketingStarted())) {
+          setButtonDisabled(false);
+          setButtonMessage('예매하기');
+        } else {
+          setButtonDisabled(true);
+          setButtonMessage('곧 예매가 시작됩니다.');
+          setIntervalId(
+            window.setInterval(changeButtonMessage, 1000) as number
+          ); // 1초마다 실행
+        }
+      } else if (secondsLeft < 60 && !timeInfo.finished) {
+        // 60초 미만 남았을 때
         setButtonDisabled(true);
         setButtonMessage(secondsLeft + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초마다 실행
       } else if (secondsLeft < 600 && !timeInfo.finished) {
-        // 10분 이하 남았을 때
+        // 1분 이상 10분 이하하 남았을 때
         setButtonDisabled(true);
         const min = Math.floor(secondsLeft / 60);
         const sec = secondsLeft % 60;
-        setButtonMessage(min + '분 ' + sec + '후 예매 시작');
+        setButtonMessage(min + '분 ' + sec + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초초마다 실행
       } else if (secondsLeft >= 600 && !timeInfo.finished) {
         // 10분 이상 남았을 때

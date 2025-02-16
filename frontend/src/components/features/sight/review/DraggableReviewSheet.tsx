@@ -32,16 +32,21 @@ export const DraggableReviewSheet = ({
   const { getSectionById } = useSectionStore();
   const params = useParams();
   const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
+  console.log(`params.sectionId :: ${params.sectionId}`);
+  console.log(
+    `getSectionById(Number(params.sectionId)) ::: ${getSectionById(Number(params.sectionId))}`
+  );
+  console.log(`currentSectionNumber :: ${currentSectionNumber}`);
+
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
 
-  // Zustand store hooks
   const { getSeatScrapStatus, updateSeatScrapStatus, getSeatById } =
     useSeatsStore();
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
   const { handlers, style } = useDraggableSheet({
-    position: isOpen ? 'half' : 'closed', // isOpen 값에 따라 position 결정
+    position: isOpen ? 'half' : 'closed',
     onClose,
   });
 
@@ -71,40 +76,42 @@ export const DraggableReviewSheet = ({
     }
 
     return (
-      <div className="space-y-4 px-4">
-        {reviewDataList.map((reviewData, index) => {
-          if (
-            !isSoundStatus(reviewData.sound) ||
-            !isSeatDistanceStatus(reviewData.seatDistance)
-          ) {
-            return null;
-          }
+      <div className="px-4">
+        <div className="rounded-t-3xl bg-white">
+          {reviewDataList.map((reviewData, index) => {
+            if (
+              !isSoundStatus(reviewData.sound) ||
+              !isSeatDistanceStatus(reviewData.seatDistance)
+            ) {
+              return null;
+            }
 
-          return (
-            <div
-              key={`${reviewData.seatId}-${reviewData.reviewId}-${index}`}
-              className="flex flex-col rounded-t-3xl bg-white"
-            >
-              <SightReviewCard
-                profilePicture={getUserProfileImage(reviewData.level)}
-                writerId={reviewData.userId}
-                concertTitle={reviewData.concertName}
-                nickName={reviewData.nickname ?? 'Unknown'}
-                reviewId={reviewData.reviewId}
-                seatInfo={`${reviewData.rowLine}열 ${reviewData.columnLine}번`}
-                image={reviewData.photoUrl}
-                content={reviewData.content}
-                viewQuality={reviewData.viewScore}
-                soundQuality={reviewData.sound}
-                seatDistance={reviewData.seatDistance}
-                writeTime={reviewData.writeTime}
-              />
-              {index < reviewDataList.length - 1 && (
-                <hr className="my-4 border-t border-gray-100" />
-              )}
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={`${reviewData.seatId}-${reviewData.reviewId}-${index}`}
+                className="flex flex-col"
+              >
+                <SightReviewCard
+                  profilePicture={getUserProfileImage(reviewData.level)}
+                  writerId={reviewData.userId}
+                  concertTitle={reviewData.concertName}
+                  nickName={reviewData.nickname ?? 'Unknown'}
+                  reviewId={reviewData.reviewId}
+                  seatInfo={`${reviewData.rowLine}열 ${reviewData.columnLine}번`}
+                  image={reviewData.photoUrl}
+                  content={reviewData.content}
+                  viewQuality={reviewData.viewScore}
+                  soundQuality={reviewData.sound}
+                  seatDistance={reviewData.seatDistance}
+                  writeTime={reviewData.writeTime}
+                />
+                {index < reviewDataList.length - 1 && (
+                  <hr className="border-t border-gray-100" />
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     );
   };

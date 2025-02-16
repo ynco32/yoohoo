@@ -140,7 +140,7 @@ export const SharingView = () => {
 
   return (
     <div
-      className={`${viewMode === 'map' ? '-mt-[56px] h-screen' : 'flex h-[calc(100vh-56px)] flex-col'}`}
+      className={`relative ${viewMode === 'map' ? '-mt-[56px] h-[calc(100vh)]' : 'flex h-[calc(100vh-56px)] flex-col'}`}
     >
       <div
         className={
@@ -158,7 +158,7 @@ export const SharingView = () => {
 
       <div
         ref={containerRef}
-        className={`${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
+        className={`${viewMode === 'map' ? 'h-full pt-[56px]' : 'flex-1 overflow-auto'}`}
       >
         {viewMode === 'map' && (
           <SharingMap
@@ -177,7 +177,8 @@ export const SharingView = () => {
           />
         )}
       </div>
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] px-4">
       <WriteButton path={`/sharing/${concertId}/write`} />
-    </div>
+    </div>    </div>
   );
 };

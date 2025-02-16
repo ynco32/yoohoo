@@ -6,7 +6,7 @@ export default function Practice() {
       <Link href="practice/entrance">
         <div>대기열 입장</div>
       </Link>
-      <Link href="grapes">
+      <Link href="practice/grape">
         <div>포도알 잡기</div>
       </Link>
       <Link href="securityMessage">

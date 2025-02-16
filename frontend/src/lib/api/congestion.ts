@@ -36,33 +36,6 @@ export const congestionAPI = {
       });
 
       const data = response.data;
-      // const data = JSON.parse(`
-      //   {
-      //       "status": {
-      //           "code": "00",
-      //           "message": "success",
-      //           "totalCount": 1
-      //       },
-      //       "contents": {
-      //           "poiId": "188633",
-      //           "poiName": "올림픽공원",
-      //           "rltm": [
-      //               {
-      //                   "datetime": "20250206154000",
-      //                   "congestion": 0.0070319381,
-      //                   "congestionLevel": 1,
-      //                   "type": 1
-      //               },
-      //               {
-      //                   "datetime": "20250206160500",
-      //                   "congestion": 0.0805,
-      //                   "congestionLevel": 3,
-      //                   "type": 2
-      //               }
-      //           ]
-      //       }
-      //   }
-      //   `);
 
       const processedData = processCongestionData(location, data);
 

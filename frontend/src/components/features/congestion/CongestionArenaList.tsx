@@ -1,6 +1,6 @@
 'use client';
 
-import { /* arenaAPI, */ ArenaData, ArenaResponse } from '@/lib/api/arena';
+import { arenaAPI, ArenaData, ArenaResponse } from '@/lib/api/arena';
 import { useEffect, useState } from 'react';
 import { ArenaItem } from './ArenaItem';
 
@@ -9,28 +9,7 @@ export const ArenaListContainer = () => {
 
   useEffect(() => {
     const fetchArenas = async () => {
-      // const arenaList = await arenaAPI.getArenas();
-      const arenaList = JSON.parse(`
-        {
-            "arenas": [
-                {
-                    "arenaId": 1,
-                    "arenaName": "올림픽체조경기장",
-                    "photoUrl": null
-                },
-                {
-                    "arenaId": 2,
-                    "arenaName": "고척스카이돔",
-                    "photoUrl": null
-                },
-                {
-                    "arenaId": 3,
-                    "arenaName": "SK올림픽 핸드볼경기장",
-                    "photoUrl": null
-                }
-            ]
-        }
-        `);
+      const arenaList = await arenaAPI.getArenas();
       setArenas(arenaList.arenas);
     };
 

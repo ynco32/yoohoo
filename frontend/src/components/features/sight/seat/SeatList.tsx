@@ -50,7 +50,7 @@ const SeatList = ({ isScrapMode }: SeatListProps) => {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-background-default">
+    <div className="items-center justify-center overflow-hidden">
       <TransformWrapper
         initialScale={1}
         minScale={0.5}

@@ -6,6 +6,7 @@ import { ContentCard } from '../../ui/ContentCard';
 import Link from 'next/link';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface ConcertItemProps {
   concertId: number;
@@ -25,9 +26,26 @@ export const ConcertItem = ({
   photoUrl,
 }: ConcertItemProps) => {
   // 이미지와 겹치지 않는 최대 텍스트 길이 계산
-  const maxWidth = 380;
-  const fontSize = 16;
-  const charsToFit = Math.floor(maxWidth / (fontSize * 0.6));
+  const [charsToFit, setCharsToFit] = useState(0);
+
+  useEffect(() => {
+    // 화면 크기에 따른 텍스트 길이 계산 함수
+    const calculateCharsToFit = () => {
+      const fontSize = 16;
+      // 모바일 화면에서는 더 작은 maxWidth 사용
+      const maxWidth = window.innerWidth < 420 ? 210 : 260;
+      setCharsToFit(Math.floor(maxWidth / (fontSize * 0.6)));
+    };
+
+    // 초기 계산
+    calculateCharsToFit();
+
+    // 화면 크기 변경 시 다시 계산
+    window.addEventListener('resize', calculateCharsToFit);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => window.removeEventListener('resize', calculateCharsToFit);
+  }, []);
 
   // 최대 길이를 초과하는 경우 말줄임표(...) 처리
   const truncatedTitle =
@@ -41,22 +59,24 @@ export const ConcertItem = ({
   return (
     <Link href={`/sharing/${concertId}`} className="block">
       <ContentCard className="overflow-hidden rounded-xl p-0">
-        <div className="-mx-4 flex items-center">
-          <div className="relative ml-4 h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg">
-            <Image
-              src={photoUrl}
-              alt={concertName}
-              className="object-cover"
-              fill
-              sizes="(max-width: 80px) 100vw"
-            />
+        <div className="flex items-center">
+          <div className="relative -m-1 w-16 flex-shrink-0 overflow-hidden rounded-lg">
+            <div style={{ paddingTop: '141.4%' }}>
+              <Image
+                src={photoUrl}
+                alt={concertName}
+                className="object-cover"
+                fill
+                sizes="(max-width: 80px) 100vw"
+              />
+            </div>
           </div>
-          <div className="ml-4 min-w-0 flex-1">
+          <div className="ml-5 min-w-0 flex-1">
             <h3 className="truncate text-base font-bold">{truncatedTitle}</h3>
             <div className="mt-1.5 space-y-0.5">
-              <p className="text-sm text-gray-500">{artist}</p>
-              <p className="text-sm text-gray-500">{arena}</p>
-              <p className="text-sm text-gray-500">{formattedDateTime}</p>
+              <p className="text-xs text-base font-semibold">{artist}</p>
+              <p className="text-xs text-base font-semibold">{arena}</p>
+              <p className="text-xs text-gray-500">{formattedDateTime}</p>
             </div>
           </div>
         </div>

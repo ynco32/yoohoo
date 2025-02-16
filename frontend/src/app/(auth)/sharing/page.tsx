@@ -17,11 +17,11 @@ export default function SharingPage() {
   return (
     <div className="flex h-[calc(100vh-56px)] flex-col">
       <div className="sticky top-0 z-10 bg-white">
-        <div className="px-4 py-4">
+        <div className="px-4 py-3">
           <SearchInput placeholder="공연명 검색" onSearch={handleSearch} />
         </div>
-        <div className="flex items-center justify-between px-4 py-3">
-          <h2 className="text-lg font-medium">다가오는 콘서트</h2>
+        <div className="flex items-center justify-between px-4 py-3 pt-0">
+          <h2 className="text-base font-bold">다가오는 콘서트</h2>
         </div>
       </div>
 

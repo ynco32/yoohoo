@@ -42,6 +42,12 @@ export function SightReviewList() {
   const stageType = Number(params.stageType);
 
   useEffect(() => {
+    if (params.seatId) {
+      setIsSheetOpen(true);
+    }
+  }, [params.seatId]);
+
+  useEffect(() => {
     console.log({
       arenaId,
       stageType,

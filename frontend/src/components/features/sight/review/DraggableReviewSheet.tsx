@@ -41,9 +41,8 @@ export const DraggableReviewSheet = ({
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
   const { handlers, style } = useDraggableSheet({
-    isOpen,
+    position: isOpen ? 'half' : 'closed', // isOpen 값에 따라 position 결정
     onClose,
-    initialPosition: 'half',
   });
 
   const isSoundStatus = (value: string): value is SoundStatus => {
@@ -112,7 +111,7 @@ export const DraggableReviewSheet = ({
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-10 flex justify-center">
-      <div className="relative h-full w-full max-w-md">
+      <div className="max-w-md relative h-full w-full">
         <div
           className="pointer-events-auto absolute bottom-0 w-full transform px-4 transition-transform duration-300 ease-out"
           style={style}

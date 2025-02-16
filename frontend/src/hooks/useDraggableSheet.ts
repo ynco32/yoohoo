@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
 interface UseDraggableSheetProps {
-  isOpen: boolean;
+  position: 'full' | 'half' | 'closed'; // isOpen 대신 position으로 변경
   onClose: () => void;
-  initialPosition?: 'full' | 'half' | 'closed';
 }
 
 interface DragState {
@@ -13,16 +12,28 @@ interface DragState {
 }
 
 export const useDraggableSheet = ({
-  isOpen,
+  position: targetPosition, // prop 이름을 더 명확하게 변경
   onClose,
-  initialPosition = 'half',
 }: UseDraggableSheetProps) => {
   const [dragState, setDragState] = useState<DragState>({
-    position: initialPosition,
-    currentTranslate:
-      initialPosition === 'full' ? 0 : initialPosition === 'half' ? 50 : 90,
+    position: 'closed',
+    currentTranslate: 90,
     isDragging: false,
   });
+
+  // position prop 변경 시 상태 업데이트
+  useEffect(() => {
+    let newTranslate = 90; // closed
+    if (targetPosition === 'half') newTranslate = 50;
+    if (targetPosition === 'full') newTranslate = 0;
+
+    setDragState((prev) => ({
+      ...prev,
+      position: targetPosition,
+      currentTranslate: newTranslate,
+    }));
+  }, [targetPosition]);
+
   const [dragStart, setDragStart] = useState<number | null>(null);
 
   const updatePosition = useCallback(
@@ -128,23 +139,6 @@ export const useDraggableSheet = ({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
-
-  // Handle isOpen prop changes
-  useEffect(() => {
-    if (isOpen) {
-      setDragState((prev) => ({
-        ...prev,
-        position: 'half',
-        currentTranslate: 50,
-      }));
-    } else {
-      setDragState((prev) => ({
-        ...prev,
-        position: 'closed',
-        currentTranslate: 90,
-      }));
-    }
-  }, [isOpen]);
 
   return {
     position: dragState.position,

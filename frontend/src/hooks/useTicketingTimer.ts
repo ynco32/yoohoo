@@ -91,7 +91,7 @@ export const useTicketingTimer2 = () => {
         setButtonDisabled(true);
         const min = Math.floor(secondsLeft / 60);
         const sec = secondsLeft % 60;
-        setButtonMessage(min + '분 ' + sec + '후 예매 시작');
+        setButtonMessage(min + '분 ' + sec + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초초마다 실행
       } else if (secondsLeft >= 600 && !timeInfo.finished) {
         // 10분 이상 남았을 때

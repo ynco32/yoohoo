@@ -13,7 +13,6 @@ const Header = () => {
 
   const rootPaths = ['/main'];
   const shouldShowLogo = rootPaths.some((path) => path === pathname);
-
   // 경로에 따른 타이틀 매핑
   const getTitleByPath = () => {
     if (pathname.startsWith('/sight')) return '시야 보기';
@@ -35,26 +34,28 @@ const Header = () => {
   return (
     <div className="container left-0 top-0 z-header">
       <header className="h-16">
-        <div className="flex h-full items-center justify-between">
-          {shouldShowLogo ? (
-            <Link href="/main" className="h-8 w-auto">
-              <Image
-                src="/svgs/logo.svg"
-                alt="Logo"
-                width={109}
-                height={109}
-                priority
-              />
-            </Link>
-          ) : (
-            <>
+        <div className="relative flex h-full items-center justify-between">
+          <div className="flex-none">
+            {shouldShowLogo ? (
+              <Link href="/main" className="h-8 w-auto">
+                <Image
+                  src="/svgs/logo.svg"
+                  alt="Logo"
+                  width={109}
+                  height={109}
+                  priority
+                />
+              </Link>
+            ) : (
               <BackButton onClick={handleBack} />
-              <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium">
-                {getTitleByPath()}
-              </h1>
-            </>
-          )}
-          <MenuToggleButton onClick={openMenu} />
+            )}
+          </div>
+          <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium">
+            {getTitleByPath()}
+          </h1>
+          <div className="flex-none">
+            <MenuToggleButton onClick={openMenu} />
+          </div>
         </div>
       </header>
 

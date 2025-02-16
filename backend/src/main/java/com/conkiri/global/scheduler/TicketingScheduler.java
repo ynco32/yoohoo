@@ -49,7 +49,7 @@ public class TicketingScheduler {
 	}
 
 	// 매일 지정된 시작 시간(0시)에 티켓팅 시작
-	@Scheduled(cron = "0 25 22 * * *", zone = "Asia/Seoul")
+	@Scheduled(cron = "0 47 22 * * *", zone = "Asia/Seoul")
 	public void startTicketing() {
 		LocalDateTime startTime = getTodayTicketingStartTime();
 		LocalDateTime endTime = startTime.plusHours(TICKETING_DURATION_HOURS);

@@ -155,10 +155,11 @@ public class TicketingService {
 		String seat = (String) history.get("seat");
 		Long rank = Long.parseLong((String) history.get("rank"));
 
-		// 소요 시간 계산 (나노초를 초로 변환, 소수점 버림)
-		Long queueTime = Long.parseLong((String) history.get("queueTime"));
-		Long reserveNanoTime = Long.parseLong((String) history.get("reserveNanoTime"));
-		Long processingTime = (reserveNanoTime - queueTime) / 1_000_000_000;  // 나노초를 초로 변환
+		// Double로 파싱한 후 Long으로 변환
+		double queueTimeDouble = Double.parseDouble((String) history.get("queueTime"));
+		double reserveNanoTimeDouble = Double.parseDouble((String) history.get("reserveNanoTime"));
+		Long processingTime = (long)((reserveNanoTimeDouble - queueTimeDouble) / 1_000_000_000);
+
 		LocalDateTime reserveTime = LocalDateTime.parse((String) history.get("reserveTime"));
 
 		return new TicketingResultResponseDTO(section, seat, rank, processingTime, reserveTime);

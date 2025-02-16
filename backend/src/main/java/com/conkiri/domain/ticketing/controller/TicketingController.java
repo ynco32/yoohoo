@@ -29,6 +29,12 @@ public class TicketingController {
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
 
+	// 활성화 여부
+	@GetMapping("/status")
+	public boolean getTicketingStatus(@AuthenticationPrincipal UserPrincipal user) {
+		return queueProcessingService.isTicketingActive();
+	}
+
 	// 서버 시간 제공
 	@GetMapping("/time-info")
 	public TicketingInfoResponseDTO getTimeInfo(@AuthenticationPrincipal UserPrincipal user) {

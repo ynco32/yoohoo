@@ -61,8 +61,24 @@ export const useTicketingTimer = () => {
     return Math.floor(timeLeft / 1000); // 초 단위 변환
   };
 
-  // 3️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
-  const changeButtonMessage = () => {
+  // 3️⃣ 티켓팅이 시작됐는지 확인하기
+  const checkIfTicketingStarted = async () => {
+    try {
+      const ticketingStarted = await api.get('/api/v1/ticketing/status');
+      return ticketingStarted.data;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error('⏰ [Timer] 티켓팅이 시작했는지 불러오지 못했습니다.', {
+          status: error.response?.status,
+          data: error.response?.data,
+          config: error.config, // 요청 설정 확인
+        });
+      }
+    }
+  };
+
+  // 4️⃣ 남은 시간에 따라 버튼 문구 바꿔주기기
+  const changeButtonMessage = async () => {
     // fetchTimeInfo(); // 빌드될 때 한 번만 가져오기
 
     // 이전 인터벌 제거
@@ -72,11 +88,6 @@ export const useTicketingTimer = () => {
 
     const secondsLeft = calculateSecondsLeft();
 
-    // 4️⃣ 티켓팅이 시작됐는지 확인하기
-    const _checkIfTicketingStarted = () => {
-      // 시작이 됐는지 확인하는 api
-    };
-
     if (timeInfo) {
       if (timeInfo.finished) {
         // 티켓팅이 끝났을 때
@@ -84,8 +95,16 @@ export const useTicketingTimer = () => {
         setButtonMessage('마감되었습니다');
       } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
-        setButtonDisabled(false);
-        setButtonMessage('예매하기');
+        if (!(await checkIfTicketingStarted())) {
+          setButtonDisabled(false);
+          setButtonMessage('예매하기');
+        } else {
+          setButtonDisabled(true);
+          setButtonMessage('곧 예매가 시작됩니다.');
+          setIntervalId(
+            window.setInterval(changeButtonMessage, 1000) as number
+          ); // 1초마다 실행
+        }
       } else if (secondsLeft < 60 && !timeInfo.finished) {
         // 60초 미만 남았을 때
         setButtonDisabled(true);

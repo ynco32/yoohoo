@@ -115,6 +115,8 @@ export const SharingMap = ({
             venueLocation.longitude
           ),
           level: 3,
+          maxLevel: 5, // 최대 줌 레벨
+          minLevel: 1, // 최소 줌 레벨
         });
 
         // 지도 클릭 이벤트는 맵 생성 시 한 번만 등록

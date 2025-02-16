@@ -30,12 +30,11 @@ export const StageMenuItem = ({
       className={`relative flex h-64 flex-col items-center justify-between rounded-card bg-white p-2 text-center ${className}`}
     >
       <div className="flex flex-col items-center gap-4">
-        <div className="relative flex h-32 w-32 items-center justify-center">
+        <div className="relative flex h-48 w-48 items-center justify-center">
           <Image
             src={SVGIcons[icon]}
             alt={name}
-            width={150}
-            height={150}
+            fill
             className="z-10 object-contain"
           />
         </div>

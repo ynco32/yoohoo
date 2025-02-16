@@ -72,7 +72,7 @@ export default function ArenaList() {
           </div>
         </div>
       </div>
-      <div className="flex-1 px-2xl">
+      <div className="flex-1 px-4">
         {selectedArenaId != null && (
           <SelectedArenaMenu arenaId={selectedArenaId} />
         )}

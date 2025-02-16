@@ -1,10 +1,15 @@
 import { create } from 'zustand';
 import { TicketingSeatProps } from '@/types/ticketingSeat';
 
+interface TicketingError {
+  code: string;
+  message: string;
+}
+
 interface TicketingSeatState {
   seats: TicketingSeatProps[];
   isLoading: boolean;
-  error: string | null;
+  error: TicketingError | null;
   selectedSeatNumber: string | null;
   currentSectionId: string | null;
 
@@ -14,7 +19,28 @@ interface TicketingSeatState {
   isSeatAvailable: (seatNumber: string) => boolean;
   tryReserveSeat: (section: string, seat: string) => Promise<void>;
   reset: () => void;
+  clearError: () => void;
 }
+
+// 에러들
+const TICKETING_ERRORS = {
+  SEAT_ALREADY_RESERVED: {
+    code: 'SEAT_ALREADY_RESERVED',
+    message: '이미 예약된 좌석입니다.',
+  },
+  ALREADY_PARTICIPATED: {
+    code: 'ALREADY_PARTICIPATED',
+    message: '이미 티켓팅에 참여하셨습니다.',
+  },
+  RESERVATION_FAILED: {
+    code: 'RESERVATION_FAILED',
+    message: '예약 처리 중 오류가 발생했습니다.',
+  },
+  FETCH_FAILED: {
+    code: 'FETCH_FAILED',
+    message: '좌석 정보를 불러오는데 실패했습니다.',
+  },
+} as const;
 
 export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
   seats: [],
@@ -22,6 +48,9 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
   error: null,
   selectedSeatNumber: null,
   currentSectionId: null,
+
+  // [Zustand] 에러 초기화 액션
+  clearError: () => set({ error: null }),
 
   // [Zustand] 상태 변경 추적 출력
   fetchSeatsByArea: async (area: string) => {
@@ -35,7 +64,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
       console.log('📦 API 응답 상태:', response.status);
 
       if (!response.ok) {
-        throw new Error('📦 Failed to fetch seats');
+        throw TICKETING_ERRORS.FETCH_FAILED;
       }
 
       const seatsData = await response.json();
@@ -51,13 +80,20 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
       console.error('📦 좌석 정보 요청 실패:', error);
       set({
         error:
-          error instanceof Error ? error.message : '📦 Failed to fetch seats',
+          error instanceof Error
+            ? { code: 'UNKNOWN', message: error.message }
+            : TICKETING_ERRORS.FETCH_FAILED,
         isLoading: false,
       });
     }
   },
-  //
+
   selectSeat: (seatNumber: string) => {
+    // 이미 같은 좌석이 선택되어 있다면 선택 취소
+    if (get().selectedSeatNumber === seatNumber) {
+      set({ selectedSeatNumber: null });
+      return;
+    }
     set({ selectedSeatNumber: seatNumber });
   },
 
@@ -68,7 +104,9 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
 
   tryReserveSeat: async (section: string, seat: string) => {
     if (!get().isSeatAvailable(seat)) {
-      throw new Error('이미 예약된 좌석입니다.');
+      set({ error: TICKETING_ERRORS.SEAT_ALREADY_RESERVED });
+      await get().fetchSeatsByArea(section); // 좌석 정보 새로고침
+      throw TICKETING_ERRORS.SEAT_ALREADY_RESERVED;
     }
 
     try {
@@ -80,8 +118,17 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
         body: JSON.stringify({ section, seat }),
       });
 
+      // 티켓팅 도메인 에러 처리
       if (!response.ok) {
-        throw new Error('예약에 실패했습니다.');
+        let error;
+        if (response.status === 409) {
+          error = TICKETING_ERRORS.ALREADY_PARTICIPATED; // 이미 참여해서 더이상 안 됨.
+        } else {
+          error = TICKETING_ERRORS.RESERVATION_FAILED;
+        }
+        set({ error });
+        await get().fetchSeatsByArea(section);
+        throw error;
       }
 
       set((state) => ({
@@ -94,7 +141,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
     } catch (error) {
       throw error instanceof Error
         ? error
-        : new Error('예약 처리 중 오류가 발생했습니다.');
+        : TICKETING_ERRORS.RESERVATION_FAILED;
     }
   },
 

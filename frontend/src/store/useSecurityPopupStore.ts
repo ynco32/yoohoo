@@ -3,6 +3,7 @@ import { create } from 'zustand';
 interface SecurityPopupStoreProps {
   onSuccess: boolean;
   setSecurityPopupState: (onPostpone: boolean) => void;
+  reset: () => void;
 }
 
 export const useSecurityPopupStore = create<SecurityPopupStoreProps>((set) => ({

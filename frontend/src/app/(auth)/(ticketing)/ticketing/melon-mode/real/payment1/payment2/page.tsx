@@ -7,6 +7,7 @@ import { AgreementSection } from '@/components/features/ticketing/AgreementSecti
 import { StepIndicator } from '@/components/features/ticketing/StepIndicator';
 import { Modal } from '@/components/common/Modal';
 import { useRouter } from 'next/navigation';
+import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
 
 import type {
   PaymentMethod,
@@ -106,6 +107,7 @@ export default function PaymentPage() {
       confirmText: '결제완료',
       onConfirm: () => {
         router.push('../result');
+        useSecurityPopupStore.getState().reset(); // store 에 들어있는 보안 문자 정보 삭제
       },
     });
   };

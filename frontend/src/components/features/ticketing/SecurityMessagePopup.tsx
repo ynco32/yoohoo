@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Captcha from './Captcha';
 import Popup from '@/components/ui/Popup';
+import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
 
 interface SecurityMessagePopupProps {
   isOpen: boolean;
@@ -16,6 +17,9 @@ export default function SecurityMessagePopup({
   const [captchaText, setCaptchatext] = useState('');
   const [inputText, setInputText] = useState('');
   const [error, setError] = useState(false);
+  const setSecurityPopupState = useSecurityPopupStore(
+    (state) => state.setSecurityPopupState
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -47,11 +51,28 @@ export default function SecurityMessagePopup({
     setInputText(inputValue);
   };
 
+  // const handleSubmit = () => {
+  //   if (captchaText === inputText) {
+  //     setSecurityPopupState(true);
+  //     onSuccess();
+  //   } else {
+  //     return setError(true);
+  //   }
+  // };
   const handleSubmit = () => {
+    console.log('handleSubmit 실행됨');
+    console.log('captchaText:', captchaText);
+    console.log('inputText:', inputText);
+
     if (captchaText === inputText) {
-      return onSuccess();
+      console.log('captcha 일치');
+      setSecurityPopupState(true);
+      console.log('SecurityPopup 상태 업데이트됨');
+      onSuccess();
+      console.log('onSuccess 호출됨');
     } else {
-      return setError(true);
+      console.log('captcha 불일치');
+      setError(true);
     }
   };
 
@@ -84,7 +105,7 @@ export default function SecurityMessagePopup({
           </button>
         </div>
         <button
-          className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline [&>span]:active:bg-status-warning"
+          className="inline-block w-full text-center text-sm text-gray-500 underline hover:underline"
           onClick={onPostpone}
         >
           <span>좌석 먼저 확인하고 나중에 입력하기</span>

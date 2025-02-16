@@ -23,7 +23,7 @@ export default function MainMenu() {
     {
       icon: 'SightIcon',
       label: '시야 보기',
-      description: '시야 후기 보기',
+      description: '좌석별 시야 후기',
       layout: 'large',
       href: '/sight',
       className: 'bg-sight-menu rounded-menu shadow-menu',
@@ -32,7 +32,7 @@ export default function MainMenu() {
       icon: 'SharingIcon',
       label: '나눔 지도',
       href: '/sharing',
-      description: '시야 후기 보기',
+      description: '공연별 나눔 정보',
       layout: 'default',
       className: 'bg-sharing-menu rounded-menu shadow-menu',
     },
@@ -40,7 +40,7 @@ export default function MainMenu() {
       icon: 'CongestionIcon',
       label: '혼잡도 보기',
       href: '/congestion',
-      description: '시야 후기 보기',
+      description: '공연장 주변 혼잡도',
       layout: 'default',
       className: 'bg-congestion-menu rounded-menu shadow-menu',
     },
@@ -48,15 +48,14 @@ export default function MainMenu() {
       icon: 'TicketIcon',
       label: '티켓팅 연습',
       href: '/ticketing',
-      description: '시야 후기 보기',
+      description: '티켓팅 시뮬레이션',
       layout: 'wide',
       className: 'bg-ticket-menu rounded-menu shadow-menu',
     },
   ];
-
   return (
-    <div className="h-[65vh] w-full flex-grow">
-      <div className="grid h-full grid-cols-2 gap-md bg-white py-md">
+    <div className="flex-1 py-4">
+      <div className="grid h-full w-full grid-cols-2 gap-md">
         {menuItems.map((item) => (
           <MenuItem
             key={item.href}

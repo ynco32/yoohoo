@@ -2,6 +2,7 @@
 import TicketingBottomGreenButton from './TicketingBottomGreenButton';
 // import TicketingRefreshButton from './TicketingRefreshButton';
 import ArrowPathButton from './ArrowPathButton';
+import { useRouter } from 'next/navigation';
 
 interface TicketingBottomBarProps {
   selectedSeat?: number | string;
@@ -15,8 +16,11 @@ export default function TicketingBottomBar({
   children,
   onClick,
 }: TicketingBottomBarProps) {
+  const router = useRouter(); // [Next.js] router 인스턴스 생성
+
+  // [Next.js] 새로고침 함수
   const refresh = () => {
-    window.location.reload();
+    router.refresh(); // 현재 페이지의 데이터만 새로고침
   };
 
   return (

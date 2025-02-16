@@ -49,7 +49,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center overflow-hidden bg-background-default">
+    <div>
       <TransformWrapper
         initialScale={1}
         minScale={0.5}
@@ -67,7 +67,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
             preserveAspectRatio="xMidYMid meet"
             className="h-full w-full origin-center"
           >
-            <g transform="translate(-500, -400) scale(1.2)">
+            <g transform="translate(-600, -400) scale(1.5)">
               {sections.map((section, index) => {
                 const position = calculatePosition(index);
                 const sectionProps: SectionComponentProps = {

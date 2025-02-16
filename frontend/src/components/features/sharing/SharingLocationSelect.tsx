@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { SharingLocationMap } from './SharingLocationMap';
 
 interface SharingLocationSelectProps {
@@ -27,12 +27,12 @@ export const SharingLocationSelect = ({
     | undefined
   >(initialLocation);
 
-  const handleLocationSelect = (location: {
-    latitude: number;
-    longitude: number;
-  }) => {
-    setSelectedLocation(location);
-  };
+  const handleLocationSelect = useCallback(
+    (location: { latitude: number; longitude: number }) => {
+      setSelectedLocation(location);
+    },
+    []
+  );
 
   return (
     <div className="relative mx-auto -mt-[56px] h-full max-w-[430px]">

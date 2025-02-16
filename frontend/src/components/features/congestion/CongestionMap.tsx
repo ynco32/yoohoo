@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { CongestionInfo } from './CongestionInfo';
 
 interface LocationInfo {
   latitude: number;
@@ -89,8 +90,10 @@ export const CongestionMap = ({ position, data }: CongestionDisplayProps) => {
 
   return (
     <div>
-      <div className="h-[90vh] w-full overflow-hidden rounded-xl">
-        <div ref={mapContainerRef} className="h-full w-full" />
+      <div className="h-[85vh] w-full overflow-hidden rounded-xl">
+        <div ref={mapContainerRef} className="h-full w-full">
+          <CongestionInfo />
+        </div>
       </div>
     </div>
   );

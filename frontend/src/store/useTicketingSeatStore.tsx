@@ -23,35 +23,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
   selectedSeatNumber: null,
   currentSectionId: null,
 
-  // fetchSeatsByArea: async (area: string) => {
-  //   try {
-  //     set({ isLoading: true, error: null, currentSectionId: area });
-  //     const response = await fetch(
-  //       `/api/v1/ticketing/sections/seats?section=${area}`
-  //     );
-  //     if (!response.ok) {
-  //       throw new Error('📦 Failed to fetch seats');
-  //     }
-  //     const seatsData = await response.json();
-  //     console.log('API 응답 데이터:', seatsData); // 디버깅용
-  //     // set({ seats: seatsData, isLoading: false });
-  //     // API 응답 구조에 따라 수정
-  //     if (Array.isArray(seatsData)) {
-  //       set({ seats: seatsData, isLoading: false });
-  //     } else if (seatsData.seats) {
-  //       set({ seats: seatsData.seats, isLoading: false });
-  //     } else {
-  //       set({ seats: [], isLoading: false, error: '잘못된 좌석 데이터 형식' });
-  //     }
-  //   } catch (error) {
-  //     set({
-  //       error:
-  //         error instanceof Error ? error.message : ' 📦 Failed to fetch seats',
-  //       isLoading: false,
-  //     });
-  //   }
-  // }
-  // [Zustand] 상태 변경 추적 덕지덕지 출력 ver
+  // [Zustand] 상태 변경 추적 출력
   fetchSeatsByArea: async (area: string) => {
     try {
       console.log('📦 좌석 정보 요청 시작:', area);

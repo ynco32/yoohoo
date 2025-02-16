@@ -1,12 +1,10 @@
 'use client';
+
 import TicketingBottomBar from '@/components/ui/TicketingBottomBar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TicketingSeatList from '@/components/features/ticketing/TicketingSeatList';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { SeatTakenPopup } from '@/components/features/ticketing/SeatTakenPopup';
 import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
 import { useUserStore } from '@/store/useUserStore';
 import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
@@ -14,73 +12,47 @@ import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessag
 
 export default function Seat() {
   const [isActive, setIsActive] = useState(false);
-  const [_seat, setSeat] = useState('');
-  const [isSeatTakenPopupOpen, setIsSeatTakenPopupOpen] = useState(false);
-  const [reservationError, setReservationError] = useState<string | null>(null); // 에러 뜰 경우\
   const [isSecurityMessageOpen, setisSecurityMessageOpen] = useState(false);
-  const { selectedSeatNumber, tryReserveSeat } = useTicketingSeatStore();
-  // const { onSuccess } = useSecurityPopupStore();
-  const onSuccess = useSecurityPopupStore((state) => state.onSuccess);
-  const setSecurityPopupState = useSecurityPopupStore(
-    (state) => state.setSecurityPopupState
-  );
   const router = useRouter();
+  const areaId = useParams().areaId as string;
+
+  const { error, clearError, selectedSeatNumber, tryReserveSeat } =
+    useTicketingSeatStore();
 
   const userId = useUserStore((state) => state.user?.userId);
-  const handleReservationError = (errorMessage: string) => {
-    setReservationError(errorMessage);
-  };
-  const areaId = useParams().areaType as string;
+  const { onSuccess, setSecurityPopupState } = useSecurityPopupStore();
 
-  // selectedSeatNumber가 변경될 때마다 상태 업데이트
+  // selectedSeatNumber 변경 시 버튼 활성화 상태 업데이트
   useEffect(() => {
-    if (selectedSeatNumber) {
-      setIsActive(true);
-      setSeat(selectedSeatNumber);
-    } else {
-      // selectedSeatNumber가 null일 때 처리 추가
-      setIsActive(false);
-      setSeat('');
-    }
+    setIsActive(!!selectedSeatNumber);
   }, [selectedSeatNumber]);
 
-  // 이선좌
-  const onSeatTaken = () => {
-    setIsSeatTakenPopupOpen(true);
-  };
-
-  // [React] 예매하기 버튼 클릭 시 실행되는 함수
+  // 예매하기 버튼 클릭 핸들러
   const handleReservationClick = async () => {
     if (!selectedSeatNumber || !userId) {
-      setReservationError('좌석을 선택해주세요.');
       return;
     }
 
-    // 보안 문자 안했으면 지금 하기
+    // 보안 문자 인증 확인
     if (!onSuccess) {
       setisSecurityMessageOpen(true);
       return;
     }
 
     try {
-      // 여기서 실제 예매 API 호출
       await tryReserveSeat(areaId, selectedSeatNumber);
-      // 성공하면 결제 페이지로 이동
       router.push('payment1');
     } catch (error) {
-      // 실패하면 에러 메시지 표시
-      setReservationError(
-        error instanceof Error ? error.message : '예매에 실패했습니다.'
-      );
+      // 에러는 store에서 처리됨
     }
   };
 
-  const handleOnPostpone = () => {
+  // 보안 문자 관련
+  const handleSecurityPostpone = () => {
     setisSecurityMessageOpen(false);
   };
 
-  const handleOnSuccess = () => {
-    console.log('Seat의 handleOnSuccess 실행됨');
+  const handleSecuritySuccess = () => {
     setisSecurityMessageOpen(false);
     setSecurityPopupState(true);
   };
@@ -89,35 +61,22 @@ export default function Seat() {
     ? `${areaId}구역 ${selectedSeatNumber}번 좌석 예매하기`
     : '선택된 좌석 없음';
 
-  const errorOnClick = () => {
-    setReservationError(null);
-  };
-
   return (
     <div>
-      <TicketingSeatList
-        onReservationError={handleReservationError}
-        onSeatTaken={onSeatTaken}
-        areaId={areaId}
-      />
-      <TicketingBottomBar
-        onClick={handleReservationClick}
-        isActive={isActive}
-        // selectedSeat={selectedSeatNumber ? selectedSeatNumber : ''}
-      >
+      <TicketingSeatList areaId={areaId} />
+      <TicketingBottomBar onClick={handleReservationClick} isActive={isActive}>
         {bottomBarContent}
       </TicketingBottomBar>
-      <SeatTakenPopup
-        onClick={() => setIsSeatTakenPopupOpen(false)}
-        isOpen={isSeatTakenPopupOpen}
-      />
-      <ErrorPopup isOpen={reservationError != null} onClick={errorOnClick}>
-        {reservationError}
-      </ErrorPopup>
+
+      {error && (
+        <ErrorPopup isOpen={!!error} onClick={clearError}>
+          {error.message}
+        </ErrorPopup>
+      )}
       <SecurityMessagePopup
         isOpen={isSecurityMessageOpen}
-        onPostpone={handleOnPostpone}
-        onSuccess={handleOnSuccess}
+        onPostpone={handleSecurityPostpone}
+        onSuccess={handleSecuritySuccess}
       />
     </div>
   );

@@ -35,7 +35,7 @@ export const SharingLocationSelect = ({
   );
 
   return (
-    <div className="relative mx-auto -mt-[56px] h-full max-w-[430px]">
+    <div className="relative mx-auto -mt-[56px] h-[calc(100vh)] max-w-[430px]">
       <div className="h-full">
         <SharingLocationMap
           venueLocation={venueLocation}
@@ -43,7 +43,7 @@ export const SharingLocationSelect = ({
           initialLocation={selectedLocation}
         />
       </div>
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-4">
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-10 w-full max-w-[430px] px-4">
         <button
           className={`w-full rounded-lg py-4 text-white transition-colors ${
             selectedLocation

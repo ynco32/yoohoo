@@ -25,6 +25,7 @@ import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.InvalidSeatException;
 import com.conkiri.global.exception.ticketing.InvalidSectionException;
 import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
+import com.conkiri.global.exception.ticketing.RecordNotFoundException;
 import com.conkiri.global.exception.user.AlreadyExistUserException;
 import com.conkiri.global.exception.user.DuplicateNicknameException;
 import com.conkiri.global.exception.user.InvalidNicknameException;
@@ -231,6 +232,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidSeatException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ExceptionResponse invalidSeatExceptionHandler(Exception e) {
+		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+	}
+
+	@ExceptionHandler(RecordNotFoundException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ExceptionResponse recordNotFoundExceptionHandler(Exception e) {
 		return new ExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
 	}
 }

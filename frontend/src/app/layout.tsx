@@ -19,9 +19,9 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="bg-web flex h-screen flex-col overflow-hidden font-pretendard">
+      <body className="flex h-[100dvh] flex-col overflow-hidden bg-web font-pretendard">
         <MSWProvider />
-        <div className="max-w-layout container relative flex flex-1 flex-col bg-white p-0 shadow-lg">
+        <div className="container relative flex h-[100dvh] max-w-layout flex-1 flex-col bg-white p-0 shadow-lg">
           <AuthGuard>
             <HeaderWrapper />
             <main className="flex-1 overflow-auto">{children}</main>

@@ -32,6 +32,12 @@ export const DraggableReviewSheet = ({
   const { getSectionById } = useSectionStore();
   const params = useParams();
   const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
+  console.log(`params.sectionId :: ${params.sectionId}`);
+  console.log(
+    `getSectionById(Number(params.sectionId)) ::: ${getSectionById(Number(params.sectionId))}`
+  );
+  console.log(`currentSectionNumber :: ${currentSectionNumber}`);
+
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
 

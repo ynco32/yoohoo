@@ -72,6 +72,11 @@ export const useTicketingTimer2 = () => {
 
     const secondsLeft = calculateSecondsLeft();
 
+    // 4️⃣ 티켓팅이 시작됐는지 확인하기
+    const _checkIfTicketingStarted = () => {
+      // 시작이 됐는지 확인하는 api
+    };
+
     if (timeInfo) {
       if (timeInfo.finished) {
         // 티켓팅이 끝났을 때
@@ -81,13 +86,13 @@ export const useTicketingTimer2 = () => {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
         setButtonDisabled(false);
         setButtonMessage('예매하기');
-      } else if (secondsLeft <= 60 && !timeInfo.finished) {
-        // 60초 이하 남았을 때
+      } else if (secondsLeft < 60 && !timeInfo.finished) {
+        // 60초 미만 남았을 때
         setButtonDisabled(true);
         setButtonMessage(secondsLeft + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초마다 실행
       } else if (secondsLeft < 600 && !timeInfo.finished) {
-        // 10분 이하 남았을 때
+        // 1분 이상 10분 이하하 남았을 때
         setButtonDisabled(true);
         const min = Math.floor(secondsLeft / 60);
         const sec = secondsLeft % 60;

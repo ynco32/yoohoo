@@ -14,7 +14,7 @@ export default function Seat() {
   const [isActive, setIsActive] = useState(false);
   const [isSecurityMessageOpen, setisSecurityMessageOpen] = useState(false);
   const router = useRouter();
-  const areaId = useParams().areaId as string;
+  const areaId = useParams().areaType as string;
 
   const { error, clearError, selectedSeatNumber, tryReserveSeat } =
     useTicketingSeatStore();

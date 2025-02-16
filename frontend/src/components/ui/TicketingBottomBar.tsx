@@ -3,6 +3,8 @@ import TicketingBottomGreenButton from './TicketingBottomGreenButton';
 // import TicketingRefreshButton from './TicketingRefreshButton';
 import ArrowPathButton from './ArrowPathButton';
 import { useRouter } from 'next/navigation';
+import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
+import { useParams } from 'next/navigation';
 
 interface TicketingBottomBarProps {
   selectedSeat?: number | string;
@@ -18,8 +20,15 @@ export default function TicketingBottomBar({
 }: TicketingBottomBarProps) {
   const router = useRouter(); // [Next.js] router 인스턴스 생성
 
+  const fetchSeatsByArea = useTicketingSeatStore(
+    (state) => state.fetchSeatsByArea
+  );
+
+  const areaId = useParams().areaType as string;
+
   // [Next.js] 새로고침 함수
   const refresh = () => {
+    fetchSeatsByArea(areaId);
     router.refresh(); // 현재 페이지의 데이터만 새로고침
   };
 

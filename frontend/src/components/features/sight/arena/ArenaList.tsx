@@ -57,7 +57,7 @@ export default function ArenaList() {
     <div className="flex h-full flex-col">
       <div>
         <div className="scrollbar-hide overflow-x-auto">
-          <div className="flex gap-8 px-2xl py-sm">
+          <div className="flex items-center gap-6 px-6 py-4">
             {arenas.map((arena) => (
               <Arena
                 key={arena.arenaId}

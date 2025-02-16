@@ -17,8 +17,11 @@ export const Arena = ({
   onClick,
 }: ArenaProps) => {
   return (
-    <div onClick={onClick} className={`cursor-pointer ${className}`}>
-      <div className="h-28 w-28 overflow-hidden rounded-2xl">
+    <div
+      onClick={onClick}
+      className={`flex h-full cursor-pointer flex-col items-center ${className}`}
+    >
+      <div className="rounded-arena h-24 w-24 overflow-hidden">
         <Image
           src={imageSrc}
           alt={imageAlt}
@@ -27,8 +30,8 @@ export const Arena = ({
           height={300}
         />
       </div>
-      <div className="mt-2 w-28">
-        <div className="text-center font-pretendard text-caption2 font-bold text-gray-900">
+      <div className="mt-2 flex items-center">
+        <div className="text-center font-pretendard text-caption2 font-bold text-text-menu">
           {arenaName}
         </div>
       </div>

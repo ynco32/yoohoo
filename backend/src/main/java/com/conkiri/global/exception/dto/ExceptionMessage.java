@@ -49,5 +49,6 @@ public final class ExceptionMessage {
 	public static final String NOT_START_TICKETING = "티켓팅이 아직 시작되지 않았습니다.";
 	public static final String INVALID_SECTION = "유효하지 않은 구역입니다.";
 	public static final String INVALID_SEAT = "유효하지 않은 좌석입니다.";
+	public static final String RECORD_NOT_FOUND = "티켓팅 결과를 찾을 수 없습니다.";
 
 }

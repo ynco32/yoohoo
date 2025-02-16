@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
+import com.conkiri.domain.ticketing.dto.response.TicketingResultResponseDTO;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -64,13 +65,20 @@ public class TicketingController {
 		);
 	}
 
-	// @GetMapping("/result")
-	// public HistoryResponseDTO getTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-	// 	return ticketingService.getTicketingResult(userPrincipal.getUserId());
-	// }
+	@GetMapping("/result")
+	public TicketingResultResponseDTO getTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return ticketingService.getTicketingResult(userPrincipal.getUserId());
+	}
 
-	// @PostMapping("/result")
-	// public void saveTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-	// 	ticketingService.saveTicketingResult(userPrincipal.getUserId());
-	// }
+	@PostMapping("/result")
+	public void saveTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		ticketingService.saveTicketingResult(userPrincipal.getUserId());
+	}
+
+	// 마이페이지용 전체 결과 조회 API
+	@GetMapping("/results")
+	public List<TicketingResultResponseDTO> getAllResults(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return ticketingService.getAllTicketingResults(userPrincipal.getUserId());
+	}
+
 }

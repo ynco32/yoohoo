@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
+import com.conkiri.domain.base.entity.StageType;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.entity.Review;
 
@@ -23,4 +24,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	boolean existsByUserAndSeatAndConcertAndReviewIdNot(User user, Seat seat, Concert concert, Long reviewId);
 
 	Optional<Review> findReviewByReviewId(Long reviewId);
+
+	Long countBySeat(Seat seat);
+
+	Long countBySeatAndStageType(Seat seat, StageType stageType);
 }

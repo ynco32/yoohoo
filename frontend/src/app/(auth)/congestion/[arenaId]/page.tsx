@@ -5,7 +5,7 @@ import { CongestionMap } from '@/components/features/congestion/CongestionMap';
 import { congestionAPI } from '@/lib/api/congestion';
 import { useParams } from 'next/navigation';
 import { locationInfo } from '@/lib/constants/locationInfo';
-import { CongestionInfo } from '@/components/features/congestion/CongestionInfo';
+import { DataError } from '@/components/features/congestion/DataError';
 // import { CongestionInfo } from '@/components/features/congestion/CongestionInfo';
 // import Badge from '@/components/ui/Badge';
 
@@ -66,12 +66,8 @@ export default function CongestionPage() {
       {congestions.length > 0 && position ? (
         <CongestionMap data={congestions} position={position} />
       ) : (
-        <div>데이터가 없습니다.</div>
+        <DataError />
       )}
-      {/* <CongestionInfo /> */}
-      <div>
-        <CongestionInfo />
-      </div>
     </div>
   );
 }

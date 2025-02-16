@@ -10,7 +10,7 @@ interface TimeInfo {
   frontStartTime: number;
 }
 
-export const useTicketingTimer2 = () => {
+export const useTicketingTimer = () => {
   // 넘겨줘야 하는 값들들
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [buttonMessage, setButtonMessage] = useState('잠시만 기다려주세요...');
@@ -76,7 +76,7 @@ export const useTicketingTimer2 = () => {
       if (timeInfo.finished) {
         // 티켓팅이 끝났을 때
         setButtonDisabled(true);
-        setButtonMessage('마감되었습니다.');
+        setButtonMessage('마감되었습니다');
       } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
         setButtonDisabled(false);
@@ -91,7 +91,7 @@ export const useTicketingTimer2 = () => {
         setButtonDisabled(true);
         const min = Math.floor(secondsLeft / 60);
         const sec = secondsLeft % 60;
-        setButtonMessage(min + '분 ' + sec + '후 예매 시작');
+        setButtonMessage(min + '분 ' + sec + '초 후 예매 시작');
         setIntervalId(window.setInterval(changeButtonMessage, 1000) as number); // 1초초마다 실행
       } else if (secondsLeft >= 600 && !timeInfo.finished) {
         // 10분 이상 남았을 때

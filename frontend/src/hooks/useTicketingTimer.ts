@@ -95,7 +95,7 @@ export const useTicketingTimer = () => {
         setButtonMessage('마감되었습니다');
       } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
-        if (!(await checkIfTicketingStarted())) {
+        if (await checkIfTicketingStarted()) {
           setButtonDisabled(false);
           setButtonMessage('예매하기');
         } else {

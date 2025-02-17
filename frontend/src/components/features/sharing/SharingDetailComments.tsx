@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CommentItem } from './CommentItem';
 import { useMswInit } from '@/hooks/useMswInit';
 import { useSharingCommentStore } from '@/store/useSharingCommentStore';
+import { TextArea } from '@/components/common/TextArea';
 
 interface SharingDetailCommentsProps {
   sharingId: number;
@@ -57,7 +58,7 @@ export const SharingDetailComments = ({
   }, [fetchMoreComments, hasMore, isLoading, sharingId]);
 
   return (
-    <div className="mx-4 mb-5 space-y-2 rounded-xl bg-gray-100 p-5">
+    <div className="mx-6 mb-5 space-y-2">
       <h2 className="font-medium">
         댓글 {comments.length > 0 && `(${comments.length})`}
       </h2>
@@ -76,17 +77,16 @@ export const SharingDetailComments = ({
         className="mb-4"
       >
         <div className="flex flex-col gap-2">
-          <textarea
+          <TextArea
             value={commentContent}
-            onChange={(e) => setCommentContent(e.target.value)}
-            rows={2}
+            onChange={setCommentContent}
             placeholder="댓글을 입력하세요"
-            className="focus:border-primary flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            rows={2}
           />
           <button
             type="submit"
             disabled={!commentContent.trim()}
-            className="ml-auto rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
+            className="-mt-1 ml-auto rounded-lg bg-sight-button px-4 py-2 text-sm text-white disabled:bg-gray-300"
           >
             등록
           </button>
@@ -95,8 +95,13 @@ export const SharingDetailComments = ({
       {error && <p className="text-sm text-red-500">{error}</p>}
       {comments.length > 0 ? (
         <div className="space-y-3">
-          {comments.map((comment) => (
-            <CommentItem key={comment.commentId} comment={comment} />
+          {comments.map((comment, index) => (
+            <div
+              key={comment.commentId}
+              className={`pb-2 ${index !== comments.length - 1 ? 'border-b border-gray-200' : ''}`}
+            >
+              <CommentItem comment={comment} />
+            </div>
           ))}
           <div ref={loadingRef} className="h-px" />
         </div>

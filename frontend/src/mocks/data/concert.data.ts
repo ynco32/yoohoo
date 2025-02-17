@@ -1,7 +1,7 @@
 export const mockConcerts = [
   {
     concertId: 1,
-    concertName: '베몬1회차',
+    concertName: '베몬1회차 타이틀 테스트용 엄청 긴 콘서트명 콘서트',
     artist: '아이들',
     startTime: '2025-02-10T00:29:32.01385',
     stageType: 'STANDARD',

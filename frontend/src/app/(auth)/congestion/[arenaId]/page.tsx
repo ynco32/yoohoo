@@ -62,7 +62,7 @@ export default function CongestionPage() {
   }, [arenaId]);
 
   return (
-    <div className="container relative mx-auto min-h-screen px-4">
+    <div className="container relative mx-auto px-4">
       {congestions.length > 0 && position ? (
         <CongestionMap data={congestions} position={position} />
       ) : (

@@ -186,13 +186,14 @@ export const ConcertList = ({ searchTerm = '' }: ConcertListProps) => {
    * 렌더링
    */
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-1">
       {concerts.map((concert, index) => (
         <div
           key={concert.concertId}
           ref={
             index === concerts.length - 1 ? lastConcertElementRef : undefined
           }
+          className="relative z-0"
         >
           <ConcertItem {...concert} />
         </div>

@@ -33,7 +33,7 @@ export const Modal = ({
         className="absolute inset-0 bg-black bg-opacity-25"
         onClick={type === 'alert' ? onClose : undefined}
       />
-      <div className="absolute left-1/2 top-1/2 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 text-center">
+      <div className="absolute left-1/2 top-1/2 w-full max-w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-6 text-center">
         <p className="mb-4 text-lg font-medium">{title}</p>
 
         <div className={`${type === 'confirm' ? 'flex gap-2' : ''}`}>

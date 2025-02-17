@@ -35,12 +35,14 @@ export const DraggableReviewSheet = ({
 
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
+  const currentSectionId = Number(params.sectionId);
 
   const { getSeatScrapStatus, updateSeatScrapStatus, getSeatById } =
     useSeatsStore();
+
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
-  const { handlers, style } = useDraggableSheet({
+  const { style } = useDraggableSheet({
     position: isOpen ? 'half' : 'closed',
     onClose,
   });
@@ -129,7 +131,7 @@ export const DraggableReviewSheet = ({
                 <div className="flex items-center gap-2">
                   <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
                   <span className="text-body-bold text-primary-main">
-                    {currentSectionNumber}구역
+                    {getSectionById(currentSectionId)?.sectionName}구역
                   </span>
                   {typeof currentSeatId === 'number' &&
                     !Number.isNaN(currentSeatId) && (

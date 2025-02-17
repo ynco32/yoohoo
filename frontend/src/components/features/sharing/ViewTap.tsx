@@ -11,12 +11,12 @@ interface ViewTabProps {
 
 export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
   return (
-    <div className="flex w-full">
+    <div className="flex w-full px-2 py-2">
       <button
-        className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
+        className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm transition-colors ${
           currentTab === 'scrap'
-            ? 'bg-sight-button text-white'
-            : 'text-gray-600'
+            ? 'border-sight-button text-sight-button'
+            : 'border-transparent text-gray-600'
         }`}
         onClick={() => onTabChange(currentTab === 'scrap' ? null : 'scrap')}
       >
@@ -24,8 +24,10 @@ export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
         <span>북마크 보기</span>
       </button>
       <button
-        className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
-          currentTab === 'my' ? 'bg-sight-button text-white' : 'text-gray-600'
+        className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm transition-colors ${
+          currentTab === 'my'
+            ? 'border-sight-button text-sight-button'
+            : 'border-transparent text-gray-600'
         }`}
         onClick={() => onTabChange(currentTab === 'my' ? null : 'my')}
       >

@@ -17,11 +17,13 @@ export const BottomControls = ({
     <>
       {/* View Toggle */}
       <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2">
-        <div className="flex items-center rounded-lg bg-sight-button p-1">
+        <div className="flex items-center rounded-lg bg-sight-button p-1 text-white">
           <button
             onClick={() => onModeChange('map')}
             className={`flex items-center rounded-md px-3 py-1.5 ${
-              viewMode === 'map' ? 'bg-white shadow-sm' : 'text-white'
+              viewMode === 'map'
+                ? 'bg-white text-sight-button shadow-sm'
+                : 'text-white'
             }`}
           >
             <MapIcon className="h-4 w-4" />
@@ -29,7 +31,9 @@ export const BottomControls = ({
           <button
             onClick={() => onModeChange('list')}
             className={`flex items-center rounded-md px-3 py-1.5 ${
-              viewMode === 'list' ? 'bg-white shadow-sm' : 'text-white'
+              viewMode === 'list'
+                ? 'bg-white text-sight-button shadow-sm'
+                : 'text-white'
             }`}
           >
             <ListBulletIcon className="h-4 w-4" />

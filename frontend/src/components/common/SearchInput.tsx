@@ -45,14 +45,14 @@ export const SearchInput = ({
 
   return (
     <div className="relative flex items-center">
-      <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-gray-400" />
+      <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-gray-600" />
       <input
         type="text"
         value={value}
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={`w-full rounded-xl bg-gray-50 py-2.5 pl-10 pr-12 text-sm outline-none focus:ring-1 focus:ring-gray-200 ${className}`}
+        className={`w-full rounded-xl  py-2.5 pl-10 pr-12 text-sm placeholder-gray-600 outline outline-1 outline-gray-600 focus:ring-1 focus:ring-gray-800 ${className}`}
       />
       {value && (
         <div className="absolute right-2 flex items-center">
@@ -61,7 +61,7 @@ export const SearchInput = ({
             onClick={handleClear}
             className="rounded-full p-1.5 hover:bg-gray-100"
           >
-            <XMarkIcon className="h-4 w-4 text-gray-400" />
+            <XMarkIcon className="h-4 w-4 text-gray-600" />
           </button>
         </div>
       )}

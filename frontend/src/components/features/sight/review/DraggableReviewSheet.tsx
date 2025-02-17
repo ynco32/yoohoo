@@ -31,7 +31,12 @@ export const DraggableReviewSheet = ({
 }: DraggableReviewSheetProps) => {
   const { getSectionById } = useSectionStore();
   const params = useParams();
-  const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
+  // const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
+  console.log(`params.sectionId :: ${params.sectionId}`);
+  console.log(
+    `getSectionById(Number(params.sectionId)) ::: ${getSectionById(Number(params.sectionId))?.sectionName}`
+  );
+  // console.log(`currentSectionNumber :: ${currentSectionNumber}`);
 
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
@@ -119,10 +124,25 @@ export const DraggableReviewSheet = ({
           style={style}
         >
           <div className="relative w-full rounded-t-3xl bg-sight-bg shadow-lg">
-            {/* 드래그 핸들러 영역 */}
-            <div className="cursor-grab touch-none" {...handlers}>
-              <div className="py-2 pt-4">
-                <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
+            <div className="py-2 pt-4">
+              <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
+            </div>
+
+            <div className="flex items-center justify-between px-6 py-2">
+              <div className="flex items-center gap-2">
+                <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
+                <span className="text-body-bold text-primary-main">
+                  {getSectionById(Number(params.sectionId))?.sectionName}구역
+                </span>
+                {typeof currentSeatId === 'number' &&
+                  !Number.isNaN(currentSeatId) && (
+                    <>
+                      <div className="h-1 w-1 rounded-full bg-gray-300" />
+                      <span className="text-body text-gray-600">
+                        {currentRow}열
+                      </span>
+                    </>
+                  )}
               </div>
 
               <div className="flex items-center justify-between px-6 py-2">

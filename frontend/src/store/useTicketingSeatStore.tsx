@@ -56,7 +56,7 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
   fetchSeatsByArea: async (area: string) => {
     try {
       console.log('📦 좌석 정보 요청 시작:', area);
-      set({ isLoading: true, error: null, currentSectionId: area });
+      set({ isLoading: true, currentSectionId: area });
 
       const response = await fetch(
         `/api/v1/ticketing/sections/seats?section=${area}`
@@ -104,8 +104,8 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
 
   tryReserveSeat: async (section: string, seat: string) => {
     if (!get().isSeatAvailable(seat)) {
-      set({ error: TICKETING_ERRORS.SEAT_ALREADY_RESERVED });
       await get().fetchSeatsByArea(section); // 좌석 정보 새로고침
+      set({ error: TICKETING_ERRORS.SEAT_ALREADY_RESERVED });
       throw TICKETING_ERRORS.SEAT_ALREADY_RESERVED;
     }
 
@@ -121,13 +121,15 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
       // 티켓팅 도메인 에러 처리
       if (!response.ok) {
         let error;
-        if (response.status === 409) {
+        if (response.status === 400) {
           error = TICKETING_ERRORS.ALREADY_PARTICIPATED; // 이미 참여해서 더이상 안 됨.
+        } else if (response.status === 409) {
+          error = TICKETING_ERRORS.SEAT_ALREADY_RESERVED; // 이선좌
         } else {
           error = TICKETING_ERRORS.RESERVATION_FAILED;
         }
-        set({ error });
         await get().fetchSeatsByArea(section);
+        set({ error });
         throw error;
       }
 

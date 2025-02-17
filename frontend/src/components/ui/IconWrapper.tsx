@@ -30,11 +30,11 @@ export const IconWrapper = ({ icon, label, description }: IconWrapperProps) => {
             src={SVGIcons[icon]}
             alt={label}
             // fill
-            width={icon === 'SightIcon' ? 130 : icon === 'TicketIcon' ? 90 : 80} // 예시로 아이콘별 크기 조정
+            width={icon === 'SightIcon' ? 150 : icon === 'TicketIcon' ? 90 : 80} // 예시로 아이콘별 크기 조정
             height={
-              icon === 'SightIcon' ? 130 : icon === 'TicketIcon' ? 90 : 80
+              icon === 'SightIcon' ? 150 : icon === 'TicketIcon' ? 90 : 80
             } // 예시로 아이콘별 크기 조정
-            className="object-contain"
+            className="rounded-lg object-contain"
           />
         </div>
       </div>

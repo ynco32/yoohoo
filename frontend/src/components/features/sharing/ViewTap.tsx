@@ -1,5 +1,8 @@
 import { ViewTabItem } from '@/types/sharing';
-import { BookmarkIcon, UserIcon } from '@heroicons/react/24/outline';
+import {
+  BookmarkIcon,
+  ChatBubbleOvalLeftIcon,
+} from '@heroicons/react/24/outline';
 
 interface ViewTabProps {
   currentTab: ViewTabItem | null;
@@ -12,7 +15,7 @@ export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
       <button
         className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
           currentTab === 'scrap'
-            ? 'bg-primary-main text-white'
+            ? 'bg-sight-button text-white'
             : 'text-gray-600'
         }`}
         onClick={() => onTabChange(currentTab === 'scrap' ? null : 'scrap')}
@@ -22,11 +25,11 @@ export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
       </button>
       <button
         className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
-          currentTab === 'my' ? 'bg-primary-main text-white' : 'text-gray-600'
+          currentTab === 'my' ? 'bg-sight-button text-white' : 'text-gray-600'
         }`}
         onClick={() => onTabChange(currentTab === 'my' ? null : 'my')}
       >
-        <UserIcon className="h-4 w-4" />
+        <ChatBubbleOvalLeftIcon className="h-4 w-4 scale-x-[-1]" />
         <span>내 나눔글 보기</span>
       </button>
     </div>

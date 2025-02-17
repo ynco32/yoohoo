@@ -139,20 +139,14 @@ export const SharingView = () => {
 
   return (
     <div
-      className={`relative ${viewMode === 'map' ? '-mt-[56px] h-[calc(100vh)]' : 'flex h-[calc(100vh-56px)] flex-col'}`}
+      className={`relative mx-auto max-w-[430px] ${viewMode === 'map' ? '-mt-[56px] h-[calc(100vh)]' : 'flex h-[calc(100vh-56px)] flex-col'}`}
     >
-      <div
-        className={
-          viewMode === 'map'
-            ? 'absolute top-[56px] z-10 w-full bg-white'
-            : 'bg-white'
-        }
-      >
+      <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <ViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>
       <div
         ref={containerRef}
-        className={`${viewMode === 'map' ? 'h-full pt-[56px]' : 'flex-1 overflow-auto'}`}
+        className={`pt-[44px] ${viewMode === 'map' ? 'h-full' : 'flex-1 overflow-auto'}`}
       >
         {viewMode === 'map' && (
           <SharingMap

@@ -47,7 +47,7 @@ export const SharingLocationSelect = ({
         <button
           className={`w-full rounded-lg py-4 text-white transition-colors ${
             selectedLocation
-              ? 'hover:bg-primary-main bg-sight-button'
+              ? 'bg-sight-button'
               : 'cursor-not-allowed bg-gray-300'
           }`}
           onClick={() => selectedLocation && onLocationSelect(selectedLocation)}

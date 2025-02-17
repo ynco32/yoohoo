@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BackButton } from './BackButton';
 import { MenuToggleButton } from './MenuToggleButton';
@@ -10,20 +10,57 @@ import Image from 'next/image';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const rootPaths = ['/main'];
   const shouldShowLogo = rootPaths.some((path) => path === pathname);
   // 경로에 따른 타이틀 매핑
   const getTitleByPath = () => {
+    const pathSegments = pathname.split('/').filter(Boolean);
+    if (pathname.startsWith('/sight/reviews/write')) return '리뷰 쓰기';
+    if (pathname.startsWith('/mypage/sight')) return '나의 후기';
+    if (pathname.startsWith('/mypage/sharing')) return '나의 나눔글';
+    if (pathname.startsWith('/mypage/ticketing')) return '티켓팅 기록';
+    if (pathSegments[0] === 'sharing' && pathSegments[2] === 'write') {
+      return '나눔 등록';
+    }
+    if (pathSegments[0] === 'sharing' && pathSegments[3] === 'edit') {
+      return '나눔글 수정';
+    }
+    if (pathSegments[0] === 'sight' && pathSegments[3] === 'edit') {
+      return '리뷰 수정';
+    }
+
     if (pathname.startsWith('/sight')) return '시야 보기';
     if (pathname.startsWith('/sharing')) return '나눔 지도';
-    if (pathname.startsWith('/mypage')) return '마이페이지';
-    if (pathname.startsWith('/ticketing')) return '티켓팅';
-    if (pathname.startsWith('/congestion')) return '혼잡도';
+    if (pathname.startsWith('/mypage')) return '나의 프로필';
+    if (pathname.startsWith('/ticketing')) return '티켓팅 연습';
+    if (pathname.startsWith('/congestion')) return '혼잡도 보기';
     return '';
   };
 
   const handleBack = () => {
+    const pathSegments = pathname.split('/').filter(Boolean);
+
+    // 루트 레벨의 페이지들(/sight, /sharing 등)은 /main으로 이동
+    if (
+      pathSegments.length === 1 &&
+      ['sight', 'sharing', 'mypage', 'ticketing', 'congestion'].includes(
+        pathSegments[0]
+      )
+    ) {
+      router.push('/main');
+      return;
+    }
+
+    // 한 단계 위 경로로 이동
+    if (pathSegments.length > 1) {
+      const upperPath = '/' + pathSegments.slice(0, -1).join('/');
+      router.push(upperPath);
+      return;
+    }
+
+    // 그 외의 경우는 기본 뒤로가기 동작 수행
     window.history.back();
   };
 

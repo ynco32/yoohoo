@@ -18,6 +18,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         web: "url('/images/cat.png')",
+
         'congestion-menu':
           'radial-gradient(81.04% 94.42% at 0% 0%, #DEFFE8 0%, #FFF 100%)',
         'ticket-menu':
@@ -28,6 +29,8 @@ module.exports = {
           'radial-gradient(70% 55% at 80% 50%, #E0F5FF 0%, #FFF 93.5%)',
         'sight-main-gra':
           'linear-gradient(180deg, #FFF 33.04%, #DBEEFD 52.81%, #BAE4FD 88.73%)',
+        'mypage-gra':
+          'var(--BG, linear-gradient(180deg, #BAE4FD 33.04%, #DBEEFD 54.2%, #FFF 88.73%))',
         'gradient-radial':
           'radial-gradient(closest-side, var(--tw-gradient-stops))',
       },
@@ -42,6 +45,7 @@ module.exports = {
         menu: '3.068px 3.068px 20.455px 0px rgba(106, 160, 205, 0.25)',
         card: '0px 4px 10px 0px rgba(0,0,0,0.25)',
         'card-colored': '0px 0px 10px 0px rgba(34, 129, 198, 0.25)',
+        'my-page': '2px 2px 8px 0px rgba(106, 160, 205, 0.25)',
         concert: '0px 1px 10px 0px rgba(0, 101, 164, 0.11)',
       },
       minHeight: {

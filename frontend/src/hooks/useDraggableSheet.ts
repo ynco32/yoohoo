@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 interface UseDraggableSheetProps {
-  position: 'full' | 'half' | 'closed'; // isOpen 대신 position으로 변경
+  position: 'full' | 'half' | 'closed';
   onClose: () => void;
 }
 
@@ -12,7 +12,7 @@ interface DragState {
 }
 
 export const useDraggableSheet = ({
-  position: targetPosition, // prop 이름을 더 명확하게 변경
+  position: targetPosition,
   onClose,
 }: UseDraggableSheetProps) => {
   const [dragState, setDragState] = useState<DragState>({
@@ -25,7 +25,7 @@ export const useDraggableSheet = ({
   useEffect(() => {
     let newTranslate = 90; // closed
     if (targetPosition === 'half') newTranslate = 50;
-    if (targetPosition === 'full') newTranslate = 0;
+    if (targetPosition === 'full') newTranslate = 10; // 90% 화면 높이를 위해 10%만 translate
 
     setDragState((prev) => ({
       ...prev,
@@ -42,7 +42,7 @@ export const useDraggableSheet = ({
         setDragState((prev) => ({
           ...prev,
           position: 'full',
-          currentTranslate: 0,
+          currentTranslate: 10, // 90% 화면 높이를 위해 10%만 translate
         }));
       } else if (translate < 75) {
         setDragState((prev) => ({
@@ -75,8 +75,9 @@ export const useDraggableSheet = ({
       const windowHeight = window.innerHeight;
       const percentage = (diff / windowHeight) * 100;
 
+      // 최소값을 10%로 변경하여 90% 높이 제한
       const newTranslate = Math.max(
-        0,
+        10,
         Math.min(90, dragState.currentTranslate + percentage)
       );
       setDragState((prev) => ({ ...prev, currentTranslate: newTranslate }));

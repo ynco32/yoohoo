@@ -3,9 +3,9 @@ import ArenaList from '@/components/features/sight/arena/ArenaList';
 
 export default function SightMainPage() {
   return (
-    <main className="h-full min-h-screen flex-1 bg-sight-main-gra">
+    <div className="flex h-full flex-col overflow-hidden bg-sight-main-gra">
       <ArenaList />
       <WriteButton path="/sight/reviews/write" />
-    </main>
+    </div>
   );
 }

@@ -78,10 +78,10 @@ export default function ArenaList() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* 공연장 목록 영역 - 가로 스크롤 */}
-      <div className="scrollbar-hide overflow-x-auto">
-        <div className="flex items-center gap-6 px-6 py-4">
+      <div className="scrollbar-hide shrink-0 overflow-x-auto">
+        <div className="flex items-center gap-2 px-6 py-2">
           {arenas.map((arena) => (
             <Arena
               key={arena.arenaId}
@@ -96,7 +96,7 @@ export default function ArenaList() {
         </div>
       </div>
       {/* 선택된 공연장 메뉴 영역 */}
-      <div className="flex-1 px-4 pb-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
         {selectedArenaId != null && (
           <SelectedArenaMenu arenaId={selectedArenaId} />
         )}

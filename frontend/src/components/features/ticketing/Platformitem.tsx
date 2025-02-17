@@ -24,29 +24,27 @@ export const PlatformItem = ({
   return (
     <div
       onClick={!isDisabled ? () => router.push(href) : undefined}
-      className={`shadow-my-page group relative flex ${
+      className={`group relative flex w-24 shadow-card ${
         !isDisabled ? 'cursor-pointer' : 'cursor-not-allowed'
-      } flex-col justify-between rounded-card ${
+      } flex-col items-center justify-center rounded-card ${
         isDisabled ? 'bg-gray-100' : 'bg-background-default'
       } p-md transition-all duration-normal ${className}`}
     >
-      <div className="flex items-center">
-        <div className={`flex w-full flex-col items-center gap-xs`}>
-          <div className="relative">
-            {isDisabled ? (
-              <LockClosedIcon className="h-6 w-6 text-gray-400" />
-            ) : (
-              <Icon className="h-6 w-6" />
-            )}
-          </div>
-          <span
-            className={`text-center text-caption2 transition-all duration-normal group-hover:font-medium ${
-              isDisabled ? 'text-gray-400' : ''
-            }`}
-          >
-            {label}
-          </span>
+      <div className="flex flex-col items-center gap-xs">
+        <div className="relative">
+          {isDisabled ? (
+            <LockClosedIcon className="h-6 w-6 text-gray-400" />
+          ) : (
+            <Icon className="h-6 w-6" />
+          )}
         </div>
+        <span
+          className={`text-center text-caption2 transition-all duration-normal group-hover:font-medium ${
+            isDisabled ? 'text-gray-400' : ''
+          }`}
+        >
+          {label}
+        </span>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        web: "url('/images/cat.png')",
+        web: "url('/images/desktop.png')",
         'ticketing-bg':
           'radial-gradient(300px 300px at 50% 50%, #DBEEFD 0%, #EEF7FE 51.9%, #FFF 100%)',
         'congestion-menu':

@@ -27,10 +27,10 @@ export const StageMenuItem = ({
   return (
     <MenuCard
       onClick={() => router.push(`/sight/${arenaId}/${stageType}`)}
-      className={`relative flex h-64 flex-col items-center justify-between rounded-card bg-white p-2 text-center ${className}`}
+      className={`relative flex flex-col items-center justify-between rounded-card bg-white p-2 text-center ${className}`}
     >
-      <div className="flex flex-col items-center gap-2">
-        <div className="relative flex h-48 w-48 items-center justify-center">
+      <div className="flex flex-col items-center gap-1">
+        <div className="relative flex h-24 w-24 items-center justify-center">
           <Image
             src={SVGIcons[icon]}
             alt={name}
@@ -38,8 +38,6 @@ export const StageMenuItem = ({
             className="z-10 object-contain"
           />
         </div>
-
-        {/* 텍스트 영역 */}
         <div className="flex flex-col items-center gap-1">
           <span className="text-title-bold text-text-menu">{name}</span>
           {description.length > 0 && (

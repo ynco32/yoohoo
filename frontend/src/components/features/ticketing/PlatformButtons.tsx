@@ -1,30 +1,31 @@
 'use client';
 
+import React from 'react';
 import { MusicalNoteIcon } from '@heroicons/react/24/outline';
 import PlatformItem from './Platformitem';
 
 const platformList = [
   {
     platformId: 1,
-    name: '멜론티켓',
+    name: 'M티켓',
     href: '/ticketing/melon-mode',
     icon: MusicalNoteIcon,
   },
   {
     platformId: 2,
-    name: '인터파크 티켓',
+    name: 'I티켓',
     href: '/ticketing/interpark-mode',
     icon: MusicalNoteIcon,
   },
   {
     platformId: 3,
-    name: '옥션',
+    name: 'A사',
     href: '/ticketing/auction-mode',
     icon: MusicalNoteIcon,
   },
   {
     platformId: 4,
-    name: 'yes24',
+    name: 'Y사',
     href: '/ticketing/yes24-mode',
     icon: MusicalNoteIcon,
   },
@@ -32,8 +33,8 @@ const platformList = [
 
 export default function PlatformButtons() {
   return (
-    <div className="flex-1 py-4">
-      <div className="flex grid h-full w-full grid-cols-2 gap-x-md gap-y-sm">
+    <div className="max-w-xs mx-auto">
+      <div className="grid grid-cols-2 justify-items-center gap-4">
         {platformList.map((item) => (
           <PlatformItem
             key={item.platformId}

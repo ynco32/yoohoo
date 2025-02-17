@@ -26,13 +26,6 @@ export const SharingCard = ({
   isLastItem,
   wrapperClassName = 'border-0', // 스타일 기본값
 }: SharingCardProps) => {
-  // 제목 길이에 따른 말줄임표 처리
-  const maxTitleLength = 30;
-  const truncatedTitle =
-    title.length > maxTitleLength
-      ? `${title.slice(0, maxTitleLength - 3)}...`
-      : title;
-
   const getStatusText = (status: SharingStatus) => {
     switch (status) {
       case 'ONGOING':
@@ -63,30 +56,34 @@ export const SharingCard = ({
     <div className={`${!isLastItem ? 'border-b border-gray-200' : ''}`}>
       <Link href={`/sharing/${concertId}/${sharingId}`} passHref>
         <ContentCard className={wrapperClassName}>
-          <div className="relative h-24 w-24">
-            <Image
-              src={photoUrl ?? '/images/card.png'}
-              alt={title}
-              fill
-              sizes="(max-width: 80px) 100vw, 80px"
-              className="rounded-md object-cover"
-            />
-          </div>
-          <div className="min-w-0 flex-1 pl-4">
-            <div>
-              <h3 className="truncate font-medium">{truncatedTitle}</h3>
+          <div className="flex w-full">
+            <div className="relative h-24 w-24 flex-shrink-0">
+              <Image
+                src={photoUrl ?? '/images/card.png'}
+                alt={title}
+                fill
+                sizes="(max-width: 96px) 100vw, 96px"
+                className="rounded-md object-cover"
+              />
             </div>
-            <div className="mt-1 text-sm text-gray-600">{writer}</div>
-            <div className="mt-1 flex items-center justify-between text-sm text-gray-900">
-              <div className="flex items-center gap-1">
-                <ClockIcon className="h-4 w-4" />
-                <span>{startTime}</span>
+            <div className="flex min-w-0 flex-1 flex-col justify-between pl-4">
+              <div>
+                <h3 className="line-clamp-2 text-base font-medium">{title}</h3>
               </div>
-              <span
-                className={`group rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
-              >
-                {getStatusText(status)}
-              </span>
+              <div className="space-y-1">
+                <div className="text-sm text-gray-600">{writer}</div>
+                <div className="flex items-center justify-between text-sm text-gray-900">
+                  <div className="flex items-center gap-1">
+                    <ClockIcon className="h-4 w-4" />
+                    <span>{startTime}</span>
+                  </div>
+                  <span
+                    className={`group rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+                  >
+                    {getStatusText(status)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </ContentCard>

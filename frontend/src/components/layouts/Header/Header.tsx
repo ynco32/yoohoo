@@ -42,6 +42,12 @@ const Header = () => {
   const handleBack = () => {
     const pathSegments = pathname.split('/').filter(Boolean);
 
+    // /sight/[arenaid]/[stageType] 경로에서는 바로 /sight로 이동
+    if (pathSegments[0] === 'sight' && pathSegments.length === 3) {
+      router.push('/sight');
+      return;
+    }
+
     // 루트 레벨의 페이지들(/sight, /sharing 등)은 /main으로 이동
     if (
       pathSegments.length === 1 &&

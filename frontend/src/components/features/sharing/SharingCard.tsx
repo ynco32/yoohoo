@@ -8,6 +8,7 @@ import Link from 'next/link';
 interface SharingCardProps extends SharingPost {
   wrapperClassName?: string; // 지도에서만 스타일 적용하기 위함
   concertId: number;
+  isLastItem?: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ export const SharingCard = ({
   startTime,
   photoUrl,
   concertId,
+  isLastItem,
   wrapperClassName = 'border-0', // 스타일 기본값
 }: SharingCardProps) => {
   // 제목 길이에 따른 말줄임표 처리
@@ -31,63 +33,64 @@ export const SharingCard = ({
       ? `${title.slice(0, maxTitleLength - 3)}...`
       : title;
 
-      const getStatusText = (status: SharingStatus) => {
-        switch (status) {
-          case 'ONGOING':
-            return '진행중';
-          case 'UPCOMING':
-            return '준비중';
-          case 'CLOSED':
-            return '마감';
-          default:
-            return '';
-        }
-      };
-    
-      const getStatusColor = (status: SharingStatus) => {
-        switch (status) {
-          case 'ONGOING':
-            return 'bg-status-success';
-          case 'UPCOMING':
-            return 'bg-status-caution';
-          case 'CLOSED':
-            return 'bg-gray-400';
-          default:
-            return 'bg-gray-400';
-        }
-      };
+  const getStatusText = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return '진행중';
+      case 'UPCOMING':
+        return '준비중';
+      case 'CLOSED':
+        return '마감';
+      default:
+        return '';
+    }
+  };
+
+  const getStatusColor = (status: SharingStatus) => {
+    switch (status) {
+      case 'ONGOING':
+        return 'bg-status-success';
+      case 'UPCOMING':
+        return 'bg-status-caution';
+      case 'CLOSED':
+        return 'bg-gray-400';
+      default:
+        return 'bg-gray-400';
+    }
+  };
 
   return (
-    <Link href={`/sharing/${concertId}/${sharingId}`} passHref>
-      <ContentCard className={wrapperClassName}>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="max-w-[calc(100%-80px)] truncate font-medium">
-              {truncatedTitle}
-            </h3>
-            <span
-              className={`group rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
-            >
-              {getStatusText(status)}
-            </span>
+    <div className={`${!isLastItem ? 'border-b border-gray-200' : ''}`}>
+      <Link href={`/sharing/${concertId}/${sharingId}`} passHref>
+        <ContentCard className={wrapperClassName}>
+          <div className="relative h-24 w-24">
+            <Image
+              src={photoUrl ?? '/images/card.png'}
+              alt={title}
+              fill
+              sizes="(max-width: 80px) 100vw, 80px"
+              className="rounded-md object-cover"
+            />
           </div>
-          <div className="mt-1 text-sm text-gray-600">{writer}</div>
-          <div className="mt-1 flex items-center gap-1 text-sm text-gray-900">
-            <ClockIcon className="h-4 w-4" />
-            {startTime}
+          <div className="min-w-0 flex-1 pl-4">
+            <div>
+              <h3 className="truncate font-medium">{truncatedTitle}</h3>
+            </div>
+            <div className="mt-1 text-sm text-gray-600">{writer}</div>
+            <div className="mt-1 flex items-center justify-between text-sm text-gray-900">
+              <div className="flex items-center gap-1">
+                <ClockIcon className="h-4 w-4" />
+                <span>{startTime}</span>
+              </div>
+              <span
+                className={`group rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+              >
+                {getStatusText(status)}
+              </span>
+            </div>
           </div>
-        </div>
-
-        <div className="relative h-20 w-20">
-          <Image
-            src={photoUrl ?? '/images/card.png'}
-            alt={title}
-            fill
-            sizes="(max-width: 80px) 100vw, 80px"
-            className="rounded-md object-cover"
-          />
-        </div>
-      </ContentCard>
-    </Link>
+        </ContentCard>
+      </Link>
+    </div>
   );
 };

@@ -43,10 +43,19 @@ export const SharingList = ({
   }, [hasMore, isLoading, onLoadMore]);
 
   return (
-    <div>
-      <div className="flex flex-col gap-3 p-4">
-        {posts.map((post) => (
-          <SharingCard key={post.sharingId} {...post} concertId={concertId} />
+    <div className="px-4 pb-14">
+      <div className="flex flex-col">
+        {posts.map((post, index) => (
+          <div
+            key={post.sharingId}
+            className={`${index !== posts.length - 1 ? 'border-b border-gray-50' : ''}`}
+          >
+            <SharingCard
+              {...post}
+              concertId={concertId}
+              isLastItem={index === posts.length - 1}
+            />
+          </div>
         ))}
         <div ref={observerRef} className="h-4" />
         {isLoading && <div className="py-4 text-center">로딩 중...</div>}

@@ -1,6 +1,7 @@
 package com.conkiri.domain.ticketing.service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,12 +11,18 @@ import org.springframework.stereotype.Service;
 
 import com.conkiri.domain.ticketing.dto.response.SeatDetailResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
+import com.conkiri.domain.ticketing.dto.response.TicketingResultResponseDTO;
+import com.conkiri.domain.ticketing.entity.Result;
 import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.entity.Status;
+import com.conkiri.domain.ticketing.repository.ResultRepository;
+import com.conkiri.domain.user.entity.User;
+import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.exception.ticketing.AlreadyReservedSeatException;
 import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
 import com.conkiri.global.exception.ticketing.InvalidSeatException;
 import com.conkiri.global.exception.ticketing.InvalidSectionException;
+import com.conkiri.global.exception.ticketing.RecordNotFoundException;
 import com.conkiri.global.util.RedisKeys;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +36,8 @@ public class TicketingService {
 	private static final int MAX_ROW = 7;
 	private static final int MAX_COL = 10;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final UserReadService userReadService;
+	private final ResultRepository resultRepository;
 
 	// 특정 구역의 모든 좌석을 초기화
 	public void initializeSeatsForSection(String section) {
@@ -109,21 +118,106 @@ public class TicketingService {
 	private void processSeatReservation(Long userId, String section, String seat, String sectionKey) {
 
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
+		Long rank = redisTemplate.opsForValue().increment(RedisKeys.RESERVATION);
 		redisTemplate.opsForHash().put(sectionKey, seat, Status.RESERVED.getValue());
-		saveReservationHistory(historyKey, userId, section, seat);
+		saveReservationHistory(historyKey, userId, section, seat, rank);
 	}
 
 	// 예매 정보 저장
-	private void saveReservationHistory(String userHistoryKey, Long userId, String section, String seat) {
+	private void saveReservationHistory(String userHistoryKey, Long userId, String section, String seat, Long rank) {
+		LocalDateTime now = LocalDateTime.now();
+
 		// 사용자의 예매 내역 저장
 		redisTemplate.opsForHash().put(userHistoryKey, "section", section);
 		redisTemplate.opsForHash().put(userHistoryKey, "seat", seat);
-		redisTemplate.opsForHash().put(userHistoryKey, "reserveTime", String.valueOf(System.currentTimeMillis()));
+		redisTemplate.opsForHash().put(userHistoryKey, "reserveTime", now.toString());
+		redisTemplate.opsForHash().put(userHistoryKey, "rank", String.valueOf(rank));
+		redisTemplate.opsForHash().put(userHistoryKey, "reserveNanoTime", String.valueOf(System.nanoTime()));  // 예매 시점의 나노타임 저장
+
 
 		// 해당 좌석의 예매 내역 저장
 		String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
 		redisTemplate.opsForHash().put(seatHistoryKey, "userId", String.valueOf(userId));
-		redisTemplate.opsForHash().put(seatHistoryKey, "reserveTime", String.valueOf(System.currentTimeMillis()));
+		redisTemplate.opsForHash().put(seatHistoryKey, "reserveTime", now.toString());
+	}
+
+
+	// 티켓팅 결과 조회
+	public TicketingResultResponseDTO getTicketingResult(Long userId) {
+		String historyKey = RedisKeys.getUserHistoryKey(userId);
+		Map<Object, Object> history = redisTemplate.opsForHash().entries(historyKey);
+
+		if (history.isEmpty()) {
+			return null;
+		}
+
+		String section = (String) history.get("section");
+		String seat = (String) history.get("seat");
+		Long rank = Long.parseLong((String) history.get("rank"));
+
+		// Double로 파싱한 후 Long으로 변환
+		double queueTimeDouble = Double.parseDouble((String) history.get("queueTime"));
+		double reserveNanoTimeDouble = Double.parseDouble((String) history.get("reserveNanoTime"));
+		Long processingTime = (long)((reserveNanoTimeDouble - queueTimeDouble) / 1_000_000_000);
+
+		LocalDateTime reserveTime = LocalDateTime.parse((String) history.get("reserveTime"));
+
+		return new TicketingResultResponseDTO(section, seat, rank, processingTime, reserveTime);
+	}
+
+
+	// 결과 저장
+	public void saveTicketingResult(Long userId) {
+		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
+		if (resultDTO == null) {
+			throw new RecordNotFoundException();
+		}
+
+		System.out.println("save 전!!");
+		System.out.println(resultDTO + " " + resultDTO.getSeat());
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+		Result result = Result.of(resultDTO, user);
+		resultRepository.save(result);
+		System.out.println("save 후!!");
+	}
+
+	// 마이페이지용 전체 결과 조회
+	public List<TicketingResultResponseDTO> getAllTicketingResults(Long userId) {
+		return resultRepository.findByUser_UserIdOrderByReserveTimeDesc(userId)
+			.stream()
+			.map(result -> new TicketingResultResponseDTO(
+				result.getSection(),
+				result.getSeat(),
+				result.getTicketRank(),
+				result.getProcessingTime(),
+				result.getReserveTime()
+			))
+			.collect(Collectors.toList());
+	}
+
+	public void deleteTicketingResult(Long userId) {
+		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
+
+		String section = (String) redisTemplate.opsForHash().get(userHistoryKey, "section");
+		String seat = (String) redisTemplate.opsForHash().get(userHistoryKey, "seat");
+		if (section != null && seat != null) {
+			// 좌석 상태 변경
+			String sectionKey = RedisKeys.getSectionKey(section);
+			redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
+
+			// 좌석 히스토리 삭제
+			String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
+			redisTemplate.delete(seatHistoryKey);
+		}
+
+		// reserveTime만 삭제
+		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
+		redisTemplate.opsForHash().delete(userHistoryKey, "section");
+		redisTemplate.opsForHash().delete(userHistoryKey, "seat");
+		redisTemplate.opsForHash().delete(userHistoryKey, "rank");
+		redisTemplate.opsForHash().delete(userHistoryKey, "reserveNanoTime");
+
+		// 대기열 관련 정보(queueTime, position)는 유지
 	}
 
 	//  좌석 상태 유효성 검사
@@ -188,24 +282,5 @@ public class TicketingService {
 	private void releaseLock(String lockKey) {
 		redisTemplate.delete(lockKey);
 	}
-
-	// public HistoryResponseDTO getTicketingResult(Long userId) {
-	// 	String historyKey = RedisKeys.getHistoryKey(userId);
-	// 	Map<Object, Object> history = redisTemplate.opsForHash().entries(historyKey);
-	//
-	// 	if (history.isEmpty()) {
-	// 		return null;
-	// 	}
-	//
-	// 	return new HistoryResponseDTO(
-	// 		(String) history.get("section"),
-	// 		(String) history.get("seat"),
-	// 		Long.parseLong((String) history.get("queueTime")),
-	// 		Long.parseLong((String) history.get("position")),
-	// 		Long.parseLong((String) history.get("totalQueue")),
-	// 		history.get("enterTime") != null ? Long.parseLong((String) history.get("enterTime")) : null,
-	// 		history.get("reserveTime") != null ? Long.parseLong((String) history.get("reserveTime")) : null
-	// 	);
-	// }
 
 }

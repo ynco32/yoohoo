@@ -55,7 +55,11 @@ public class SharingService {
 		String photoUrl = s3Service.uploadImage(file, "sharing");
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
-		return sharingRepository.save(sharing).getSharingId();
+		Sharing savedSharing = sharingRepository.save(sharing);
+
+		System.out.println("저장되고 난 후 불러올 때 시간 : " + savedSharing.getStartTime());
+
+		return savedSharing.getSharingId();
 	}
 
 	/**
@@ -82,9 +86,11 @@ public class SharingService {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 		validateAuthorizedAccessToSharing(sharing, userId);
 
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingUpdateRequestDTO.getConcertId());
+
 		s3Service.deleteImage(sharing.getPhotoUrl());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
-		sharing.update(sharingUpdateRequestDTO, photoUrl);
+		sharing.update(sharingUpdateRequestDTO, concert, photoUrl);
 	}
 
 	/**

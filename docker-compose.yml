@@ -53,6 +53,8 @@ services:
       args:
         - NEXT_PUBLIC_KAKAO_MAP_API_KEY=${NEXT_PUBLIC_KAKAO_MAP_API_KEY}
         - NEXT_PUBLIC_API_URL=https://i12b207.p.ssafy.io
+        - NEXT_PUBLIC_SKT_API_KEY=${NEXT_PUBLIC_SKT_API_KEY}
+        - NEXT_PUBLIC_SKT_API_URL=${NEXT_PUBLIC_SKT_API_URL}
     ports:
       - "3000:3000"
     environment:
@@ -73,6 +75,7 @@ services:
       - MYSQL_DATABASE=conkiri
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - TZ=Asia/Seoul
     ports:
       - "13309:3306"
     volumes:            # 데이터 영속성

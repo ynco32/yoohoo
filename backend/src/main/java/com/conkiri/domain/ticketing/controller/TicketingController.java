@@ -3,6 +3,7 @@ package com.conkiri.domain.ticketing.controller;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
+import com.conkiri.domain.ticketing.dto.response.TicketingResultResponseDTO;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -27,6 +29,12 @@ public class TicketingController {
 
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
+
+	// 활성화 여부
+	@GetMapping("/status")
+	public boolean getTicketingStatus(@AuthenticationPrincipal UserPrincipal user) {
+		return queueProcessingService.isTicketingActive();
+	}
 
 	// 서버 시간 제공
 	@GetMapping("/time-info")
@@ -64,13 +72,25 @@ public class TicketingController {
 		);
 	}
 
-	// @GetMapping("/result")
-	// public HistoryResponseDTO getTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-	// 	return ticketingService.getTicketingResult(userPrincipal.getUserId());
-	// }
+	@GetMapping("/result")
+	public TicketingResultResponseDTO getTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return ticketingService.getTicketingResult(userPrincipal.getUserId());
+	}
 
-	// @PostMapping("/result")
-	// public void saveTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-	// 	ticketingService.saveTicketingResult(userPrincipal.getUserId());
-	// }
+	@PostMapping("/result")
+	public void saveTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		ticketingService.saveTicketingResult(userPrincipal.getUserId());
+	}
+
+	// 마이페이지용 전체 결과 조회 API
+	@GetMapping("/results")
+	public List<TicketingResultResponseDTO> getAllResults(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		return ticketingService.getAllTicketingResults(userPrincipal.getUserId());
+	}
+
+	@DeleteMapping("/result")
+	public void deleteTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		ticketingService.deleteTicketingResult(userPrincipal.getUserId());
+	}
+
 }

@@ -1,8 +1,10 @@
 package com.conkiri.domain.sharing.entity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.TimeZoneColumn;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
@@ -56,7 +58,8 @@ public class Sharing extends BaseTime {
 	@ColumnDefault("'UPCOMING'")
 	private Status status = Status.UPCOMING;
 
-	@Column(name = "start_time")
+	@Column(name = "start_time", columnDefinition = "TIMESTAMP")
+	@TimeZoneColumn()
 	private LocalDateTime startTime;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -76,19 +79,30 @@ public class Sharing extends BaseTime {
 		this.longitude = sharingRequestDTO.getLongitude();
 		this.title = sharingRequestDTO.getTitle();
 		this.content = sharingRequestDTO.getContent();
-		this.startTime = sharingRequestDTO.getStartTime();
+		LocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
+			.atTime(sharingRequestDTO.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
+		System.out.println("엔티티 생성할 때 시간 : " + startTime);
+		this.startTime = startTime;
 		this.photoUrl = photoUrl;
 		this.concert = concert;
 		this.user = user;
 	}
 
-	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, String photoUrl) {
+	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, Concert concert, String photoUrl) {
 		this.title = sharingUpdateRequestDTO.getTitle() != null ? sharingUpdateRequestDTO.getTitle() : this.title;
 		this.content = sharingUpdateRequestDTO.getContent() != null ? sharingUpdateRequestDTO.getContent() : this.content;
 		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;
 		this.latitude = sharingUpdateRequestDTO.getLatitude() != null ? sharingUpdateRequestDTO.getLatitude() : this.latitude;
 		this.longitude = sharingUpdateRequestDTO.getLongitude() != null ? sharingUpdateRequestDTO.getLongitude() : this.longitude;
-		this.startTime = sharingUpdateRequestDTO.getStartTime() != null ? sharingUpdateRequestDTO.getStartTime() : this.startTime;
+		this.startTime = sharingUpdateRequestDTO.getStartTime() != null ? concert
+																			.getStartTime()
+																			.atZone(ZoneId.of("Asia/Seoul"))
+																			.toLocalDate()
+																			.atTime(
+																				sharingUpdateRequestDTO
+																					.getStartTime()
+																					.atZone(ZoneId.of("Asia/Seoul"))
+																					.toLocalTime()) : this.startTime;
 	}
 
 	public void updateStatus(String status) {

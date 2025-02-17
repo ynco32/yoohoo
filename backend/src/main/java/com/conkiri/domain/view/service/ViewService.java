@@ -97,7 +97,10 @@ public class ViewService {
 		return SeatResponseDTO.from(seats.stream()
 			.map(seat -> {
 				boolean isScrapped = scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType);
-				return SeatDetailResponseDTO.of(seat, section.getSectionNumber(), isScrapped);
+				Long reviewCount = (stageType == 0)
+					? reviewRepository.countBySeat(seat)
+					: reviewRepository.countBySeatAndStageType(seat, selectedType);
+				return SeatDetailResponseDTO.of(seat, section.getSectionNumber(), isScrapped, reviewCount);
 			})
 			.collect(Collectors.toList()));
 	}
@@ -193,7 +196,6 @@ public class ViewService {
 		}
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
-		seat.increaseReviewCount();
 		user.incrementReviewCount();
 	}
 
@@ -256,7 +258,6 @@ public class ViewService {
 		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
-		seat.decreaseReviewCount();
 		user.decrementReviewCount();
 
 		if (photoUrl != null) {

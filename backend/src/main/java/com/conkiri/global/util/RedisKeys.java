@@ -8,6 +8,7 @@ public class RedisKeys {
 	public static final String SEAT_LOCK = PREFIX + "seat:lock:";
 	public static final String QUEUE = PREFIX + "queue";
 	public static final String TIME = PREFIX + "time";
+	public static final String RESERVATION = PREFIX + "reservation:count";
 
 	public static String getSectionKey(String section) {
 		return SEATS + section;

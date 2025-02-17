@@ -21,11 +21,10 @@ export const useDraggableSheet = ({
     isDragging: false,
   });
 
-  // position prop 변경 시 상태 업데이트
   useEffect(() => {
     let newTranslate = 90; // closed
     if (targetPosition === 'half') newTranslate = 50;
-    if (targetPosition === 'full') newTranslate = 10; // 90% 화면 높이를 위해 10%만 translate
+    if (targetPosition === 'full') newTranslate = 10; // 90% 화면 높이
 
     setDragState((prev) => ({
       ...prev,
@@ -42,7 +41,7 @@ export const useDraggableSheet = ({
         setDragState((prev) => ({
           ...prev,
           position: 'full',
-          currentTranslate: 10, // 90% 화면 높이를 위해 10%만 translate
+          currentTranslate: 10,
         }));
       } else if (translate < 75) {
         setDragState((prev) => ({
@@ -75,7 +74,6 @@ export const useDraggableSheet = ({
       const windowHeight = window.innerHeight;
       const percentage = (diff / windowHeight) * 100;
 
-      // 최소값을 10%로 변경하여 90% 높이 제한
       const newTranslate = Math.max(
         10,
         Math.min(90, dragState.currentTranslate + percentage)
@@ -91,7 +89,6 @@ export const useDraggableSheet = ({
     updatePosition(dragState.currentTranslate);
   }, [dragState.currentTranslate, updatePosition]);
 
-  // Touch event handlers
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       handleDragStart(e.touches[0].clientY);
@@ -106,7 +103,6 @@ export const useDraggableSheet = ({
     [handleDragMove]
   );
 
-  // Mouse event handlers
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       handleDragStart(e.clientY);
@@ -128,7 +124,6 @@ export const useDraggableSheet = ({
     }
   }, [dragState.isDragging, handleDragEnd]);
 
-  // Mouse event listeners
   useEffect(() => {
     if (dragState.isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -154,7 +149,6 @@ export const useDraggableSheet = ({
     style: {
       transform: `translateY(${dragState.currentTranslate}%)`,
       touchAction: 'none',
-      cursor: dragState.isDragging ? 'grabbing' : 'grab',
     },
   };
 };

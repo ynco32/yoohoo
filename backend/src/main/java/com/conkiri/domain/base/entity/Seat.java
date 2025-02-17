@@ -28,18 +28,7 @@ public class Seat {
 	@Column(name = "column_line")
 	private Long columnLine;
 
-	@Column(name = "review_count")
-	private Long reviewCount;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "section_id", nullable = false)
 	private Section section;
-
-	public void increaseReviewCount() {
-		this.reviewCount++;
-	}
-
-	public void decreaseReviewCount() {
-		this.reviewCount--;
-	}
 }

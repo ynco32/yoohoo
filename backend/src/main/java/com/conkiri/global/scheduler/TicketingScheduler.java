@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TicketingScheduler {
 
-	private static final int TICKETING_START_HOUR = 16;
-	private static final int TICKETING_START_MINUTE = 0;  // 추가
+	private static final int TICKETING_START_HOUR = 15;
+	private static final int TICKETING_START_MINUTE = 30;  // 추가
 	private static final int TICKETING_DURATION_HOURS = 10;
 	private static final String TICKETING_KEY_PATTERN = "ticketing:*";
 
@@ -48,8 +48,8 @@ public class TicketingScheduler {
 		}
 	}
 
-	// 매일 지정된 시작 시간(19시)에 티켓팅 시작
-	@Scheduled(cron = "0 0 16 * * *", zone = "Asia/Seoul")
+	// 매일 지정된 시작 시간(0시)에 티켓팅 시작
+	@Scheduled(cron = "0 30 15 * * *", zone = "Asia/Seoul")
 	public void startTicketing() {
 		LocalDateTime startTime = getTodayTicketingStartTime();
 		LocalDateTime endTime = startTime.plusHours(TICKETING_DURATION_HOURS);

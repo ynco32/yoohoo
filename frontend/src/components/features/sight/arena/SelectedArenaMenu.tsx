@@ -70,7 +70,7 @@ export const SelectedArenaMenu = ({ arenaId }: SelectedArenaMenuProps) => {
 
   return (
     <div className="max-w-6xl">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 tablet:gap-4">
         {menuItems.map((item) => (
           <StageMenuItem
             key={item.stageType}

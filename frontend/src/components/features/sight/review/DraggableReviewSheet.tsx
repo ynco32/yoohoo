@@ -31,7 +31,6 @@ export const DraggableReviewSheet = ({
 }: DraggableReviewSheetProps) => {
   const { getSectionById } = useSectionStore();
   const params = useParams();
-  const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
 
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
@@ -42,7 +41,7 @@ export const DraggableReviewSheet = ({
 
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
-  const { style } = useDraggableSheet({
+  const { handlers, style } = useDraggableSheet({
     position: isOpen ? 'half' : 'closed',
     onClose,
   });

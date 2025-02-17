@@ -1,6 +1,6 @@
 'use client';
 // hooks/useWebSocketQueue.ts
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 import { useRouter } from 'next/navigation';
 import { useQueueStore } from '@/store/useQueueStore';
@@ -13,6 +13,7 @@ export const useWebSocketQueue = () => {
   // const [peopleBehind, setPeopleBehind] = useState(0);
   const stompClient = useRef<Client | null>(null);
   const setQueueInfo = useQueueStore((state) => state.setQueueInfo);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
 
   const getAccessToken = () => {
     return document.cookie
@@ -36,20 +37,26 @@ export const useWebSocketQueue = () => {
       heartbeatOutgoing: 4000,
     });
 
+    client.beforeConnect = () => {
+      setConnectionAttempts((prev) => prev + 1);
+    };
+
     client.onStompError = (frame) => {
       console.error('🤝 STOMP 에러:', frame);
+      if (connectionAttempts >= 5) {
+        client.deactivate();
+        alert('🤝 웹소켓 5회 이상 연결 시도. 연결 중단');
+      }
     };
 
     client.onConnect = () => {
       console.log('🤝 웹소켓 연결 성공');
+      setConnectionAttempts(0);
 
       client.subscribe(`/user/book/waiting-time`, (message: IMessage) => {
         console.log('🤝waiting-time 구독~!!');
         console.log('🤝waiting-time 수신된 메세지:', message.body);
         const response = JSON.parse(message.body);
-        // setQueueNumber(response.position);
-        // setWaitingTime(response.estimatedWaitingSeconds);
-        // setPeopleBehind(response.usersAfter);
         setQueueInfo(
           response.position,
           response.estimatedWaitingSeconds,
@@ -67,20 +74,22 @@ export const useWebSocketQueue = () => {
       });
     };
 
-    client.activate();
-    stompClient.current = client;
+    // 연결 시도 횟수가 최대치 미만일 때만 활성화
+    if (connectionAttempts < 5) {
+      client.activate();
+      stompClient.current = client;
+    }
 
     return () => {
       if (client.connected) {
         client.deactivate();
       }
     };
-  }, []);
+  }, [connectionAttempts]);
 
   const enterQueue = async () => {
     try {
       const response = await api.post(`/api/v1/ticketing/queue`);
-      // setQueueNumber(response.data); // 이걸로 설정해주지 말기
       console.log(`🤝 ${response.data} 번째로 대기열 진입 성공`);
     } catch (_error) {
       console.log('🤝 대기열 진입 실패');
@@ -88,9 +97,8 @@ export const useWebSocketQueue = () => {
   };
 
   return {
-    // queueNumber,
-    // waitingTime,
-    // peopleBehind,
     enterQueue,
+    connectionAttempts,
+    isMaxAttemptsReached: connectionAttempts >= 5,
   };
 };

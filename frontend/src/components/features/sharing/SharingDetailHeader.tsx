@@ -231,7 +231,7 @@ export const SharingDetailHeader = ({
         </div>
         <div className="mx-6 border-b border-gray-200" />
         <div className="p-4 px-6">
-          <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
           <div className="mt-1 flex items-center gap-1 text-sm text-gray-500">
             <ClockIcon className="h-4 w-4" />
             <span>{formatDateTime(startTime)} 시작</span>

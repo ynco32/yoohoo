@@ -45,11 +45,9 @@ export const SharingDetailMap = ({
   }, [latitude, longitude]);
 
   return (
-    <div className="mx-4 pb-5 pt-5">
-      {' '}
+    <div className="mx-6 pb-5 pt-2">
       {/* margin 추가 */}
-      <div className="h-[200px] w-full overflow-hidden rounded-xl">
-        {' '}
+      <div className="h-[170px] w-full overflow-hidden rounded-xl">
         {/* rounded와 overflow-hidden 추가 */}
         <div ref={mapContainerRef} className="h-full w-full" />
       </div>

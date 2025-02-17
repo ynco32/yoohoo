@@ -58,7 +58,7 @@ export const ConcertItem = ({
 
   return (
     <Link href={`/sharing/${concertId}`} className="block">
-      <ContentCard className="overflow-hidden rounded-xl p-0">
+      <ContentCard className="shadow-concert overflow-hidden rounded-xl border-none bg-white p-3">
         <div className="flex items-center">
           <div className="relative -m-1 w-16 flex-shrink-0 overflow-hidden rounded-lg">
             <div style={{ paddingTop: '141.4%' }}>
@@ -74,8 +74,8 @@ export const ConcertItem = ({
           <div className="ml-5 min-w-0 flex-1">
             <h3 className="truncate text-base font-bold">{truncatedTitle}</h3>
             <div className="mt-1.5 space-y-0.5">
-              <p className="text-xs text-base font-semibold">{artist}</p>
-              <p className="text-xs text-base font-semibold">{arena}</p>
+              <p className="text-base text-xs font-semibold">{artist}</p>
+              <p className="text-base text-xs font-semibold">{arena}</p>
               <p className="text-xs text-gray-500">{formattedDateTime}</p>
             </div>
           </div>

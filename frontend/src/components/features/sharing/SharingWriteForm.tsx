@@ -77,7 +77,7 @@ export const SharingWriteForm = ({
         <p className="px-4 text-sm text-status-warning">{errors.submit}</p>
       )}
 
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-6">
         <TextButton variant="outline" onClick={onLocationReset}>
           위치 다시 선택하기
         </TextButton>

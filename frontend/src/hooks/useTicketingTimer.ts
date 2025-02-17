@@ -65,6 +65,10 @@ export const useTicketingTimer = () => {
   const checkIfTicketingStarted = async () => {
     try {
       const ticketingStarted = await api.get('/api/v1/ticketing/status');
+      console.log(
+        '⏰ [Timer] 티켓팅 시작했는지지 api 응답:',
+        ticketingStarted.data
+      );
       return ticketingStarted.data;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -89,22 +93,42 @@ export const useTicketingTimer = () => {
     const secondsLeft = calculateSecondsLeft();
 
     if (timeInfo) {
+      // 티켓팅이 끝났을 때
       if (timeInfo.finished) {
-        // 티켓팅이 끝났을 때
         setButtonDisabled(true);
         setButtonMessage('마감되었습니다');
-      } else if (secondsLeft <= 0 && !timeInfo.finished) {
         // 시간이 안 남고 티켓팅이 끝나지 않았을 때
-        if (await checkIfTicketingStarted()) {
+      } else if (secondsLeft <= 0 && !timeInfo.finished) {
+        const isStarted = await checkIfTicketingStarted();
+        // 티켓팅 시작
+        if (isStarted) {
           setButtonDisabled(false);
           setButtonMessage('예매하기');
         } else {
+          // 시간은 됐는데 서버가 안 열림
           setButtonDisabled(true);
           setButtonMessage('곧 예매가 시작됩니다.');
-          setIntervalId(
-            window.setInterval(changeButtonMessage, 1000) as number
-          ); // 1초마다 실행
+          // 전체 메서드 말고 해당 부분만 반복 - 2초에 한 번으로 더 느리게
+          let count = 0;
+          const newIntervalId = window.setInterval(async () => {
+            if (count > 10) {
+              clearInterval(newIntervalId);
+              setButtonDisabled(true);
+              setButtonMessage('새로고침 후 시도해주세요');
+              return;
+            }
+            count++;
+
+            const status = await checkIfTicketingStarted();
+            if (status) {
+              clearInterval(newIntervalId);
+              setButtonDisabled(false);
+              setButtonMessage('예매하기');
+            }
+          }, 2000);
+          setIntervalId(newIntervalId);
         }
+        return;
       } else if (secondsLeft < 60 && !timeInfo.finished) {
         // 60초 미만 남았을 때
         setButtonDisabled(true);

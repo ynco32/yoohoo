@@ -3,10 +3,10 @@
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { SharingLocationSelect } from '@/components/features/sharing/SharingLocationSelect';
-import { Modal } from '@/components/common/Modal';
 import { VENUE_COORDINATES } from '@/lib/constants/venues';
 import { SharingFormContainer } from '@/components/features/sharing/SharingFormContainer';
 import { SharingFormData } from '@/types/sharing';
+import { SuccessModal } from '@/components/common/SuccessModal';
 
 interface LocationInfo {
   latitude: number;
@@ -91,12 +91,10 @@ export default function SharingWritePage() {
           />
         </div>
       )}
-      <Modal
+      <SuccessModal
         isOpen={isCompleteModalOpen}
         onClose={handleModalClose}
-        title="등록이 완료되었습니다"
-        type="alert"
-        variant="primary"
+        message="등록이 완료되었습니다!"
       />
     </>
   );

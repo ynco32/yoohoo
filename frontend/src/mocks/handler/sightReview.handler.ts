@@ -99,6 +99,36 @@ const mapFormDataToApiRequest = (
 };
 
 export const sightReviewHandlers = [
+  // GET My Reviews Handler
+  rest.get('/api/v1/mypage/reviews', (req, res, ctx) => {
+    // 현재 로그인된 유저의 ID를 2001로 가정
+    const currentUserId = 2001;
+
+    console.log('Fetching reviews for user:', currentUserId);
+
+    // 현재 유저의 리뷰만 필터링
+    const userReviews = mockApiReviews.filter(
+      (review) => review.userId === currentUserId
+    );
+
+    if (userReviews.length === 0) {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          reviews: [],
+        })
+      );
+    }
+
+    const response: ApiResponse = {
+      reviews: userReviews,
+    };
+
+    console.log('Found user reviews:', response);
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(response));
+  }),
+
   // GET Arena Reviews Handler
   rest.get('/api/v1/view/arenas/:arenaId/reviews', (req, res, ctx) => {
     const stageType = req.url.searchParams.get('stageType');

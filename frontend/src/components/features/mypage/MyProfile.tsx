@@ -37,30 +37,38 @@ export const MyProfile = () => {
   }
 
   return (
-    <div className="relative aspect-square w-[150px] w-full mobile:w-[180px] tablet:w-[220px] desktop:w-[250px]">
-      {/* 배경 이미지 */}
-      <div className="absolute inset-0 overflow-hidden rounded-full">
-        <Image
-          src={SVGIcons.ProfileBg}
-          alt="background pattern"
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          priority
-        />
-      </div>
-
-      {/* 프로필 이미지 */}
-      <div className="relative h-full w-full p-4 mobile:p-3 tablet:p-4">
-        <div className="relative h-full w-full">
+    <div className="flex flex-col items-center justify-center">
+      <div className="relative aspect-square w-[150px] mobile:w-[180px] tablet:w-[220px] desktop:w-[250px]">
+        {/* 배경 이미지 */}
+        <div className="absolute inset-0 overflow-hidden rounded-full">
           <Image
-            src={getUserProfileImage(user.level || '')}
-            alt={user.nickname}
+            src={SVGIcons.ProfileBg}
+            alt="background pattern"
             fill
-            className="object-contain"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         </div>
+
+        {/* 프로필 이미지 */}
+        <div className="relative h-full w-full p-4 mobile:p-3 tablet:p-4">
+          <div className="relative h-full w-full">
+            <Image
+              src={getUserProfileImage(user.level || '')}
+              alt={user.nickname}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        <div className="inline-flex h-3.5 min-w-8 items-center justify-center rounded-3xl border border-sight-button px-1">
+          <span className="text-caption3 text-sight-button">{user.level}</span>
+        </div>
+        <span className="text-title-bold">{user.nickname}</span>
       </div>
     </div>
   );

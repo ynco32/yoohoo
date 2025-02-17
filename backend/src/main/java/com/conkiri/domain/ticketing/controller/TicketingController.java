@@ -3,6 +3,7 @@ package com.conkiri.domain.ticketing.controller;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,6 +86,11 @@ public class TicketingController {
 	@GetMapping("/results")
 	public List<TicketingResultResponseDTO> getAllResults(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 		return ticketingService.getAllTicketingResults(userPrincipal.getUserId());
+	}
+
+	@DeleteMapping("/result")
+	public void deleteTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		ticketingService.deleteTicketingResult(userPrincipal.getUserId());
 	}
 
 }

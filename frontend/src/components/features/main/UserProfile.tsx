@@ -53,7 +53,7 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   }
 
   return (
-    <div className="h-[30vh]" onClick={handleClick}>
+    <div className="h-[23vh]" onClick={handleClick}>
       <div className="relative h-full w-full overflow-hidden rounded-userProfile bg-secondary-300">
         {/* 배경 이미지 */}
         <Image

@@ -32,10 +32,15 @@ export const SharingWriteForm = ({
     <div className="flex h-[calc(100vh-56px)] w-full max-w-[430px] flex-col">
       <div className="h-full overflow-y-auto">
         <form onSubmit={(e) => e.preventDefault()}>
-          <div className="space-y-6 p-4">
+          <div className="space-y-6 p-6">
+            <ImageUpload
+              value={formData?.image || null}
+              onChange={(image) => onFormChange({ image })}
+              error={errors?.image}
+            />
+
             <FormSectionHeader
               title="제목"
-              description="나눔할 물건의 제목을 입력해주세요"
             />
             <TextArea
               value={formData?.title || ''}
@@ -46,8 +51,7 @@ export const SharingWriteForm = ({
             />
 
             <FormSectionHeader
-              title="시간 선택"
-              description="나눔을 시작할 시간을 설정해주세요"
+              title="나눔 시작 시간"
             />
             <TimeInput
               value={formData?.startTime || ''}
@@ -56,24 +60,13 @@ export const SharingWriteForm = ({
             />
 
             <FormSectionHeader
-              title="사진 업로드"
-              description="나눔할 물건의 사진을 업로드해주세요"
-            />
-            <ImageUpload
-              value={formData?.image || null}
-              onChange={(image) => onFormChange({ image })}
-              error={errors?.image}
-            />
-
-            <FormSectionHeader
-              title="상세 내용"
-              description="나눔할 물건에 대한 자세한 설명을 입력해주세요"
+              title="자세한 설명"
             />
             <TextArea
               value={formData?.content || ''}
               onChange={(content) => onFormChange({ content })}
               error={errors?.content}
-              placeholder="상세 내용을 입력해주세요"
+              placeholder="자세한 나눔 내용을 입력해주세요"
               rows={5}
             />
           </div>

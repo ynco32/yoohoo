@@ -16,9 +16,9 @@ export const TextButton = ({
   const baseStyles = 'w-full rounded-lg py-4 transition-colors';
 
   const variantStyles = {
-    primary: 'bg-primary-main text-white disabled:bg-gray-300',
+    primary: 'bg-sight-button text-white disabled:bg-gray-300',
     outline:
-      'border border-primary-main text-primary-main disabled:border-gray-300 disabled:text-gray-300',
+      'border border-sight-button text-sight-button disabled:border-gray-300 disabled:text-gray-300',
   };
 
   return (

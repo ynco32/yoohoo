@@ -93,7 +93,7 @@ export const TimeInput = ({
           onChange={(e) =>
             handleMeridianChange(e.target.value as '오전' | '오후')
           }
-          className="rounded-lg bg-gray-100 p-3"
+          className="rounded-lg bg-primary-50 p-3"
         >
           <option value="오전">오전</option>
           <option value="오후">오후</option>
@@ -102,7 +102,7 @@ export const TimeInput = ({
         <select
           value={hour}
           onChange={(e) => handleHourChange(Number(e.target.value))}
-          className="rounded-lg bg-gray-100 p-3"
+          className="rounded-lg bg-primary-50 p-3"
         >
           {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
             <option key={h} value={h}>
@@ -114,7 +114,7 @@ export const TimeInput = ({
         <select
           value={minute}
           onChange={(e) => handleMinuteChange(Number(e.target.value))}
-          className="rounded-lg bg-gray-100 p-3"
+          className="rounded-lg bg-primary-50 p-3"
         >
           {Array.from({ length: 6 }, (_, i) => i * 10).map((m) => (
             <option key={m} value={m}>

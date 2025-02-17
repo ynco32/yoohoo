@@ -10,7 +10,7 @@ export const SVGIcons = {
   ConkiriVer1: '/svgs/conkiri_ver1.svg',
   Logo: '/svgs/logo.svg',
   SharingIcon: '/svgs/main/SharingIcon.svg',
-  SightIcon: '/svgs/main/SightIcon.svg',
+  SightIcon: '/svgs/main/sightIconFull.svg',
   TicketIcon: '/svgs/main/TicketIcon.svg',
   SightBg: '/svgs/main/SightBg.svg',
   CongestionIcon: '/svgs/main/CongestionIcon.svg',

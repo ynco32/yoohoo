@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { SharingCard } from './SharingCard';
+import { MapSharingCard } from './MapSharingCard';
 import { SharingPost } from '@/types/sharing';
 import { useRouter } from 'next/navigation';
 import { createRoot } from 'react-dom/client';
@@ -41,35 +41,34 @@ export const SharingMap = ({
   const createOverlay = useCallback(
     (post: SharingPost, map: any, position: any) => {
       const overlayContainer = document.createElement('div');
-      overlayContainer.className = 'p-4 z-50 overlay-content';
-      overlayContainer.style.pointerEvents = 'auto'; // 클릭 이벤트 허용
+      overlayContainer.className = 'overlay-content';
+      overlayContainer.style.pointerEvents = 'auto';
+      overlayContainer.style.cssText = `
+        position: relative;
+        transform: translate(-50%, -170%);
+        margin-bottom: 10px;
+      `;
 
-      // React로 동적 렌더링 (DOM에 직접 추가)
       createRoot(overlayContainer).render(
-        <div
-          className="w-[320px] cursor-pointer"
-          onClick={(e) => {
-            e.preventDefault(); // 새로고침 방지
-            e.stopPropagation(); // 지도 클릭 이벤트 차단
+        <MapSharingCard
+          {...post}
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
             setTimeout(() => {
               router.push(`/sharing/${concertId}/${post.sharingId}`);
-            }, 0); // 카카오맵의 click 이벤트 처리가 끝난 후 router.push() 실행
+            }, 0);
           }}
-        >
-          <SharingCard
-            {...post}
-            concertId={concertId}
-            wrapperClassName="bg-white shadow-lg border-0 rounded-lg cursor-pointer"
-          />
-        </div>
+        />
       );
 
       return new window.kakao.maps.CustomOverlay({
         content: overlayContainer,
         position: position,
-        xAnchor: 5.5,
-        yAnchor: 5.5,
+        xAnchor: 0,
+        yAnchor: 0,
         map: map,
+        zIndex: 1,
       });
     },
     [router, concertId]

@@ -17,7 +17,7 @@ export interface SharingPost {
   content: string;
   writer: string;
   writerId: number;
-  writerLevel:string;
+  writerLevel: string;
   status: SharingStatus;
   startTime: string;
   photoUrl: string | null;
@@ -114,7 +114,7 @@ export interface Comment {
   commentId: number;
   writer: string; // 작성자
   writerId: number;
-  writerLevel:string;
+  writerLevel: string;
   content: string; // 댓글 내용
   modifyTime: string; // 작성 시간
 }
@@ -148,3 +148,5 @@ export interface SharingFormData {
   concertId?: number; // 콘서트 ID
   image?: File | string | null; // 업로드할 이미지 파일
 }
+
+export type ViewTabItem = 'my' | 'scrap';

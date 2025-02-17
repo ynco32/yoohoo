@@ -10,7 +10,7 @@ export const mockSharings: ExtendedSharingPost[] = [
   {
     sharingId: 1,
     concertId: 1,
-    title: '베몬 포카 나눔합니다',
+    title: '베몬 포카 나눔합니다. 테스트용 엄청 긴 나눔 글 제목입니다. 더 길어질 시 줄바꿈 테스트용 제목입니다.',
     content:
       '안녕하세요! 베몬 포토카드 나눔합니다. 총 5장이며 상태 좋습니다. 관심 있으신 분들 신청해주세요!',
     writer: '닉네임',

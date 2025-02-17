@@ -18,20 +18,20 @@ const TicketingInfo = ({
   return (
     <div>
       <div className="px-4 py-6">
-        <PerformanceInfo title="공연기간" info="20XX.03.21 - 20XX.03.23" />
-        <PerformanceInfo title="공연장" info="KSPO DOME " />
+        <PerformanceInfo title="공연기간" info="20XX.xx.xx - 20XX.xx.xx" />
+        <PerformanceInfo title="공연장  " info="KSPO DOME " />
         <PerformanceInfo title="관람시간" info="-" />
         <PerformanceInfo title="할인혜택" info="무이자" />
       </div>
       <div className="flex gap-6 px-4 py-2">
-        <span className="text-[#00C73C]">상세 정보</span>
+        <span className="text-[#00C73C]">상세정보</span>
         <span className="text-gray-500">공연장정보</span>
         <span className="text-gray-500">예매안내</span>
       </div>
       <TicketingDetails
         title="공연시간"
-        info={`2025년 3월 15일(토) ~ 3월 16일(일)
-        \n 토 오후 6시/ 일 오후 5시`}
+        info={`20xx년 xx월 xx일(토) ~ xx월 xx일(일)
+        \n토 오후 6시 / 일 오후 5시`}
       />
       <TicketingDetails title="가격정보" info="기본가" />
       <div className="flex justify-center gap-9 bg-white px-4 py-4">

@@ -9,7 +9,7 @@ const ReviewSuccessnPage = ({ reviewId }: { reviewId: string }) => {
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      router.push(`/main`);
+      router.push(`/sight`);
     }, 1500);
 
     return () => clearTimeout(timer);

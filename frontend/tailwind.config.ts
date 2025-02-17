@@ -19,13 +19,13 @@ module.exports = {
       backgroundImage: {
         web: "url('/images/cat.png')",
         'congestion-menu':
-          'radial-gradient(50% 100% at 50% 0%, #DEFFE8 0%, #FFF 100%)',
+          'radial-gradient(81.04% 94.42% at 0% 0%, #DEFFE8 0%, #FFF 100%)',
         'ticket-menu':
-          'radial-gradient(81.04% 94.42% at 0% 0%, #F8EDFF 0%, #FFF 100%)',
+          'radial-gradient(50% 100% at 50% 0%, #F8EDFF 0%, #FFF 100%)',
         'sharing-menu':
           'radial-gradient(71.76% 83.6% at 0% 100%, #FAFFD7 0%, #FFF 100%)',
         'sight-menu':
-          'radial-gradient(50% 100% at 100% 50%, #E0F5FF 0%, #FFF 93.5%)',
+          'radial-gradient(70% 55% at 80% 50%, #E0F5FF 0%, #FFF 93.5%)',
         'sight-main-gra':
           'linear-gradient(180deg, #FFF 33.04%, #DBEEFD 52.81%, #BAE4FD 88.73%)',
         'gradient-radial':

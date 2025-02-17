@@ -54,7 +54,7 @@ public class User {
 	}
 
 	public void decrementReviewCount() {
-		this.reviewCount++;
+		this.reviewCount--;
 		updateViewLevel();
 	}
 

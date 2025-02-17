@@ -1,11 +1,16 @@
 import Mode from '@/components/features/ticketing/ModeButtons';
-import { TextBox } from '@/components/ui/TextBox';
 
 export default function ModeSelect() {
   return (
-    <div>
-      <TextBox headText="모드를 선택하세요"></TextBox>
-      <Mode></Mode>
+    <div className="flex h-full flex-col bg-ticketing-bg">
+      <div className="flex items-center justify-center px-3 pt-20">
+        <span className="font-title-bold text-text-menu">
+          연습할 플랫폼을 선택해주세요
+        </span>
+      </div>
+      <div className="-mt-8 flex flex-1 items-center justify-center">
+        <Mode />
+      </div>
     </div>
   );
 }

@@ -1,36 +1,33 @@
-type ViewTabItem = 'all' | 'my' | 'scrap';
+import { ViewTabItem } from '@/types/sharing';
+import { BookmarkIcon, UserIcon } from '@heroicons/react/24/outline';
 
 interface ViewTabProps {
-  currentTab: ViewTabItem;
-  onTabChange: (tab: ViewTabItem) => void;
+  currentTab: ViewTabItem | null;
+  onTabChange: (tab: ViewTabItem | null) => void;
 }
 
 export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
   return (
-    <div className="flex rounded-lg bg-gray-100 p-1">
+    <div className="flex w-full">
       <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'all' ? 'bg-primary text-white' : 'text-gray-600'
+        className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
+          currentTab === 'scrap'
+            ? 'bg-primary-main text-white'
+            : 'text-gray-600'
         }`}
-        onClick={() => onTabChange('all')}
+        onClick={() => onTabChange(currentTab === 'scrap' ? null : 'scrap')}
       >
-        전체
+        <BookmarkIcon className="h-4 w-4" />
+        <span>북마크 보기</span>
       </button>
       <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'my' ? 'bg-primary text-white' : 'text-gray-600'
+        className={`flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm transition-colors ${
+          currentTab === 'my' ? 'bg-primary-main text-white' : 'text-gray-600'
         }`}
-        onClick={() => onTabChange('my')}
+        onClick={() => onTabChange(currentTab === 'my' ? null : 'my')}
       >
-        My
-      </button>
-      <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'scrap' ? 'bg-primary text-white' : 'text-gray-600'
-        }`}
-        onClick={() => onTabChange('scrap')}
-      >
-        스크랩
+        <UserIcon className="h-4 w-4" />
+        <span>내 나눔글 보기</span>
       </button>
     </div>
   );

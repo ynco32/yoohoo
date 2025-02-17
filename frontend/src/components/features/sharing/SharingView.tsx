@@ -1,20 +1,19 @@
 'use client';
 
+import { ViewTabItem } from '@/types/sharing';
 import { useParams } from 'next/navigation';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { ViewModeToggle } from './ViewModeToggle';
 import { ViewTab } from './ViewTap';
 import { SharingList } from './SharingList';
 import { SharingMap } from './SharingMap';
 import { SharingPost } from '@/types/sharing';
 import { VENUE_COORDINATES } from '@/lib/constants/venues';
-import { WriteButton } from '@/components/common/WriteButton';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { sharingAPI } from '@/lib/api/sharing';
 import { useMswInit } from '@/hooks/useMswInit';
+import { BottomControls } from './BottomControls';
 
 type ViewMode = 'list' | 'map';
-type ViewTabItem = 'all' | 'my' | 'scrap';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -25,7 +24,7 @@ export const SharingView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [currentTab, setCurrentTab] = useState<ViewTabItem>('all');
+  const [currentTab, setCurrentTab] = useState<ViewTabItem | null>(null);
   const { mswInitialized } = useMswInit();
 
   // refs
@@ -144,18 +143,13 @@ export const SharingView = () => {
     >
       <div
         className={
-          viewMode === 'map' ? 'absolute top-[56px] z-10 w-full p-4' : 'p-4'
+          viewMode === 'map'
+            ? 'absolute top-[56px] z-10 w-full bg-white'
+            : 'bg-white'
         }
       >
-        <div className="flex items-center justify-between">
-          <ViewModeToggle
-            viewMode={viewMode}
-            onModeChange={handleViewModeChange}
-          />
-          <ViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
-        </div>
+        <ViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>
-
       <div
         ref={containerRef}
         className={`${viewMode === 'map' ? 'h-full pt-[56px]' : 'flex-1 overflow-auto'}`}
@@ -177,8 +171,11 @@ export const SharingView = () => {
           />
         )}
       </div>
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] px-4">
-      <WriteButton path={`/sharing/${concertId}/write`} />
-    </div>    </div>
+      <BottomControls
+        viewMode={viewMode}
+        onModeChange={handleViewModeChange}
+        concertId={concertId}
+      />
+    </div>
   );
 };

@@ -122,7 +122,6 @@ export const DraggableReviewSheet = ({
         <div
           className="pointer-events-auto absolute bottom-0 w-full transform px-4 transition-transform duration-300 ease-out"
           style={style}
-          {...handlers}
         >
           <div className="relative w-full rounded-t-3xl bg-sight-bg shadow-lg">
             <div className="py-2 pt-4">
@@ -146,19 +145,42 @@ export const DraggableReviewSheet = ({
                   )}
               </div>
 
-              {typeof currentSeatId === 'number' &&
-                !Number.isNaN(currentSeatId) && (
-                  <SeatScrapButton
-                    seatId={currentSeatId}
-                    stageType={currentStageType}
-                    initialScrapState={isScraped}
-                    size="lg"
-                    onScrap={handleScrap}
-                  />
-                )}
+              <div className="flex items-center justify-between px-6 py-2">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
+                  <span className="text-body-bold text-primary-main">
+                    {currentSectionNumber}구역
+                  </span>
+                  {typeof currentSeatId === 'number' &&
+                    !Number.isNaN(currentSeatId) && (
+                      <>
+                        <div className="h-1 w-1 rounded-full bg-gray-300" />
+                        <span className="text-body text-gray-600">
+                          {currentRow}열
+                        </span>
+                      </>
+                    )}
+                </div>
+
+                {typeof currentSeatId === 'number' &&
+                  !Number.isNaN(currentSeatId) && (
+                    <SeatScrapButton
+                      seatId={currentSeatId}
+                      stageType={currentStageType}
+                      initialScrapState={isScraped}
+                      size="lg"
+                      onScrap={handleScrap}
+                    />
+                  )}
+              </div>
             </div>
 
-            <div className="h-[90vh] overflow-y-auto">
+            {/* 리뷰 리스트 영역 */}
+            <div
+              className="h-[90vh] touch-pan-y overflow-y-auto"
+              onTouchStart={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
               {children || renderReviewContent()}
             </div>
           </div>

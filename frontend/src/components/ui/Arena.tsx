@@ -34,30 +34,44 @@ interface ArenaProps {
  * @returns {JSX.Element} 공연장 선택 버튼
  */
 export const Arena = ({
+  arenaId,
   arenaName,
   imageSrc = '/images/cat.png', // 기본 이미지 경로
   imageAlt = arenaName, // 이미지 대체 텍스트 기본값
   className = '', // 추가 스타일 클래스 기본값
   onClick,
 }: ArenaProps) => {
+  const isDisabled = arenaId !== 1;
+
   return (
     <div
-      onClick={onClick}
-      className={`flex h-40 cursor-pointer flex-col items-center ${className}`}
+      onClick={!isDisabled ? onClick : undefined}
+      className={`flex h-full flex-col items-center ${
+        !isDisabled ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed'
+      } ${className}`}
     >
-      {/* 공연장 이미지 컨테이너 - 원형 마스크 적용 */}
-      <div className="h-24 w-24 overflow-hidden rounded-arena">
+      <div className="relative h-24 w-24 overflow-hidden rounded-arena">
         <Image
           src={imageSrc}
           alt={imageAlt}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-all ${
+            isDisabled ? 'brightness-50' : ''
+          }`}
           width={300}
           height={300}
         />
+        {isDisabled && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+            <LockClosedIcon className="h-8 w-8 text-white/90" />
+          </div>
+        )}
       </div>
-      {/* 공연장 이름 컨테이너 - 2줄 제한 */}
-      <div className="mt-2 flex min-h-[3rem] items-center">
-        <div className="line-clamp-2 max-w-[96px] text-center font-pretendard text-caption2 font-bold text-text-menu">
+      <div className="mt-2 flex items-center">
+        <div
+          className={`text-center font-pretendard text-caption2 font-bold ${
+            isDisabled ? 'text-gray-400' : 'text-text-menu'
+          }`}
+        >
           {arenaName}
         </div>
       </div>

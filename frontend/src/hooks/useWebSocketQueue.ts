@@ -1,32 +1,33 @@
 'use client';
-
 // hooks/useWebSocketQueue.ts
 import { useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
-// import { useRouter } from 'next/navigation';
-import api from '@/lib/api/axios';
+import { useRouter } from 'next/navigation';
 import { useQueueStore } from '@/store/useQueueStore';
+import api from '@/lib/api/axios';
 
 export const useWebSocketQueue = () => {
+  const router = useRouter();
   const stompClient = useRef<Client | null>(null);
   const setQueueInfo = useQueueStore((state) => state.setQueueInfo);
 
   const getAccessToken = () => {
     return document.cookie
       .split('; ')
-      .find((row) => row.startsWith('accessToken='))
+      .find((row) => row.startsWith('access_token='))
       ?.split('=')[1];
   };
 
   useEffect(() => {
+    if (process.env.NEXT_PUBLIC_DISABLE_WEBSOCKET === 'true') {
+      return;
+    }
     const client = new Client({
-      brokerURL: `${process.env.NEXT_PUBLIC_WS_BASE_URL}/ws`,
+      brokerURL: 'wss://i12b207.p.ssafy.io/ticketing-melon',
       connectHeaders: {
         Authorization: `Bearer ${getAccessToken()}`,
       },
-      debug: function (str) {
-        console.log(str);
-      },
+      debug: (str) => console.log('🤝 STOMP: ' + str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -38,6 +39,7 @@ export const useWebSocketQueue = () => {
 
     client.onConnect = () => {
       console.log('🤝 웹소켓 연결 성공');
+
       client.subscribe(`/user/book/waiting-time`, (message: IMessage) => {
         console.log('🤝waiting-time 구독~!!');
         console.log('🤝waiting-time 수신된 메세지:', message.body);
@@ -47,6 +49,15 @@ export const useWebSocketQueue = () => {
           response.estimatedWaitingSeconds,
           response.usersAfter
         );
+      });
+
+      client.subscribe(`/user/book/notification`, (message: IMessage) => {
+        console.log('🤝notification 구독~!!');
+        console.log('🤝notification 수신된 메세지:', message.body);
+        const response = JSON.parse(message.body);
+        if (response === true) {
+          router.push('./real/areaSelect');
+        }
       });
     };
 

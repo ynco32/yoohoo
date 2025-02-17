@@ -31,12 +31,12 @@ export const DraggableReviewSheet = ({
 }: DraggableReviewSheetProps) => {
   const { getSectionById } = useSectionStore();
   const params = useParams();
-  const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
+  // const currentSectionNumber = Number(getSectionById(Number(params.sectionId)));
   console.log(`params.sectionId :: ${params.sectionId}`);
   console.log(
-    `getSectionById(Number(params.sectionId)) ::: ${getSectionById(Number(params.sectionId))}`
+    `getSectionById(Number(params.sectionId)) ::: ${getSectionById(Number(params.sectionId))?.sectionName}`
   );
-  console.log(`currentSectionNumber :: ${currentSectionNumber}`);
+  // console.log(`currentSectionNumber :: ${currentSectionNumber}`);
 
   const currentStageType = Number(params.stageType);
   const currentSeatId = Number(params.seatId);
@@ -133,7 +133,7 @@ export const DraggableReviewSheet = ({
               <div className="flex items-center gap-2">
                 <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
                 <span className="text-body-bold text-primary-main">
-                  {currentSectionNumber}구역
+                  {getSectionById(Number(params.sectionId))?.sectionName}구역
                 </span>
                 {typeof currentSeatId === 'number' &&
                   !Number.isNaN(currentSeatId) && (

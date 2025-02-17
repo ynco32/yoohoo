@@ -32,7 +32,7 @@ const Header = () => {
   };
 
   return (
-    <div className="container left-0 top-0 z-header">
+    <div className="container sticky left-0 top-0 z-header">
       <header className="h-16">
         <div className="relative flex h-full items-center justify-between">
           <div className="flex-none">

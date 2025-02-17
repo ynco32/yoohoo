@@ -34,6 +34,8 @@ module.exports = {
           'var(--BG, linear-gradient(180deg, #BAE4FD 33.04%, #DBEEFD 54.2%, #FFF 88.73%))',
         'gradient-radial':
           'radial-gradient(closest-side, var(--tw-gradient-stops))',
+        'success-gradient':
+          'radial-gradient(circle at center, #BEE5FF 0%,rgb(208, 226, 255) 15%, #FFFFFF 40%)',
       },
       borderRadius: {
         menu: '12.273px',

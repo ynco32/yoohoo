@@ -34,7 +34,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex items-center justify-center">
         Loading sections...
       </div>
     );
@@ -42,7 +42,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center text-red-500">
+      <div className="flex items-center justify-center text-red-500">
         {error}
       </div>
     );

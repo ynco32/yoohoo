@@ -198,6 +198,18 @@ public class TicketingService {
 	public void deleteTicketingResult(Long userId) {
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
 
+		String section = (String) redisTemplate.opsForHash().get(userHistoryKey, "section");
+		String seat = (String) redisTemplate.opsForHash().get(userHistoryKey, "seat");
+		if (section != null && seat != null) {
+			// 좌석 상태 변경
+			String sectionKey = RedisKeys.getSectionKey(section);
+			redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
+
+			// 좌석 히스토리 삭제
+			String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
+			redisTemplate.delete(seatHistoryKey);
+		}
+
 		// reserveTime만 삭제
 		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
 		redisTemplate.opsForHash().delete(userHistoryKey, "section");

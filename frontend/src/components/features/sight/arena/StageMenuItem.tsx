@@ -27,10 +27,10 @@ export const StageMenuItem = ({
   return (
     <MenuCard
       onClick={() => router.push(`/sight/${arenaId}/${stageType}`)}
-      className={`relative flex flex-col items-center justify-between rounded-card bg-white p-2 text-center ${className}`}
+      className={`relative flex flex-col items-center rounded-card bg-white text-center ${className}`}
     >
       <div className="flex flex-col items-center gap-1">
-        <div className="relative flex h-24 w-24 items-center justify-center">
+        <div className="relative flex h-40 w-40 items-center justify-center">
           <Image
             src={SVGIcons[icon]}
             alt={name}
@@ -41,7 +41,7 @@ export const StageMenuItem = ({
         <div className="flex flex-col items-center gap-1">
           <span className="text-title-bold text-text-menu">{name}</span>
           {description.length > 0 && (
-            <span className="text-caption1 text-text-description">
+            <span className="text-caption3 text-text-description">
               {description}
             </span>
           )}

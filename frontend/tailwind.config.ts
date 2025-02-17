@@ -46,6 +46,7 @@ module.exports = {
         menu: '3.068px 3.068px 20.455px 0px rgba(106, 160, 205, 0.25)',
         card: '0px 4px 10px 0px rgba(0,0,0,0.25)',
         'card-colored': '0px 0px 10px 0px rgba(34, 129, 198, 0.25)',
+        'card-hover': '2px 2px 20px 0px rgba(34, 129, 198, 0.25)',
         'my-page': '2px 2px 8px 0px rgba(106, 160, 205, 0.25)',
         concert: '0px 1px 10px 0px rgba(0, 101, 164, 0.11)',
       },

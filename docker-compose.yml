@@ -54,6 +54,7 @@ services:
         - NEXT_PUBLIC_KAKAO_MAP_API_KEY=${NEXT_PUBLIC_KAKAO_MAP_API_KEY}
         - NEXT_PUBLIC_API_URL=https://i12b207.p.ssafy.io
         - NEXT_PUBLIC_SKT_API_KEY=${NEXT_PUBLIC_SKT_API_KEY}
+        - NEXT_PUBLIC_SKT_API_URL=${NEXT_PUBLIC_SKT_API_URL}
     ports:
       - "3000:3000"
     environment:

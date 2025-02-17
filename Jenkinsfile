@@ -91,6 +91,7 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
                         string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST'),
                         string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
+                        string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL')
                     ]) {
                         sh '''
                             docker-compose down
@@ -113,7 +114,8 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg AWS_REGION=$AWS_REGION \
                                 --build-arg S3_BUCKET=$S3_BUCKET \
                                 --build-arg REDIS_HOST=$REDIS_HOST \
-                                --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY
+                                --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
+                                --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
                             docker-compose up -d
                         '''
                     }

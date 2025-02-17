@@ -7,7 +7,7 @@ export const SharingDetailContent = ({
   content,
 }: SharingDetailContentProps) => {
   return (
-    <div className="mx-4 rounded-xl bg-gray-100 p-4">
+    <div className="mx-4 p-3">
       <p className="whitespace-pre-line">{content}</p>
     </div>
   );

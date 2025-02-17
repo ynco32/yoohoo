@@ -12,7 +12,7 @@ interface ContentCardProps {
 export const ContentCard = ({ children, className = '' }: ContentCardProps) => {
   return (
     <div
-      className={`flex items-center justify-between border border-gray-200 p-4 ${className}`}
+      className={`flex items-center justify-between border border-gray-200 py-4 ${className}`}
     >
       {children}
     </div>

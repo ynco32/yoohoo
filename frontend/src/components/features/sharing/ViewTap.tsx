@@ -1,36 +1,38 @@
-type ViewTabItem = 'all' | 'my' | 'scrap';
+import { ViewTabItem } from '@/types/sharing';
+import {
+  BookmarkIcon,
+  ChatBubbleOvalLeftIcon,
+} from '@heroicons/react/24/outline';
 
 interface ViewTabProps {
-  currentTab: ViewTabItem;
-  onTabChange: (tab: ViewTabItem) => void;
+  currentTab: ViewTabItem | null;
+  onTabChange: (tab: ViewTabItem | null) => void;
 }
 
 export const ViewTab = ({ currentTab, onTabChange }: ViewTabProps) => {
   return (
-    <div className="flex rounded-lg bg-gray-100 p-1">
+    <div className="flex w-full px-2 py-2">
       <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'all' ? 'bg-primary text-white' : 'text-gray-600'
+        className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm transition-colors ${
+          currentTab === 'scrap'
+            ? 'border-sight-button text-sight-button'
+            : 'border-transparent text-gray-600'
         }`}
-        onClick={() => onTabChange('all')}
+        onClick={() => onTabChange(currentTab === 'scrap' ? null : 'scrap')}
       >
-        전체
+        <BookmarkIcon className="h-4 w-4" />
+        <span>북마크 보기</span>
       </button>
       <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'my' ? 'bg-primary text-white' : 'text-gray-600'
+        className={`flex flex-1 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm transition-colors ${
+          currentTab === 'my'
+            ? 'border-sight-button text-sight-button'
+            : 'border-transparent text-gray-600'
         }`}
-        onClick={() => onTabChange('my')}
+        onClick={() => onTabChange(currentTab === 'my' ? null : 'my')}
       >
-        My
-      </button>
-      <button
-        className={`rounded-md px-3 py-1 text-sm ${
-          currentTab === 'scrap' ? 'bg-primary text-white' : 'text-gray-600'
-        }`}
-        onClick={() => onTabChange('scrap')}
-      >
-        스크랩
+        <ChatBubbleOvalLeftIcon className="h-4 w-4 scale-x-[-1]" />
+        <span>내 나눔글 보기</span>
       </button>
     </div>
   );

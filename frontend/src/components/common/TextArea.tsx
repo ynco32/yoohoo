@@ -21,7 +21,7 @@ export const TextArea = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className={`text-m w-full resize-none rounded-lg bg-gray-100 p-3`}
+      className={`text-m w-full resize-none rounded-lg border p-3`}
     />
     {error && <p className="mt-1 text-sm text-status-warning">{error}</p>}
   </div>

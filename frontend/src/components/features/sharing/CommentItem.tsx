@@ -6,6 +6,7 @@ import { Modal } from '@/components/common/Modal';
 import { useSharingCommentStore } from '@/store/useSharingCommentStore';
 import Image from 'next/image';
 import { getUserProfileImage } from '@/lib/utils/profileCharacter';
+import { TextArea } from '@/components/common/TextArea';
 
 export const CommentItem = ({ comment }: { comment: Comment }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -56,10 +57,12 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
         </div>
 
         {/* 댓글 내용 */}
-        <div className="flex-1 space-y-1">
+        <div className="flex-1 space-y-2">
           {/* 상단 영역: 닉네임과 날짜 */}
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">{updatedComment.writer}</span>
+            <span className="font-medium font-semibold text-gray-800">
+              {updatedComment.writer}
+            </span>
             <span className="text-xs text-gray-500">
               {formatDateTime(updatedComment.modifyTime)}
             </span>
@@ -67,23 +70,22 @@ export const CommentItem = ({ comment }: { comment: Comment }) => {
 
           {/* 중간 영역: 댓글 내용 */}
           {isEditing ? (
-            <div className="flex gap-2">
-              <textarea
+            <div className="flex flex-col space-y-1">
+              <TextArea
                 value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                className="focus:border-primary w-full resize-none rounded-lg border border-gray-300 p-2 text-sm focus:outline-none"
+                onChange={setEditContent}
                 rows={2}
               />
               <button
                 onClick={handleUpdate}
                 disabled={!editContent.trim()}
-                className="h-fit rounded-lg bg-primary-main px-4 py-2 text-sm text-white disabled:bg-gray-300"
+                className="-mt-1 ml-auto rounded-lg bg-sight-button px-4 py-2 text-sm text-white disabled:bg-gray-300"
               >
                 완료
               </button>
             </div>
           ) : (
-            <p className="text-sm">{updatedComment.content}</p>
+            <p className="text-sm text-gray-800">{updatedComment.content}</p>
           )}
 
           {/* 하단 영역: 수정/삭제 버튼 */}

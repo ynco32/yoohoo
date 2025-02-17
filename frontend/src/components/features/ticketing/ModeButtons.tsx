@@ -4,6 +4,11 @@ import { IconButton } from '@/components/ui/IconButton';
 export default function Mode() {
   return (
     <div className="flex flex-col justify-center gap-3 bg-primary-50 px-3 py-3">
+      <div className="grid grid-cols-2">
+        <div>연습모드</div>
+        <div>실전모드</div>
+      </div>
+
       <Link href="/ticketing/melon-mode/practice">
         <IconButton>
           <h2>연습 모드</h2>

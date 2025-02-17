@@ -23,8 +23,8 @@ export const Modal = ({
   if (!isOpen) return null;
 
   const buttonColorClasses = {
-    primary: 'bg-primary-main text-white',
-    danger: 'bg-red-500 text-white',
+    primary: 'bg-shigt-button text-white',
+    danger: 'bg-shigt-button text-white',
   };
 
   return (
@@ -47,7 +47,7 @@ export const Modal = ({
           )}
           <button
             onClick={type === 'alert' ? onClose : onConfirm}
-            className={`w-full flex-1 rounded-lg bg-primary-main py-3 text-white ${buttonColorClasses[variant]}`}
+            className={`w-full flex-1 rounded-lg bg-sight-button py-3 text-white ${buttonColorClasses[variant]}`}
           >
             {confirmText}
           </button>

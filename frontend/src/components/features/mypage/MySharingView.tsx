@@ -117,7 +117,7 @@ export const MySharingView = () => {
       <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <MyViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>
-      <div ref={containerRef} className={'pt-[44px]flex-1 overflow-auto'}>
+      <div ref={containerRef} className={'pt-[44px] flex-1 overflow-auto'}>
         <SharingList
           posts={displayedPosts}
           concertId={concertId}

@@ -9,6 +9,8 @@ import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
 // import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import { useQueueStore } from '@/store/useQueueStore';
+import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
+import { useErrorStore } from '@/store/useErrorStore';
 
 export default function Ticketing1() {
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
@@ -17,6 +19,7 @@ export default function Ticketing1() {
 
   const { enterQueue } = useWebSocketQueue();
   const { buttonDisabled, buttonMessage } = useTicketingTimer();
+  const { error, clearError } = useErrorStore();
 
   const handleScheduleSelect = () => {
     setSchedulePopupOpen(false);
@@ -46,6 +49,12 @@ export default function Ticketing1() {
         onClose={() => setQueuePopupOpen(false)}
         isOpen={isQueuePopupOpen}
       />
+
+      {error && (
+        <ErrorPopup isOpen={!!error} onClick={clearError}>
+          {error.message}
+        </ErrorPopup>
+      )}
     </div>
   );
 }

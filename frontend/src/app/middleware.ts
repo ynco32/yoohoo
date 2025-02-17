@@ -15,6 +15,7 @@ export default function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/ticketing/melon-mode/real/areaSelect',
+    '/ticketing/melon-mode/real/[areaType]',
     '/ticketing/melon-mode/real/payment1',
     '/ticketing/melon-mode/real/payment1/payment2',
     '/ticketing/melon-mode/real/result',

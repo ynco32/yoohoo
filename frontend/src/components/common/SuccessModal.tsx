@@ -1,6 +1,5 @@
 import { TextButton } from '@/components/ui/TextButton';
 import Image from 'next/image';
-import { SVGIcons } from '@/assets/svgs';
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -18,7 +17,7 @@ export function SuccessModal({ isOpen, onClose, message }: SuccessModalProps) {
           <div className="flex flex-1 flex-col items-center justify-center">
             <div className="flex justify-center pt-20">
               <Image
-                src={SVGIcons.SuccessLogo}
+                src="/images/successLogo.png"
                 alt="Success"
                 width={160}
                 height={160}

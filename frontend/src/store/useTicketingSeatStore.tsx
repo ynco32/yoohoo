@@ -104,8 +104,8 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
 
   tryReserveSeat: async (section: string, seat: string) => {
     if (!get().isSeatAvailable(seat)) {
-      set({ error: TICKETING_ERRORS.SEAT_ALREADY_RESERVED });
       await get().fetchSeatsByArea(section); // 좌석 정보 새로고침
+      set({ error: TICKETING_ERRORS.SEAT_ALREADY_RESERVED });
       throw TICKETING_ERRORS.SEAT_ALREADY_RESERVED;
     }
 
@@ -126,8 +126,8 @@ export const useTicketingSeatStore = create<TicketingSeatState>((set, get) => ({
         } else {
           error = TICKETING_ERRORS.RESERVATION_FAILED;
         }
-        set({ error });
         await get().fetchSeatsByArea(section);
+        set({ error });
         throw error;
       }
 

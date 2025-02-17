@@ -160,7 +160,7 @@ export const SharingDetailHeader = ({
   return (
     <>
       <div className="flex flex-col">
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between px-6 py-2">
           <div className="flex items-center gap-2">
             <div className="relative h-12 w-12">
               {/* 프로필과 상태 */}
@@ -229,8 +229,8 @@ export const SharingDetailHeader = ({
             {/* 제목과 시간 */}
           </div>
         </div>
-        <div className="mx-4 border-b border-gray-200" />
-        <div className="p-4">
+        <div className="mx-6 border-b border-gray-200" />
+        <div className="p-4 px-6">
           <h2 className="text-lg font-bold text-gray-800">{title}</h2>
           <div className="mt-1 flex items-center gap-1 text-sm text-gray-500">
             <ClockIcon className="h-4 w-4" />

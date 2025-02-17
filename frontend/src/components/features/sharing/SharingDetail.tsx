@@ -68,16 +68,16 @@ export const SharingDetail = ({ id }: SharingDetailProps) => {
     <div className="h-[calc(100vh-56px)] w-full max-w-[430px]">
       {/* 내부 컨테이너 */}
       <div className="h-full overflow-y-auto">
+        {/* 이미지 */}
+        <SharingDetailImages
+          image={detailData.photoUrl || '/images/card.png'}
+        />
+
         {/* 헤더 */}
         <SharingDetailHeader
           {...detailData}
           status={currentStatus}
           onStatusChange={handleStatusChange}
-        />
-
-        {/* 이미지 */}
-        <SharingDetailImages
-          image={detailData.photoUrl || '/images/card.png'}
         />
 
         {/* 상세 정보 */}

@@ -55,21 +55,19 @@ export default function ArenaList() {
 
   return (
     <div className="flex h-full flex-col">
-      <div>
-        <div className="scrollbar-hide overflow-x-auto">
-          <div className="flex items-center gap-6 px-6 py-4">
-            {arenas.map((arena) => (
-              <Arena
-                key={arena.arenaId}
-                arenaId={arena.arenaId}
-                arenaName={arena.arenaName}
-                imageSrc={arena.photoUrl}
-                imageAlt={arena.arenaName}
-                onClick={() => setSelectedArenaId(arena.arenaId)}
-              />
-            ))}
-            <div className="w-xl flex-none"></div>
-          </div>
+      <div className="scrollbar-hide overflow-x-auto">
+        <div className="flex items-center gap-6 px-6 py-4">
+          {arenas.map((arena) => (
+            <Arena
+              key={arena.arenaId}
+              arenaId={arena.arenaId}
+              arenaName={arena.arenaName}
+              imageSrc={arena.photoUrl}
+              imageAlt={arena.arenaName}
+              onClick={() => setSelectedArenaId(arena.arenaId)}
+            />
+          ))}
+          <div className="w-xl flex-none"></div>
         </div>
       </div>
       <div className="flex-1 px-4">

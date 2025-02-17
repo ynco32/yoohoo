@@ -4,12 +4,15 @@ import { useRef, useEffect } from 'react';
 import { Client, IMessage } from '@stomp/stompjs';
 import { useRouter } from 'next/navigation';
 import { useQueueStore } from '@/store/useQueueStore';
+import { useErrorStore } from '@/store/useErrorStore';
 import api from '@/lib/api/axios';
+import { AxiosError } from 'axios';
 
 export const useWebSocketQueue = () => {
   const router = useRouter();
   const stompClient = useRef<Client | null>(null);
   const setQueueInfo = useQueueStore((state) => state.setQueueInfo);
+  const setError = useErrorStore((state) => state.setError);
 
   const getAccessToken = () => {
     return document.cookie
@@ -75,11 +78,16 @@ export const useWebSocketQueue = () => {
     try {
       const response = await api.post(`/api/v1/ticketing/queue`);
       console.log(`🤝 ${response.data} 번째로 대기열 진입 성공`);
-    } catch (_error) {
-      console.log('🤝 대기열 진입 실패');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 400) {
+          setError('이미 티켓팅에 참여한 내역이 있습니다.');
+        } else {
+          setError('티켓팅 참여 중 오류가 발생했습니다.');
+        }
+      }
     }
   };
-
   return {
     enterQueue,
   };

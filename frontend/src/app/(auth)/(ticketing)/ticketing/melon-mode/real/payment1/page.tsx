@@ -8,9 +8,11 @@ import { PriceDetail } from '@/components/features/ticketing/PriceDetail';
 import { useState } from 'react';
 import { TicketingBillButton } from '@/components/ui/TicketingBillButton';
 import Link from 'next/link';
+import { useReservationCleanup } from '@/hooks/useReservationCleanup';
 
 export default function TicketingPage() {
   const [quantity, setQuantity] = useState(1);
+  useReservationCleanup();
 
   return (
     <div className="flex h-full flex-col bg-gray-50">

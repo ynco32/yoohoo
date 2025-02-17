@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="flex h-[100dvh] flex-col overflow-hidden bg-web font-pretendard">
+      <body className="flex h-[100dvh] flex-col overflow-hidden bg-web bg-cover bg-center font-pretendard">
         <MSWProvider />
         <div className="container relative flex h-[100dvh] max-w-layout flex-1 flex-col bg-white p-0 shadow-lg">
           <AuthGuard>

@@ -39,19 +39,6 @@ export default function Mode() {
           실전과 똑같은 연습
         </span>
       </div>
-
-      {/* <Link href="/ticketing/melon-mode/practice">
-        <IconButton>
-          <h2>연습 모드</h2>
-          <h3>단계별 연습</h3>
-        </IconButton>
-      </Link>
-      <Link href="/ticketing/melon-mode/real">
-        <IconButton>
-          <h2>실전 모드 시작</h2>
-          <h3>실전과 똑같은 연습</h3>
-        </IconButton>
-      </Link> */}
     </div>
   );
 }

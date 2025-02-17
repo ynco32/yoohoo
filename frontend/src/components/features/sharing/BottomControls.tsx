@@ -17,7 +17,7 @@ export const BottomControls = ({
     <div className="fixed bottom-0 left-0 right-0 z-50">
       <div className="relative mx-auto max-w-[430px]">
         {/* View Toggle */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
           <div className="flex items-center rounded-lg bg-sight-button p-1 text-white">
             <button
               onClick={() => onModeChange('map')}

@@ -195,6 +195,18 @@ public class TicketingService {
 			.collect(Collectors.toList());
 	}
 
+	public void deleteTicketingResult(Long userId) {
+		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
+
+		// reserveTime만 삭제
+		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
+		redisTemplate.opsForHash().delete(userHistoryKey, "section");
+		redisTemplate.opsForHash().delete(userHistoryKey, "seat");
+		redisTemplate.opsForHash().delete(userHistoryKey, "rank");
+		redisTemplate.opsForHash().delete(userHistoryKey, "reserveNanoTime");
+
+		// 대기열 관련 정보(queueTime, position)는 유지
+	}
 
 	//  좌석 상태 유효성 검사
 	private void validateSeatAvailability(String sectionKey, String seat) {

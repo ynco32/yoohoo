@@ -1,12 +1,9 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import {
-  BookmarkIcon as BookmarkOutline,
-  EllipsisVerticalIcon,
-  ClockIcon,
-} from '@heroicons/react/24/outline';
-import { BookmarkIcon as BookmarkSolid } from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
+import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { SharingStatus } from '@/types/sharing';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { useSharingScrapStore } from '@/store/useSharingScrapStore';
@@ -162,33 +159,35 @@ export const SharingDetailHeader = ({
 
   return (
     <>
-      <div className="flex flex-col p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-between gap-2">
-            <div className="relative h-10 w-10">
-              {/* 원형 프로필 */}
+      <div className="flex flex-col">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-2">
+            <div className="relative h-12 w-12">
+              {/* 프로필과 상태 */}
               <Image
                 src={getUserProfileImage(writerLevel)}
                 alt="프로필"
                 fill
-                sizes="40px"
+                sizes="32px"
                 className="rounded-full object-cover"
               />
             </div>
-            <div>
-              <h1 className="font-medium">{title}</h1>
-              <p className="text-sm text-gray-600">{writer}</p>
-              <div className="mt-1">
-                <div className="flex items-center gap-1 text-sm text-gray-900">
-                  <ClockIcon className="h-6 w-6" />
-                  {formatDateTime(startTime)}
-                </div>
-              </div>
-            </div>
+            <span className="text-sm font-medium">{writer}</span>
           </div>
-          {/* 오른쪽 영역: 메뉴 버튼과 상태/스크랩 */}
-          <div className="flex flex-col items-end gap-4">
-            {/* 메뉴 버튼 또는 스크랩 버튼 */}
+          <div className="flex items-center gap-2">
+            {isAuthor ? (
+              <StatusDropdown
+                currentStatus={status}
+                onStatusChange={handleStatusChange}
+                isAuthor={isAuthor}
+              />
+            ) : (
+              <span
+                className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
+              >
+                {getStatusText(status)}
+              </span>
+            )}
             {isAuthor ? (
               <div className="menu-container relative">
                 <button
@@ -221,26 +220,21 @@ export const SharingDetailHeader = ({
                 className="transition-transform hover:scale-110 active:scale-95"
               >
                 {scraped ? (
-                  <BookmarkSolid className="text-primary h-6 w-6" />
+                  <StarSolid className="h-6 w-6 text-yellow-400" />
                 ) : (
-                  <BookmarkOutline className="h-6 w-6" />
+                  <StarOutline className="h-6 w-6 text-yellow-400" />
                 )}
               </button>
             )}
-            {/* 상태 드롭다운 또는 상태 표시 */}
-            {isAuthor ? (
-              <StatusDropdown
-                currentStatus={status}
-                onStatusChange={handleStatusChange}
-                isAuthor={isAuthor}
-              />
-            ) : (
-              <span
-                className={`rounded-md px-2 py-1 text-xs text-white ${getStatusColor(status)}`}
-              >
-                {getStatusText(status)}
-              </span>
-            )}
+            {/* 제목과 시간 */}
+          </div>
+        </div>
+        <div className="mx-4 border-b border-gray-200" />
+        <div className="p-4">
+          <h2 className="text-lg font-bold text-gray-800">{title}</h2>
+          <div className="mt-1 flex items-center gap-1 text-sm text-gray-500">
+            <ClockIcon className="h-4 w-4" />
+            <span>{formatDateTime(startTime)} 시작</span>
           </div>
         </div>
       </div>

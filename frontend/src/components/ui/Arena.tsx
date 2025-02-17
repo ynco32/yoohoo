@@ -7,6 +7,7 @@
  */
 
 'use client';
+import LockClosedIcon from '@heroicons/react/24/solid/LockClosedIcon';
 import Image from 'next/image';
 
 /**

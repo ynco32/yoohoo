@@ -1,17 +1,31 @@
 'use client';
 import React from 'react';
-import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
-import { FaceSmileIcon, TicketIcon } from '@heroicons/react/24/outline';
+// import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api/axios';
+import { AxiosError } from 'axios';
+import {
+  FaceSmileIcon,
+  TicketIcon,
+  HomeIcon,
+  BookmarkIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 export default function Result() {
-  const { selectedSeatNumber } = useTicketingSeatStore();
+  const [section, setSection] = useState('');
+  const [seat, setSeat] = useState('');
+  const [ticketRank, setTicketRank] = useState<number | null>(null);
+  const [processingTime, setProcessingTime] = useState<number | null>(null);
 
-  // 좌석 열 번호에 따른 메시지와 이모지 결정
-  const getSeatMessage = (seatNumber: string | null) => {
-    if (!seatNumber) return { message: '좌석을 선택해주세요', emoji: '🤔' };
+  // const { selectedSeatNumber } = useTicketingSeatStore();
+  const router = useRouter();
 
-    // 예: "A1", "B5" 등의 형식에서 알파벳을 숫자로 변환 (A=1, B=2, ...)
-    const row = seatNumber.charCodeAt(0) - 64; // A=1, B=2, ...
+  const getSeatMessage = (seat: string | null) => {
+    if (!seat) return { message: '좌석을 선택해주세요', emoji: '🤔' };
+
+    const row = parseInt(seat.split('-')[0]);
 
     if (row <= 3) {
       return {
@@ -34,32 +48,68 @@ export default function Result() {
     }
   };
 
-  const seatResult = getSeatMessage(selectedSeatNumber);
+  const seatResult = getSeatMessage(seat);
+
+  const handleSaveData = () => {
+    saveData(section, seat);
+  };
+
+  const saveData = async (section: string, seat: string) => {
+    try {
+      const response = await api.post(`/api/v1/ticketing/result`, {
+        section,
+        seat,
+      });
+      return response;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error.response?.data?.message || '티켓팅 결과 저장 실패'
+        );
+      }
+    }
+  };
+
+  const getResult = async () => {
+    try {
+      const { data } = await api.get(`/api/v1/ticketing/result`);
+      setSeat(data.seat);
+      setSection(data.section);
+      setTicketRank(data.ticketRank);
+      setProcessingTime(data.processingTime);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw new Error(
+          error.response?.data?.message || '티켓팅 결과 저장 실패'
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    getResult();
+  }, []);
 
   return (
     <div className="flex h-full flex-col items-center p-4">
-      {/* 상단 타이틀 */}
       <div className="mb-8 w-full text-center">
         <h1 className="text-xl font-semibold">티켓팅</h1>
       </div>
 
-      {/* 메인 컨텐츠 */}
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-lg">
-        {/* 성공 아이콘 */}
+      <div className="max-w-md w-full rounded-3xl bg-white p-8 shadow-lg">
         <div className="mb-4 flex justify-center">
           <FaceSmileIcon className="h-16 w-16 text-green-500" />
         </div>
 
-        {/* 성공 메시지 */}
         <h2 className="mb-8 text-center text-2xl font-bold text-green-500">
           티켓팅 성공!
         </h2>
 
-        {/* 좌석 정보 */}
         <div className="mb-8">
           <p className="mb-2 text-center text-gray-600">선택하신 좌석</p>
           <p className="mb-4 text-center text-xl font-bold">
-            {selectedSeatNumber || '선택된 좌석 없음'}
+            {section} 구역
+            {seat || '선택된 좌석 없음'}
           </p>
           <div className="space-y-2 text-center">
             <p className="text-lg font-medium">
@@ -69,21 +119,54 @@ export default function Result() {
           </div>
         </div>
 
-        {/* 티켓팅 순서 */}
         <div className="mb-6 rounded-2xl bg-gray-50 p-4">
           <div className="flex items-center justify-center gap-2">
             <TicketIcon className="h-5 w-5 text-blue-500" />
             <span className="text-gray-900">
-              <span className="font-bold text-blue-500">00</span>번째 티켓팅
-              성공
+              <span className="font-bold text-blue-500">{ticketRank}</span>
+              번째로 티켓팅 성공
             </span>
           </div>
         </div>
 
-        {/* 안내 메시지 */}
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-gray-900">
+            <span className="font-bold text-blue-500">{processingTime}</span>초
+            걸렸습니다
+          </span>
+        </div>
+
         <p className="text-center text-sm text-gray-500">
           예매 상세 내역은 마이페이지에서 확인하실 수 있습니다
         </p>
+
+        <div className="mt-8 space-y-4">
+          <button
+            onClick={() => {
+              handleSaveData();
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 py-3 text-white transition-colors hover:bg-blue-600"
+          >
+            <BookmarkIcon className="h-5 w-5" />
+            <span>기록 저장하기</span>
+          </button>
+
+          <button
+            onClick={() => router.push('/ticketing')}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            <HomeIcon className="h-5 w-5" />
+            <span>홈으로 가기</span>
+          </button>
+
+          <button
+            onClick={() => router.push('/mypage')}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"
+          >
+            <UserIcon className="h-5 w-5" />
+            <span>내 기록 보러가기</span>
+          </button>
+        </div>
       </div>
     </div>
   );

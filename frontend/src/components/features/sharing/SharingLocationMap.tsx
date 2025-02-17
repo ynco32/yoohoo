@@ -41,6 +41,8 @@ export const SharingLocationMap = ({
       const options = {
         center: centerPosition,
         level: 2,
+        minLevel: 1,
+        maxLevel: 5,
       };
 
       if (!mapRef.current) {

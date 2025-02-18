@@ -18,6 +18,7 @@ interface EditSightReviewFormContainerProps {
   artist?: string;
   reviewId: number;
   initialData?: ApiReview; // 기존 리뷰 데이터
+  onSubmitComplete?: () => void;
 }
 
 export function EditSightReviewFormContainer({
@@ -25,6 +26,7 @@ export function EditSightReviewFormContainer({
   artist,
   reviewId,
   initialData,
+  onSubmitComplete,
 }: EditSightReviewFormContainerProps) {
   const router = useRouter();
   const { setError, setIsSubmitting, setFormData, formData } =
@@ -84,6 +86,11 @@ export function EditSightReviewFormContainer({
       }
       const mappedData = mapFormDataToApiRequest(reviewData);
       await updateSightReview(reviewId, mappedData, photo);
+
+      // 성공적으로 수정이 완료되면 onSubmitComplete 호출
+      if (onSubmitComplete) {
+        onSubmitComplete();
+      }
       return undefined;
     } catch (error) {
       console.error('Error updating review:', error);

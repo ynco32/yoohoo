@@ -13,6 +13,7 @@ import { SightReviewFormData } from '@/types/sightReviews';
 import { STEPS, useSightReviewSteps } from '@/hooks/useSightReviewSteps';
 import { useSightReviewValidation } from '@/hooks/useSightReviewValidation';
 import StepProgressBar from './StepProgressBar';
+import { SuccessModal } from '@/components/common/SuccessModal';
 
 interface SightReviewFormProps {
   onSubmit?: (data: SightReviewFormData) => Promise<void>;
@@ -23,7 +24,6 @@ interface SightReviewFormProps {
 
 export const SightReviewForm = React.memo(
   ({ onSubmit, className = '', onClose }: SightReviewFormProps) => {
-    const router = useRouter();
     const {
       formData,
       errors,
@@ -40,6 +40,8 @@ export const SightReviewForm = React.memo(
 
     const params = useParams();
     const reviewId = params.reviewId;
+    const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+    const router = useRouter();
     const { currentStep, canProceed, handleNext, handleBack } =
       useSightReviewSteps({
         formData,
@@ -56,7 +58,6 @@ export const SightReviewForm = React.memo(
       const validationOnly = false;
       validateStep(STEPS[currentStep].id, validationOnly);
     }, [formData, currentStep, validateStep]);
-
     const handleFieldChange = <K extends keyof SightReviewFormData>(
       field: K,
       value: SightReviewFormData[K]
@@ -67,22 +68,15 @@ export const SightReviewForm = React.memo(
         setTouched(validationField);
       }
     };
+    const handleModalClose = () => {
+      setShowSuccessModal(false);
+      router.replace('/mypage/sight');
+    };
+
     const handleSubmit = async () => {
       if (currentStep !== STEPS.length - 1) return;
 
       clearErrors();
-
-      console.log('=== Submit Handler Start ===');
-      console.log('Current Form Data:', {
-        concertId: formData.concertId,
-        section: formData.sectionNumber,
-        rowLine: formData.rowLine,
-        columnLine: formData.columnLine,
-        photo: formData.photo,
-        viewScore: formData.viewScore,
-        seatDistance: formData.seatDistance,
-        content: formData.content,
-      });
 
       // validation 상태를 수동으로 업데이트
       setValidation(
@@ -97,12 +91,8 @@ export const SightReviewForm = React.memo(
       );
 
       const stepValidation = validateStep(STEPS[currentStep].id);
-      console.log('Current Step Validation:', stepValidation);
 
       const formValidation = isFormValid();
-      console.log('Form Validation:', formValidation);
-      console.log('onSubmit handler exists:', !!onSubmit);
-
       // validation 체크
       if (!stepValidation) {
         console.log('Step validation failed');
@@ -123,8 +113,6 @@ export const SightReviewForm = React.memo(
         seatDistance: formData.seatDistance.length > 0,
         content: formData.content.length >= 10,
       };
-      console.log('Form errors:', errors);
-      console.log('=== Validation Details ===', validationDetails);
 
       if (!formValidation) {
         console.log('Form validation failed:', validationDetails);
@@ -149,11 +137,9 @@ export const SightReviewForm = React.memo(
 
       try {
         setIsSubmitting(true);
-        console.log('Submitting form data:', formData);
         if (onSubmit) {
           await onSubmit(formData);
-          console.log('Submit success');
-          router.push(`/sight/success`);
+          setShowSuccessModal(true);
         }
       } catch (error) {
         console.error('Submit error:', error);
@@ -264,7 +250,7 @@ export const SightReviewForm = React.memo(
 
           {/* 중앙 컨텐츠 영역 */}
           <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-md py-lg">
-            <div className="w-full max-w-2xl">{renderStepContent()}</div>
+            <div className="max-w-2xl w-full">{renderStepContent()}</div>
           </div>
 
           {/* 하단 버튼 영역 */}
@@ -309,6 +295,11 @@ export const SightReviewForm = React.memo(
             </div>
           </div>
         </form>
+        <SuccessModal
+          isOpen={showSuccessModal}
+          onClose={handleModalClose}
+          message="리뷰가 성공적으로 등록되었습니다!"
+        />
       </div>
     );
   }

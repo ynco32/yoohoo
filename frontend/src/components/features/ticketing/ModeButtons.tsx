@@ -9,7 +9,7 @@ export default function Mode() {
     <div className="grid grid-cols-2 gap-3 p-3">
       <div
         onClick={() => router.push('/ticketing/melon-mode/practice')}
-        className={`hover:shadow-card-hover flex flex-col items-center justify-center rounded-card bg-gray-50 p-6 shadow-card-colored transition-shadow`}
+        className={`flex flex-col items-center justify-center rounded-card bg-white p-6 shadow-card-colored transition-shadow hover:shadow-card-hover`}
       >
         <div className="relative flex h-40 w-40 items-center justify-center">
           <Image
@@ -24,7 +24,7 @@ export default function Mode() {
       </div>
       <div
         onClick={() => router.push('/ticketing/melon-mode/real')}
-        className={`hover:shadow-card-hover flex flex-col items-center justify-center rounded-card bg-gray-50 p-6 shadow-card-colored transition-shadow`}
+        className={`flex flex-col items-center justify-center rounded-card bg-white p-6 shadow-card-colored transition-shadow hover:shadow-card-hover`}
       >
         <div className="relative mx-0 flex h-40 w-40 items-center justify-center">
           <Image

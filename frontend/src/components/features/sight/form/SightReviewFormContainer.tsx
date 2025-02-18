@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SightReviewForm from '@/components/features/sight/form/SightReviewForm';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
 import { submitSightReview } from '@/lib/api/sightReview';
 import type { SightReviewFormData } from '@/types/sightReviews';
 import { mapFormDataToApiRequest } from '@/lib/utils/sightReviewMapper';
+import { SuccessModal } from '@/components/common/SuccessModal';
 
 interface SightReviewFormContainerProps {
   className?: string;
@@ -17,8 +19,9 @@ export function SightReviewFormContainer({
   artist,
 }: SightReviewFormContainerProps) {
   const router = useRouter();
-  const store = useSightReviewStore(); // store를 컴포넌트 최상위에서 호출
+  const store = useSightReviewStore();
   const { setError, setIsSubmitting } = store;
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
 
   const handleSubmit = async (data: SightReviewFormData) => {
     try {
@@ -30,6 +33,7 @@ export function SightReviewFormContainer({
 
       const mappedData = mapFormDataToApiRequest(reviewData);
       await submitSightReview(mappedData, photo);
+      setIsCompleteModalOpen(true);
       return undefined;
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -48,12 +52,24 @@ export function SightReviewFormContainer({
     router.back();
   };
 
+  const handleModalClose = () => {
+    setIsCompleteModalOpen(false);
+    router.replace('/mypage/sight');
+  };
+
   return (
-    <SightReviewForm
-      onSubmit={handleSubmit}
-      artist={artist}
-      className={className}
-      onClose={handleClose}
-    />
+    <>
+      <SightReviewForm
+        onSubmit={handleSubmit}
+        artist={artist}
+        className={className}
+        onClose={handleClose}
+      />
+      <SuccessModal
+        isOpen={isCompleteModalOpen}
+        onClose={handleModalClose}
+        message="리뷰가 등록되었습니다"
+      />
+    </>
   );
 }

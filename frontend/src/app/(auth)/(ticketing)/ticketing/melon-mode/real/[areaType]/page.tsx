@@ -9,6 +9,8 @@ import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
 import { useUserStore } from '@/store/useUserStore';
 import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
 import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessagePopup';
+import { useRevertSeat } from '@/store/useRevertSeatStore';
+import api from '@/lib/api/axios';
 
 export default function Seat() {
   const [isActive, setIsActive] = useState(false);
@@ -21,6 +23,44 @@ export default function Seat() {
 
   const userId = useUserStore((state) => state.user?.userId);
   const { onSuccess, setSecurityPopupState } = useSecurityPopupStore();
+
+  const setPrevAdress = useRevertSeat((state) => state.setPrevAdress);
+  const prevAdress = useRevertSeat((state) => state.prevAdress);
+
+  const cleanup = async () => {
+    try {
+      console.log('🪑 예약 취소 API 호출 시도');
+      await api.delete('/api/v1/ticketing/result');
+      console.log('🪑 예약이 성공적으로 취소되었습니다.');
+    } catch (error) {
+      console.error('🪑 예약 취소 중 오류 발생:', error);
+    }
+  };
+
+  // useEffect(() => {
+  //   const currentPrevAddress = useRevertSeat.getState().prevAdress;
+  //   console.log('🪑 현재 prevAdress 값:', currentPrevAddress);
+
+  //   if (currentPrevAddress === 'payment') {
+  //     console.log('🪑 payment 감지됨');
+  //     cleanup();
+  //     setPrevAdress('');
+  //   }
+  // }, [prevAdress]);
+  useEffect(() => {
+    const checkPrevAddress = async () => {
+      const currentPrevAddress = useRevertSeat.getState().prevAdress;
+      console.log('🪑 현재 prevAdress 값:', currentPrevAddress);
+
+      if (currentPrevAddress === 'payment') {
+        console.log('🪑 payment 감지됨');
+        await cleanup();
+        setPrevAdress('');
+      }
+    };
+
+    checkPrevAddress();
+  }, []);
 
   // selectedSeatNumber 변경 시 버튼 활성화 상태 업데이트
   useEffect(() => {

@@ -9,7 +9,7 @@ export default function SecurityMessage() {
   const [gameState, setGameState] = useState<
     'counting' | 'showing' | 'completed'
   >('counting');
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
   const [showPopup, setShowPopup] = useState(false);
   const startTimeRef = useRef<number>(0);
   const autoRedirectTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -20,7 +20,7 @@ export default function SecurityMessage() {
 
   useEffect(() => {
     const startTimestamp = Date.now();
-    const endTimestamp = startTimestamp + 5000; // 5초 후
+    const endTimestamp = startTimestamp + 3000; // 5초 후
 
     const interval = setInterval(() => {
       const now = Date.now();

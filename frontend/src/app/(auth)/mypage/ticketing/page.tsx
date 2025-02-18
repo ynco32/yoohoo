@@ -5,6 +5,7 @@ import StatsSection from '@/components/features/mypage/MyTicketingState';
 import TicketingRecord from '@/components/features/mypage/MyTicketingRecord';
 import api from '@/lib/api/axios';
 import { AxiosError } from 'axios';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface recordProps {
   section: string;
@@ -21,10 +22,12 @@ const TicketingHistory = () => {
     try {
       const { data } = await api.get(`/api/v1/ticketing/results`);
       setRecords(data);
+      console.log('All records:', records);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log('티켓팅 기록 못 가져옴', error);
       }
+      // 더미 데이터
       // setRecords([
       //   {
       //     section: 'A',
@@ -36,49 +39,49 @@ const TicketingHistory = () => {
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 4,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 6,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 8,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 100,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 52,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 55,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
       //   {
       //     section: 'B',
       //     seat: '2-3',
-      //     rank: 5,
+      //     rank: 19,
       //     processingTime: 25,
       //     reserveTime: '2025-02-15T14:20:15',
       //   },
@@ -89,7 +92,7 @@ const TicketingHistory = () => {
   const getRank = () => {
     if (!records?.length) return 0;
     const sum = records.reduce((total, record) => total + record.rank, 0);
-    return sum / records.length;
+    return Number((sum / records.length).toFixed(1));
   };
   const rank = getRank();
 
@@ -99,7 +102,7 @@ const TicketingHistory = () => {
       (total, record) => total + record.processingTime,
       0
     );
-    return sum / records.length;
+    return Number((sum / records.length).toFixed(2));
   };
   const seconds = getAverage();
   const tries = records.length || 0;
@@ -121,15 +124,19 @@ const TicketingHistory = () => {
 
       {/* 티켓팅 기록 리스트 */}
       <div className="mt-8 px-6">
-        {records.map((record, index) => (
-          <TicketingRecord
-            key={index}
-            date={record.reserveTime}
-            section={record.section}
-            seat={record.seat}
-            isLast={index === records.length - 1}
-          />
-        ))}
+        {records.length > 0 ? (
+          records.map((record, index) => (
+            <TicketingRecord
+              key={index}
+              date={record.reserveTime}
+              section={record.section}
+              seat={record.seat}
+              isLast={index === records.length - 1}
+            />
+          ))
+        ) : (
+          <EmptyState message="티켓팅 기록이 없습니다." />
+        )}
       </div>
     </div>
   );

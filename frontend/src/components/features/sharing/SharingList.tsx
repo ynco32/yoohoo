@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { SharingCard } from './SharingCard';
-import { SharingPost } from '@/types/sharing';
+import { SharingPost, ViewTabItem } from '@/types/sharing';
 
 export interface SharingListProps {
   posts: SharingPost[];
@@ -10,6 +10,7 @@ export interface SharingListProps {
   isLoading: boolean;
   hasMore: boolean;
   onLoadMore: () => Promise<void>;
+  currentTab?: ViewTabItem | null;
 }
 
 /**
@@ -22,6 +23,7 @@ export const SharingList = ({
   isLoading,
   hasMore,
   onLoadMore,
+  currentTab,
 }: SharingListProps) => {
   const observerRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +43,40 @@ export const SharingList = ({
 
     return () => observer.disconnect();
   }, [hasMore, isLoading, onLoadMore]);
+
+  // 현재 탭에 따라 다른 빈 상태 메시지 표시
+  const getEmptyStateMessage = () => {
+    switch (currentTab) {
+      case 'scrap':
+        return {
+          title: '북마크한 나눔이 없습니다',
+          subtitle: '관심있는 나눔을 북마크해보세요',
+        };
+      case 'my':
+        return {
+          title: '작성한 나눔글이 없습니다',
+          subtitle: '새로운 나눔을 시작해보세요',
+        };
+      default:
+        return {
+          title: '진행중인 나눔이 없습니다',
+          subtitle: '새로운 나눔이 등록되면 이곳에 표시됩니다',
+        };
+    }
+  };
+
+  // 게시글이 없고 로딩 중이 아닌 상태일 때 빈 상태 표시
+  if (posts.length === 0 && !isLoading) {
+    const { title, subtitle } = getEmptyStateMessage();
+    return (
+      <div className="px-4 py-10">
+        <div className="rounded-md bg-white py-8 text-center">
+          <p className="text-lg font-medium text-gray-700">{title}</p>
+          <p className="mt-2 text-sm text-gray-500">{subtitle}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 pb-14">

@@ -43,7 +43,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 		List<Concert> results = jpaQueryFactory
 			.selectFrom(concert)
 			.where(conditions)
-			.orderBy(concert.startTime.desc())
+			.orderBy(concert.startTime.asc())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 

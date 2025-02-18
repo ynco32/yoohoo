@@ -3,7 +3,7 @@ import MyProfile from '@/components/features/mypage/MyProfile';
 
 export default function MyPage() {
   return (
-    <div className="h-full bg-sight-main-gra">
+    <div className="h-full overflow-hidden bg-sight-main-gra">
       <div className="mx-auto flex w-full items-center justify-center">
         <MyProfile />
       </div>

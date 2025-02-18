@@ -29,7 +29,7 @@ import { mapApiToSightReview } from '@/lib/utils/sightReviewMapper';
 import type { SightReviewData } from '@/types/sightReviews';
 
 export function SightReviewList() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(true);
   const [reviews, setReviews] = useState<SightReviewData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

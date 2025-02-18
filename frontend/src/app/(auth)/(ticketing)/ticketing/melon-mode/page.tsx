@@ -8,7 +8,7 @@ export default function ModeSelect() {
           모드를 선택해주세요
         </span>
       </div>
-      <div className="flex flex-1 items-center justify-center">
+      <div className="mt-4 flex justify-center">
         <Mode />
       </div>
     </div>

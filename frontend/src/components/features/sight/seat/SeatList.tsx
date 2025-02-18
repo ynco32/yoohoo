@@ -11,11 +11,15 @@ interface SeatListProps {
 }
 
 const SeatList = ({ isScrapMode }: SeatListProps) => {
-  const { seats, isLoading, fetchSeatsBySection } = useSeatsStore();
+  const { seats, isLoading, fetchSeatsBySection, selectSeat, selectedSeatId } =
+    useSeatsStore();
   const { arenaId, stageType, sectionId } = useParams();
   const router = useRouter();
   const svgRef = useRef<SVGSVGElement>(null);
   const [currentScale, setCurrentScale] = useState(1);
+
+  const params = useParams();
+  const currentSeatId = params.seatId as string;
 
   const SEAT_WIDTH = 10;
   const SEAT_HEIGHT = 10;
@@ -27,6 +31,14 @@ const SeatList = ({ isScrapMode }: SeatListProps) => {
     SEAT_HEIGHT,
     SEAT_MARGIN
   );
+
+  useEffect(() => {
+    if (currentSeatId) {
+      selectSeat(Number(currentSeatId));
+    } else {
+      selectSeat(null);
+    }
+  }, [currentSeatId, selectSeat]);
 
   useEffect(() => {
     fetchSeatsBySection(Number(arenaId), Number(stageType), Number(sectionId));
@@ -82,6 +94,7 @@ const SeatList = ({ isScrapMode }: SeatListProps) => {
                     {...seat}
                     scrapped={seat.scrapped}
                     isScrapMode={isScrapMode}
+                    isSelected={selectedSeatId === seat.seatId}
                     x={x}
                     y={y}
                     width={SEAT_WIDTH}

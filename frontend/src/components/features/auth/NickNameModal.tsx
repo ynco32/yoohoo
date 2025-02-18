@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { SubmitButton } from '@/components/ui/SubmitButton';
 import api from '@/lib/api/axios';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 interface NickNameState {
   value: string;
@@ -125,14 +125,9 @@ const NickNameModal = () => {
   };
 
   return (
-    <div className="w-80 rounded-3xl bg-primary-sub1 p-6">
-      <h2 className="mb-2 text-center text-xl font-medium">닉네임 만들기</h2>
-      <p className="mb-6 text-center text-sm text-gray-600">
-        좌석 후기 및 나눔글에서 사용됩니다
-      </p>
-
+    <div className="w-80 rounded-3xl p-6">
       <div className="mb-4">
-        <div className="relative flex h-12 w-full items-center rounded-full bg-primary-sub2">
+        <div className="relative flex h-12 w-full items-center border-b-2 border-sight-button">
           <input
             type="text"
             value={state.value}
@@ -144,21 +139,25 @@ const NickNameModal = () => {
               }));
             }}
             placeholder="닉네임을 입력하세요"
-            className="h-full w-full rounded-full bg-transparent px-6 text-white placeholder:text-white/70 focus:outline-none"
+            className="h-full w-full rounded-full bg-transparent px-2 text-text-menu placeholder:text-text-description focus:outline-none"
             maxLength={20}
           />
         </div>
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-center gap-2">
         <SubmitButton
           onClick={handleCheckNickName}
           disabled={state.isLoading}
-          // className="bg-secondary hover:bg-secondary/80"
+          className="w-1/2 rounded-card bg-gray-50 px-4 py-2 text-caption1-bold text-text-menu shadow-card-colored hover:shadow-card-hover"
         >
           중복확인
         </SubmitButton>
-        <SubmitButton onClick={handleSubmit} disabled={state.isLoading}>
+        <SubmitButton
+          onClick={handleSubmit}
+          disabled={state.isLoading}
+          className="w-1/2 rounded-card bg-white px-4 py-2 text-caption1-bold text-text-menu shadow-card-colored hover:shadow-card-hover"
+        >
           {state.isLoading ? '처리중...' : '설정'}
         </SubmitButton>
       </div>

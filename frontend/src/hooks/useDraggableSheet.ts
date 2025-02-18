@@ -16,8 +16,8 @@ export const useDraggableSheet = ({
   onClose,
 }: UseDraggableSheetProps) => {
   const [dragState, setDragState] = useState<DragState>({
-    position: 'closed',
-    currentTranslate: 90,
+    position: 'half',
+    currentTranslate: 50,
     isDragging: false,
   });
 

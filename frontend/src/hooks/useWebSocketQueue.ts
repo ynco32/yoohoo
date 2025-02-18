@@ -81,7 +81,7 @@ export const useWebSocketQueue = () => {
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 400) {
-          setError('이미 티켓팅에 참여한 내역이 있습니다.');
+          setError('이미 티켓팅에 참여하셨습니다.');
         } else {
           setError('티켓팅 참여 중 오류가 발생했습니다.');
         }

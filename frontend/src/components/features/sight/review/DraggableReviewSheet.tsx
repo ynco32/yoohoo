@@ -127,7 +127,7 @@ export const DraggableReviewSheet = ({
                   <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
                 </div>
 
-                <div className="flex items-center justify-between px-6 py-2">
+                <div className="flex items-center justify-between px-4 py-2">
                   <div className="flex items-center gap-2">
                     <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
                     <span className="text-body-bold text-primary-main">

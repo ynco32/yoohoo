@@ -130,8 +130,8 @@ export const ConcertSelect = ({
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="가수 이름을 입력해주세요"
-          className="w-full border-0 border-b border-gray-200 bg-transparent py-2 pl-8 pr-3 text-sm text-gray-900 focus:border-primary-main focus:outline-none focus:ring-0" /* 스타일 변경 */
+          placeholder="가수명"
+          className="w-full border-0 border-b border-gray-200 bg-transparent py-2 pl-8 pr-3 text-sm text-gray-900 focus:border-primary-main focus:outline-none focus:ring-0"
         />
       </div>
 

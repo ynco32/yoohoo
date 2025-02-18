@@ -180,7 +180,7 @@ export const SightReviewForm = React.memo(
           );
         case 1:
           return (
-            <div className="w-full">
+            <div className="h-full w-full">
               <ImageUpload
                 value={formData.photo}
                 onChange={(file) => handleFieldChange('photo', file)}
@@ -219,7 +219,7 @@ export const SightReviewForm = React.memo(
 
     return (
       <div
-        className={`relative flex h-dvh flex-col rounded-layout bg-white shadow-card-colored ${className}`}
+        className={`relative flex h-full flex-col rounded-layout bg-white shadow-card-colored ${className}`}
       >
         {/* Close Button */}
         <button
@@ -230,7 +230,7 @@ export const SightReviewForm = React.memo(
         </button>
 
         <form
-          className="flex flex-1 flex-col py-2xl"
+          className="flex h-full flex-1 flex-col py-2xl"
           autoComplete="off"
           noValidate
           onSubmit={(e) => {

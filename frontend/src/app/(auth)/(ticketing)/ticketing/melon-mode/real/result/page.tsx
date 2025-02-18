@@ -12,6 +12,7 @@ import {
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { SuccessModal } from '@/components/common/SuccessModal';
 
 export default function Result() {
   const [section, setSection] = useState('');
@@ -19,6 +20,7 @@ export default function Result() {
   const [ticketRank, setTicketRank] = useState<number | null>(null);
   const [processingTime, setProcessingTime] = useState<number | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   // const { selectedSeatNumber } = useTicketingSeatStore();
   const router = useRouter();
@@ -55,6 +57,7 @@ export default function Result() {
     if (isSaved) return;
     saveData(section, seat);
     setIsSaved(true);
+    setIsSuccessModalOpen(true);
   };
 
   const saveData = async (section: string, seat: string) => {
@@ -95,6 +98,11 @@ export default function Result() {
 
   return (
     <div className="flex h-full flex-col items-center p-4">
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
+        message="티켓팅 결과 저장 성공!"
+        onClose={() => {}}
+      />
       <div className="mb-8 w-full text-center">
         <h1 className="text-xl font-semibold">티켓팅</h1>
       </div>

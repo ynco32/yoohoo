@@ -25,7 +25,7 @@ export const ViewScoreSelect = ({
   ];
 
   return (
-    <div className={`mt-2 space-y-4 px-4 ${className}`}>
+    <div className={`mt-4 space-y-4 px-4 ${className}`}>
       <FormSectionHeader title="시야" description="체감 거리를 선택해주세요" />
       <div className="flex flex-col space-y-6">
         <div className="px-2">

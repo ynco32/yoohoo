@@ -80,12 +80,12 @@ export const ImageUpload = ({
         accept="image/*"
         onChange={handleImageChange}
       />
-      <div className="flex flex-col gap-2">
-        <div className="relative">
+      <div className="flex w-full flex-col gap-2 px-4">
+        <div className="relative flex h-52 w-full items-center justify-center rounded-card border pb-4">
           <button
             type="button"
             onClick={handleClick}
-            className={`relative flex h-24 w-32 items-center justify-center rounded-lg transition-colors ${
+            className={`relative mx-4 flex h-40 w-full items-center justify-center rounded-lg border border-dashed transition-colors ${
               error
                 ? 'border-2 border-red-500 bg-red-50 hover:bg-red-100'
                 : 'bg-gray-50 hover:bg-gray-100'
@@ -103,9 +103,21 @@ export const ImageUpload = ({
                 />
               </div>
             ) : (
-              <CameraIcon
-                className={`h-6 w-6 ${error ? 'text-red-400' : 'text-gray-400'}`}
-              />
+              <div className="flex flex-col items-center">
+                <CameraIcon
+                  className={`mb-2 mt-2 h-12 w-12 ${error ? 'text-red-400' : 'text-gray-400'}`}
+                />
+                <span
+                  className={`text-sm ${error ? 'text-red-400' : 'text-gray-400'}`}
+                >
+                  시야를 확인할 수 있는
+                </span>
+                <span
+                  className={`text-sm ${error ? 'text-red-400' : 'text-gray-400'}`}
+                >
+                  사진을 업로드 해주세요
+                </span>
+              </div>
             )}
           </button>
           {preview && (

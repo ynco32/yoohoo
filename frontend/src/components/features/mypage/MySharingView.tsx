@@ -33,6 +33,15 @@ export const MySharingView = () => {
   // 모든 데이터 가져오기
   const fetchData = useCallback(async () => {
     if (!mswInitialized) return;
+
+    // 현재 탭이 null인 경우 데이터를 초기화하고 함수를 종료
+    if (currentTab === null) {
+      setAllPosts([]);
+      setDisplayedPosts([]);
+      setHasMore(false);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -50,9 +59,17 @@ export const MySharingView = () => {
           case 'my':
             response = await sharingAPI.getMySharings(lastId);
             break;
+          default:
+            console.warn(`Unsupported tab: ${currentTab}`);
+            hasMoreData = false; // Exit the loop for unsupported tabs
+            continue; // Skip the rest of this iteration
         }
 
-        if (!response?.sharings || !Array.isArray(response.sharings)) {
+        if (
+          !response ||
+          !response.sharings ||
+          !Array.isArray(response.sharings)
+        ) {
           console.error('Invalid data format:', response);
           break;
         }
@@ -117,14 +134,20 @@ export const MySharingView = () => {
       <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <MyViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>
-      <div ref={containerRef} className={'pt-[44px] flex-1 overflow-auto'}>
-        <SharingList
-          posts={displayedPosts}
-          concertId={concertId}
-          isLoading={isLoading}
-          hasMore={hasMore}
-          onLoadMore={handleLoadMore}
-        />
+      <div ref={containerRef} className={'flex-1 overflow-auto pt-[44px]'}>
+        {currentTab === null ? (
+          <div className="flex h-full items-center justify-center text-gray-500">
+            탭을 선택하여 내용을 확인하세요
+          </div>
+        ) : (
+          <SharingList
+            posts={displayedPosts}
+            concertId={concertId}
+            isLoading={isLoading}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+          />
+        )}
       </div>
     </div>
   );

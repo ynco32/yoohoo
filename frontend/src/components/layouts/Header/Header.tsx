@@ -2,10 +2,13 @@
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { BackButton } from './BackButton';
-import { MenuToggleButton } from './MenuToggleButton';
 import { NavigationMenu } from './NavigationMenu';
 import Image from 'next/image';
+
+// 버튼 props 타입 정의
+interface ButtonProps {
+  onClick: () => void;
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,6 +51,16 @@ const Header = () => {
       return;
     }
 
+    // /sharing/0/xxx 경로에서는 /mypage/sharing으로 이동
+    if (
+      pathSegments[0] === 'sharing' &&
+      pathSegments.length >= 2 &&
+      pathSegments[1] === '0'
+    ) {
+      router.push('/mypage/sharing');
+      return;
+    }
+
     // 루트 레벨의 페이지들(/sight, /sharing 등)은 /main으로 이동
     if (
       pathSegments.length === 1 &&
@@ -74,6 +87,48 @@ const Header = () => {
     setIsMenuOpen(true);
   };
 
+  // 뒤로가기 버튼 컴포넌트 (이미지 사용)
+  const BackButtonWithImage = ({ onClick }: ButtonProps) => (
+    <button
+      onClick={onClick}
+      className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none"
+      aria-label="뒤로 가기"
+    >
+      <Image
+        src="/images/arrow.png"
+        alt="뒤로 가기"
+        width={24}
+        height={24}
+        className="transition-transform hover:scale-105"
+        style={{
+          filter:
+            'brightness(0) saturate(100%) invert(46%) sepia(83%) saturate(1939%) hue-rotate(203deg) brightness(101%) contrast(96%)',
+        }}
+      />
+    </button>
+  );
+
+  // 메뉴 토글 버튼 컴포넌트 (이미지 사용)
+  const MenuToggleWithImage = ({ onClick }: ButtonProps) => (
+    <button
+      onClick={onClick}
+      className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none"
+      aria-label="메뉴 열기"
+    >
+      <Image
+        src="/images/more.png"
+        alt="메뉴 열기"
+        width={24}
+        height={24}
+        className="transition-transform hover:scale-105"
+        style={{
+          filter:
+            'brightness(0) saturate(100%) invert(46%) sepia(83%) saturate(1939%) hue-rotate(203deg) brightness(101%) contrast(96%)',
+        }}
+      />
+    </button>
+  );
+
   return (
     <div className="container sticky left-0 top-0 z-header">
       <header className="h-16">
@@ -90,14 +145,14 @@ const Header = () => {
                 />
               </Link>
             ) : (
-              <BackButton onClick={handleBack} />
+              <BackButtonWithImage onClick={handleBack} />
             )}
           </div>
           <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-medium">
             {getTitleByPath()}
           </h1>
           <div className="flex-none">
-            <MenuToggleButton onClick={openMenu} />
+            <MenuToggleWithImage onClick={openMenu} />
           </div>
         </div>
       </header>

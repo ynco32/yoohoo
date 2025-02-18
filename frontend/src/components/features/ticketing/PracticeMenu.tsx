@@ -52,7 +52,7 @@ export default function PracticeMenu() {
         }
         className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center"
       >
-        <div className="hover:shadow-card-hover flex flex-col items-center justify-center rounded-card bg-gray-50 p-4 shadow-card-colored transition-shadow">
+        <div className="flex flex-col items-center justify-center rounded-card bg-white p-4 shadow-card-colored transition-shadow hover:shadow-card-hover">
           <div className="relative flex h-12 w-12 items-center justify-center">
             <Image
               src="/images/capcha.png"

@@ -54,6 +54,11 @@ export const Section = ({
     return scrapped ? '#FFFA77' : '#A7DEFF';
   };
 
+  const getTextColor = () => {
+    if (!available) return '#646464'; // 이용 불가능한 섹션
+    return '#4986E8';
+  };
+
   return (
     <g
       onClick={available ? onClick : undefined}
@@ -74,7 +79,7 @@ export const Section = ({
         y={labelPosition.y}
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="#fff"
+        fill={getTextColor()}
         fontSize="12"
       >
         {sectionNumber}

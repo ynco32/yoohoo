@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { CameraIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
@@ -19,6 +20,10 @@ export const ImageUpload = ({
 }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
+  const pathname = usePathname();
+
+  const isSharing = pathname?.includes('sharing');
+  const isSight = pathname?.includes('sight');
 
   // value가 변경될 때마다 preview 업데이트
   React.useEffect(() => {
@@ -48,10 +53,9 @@ export const ImageUpload = ({
     const maxSize = 5 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      // error prop이 있다면 에러 메시지 표시
       onError?.('파일 크기는 5MB를 초과할 수 없습니다.');
       if (inputRef.current) {
-        inputRef.current.value = ''; // 입력 필드 초기화
+        inputRef.current.value = '';
       }
       return;
     }
@@ -71,6 +75,28 @@ export const ImageUpload = ({
     }
   };
 
+  const renderUploadText = () => {
+    const textClassName = `text-sm ${error ? 'text-red-400' : 'text-gray-400'}`;
+
+    if (isSharing) {
+      return (
+        <>
+          <span className={textClassName}>나눔 물건을 확인할 수 있는</span>
+          <span className={textClassName}>사진을 업로드 해주세요</span>
+        </>
+      );
+    } else if (isSight) {
+      return (
+        <>
+          <span className={textClassName}>시야를 확인할 수 있는</span>
+          <span className={textClassName}>사진을 업로드 해주세요</span>
+        </>
+      );
+    }
+
+    return <span className={textClassName}>이미지를 업로드 해주세요</span>;
+  };
+
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       <input
@@ -80,12 +106,12 @@ export const ImageUpload = ({
         accept="image/*"
         onChange={handleImageChange}
       />
-      <div className="flex flex-col gap-2">
-        <div className="relative">
+      <div className="flex w-full flex-col gap-2 px-4">
+        <div className="relative flex h-52 w-full items-center justify-center rounded-card border pb-4">
           <button
             type="button"
             onClick={handleClick}
-            className={`relative flex h-24 w-32 items-center justify-center rounded-lg transition-colors ${
+            className={`relative mx-4 flex h-40 w-full items-center justify-center rounded-lg border border-dashed transition-colors ${
               error
                 ? 'border-2 border-red-500 bg-red-50 hover:bg-red-100'
                 : 'bg-gray-50 hover:bg-gray-100'
@@ -103,9 +129,12 @@ export const ImageUpload = ({
                 />
               </div>
             ) : (
-              <CameraIcon
-                className={`h-6 w-6 ${error ? 'text-red-400' : 'text-gray-400'}`}
-              />
+              <div className="flex flex-col items-center">
+                <CameraIcon
+                  className={`mb-2 mt-2 h-12 w-12 ${error ? 'text-red-400' : 'text-gray-400'}`}
+                />
+                {renderUploadText()}
+              </div>
             )}
           </button>
           {preview && (

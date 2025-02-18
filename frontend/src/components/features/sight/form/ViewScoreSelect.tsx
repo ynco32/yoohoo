@@ -25,24 +25,26 @@ export const ViewScoreSelect = ({
   ];
 
   return (
-    <div className={`mt-2 space-y-2 px-4 ${className}`}>
+    <div className={`mt-4 space-y-4 px-4 ${className}`}>
       <FormSectionHeader title="시야" description="체감 거리를 선택해주세요" />
-      <div className="relative px-2">
-        <div className="flex items-center justify-between">
-          {circles.map((circle, index) => (
-            <button
-              key={index}
-              onClick={() => onChange?.(circle.value)}
-              className={`rounded-full transition-all duration-normal ${circle.size} ${
-                value === circle.value
-                  ? 'bg-sight-form ring-2 ring-sight-button ring-offset-2'
-                  : 'bg-gray-100 blur-sm hover:bg-gray-300'
-              }`}
-              aria-label={`시야 거리 레벨 ${index + 1}`}
-            />
-          ))}
+      <div className="flex flex-col space-y-6">
+        <div className="px-2">
+          <div className="flex items-center justify-between">
+            {circles.map((circle, index) => (
+              <button
+                key={index}
+                onClick={() => onChange?.(circle.value)}
+                className={`rounded-full transition-all duration-normal ${circle.size} ${
+                  value === circle.value
+                    ? 'bg-sight-form ring-2 ring-sight-button ring-offset-2'
+                    : 'bg-gray-100 blur-sm hover:bg-gray-300'
+                }`}
+                aria-label={`시야 거리 레벨 ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-        <div className="absolute mt-2 flex w-full justify-between">
+        <div className="flex w-full justify-between px-2">
           <span className="text-sm text-gray-500">가깝다</span>
           <span className="text-sm text-gray-500">멀다</span>
         </div>

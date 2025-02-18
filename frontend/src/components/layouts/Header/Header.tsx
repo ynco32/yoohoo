@@ -48,6 +48,16 @@ const Header = () => {
       return;
     }
 
+    // /sharing/0/xxx 경로에서는 /mypage/sharing으로 이동
+    if (
+      pathSegments[0] === 'sharing' &&
+      pathSegments.length >= 2 &&
+      pathSegments[1] === '0'
+    ) {
+      router.push('/mypage/sharing');
+      return;
+    }
+
     // 루트 레벨의 페이지들(/sight, /sharing 등)은 /main으로 이동
     if (
       pathSegments.length === 1 &&

@@ -90,7 +90,7 @@ public class AuthService {
 		response.addCookie(cookie);
 	}
 
-	public void logout(String email) {
-		authRepository.deleteByUserEmail(email);
+	public void logout(Long userId) {
+		authRepository.deleteByUserId(userId);
 	}
 }

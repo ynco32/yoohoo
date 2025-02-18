@@ -30,7 +30,7 @@ public class AuthController {
 
 	@PostMapping("/logout")
 	public void logout(@AuthenticationPrincipal UserPrincipal user) {
-		authService.logout(user.getEmail());
+		authService.logout(user.getUserId());
 	}
 
 }

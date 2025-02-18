@@ -5,6 +5,7 @@ import StatsSection from '@/components/features/mypage/MyTicketingState';
 import TicketingRecord from '@/components/features/mypage/MyTicketingRecord';
 import api from '@/lib/api/axios';
 import { AxiosError } from 'axios';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface recordProps {
   section: string;
@@ -25,6 +26,7 @@ const TicketingHistory = () => {
       if (error instanceof AxiosError) {
         console.log('티켓팅 기록 못 가져옴', error);
       }
+      // 더미 데이터
       // setRecords([
       //   {
       //     section: 'A',
@@ -121,15 +123,19 @@ const TicketingHistory = () => {
 
       {/* 티켓팅 기록 리스트 */}
       <div className="mt-8 px-6">
-        {records.map((record, index) => (
-          <TicketingRecord
-            key={index}
-            date={record.reserveTime}
-            section={record.section}
-            seat={record.seat}
-            isLast={index === records.length - 1}
-          />
-        ))}
+        {records.length > 0 ? (
+          records.map((record, index) => (
+            <TicketingRecord
+              key={index}
+              date={record.reserveTime}
+              section={record.section}
+              seat={record.seat}
+              isLast={index === records.length - 1}
+            />
+          ))
+        ) : (
+          <EmptyState message="티켓팅 기록이 없습니다." />
+        )}
       </div>
     </div>
   );

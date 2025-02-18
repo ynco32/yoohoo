@@ -137,7 +137,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 		List<Sharing> results = jpaQueryFactory
 			.selectFrom(sharing)
 			.where(conditions)
-			.orderBy(sharing.sharingId.desc())
+			.orderBy(sharing.sharingId.asc())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 
@@ -165,7 +165,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.selectFrom(sharing)
 			.join(scrapSharing).on(scrapSharing.sharing.sharingId.eq(sharing.sharingId))
 			.where(conditions)
-			.orderBy(sharing.sharingId.desc())
+			.orderBy(sharing.sharingId.asc())
 			.limit(pageable.getPageSize() + 1)
 			.fetch();
 

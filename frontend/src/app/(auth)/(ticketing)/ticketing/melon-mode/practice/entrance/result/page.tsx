@@ -9,7 +9,7 @@ export default function EntranceResultPage() {
   // const { reactionTime } = useTicketintPracticeResultStore();
 
   const handleRetry = () => {
-    router.push('entrance');
+    router.push('./');
   };
 
   return (

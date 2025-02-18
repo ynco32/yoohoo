@@ -102,7 +102,7 @@ const Header = () => {
         className="transition-transform hover:scale-105"
         style={{
           filter:
-            'brightness(0) saturate(100%) invert(40%) sepia(69%) saturate(1928%) hue-rotate(222deg) brightness(96%) contrast(88%)',
+            'brightness(0) saturate(100%) invert(46%) sepia(83%) saturate(1939%) hue-rotate(203deg) brightness(101%) contrast(96%)',
         }}
       />
     </button>
@@ -123,7 +123,7 @@ const Header = () => {
         className="transition-transform hover:scale-105"
         style={{
           filter:
-            'brightness(0) saturate(100%) invert(40%) sepia(69%) saturate(1928%) hue-rotate(222deg) brightness(96%) contrast(88%)',
+            'brightness(0) saturate(100%) invert(46%) sepia(83%) saturate(1939%) hue-rotate(203deg) brightness(101%) contrast(96%)',
         }}
       />
     </button>

@@ -103,14 +103,11 @@ export const SharingMap = ({
 
   // 1. 카카오맵 SDK 로딩 및 맵 초기화를 위한 useEffect
   useEffect(() => {
-    console.log('카카오맵 초기화 useEffect 실행');
-
     // 이미 초기화되었으면 스킵
     if (kakaoMapInitialized) return;
 
     const initializeMap = () => {
       if (!window.kakao?.maps || !mapContainerRef.current) {
-        console.log('카카오맵 초기화 실패: 맵 또는 컨테이너 없음');
         return;
       }
 
@@ -138,22 +135,17 @@ export const SharingMap = ({
         }
       });
 
-      console.log('카카오맵 초기화 완료');
       setKakaoMapInitialized(true);
     };
 
     // 카카오맵 SDK가 이미 로드되어 있는지 확인
     if (window.kakao && window.kakao.maps) {
-      console.log('카카오맵 SDK 이미 로드됨');
       initializeMap();
     } else {
-      console.log('카카오맵 SDK 로딩 시작');
       const script = document.createElement('script');
       script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&autoload=false`;
       script.onload = () => {
-        console.log('카카오맵 SDK 스크립트 로드 완료');
         window.kakao.maps.load(() => {
-          console.log('카카오맵 SDK 초기화 완료');
           initializeMap();
         });
       };
@@ -168,12 +160,6 @@ export const SharingMap = ({
 
   // 2. 마커 생성 및 관리를 위한 useEffect
   useEffect(() => {
-    console.log('마커 생성 useEffect 실행', {
-      kakaoMapInitialized,
-      postsLength: posts.length,
-      currentMarkers: markersRef.current.length,
-    });
-
     // 맵이 초기화되고 포스트 데이터가 있을 때만 마커 생성
     if (kakaoMapInitialized && mapRef.current) {
       // 기존 마커들 모두 제거
@@ -184,11 +170,8 @@ export const SharingMap = ({
 
       // 새로운 마커 생성 (posts가 있을 때만)
       if (posts.length > 0) {
-        console.log('마커 생성 시작');
-
         posts.forEach((post) => {
           if (!post.latitude || !post.longitude) {
-            console.log('위치 정보 없는 포스트 스킵:', post.sharingId);
             return;
           }
 
@@ -209,8 +192,6 @@ export const SharingMap = ({
 
           markersRef.current.push(marker);
         });
-
-        console.log('마커 생성 완료, 총 마커 수:', markersRef.current.length);
       }
     }
   }, [kakaoMapInitialized, posts, handleMarkerClick]);
@@ -218,8 +199,6 @@ export const SharingMap = ({
   // 3. 컴포넌트 언마운트 시 정리를 위한 useEffect
   useEffect(() => {
     return () => {
-      console.log('SharingMap 컴포넌트 언마운트 - 정리 작업 시작');
-
       // 마커 제거
       if (markersRef.current.length > 0) {
         markersRef.current.forEach((marker) => {
@@ -237,8 +216,6 @@ export const SharingMap = ({
       // 맵 참조 초기화
       mapRef.current = null;
       setKakaoMapInitialized(false);
-
-      console.log('SharingMap 컴포넌트 언마운트 - 정리 작업 완료');
     };
   }, []);
 
@@ -250,13 +227,8 @@ export const SharingMap = ({
       posts.length > 0 &&
       markersRef.current.length === 0
     ) {
-      console.log('마커가 생성되지 않아 3초 후 재시도합니다');
-
       const retryTimeout = setTimeout(() => {
-        console.log('마커 생성 재시도 시작');
-
         if (!mapRef.current) {
-          console.log('재시도 실패: 맵 참조 없음');
           return;
         }
 
@@ -281,8 +253,6 @@ export const SharingMap = ({
 
           markersRef.current.push(marker);
         });
-
-        console.log('마커 재시도 완료, 총 마커 수:', markersRef.current.length);
       }, 3000);
 
       return () => clearTimeout(retryTimeout);

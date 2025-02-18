@@ -137,7 +137,6 @@ export const ConcertList = ({ searchTerm = '' }: ConcertListProps) => {
       }
 
       // 새로운 검색 시작
-      console.log('새로운 검색 시작:', searchTerm);
       prevSearchTermRef.current = searchTerm;
 
       // 먼저 모든 상태를 초기화

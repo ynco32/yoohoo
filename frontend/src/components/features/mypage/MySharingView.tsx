@@ -9,6 +9,7 @@ import { SharingPost } from '@/types/sharing';
 import { formatDateTime } from '@/lib/utils/dateFormat';
 import { sharingAPI } from '@/lib/api/sharing';
 import { useMswInit } from '@/hooks/useMswInit';
+import { useSharingScrapStore } from '@/store/useSharingScrapStore';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -21,6 +22,7 @@ export const MySharingView = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [currentTab, setCurrentTab] = useState<ViewTabItem | null>(null);
   const { mswInitialized } = useMswInit();
+  const { initScrappedSharings } = useSharingScrapStore();
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,6 +57,10 @@ export const MySharingView = () => {
         switch (currentTab) {
           case 'scrap':
             response = await sharingAPI.getMyScrappedSharings(lastId);
+            // 스크랩 스토어 초기화
+            if (response && response.sharings) {
+              initScrappedSharings(response.sharings);
+            }
             break;
           case 'my':
             response = await sharingAPI.getMySharings(lastId);

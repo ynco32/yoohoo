@@ -7,6 +7,7 @@ export const useReservationCleanup = () => {
   // const prevPathnameRef = useRef(pathname);
 
   useEffect(() => {
+    console.log('현재 pathname:', pathname);
     // [React] 이전 pathname을 저장
     // const currentPrevPathname = prevPathnameRef.current;
     // prevPathnameRef.current = pathname;
@@ -15,11 +16,12 @@ export const useReservationCleanup = () => {
     return () => {
       console.log('예약 취소 API 호출을 시작합니다.');
       // 좌석 선택 페이지로 이동할 때만 예약 취소 API 호출
+      console.log('이동 후 pathname:', pathname);
 
       const isMovingToSeatSelection =
-        pathname?.includes('/real/A') ||
-        pathname?.includes('/real/B') ||
-        pathname?.includes('/real/C');
+        pathname?.includes('real/A') ||
+        pathname?.includes('real/B') ||
+        pathname?.includes('real/C');
 
       if (isMovingToSeatSelection) {
         const cleanup = async () => {
@@ -43,7 +45,7 @@ export const useReservationCleanup = () => {
       } else {
         console.log('조건이 맞지 않아 API를 호출하지 않습니다:', {
           // pathnameDiff: pathname !== currentPrevPathname,
-          // pathname,
+          pathname,
           // currentPrevPathname,
         });
       }

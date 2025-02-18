@@ -189,32 +189,32 @@ export const sharingHandlers = [
     );
   }),
 
-// 나눔 게시글 상세 조회
-rest.get('/api/v1/sharing/detail/:sharingId', (req, res, ctx) => {
-  const params = req.params as PathParams;
-  const sharingIdNum = Number(params.sharingId);
-  const sharing = getSharingById(sharingIdNum);
+  // 나눔 게시글 상세 조회
+  rest.get('/api/v1/sharing/detail/:sharingId', (req, res, ctx) => {
+    const params = req.params as PathParams;
+    const sharingIdNum = Number(params.sharingId);
+    const sharing = getSharingById(sharingIdNum);
 
-  if (!sharing) {
+    if (!sharing) {
+      return res(
+        ctx.delay(300),
+        ctx.status(404),
+        ctx.json({ message: '게시글을 찾을 수 없습니다.' })
+      );
+    }
+
+    // 스크랩 상태 추가
+    const isScraped = mockScrappedSharingIds.has(sharingIdNum);
+
     return res(
       ctx.delay(300),
-      ctx.status(404),
-      ctx.json({ message: '게시글을 찾을 수 없습니다.' })
+      ctx.status(200),
+      ctx.json({
+        ...sharing,
+        isScraped, // 스크랩 상태 포함
+      })
     );
-  }
-
-  // 스크랩 상태 추가
-  const isScraped = mockScrappedSharingIds.has(sharingIdNum);
-
-  return res(
-    ctx.delay(300),
-    ctx.status(200),
-    ctx.json({
-      ...sharing,
-      isScraped  // 스크랩 상태 포함
-    })
-  );
-}),
+  }),
 
   // 스크랩 추가
   rest.post('/api/v1/sharing/:sharingId/scrap', (req, res, ctx) => {
@@ -260,6 +260,40 @@ rest.get('/api/v1/sharing/detail/:sharingId', (req, res, ctx) => {
     const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
 
     const result = getWroteSharings(concertIdNum, lastSharingId);
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(result));
+  }),
+
+  // 내 작성글 목록 조회 (마이페이지)
+  rest.get('/api/v1/mypage/wrote', (req, res, ctx) => {
+    console.log('[MSW] 마이페이지 작성글 목록 요청 받음');
+    const lastParam = req.url.searchParams.get('last');
+    const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
+
+    // 모든 콘서트에 대한 내 작성글을 가져오기 위해 concertId를 0으로 전달
+    const result = getWroteSharings(0, lastSharingId);
+
+    console.log('[MSW] 마이페이지 작성글 목록 응답:', {
+      lastSharingId,
+      result,
+    });
+
+    return res(ctx.delay(300), ctx.status(200), ctx.json(result));
+  }),
+
+  // 내 스크랩 목록 조회 (마이페이지)
+  rest.get('/api/v1/mypage/scrap', (req, res, ctx) => {
+    console.log('[MSW] 마이페이지 스크랩 목록 요청 받음');
+    const lastParam = req.url.searchParams.get('last');
+    const lastSharingId = lastParam !== null ? Number(lastParam) : undefined;
+
+    // 모든 콘서트에 대한 내 스크랩을 가져오기 위해 concertId를 0으로 전달
+    const result = getScrappedSharings(0, lastSharingId);
+
+    console.log('[MSW] 마이페이지 스크랩 목록 응답:', {
+      lastSharingId,
+      result,
+    });
 
     return res(ctx.delay(300), ctx.status(200), ctx.json(result));
   }),

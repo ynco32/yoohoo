@@ -330,9 +330,10 @@ export const sharingAPI = {
     }
   },
 
+  // 마이페이지
   getMySharings: async (lastSharingId?: number): Promise<SharingResponse> => {
     try {
-      let url = `/api/v1/mypage/wrote?last=${lastSharingId}`;
+      let url = `/api/v1/mypage/wrote`;
 
       if (typeof lastSharingId === 'number') {
         url += `?last=${lastSharingId}`;
@@ -359,7 +360,7 @@ export const sharingAPI = {
     lastSharingId?: number
   ): Promise<SharingResponse> => {
     try {
-      let url = `api/v1/mypage/scrap?last=${lastSharingId}`;
+      let url = `/api/v1/mypage/scrap`;
 
       if (typeof lastSharingId === 'number') {
         url += `?last=${lastSharingId}`;
@@ -375,7 +376,7 @@ export const sharingAPI = {
         throw new ApiError(
           error.response.status,
           error.response.data?.message ??
-            '나눔 게시글을 불러오는데 실패했습니다.'
+            '스크랩한 나눔 게시글을 불러오는데 실패했습니다.'
         );
       }
       throw new ApiError(500, '서버와의 통신 중 오류가 발생했습니다.');

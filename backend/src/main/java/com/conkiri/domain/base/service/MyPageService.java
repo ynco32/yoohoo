@@ -55,7 +55,7 @@ public class MyPageService {
 	public ReviewResponseDTO getReviews(Long userId) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
-		List<Review> reviews = reviewRepository.findByUser(user);
+		List<Review> reviews = reviewRepository.findByUserOrderByReviewIdDesc(user);
 
 		return ReviewResponseDTO.from(reviews);
 	}

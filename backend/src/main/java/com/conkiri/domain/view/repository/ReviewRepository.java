@@ -17,7 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findBySeat(Seat seat);
 
-	List<Review> findByUser(User user);
+	List<Review> findByUserOrderByReviewIdDesc(User user);
 
 	boolean existsByUserAndSeatAndConcert(User user, Seat seat, Concert concert);
 

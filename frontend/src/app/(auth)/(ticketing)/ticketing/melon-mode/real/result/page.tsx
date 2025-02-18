@@ -100,7 +100,7 @@ export default function Result() {
     <div className="flex h-full flex-col items-center p-4">
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        message="티켓팅 결과 저장 성공!"
+        message="티켓팅 결과 저장 성공! 마이페이지에서 확인하세요!"
         onClose={() => {}}
       />
       <div className="mb-8 w-full text-center">

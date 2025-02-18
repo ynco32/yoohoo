@@ -46,21 +46,25 @@ export default function PracticeMenu() {
         </span>
       </div>
 
-      <div className="flex h-24 w-24 cursor-not-allowed flex-col items-center justify-center">
-        <div className="flex flex-col items-center justify-center rounded-card bg-gray-100 p-4 shadow-card-colored">
+      <div
+        onClick={() =>
+          router.push('/ticketing/melon-mode/practice/sequrityMessage')
+        }
+        className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center"
+      >
+        <div className="hover:shadow-card-hover flex flex-col items-center justify-center rounded-card bg-gray-50 p-4 shadow-card-colored transition-shadow">
           <div className="relative flex h-12 w-12 items-center justify-center">
             <Image
               src="/images/capcha.png"
               alt="보안문자 연습"
               fill
-              className="z-10 object-contain brightness-50"
+              className="z-10 object-contain"
             />
-            <div className="absolute inset-0 z-20 flex items-center justify-center">
-              <LockClosedIcon className="h-6 w-6 text-gray-400" />
-            </div>
           </div>
         </div>
-        <span className="mt-1 text-caption2-bold text-gray-400">보안 문자</span>
+        <span className="mt-1 text-caption2-bold text-text-menu">
+          보안 문자
+        </span>
       </div>
 
       <div className="flex h-24 w-24 cursor-not-allowed flex-col items-center justify-center">

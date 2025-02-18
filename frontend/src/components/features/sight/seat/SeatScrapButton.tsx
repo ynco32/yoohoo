@@ -43,7 +43,7 @@ const SeatScrapButton: React.FC<SeatScrapButtonProps> = ({
   const sizeClasses = {
     sm: 'p-1',
     md: 'p-2',
-    lg: 'p-3',
+    lg: 'py-3',
   };
 
   const getVariantClasses = (scraped: boolean) => {

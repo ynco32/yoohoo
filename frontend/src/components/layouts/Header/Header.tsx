@@ -91,7 +91,7 @@ const Header = () => {
   const BackButtonWithImage = ({ onClick }: ButtonProps) => (
     <button
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none"
+      className="flex items-center justify-center rounded-full focus:outline-none"
       aria-label="뒤로 가기"
     >
       <Image
@@ -112,7 +112,7 @@ const Header = () => {
   const MenuToggleWithImage = ({ onClick }: ButtonProps) => (
     <button
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none"
+      className="flexbitems-center justify-center rounded-full focus:outline-none"
       aria-label="메뉴 열기"
     >
       <Image

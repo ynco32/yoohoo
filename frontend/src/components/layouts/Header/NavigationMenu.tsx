@@ -22,24 +22,25 @@ export const NavigationMenu = ({
   if (!isMenuOpen) return null;
 
   return (
-    <>
+    <div className="fixed top-0 left-1/2 -translate-x-1/2 z-overlay h-full max-w-layout w-full">
+      {/* 모바일 화면 내부에만 적용되는 오버레이 */}
       <div 
-        className="fixed inset-0 z-dropdown bg-gray-900/50" 
+        className="absolute inset-0 z-dropdown bg-gray-900/50" 
         onClick={onItemClick} 
       />
-      <nav className={`
-        fixed right-0 top-0 z-overlay translate-x-0 
-        transform bg-white shadow-card transition-transform 
-        duration-slow ease-out-expo h-[100vh] ${
-          window.innerWidth >= 768 ? 'w-[280px]' : 'w-[50%]'
-        }`
-      }>
+      
+      {/* 네비게이션 메뉴 (모바일 화면의 오른쪽 절반만 차지) */}
+      <nav className="
+        absolute right-0 top-0 h-full w-[50%] 
+        bg-white shadow-card z-[151]
+        transition-transform duration-slow ease-out-expo
+      ">
         <ul className="flex flex-col gap-xs p-md">
           {MENU_ITEMS.map(({ href, label }, index) => (
             <li key={href}>
               <Link
                 href={href}
-                className="px-md py-sm text-body text-gray-800 hover:bg-gray-50"
+                className="block px-md py-sm text-body text-gray-800 hover:bg-gray-50"
                 onClick={onItemClick}
               >
                 {label}
@@ -49,6 +50,6 @@ export const NavigationMenu = ({
           ))}
         </ul>
       </nav>
-    </>
+    </div>
   );
 };

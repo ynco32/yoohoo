@@ -45,7 +45,7 @@ export default function Entrance() {
         autoRedirectTimer = setTimeout(() => {
           if (gameState != 'completed') {
             setReactionTime(5000); // 5초로 설정
-            router.push('result');
+            router.push('entrance/result');
           }
         }, 5000); // 5초 후 자동 이동
 
@@ -84,7 +84,7 @@ export default function Entrance() {
       setReactionTime(reactionTime);
       setGameState('completed');
       await new Promise((resolve) => setTimeout(resolve, 0));
-      router.push('result');
+      router.push('entrance/result');
     } catch (error) {
       console.error('Error in reaction time game:', error);
     }

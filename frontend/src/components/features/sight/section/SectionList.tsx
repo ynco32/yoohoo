@@ -64,7 +64,7 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
             contentClass="!w-full !h-full flex items-center justify-center" // 중앙 정렬 추가
           >
             <svg
-              viewBox="-170-200 700 700"
+              viewBox="-270 -330 700 700"
               preserveAspectRatio="xMidYMid meet"
               className="h-full w-full"
             >

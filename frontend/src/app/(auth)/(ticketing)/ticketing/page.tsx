@@ -9,7 +9,7 @@ export default function PlatformListPage() {
           연습할 플랫폼을 선택해주세요
         </span>
       </div>
-      <div className="-mt-8 flex flex-1 items-center justify-center">
+      <div className="mt-8 flex justify-center">
         <PlatformButtons />
       </div>
     </div>

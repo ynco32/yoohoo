@@ -8,7 +8,7 @@ export default function Practice() {
           연습 유형을 선택하세요
         </span>
       </div>
-      <div className="flex flex-1 items-center justify-center">
+      <div className="mt-8 flex justify-center">
         <PracticeMenu />
       </div>
     </div>

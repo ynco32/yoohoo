@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import type { ComponentType, SVGProps } from 'react';
+import logout from '@/lib/api/logout';
 
 interface MyMenuItemProps {
   icon: ComponentType<SVGProps<SVGSVGElement>>;
@@ -31,15 +32,31 @@ export const MyMenuItem = ({
     narrow: 'text-text-menu',
   };
 
+  const isLogout = label === '로그아웃';
   const isWithdrawal = label === '회원 탈퇴';
   const textColorClass = isWithdrawal
     ? 'text-status-warning'
     : layoutClassesText[layout];
 
+  const handleClick = async () => {
+    if (isLogout) {
+      try {
+        await logout();
+        // 로그아웃 성공 시 로그인 페이지로 이동
+        router.push('/login');
+      } catch (error) {
+        console.error('로그아웃 실패:', error);
+        // 에러 처리 (필요한 경우 토스트 메시지 등 추가)
+      }
+    } else {
+      router.push(href);
+    }
+  };
+
   return (
     <div
-      onClick={() => router.push(href)}
-      className={`shadow-my-page group relative flex cursor-pointer flex-col justify-between rounded-card bg-background-default p-md transition-all duration-normal ${layoutClasses[layout]} ${className}`}
+      onClick={handleClick}
+      className={`group relative flex cursor-pointer flex-col justify-between rounded-card bg-background-default p-md shadow-my-page transition-all duration-normal ${layoutClasses[layout]} ${className}`}
     >
       <div className="flex items-center">
         <div

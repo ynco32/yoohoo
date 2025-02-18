@@ -42,7 +42,7 @@ interface SeatsState {
     stageType: number,
     sectionId: number
   ) => Promise<void>;
-  selectSeat: (seatId: number) => void;
+  selectSeat: (seatId: number | null) => void;
   toggleSeatScrap: (seatId: number) => Promise<void>;
   reset: () => void;
   updateSeatScrapStatus: (seatId: number, isScraped: boolean) => void;
@@ -148,7 +148,7 @@ export const useSeatsStore = create<SeatsState>((set, get) => ({
     }
   },
 
-  selectSeat: (seatId: number) => {
+  selectSeat: (seatId: number | null) => {
     set({ selectedSeatId: seatId });
   },
 

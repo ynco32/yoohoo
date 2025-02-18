@@ -336,7 +336,7 @@ export const sharingAPI = {
       let url = `/api/v1/mypage/wrote`;
 
       if (typeof lastSharingId === 'number') {
-        url += `?last=${lastSharingId}`;
+        url += `?lastSharingId=${lastSharingId}`;
       }
 
       const response = await api.get<SharingResponse>(url);
@@ -363,7 +363,7 @@ export const sharingAPI = {
       let url = `/api/v1/mypage/scrap`;
 
       if (typeof lastSharingId === 'number') {
-        url += `?last=${lastSharingId}`;
+        url += `?lastSharingId=${lastSharingId}`;
       }
 
       const response = await api.get<SharingResponse>(url);

@@ -2,7 +2,7 @@ import { ArenaListContainer } from '@/components/features/congestion/CongestionA
 
 const CongestionPage = () => {
   return (
-    <div>
+    <div className="h-full">
       <ArenaListContainer />
     </div>
   );

@@ -117,14 +117,28 @@ export const MySharingView = () => {
       <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <MyViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>
-      <div ref={containerRef} className={'pt-[44px] flex-1 overflow-auto'}>
-        <SharingList
-          posts={displayedPosts}
-          concertId={concertId}
-          isLoading={isLoading}
-          hasMore={hasMore}
-          onLoadMore={handleLoadMore}
-        />
+      <div ref={containerRef} className={'flex-1 overflow-auto pt-[44px]'}>
+        {currentTab === null ? (
+          <div className="px-4 py-10">
+            <div className="rounded-md bg-white py-8 text-center">
+              <p className="text-lg font-medium text-gray-700">
+                탭을 눌러 내용을 확인하세요
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                북마크한 나눔이나 작성한 나눔글을 확인할 수 있습니다
+              </p>
+            </div>
+          </div>
+        ) : (
+          <SharingList
+            posts={displayedPosts}
+            concertId={concertId}
+            isLoading={isLoading}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
+            currentTab={currentTab}
+          />
+        )}
       </div>
     </div>
   );

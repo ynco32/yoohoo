@@ -162,6 +162,7 @@ export const SharingView = () => {
             isLoading={isLoading}
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
+            currentTab={currentTab} 
           />
         )}
       </div>

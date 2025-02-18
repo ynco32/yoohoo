@@ -49,8 +49,8 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
   }
 
   return (
-    <div className="relative h-64 w-full">
-      <div className="absolute inset-0 flex">
+    <div className="relative h-96 w-full">
+      <div className="absolute inset-0">
         <TransformWrapper
           initialScale={1}
           minScale={0.5}
@@ -60,15 +60,15 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
           smooth={true}
         >
           <TransformComponent
-            wrapperClass="w-full h-full flex-1"
-            contentClass="w-full h-full flex-1"
+            wrapperClass="!w-full !h-full" // !important 추가
+            contentClass="!w-full !h-full flex items-center justify-center" // 중앙 정렬 추가
           >
             <svg
               viewBox="-170-200 700 700"
               preserveAspectRatio="xMidYMid meet"
-              className="h-full w-full origin-center"
+              className="h-full w-full"
             >
-              <g transform="translate(-600, -400) scale(2)">
+              <g transform="translate(-600, -400) scale(1.7)">
                 {sections.map((section, index) => {
                   const position = calculatePosition(index);
                   const sectionProps: SectionComponentProps = {

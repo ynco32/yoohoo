@@ -68,6 +68,7 @@ export function SightReviewFormContainer({
       <SuccessModal
         isOpen={isCompleteModalOpen}
         onClose={handleModalClose}
+        buttonText="내 리뷰 보러가기"
         message="리뷰가 등록되었습니다"
       />
     </>

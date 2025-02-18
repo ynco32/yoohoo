@@ -33,6 +33,15 @@ export const MySharingView = () => {
   // 모든 데이터 가져오기
   const fetchData = useCallback(async () => {
     if (!mswInitialized) return;
+
+    // 현재 탭이 null인 경우 데이터를 초기화하고 함수를 종료
+    if (currentTab === null) {
+      setAllPosts([]);
+      setDisplayedPosts([]);
+      setHasMore(false);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -50,9 +59,17 @@ export const MySharingView = () => {
           case 'my':
             response = await sharingAPI.getMySharings(lastId);
             break;
+          default:
+            console.warn(`Unsupported tab: ${currentTab}`);
+            hasMoreData = false; // Exit the loop for unsupported tabs
+            continue; // Skip the rest of this iteration
         }
 
-        if (!response?.sharings || !Array.isArray(response.sharings)) {
+        if (
+          !response ||
+          !response.sharings ||
+          !Array.isArray(response.sharings)
+        ) {
           console.error('Invalid data format:', response);
           break;
         }

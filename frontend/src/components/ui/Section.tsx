@@ -50,8 +50,8 @@ export const Section = ({
 
   const getFillColor = () => {
     if (!available) return '#CCCCCC'; // 이용 불가능한 섹션
-    if (!isScrapMode) return '#4A90E2';
-    return scrapped ? '#FF6B6B' : '#4A90E2';
+    if (!isScrapMode) return '#A7DEFF';
+    return scrapped ? '#FFFA77' : '#A7DEFF';
   };
 
   return (

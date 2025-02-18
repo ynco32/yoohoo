@@ -9,7 +9,7 @@ module.exports = {
       layout: '430px', // 레이아웃 최대 너비 추가
     },
     screens: {
-      mobile: '375px',
+      mobile: '430px',
       'mobile-l': '425px',
       tablet: '768px',
       desktop: '1024px',

@@ -15,9 +15,19 @@ export default function TicketingPage() {
   const [quantity, setQuantity] = useState(1);
   // useReservationCleanup();
   const setPrevAdress = useRevertSeat((state) => state.setPrevAdress);
+  const prevAdress = useRevertSeat((state) => state.prevAdress); // 구조분해가 아닌 selector 사용
+
   useEffect(() => {
-    setPrevAdress('payment');
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+    if (!prevAdress) {
+      // 이미 설정되어 있지 않을 때만 실행
+      setPrevAdress('payment');
+      console.log('PrevAdress 설정됨.' + prevAdress);
+    }
+  }, []);
+  // 상태 변경 감지를 위한 별도 useEffect
+  useEffect(() => {
+    console.log('PrevAdress 변경됨: ' + prevAdress);
+  }, [prevAdress]);
 
   return (
     <div className="flex h-full flex-col bg-gray-50">

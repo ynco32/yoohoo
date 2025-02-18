@@ -25,7 +25,7 @@ export default function Seat() {
   const { onSuccess, setSecurityPopupState } = useSecurityPopupStore();
 
   const setPrevAdress = useRevertSeat((state) => state.setPrevAdress);
-  const { prevAdress } = useRevertSeat();
+  const prevAdress = useRevertSeat((state) => state.prevAdress);
 
   const cleanup = async () => {
     try {
@@ -37,14 +37,30 @@ export default function Seat() {
     }
   };
 
+  // useEffect(() => {
+  //   const currentPrevAddress = useRevertSeat.getState().prevAdress;
+  //   console.log('🪑 현재 prevAdress 값:', currentPrevAddress);
+
+  //   if (currentPrevAddress === 'payment') {
+  //     console.log('🪑 payment 감지됨');
+  //     cleanup();
+  //     setPrevAdress('');
+  //   }
+  // }, [prevAdress]);
   useEffect(() => {
-    console.log('🪑 useEffect 시작작');
-    if (prevAdress === 'payment') {
-      console.log('🪑 전에 갔던 페이지가 결제창입니다.');
-      cleanup();
-      setPrevAdress(''); // 삭제했으니 초기화
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+    const checkPrevAddress = async () => {
+      const currentPrevAddress = useRevertSeat.getState().prevAdress;
+      console.log('🪑 현재 prevAdress 값:', currentPrevAddress);
+
+      if (currentPrevAddress === 'payment') {
+        console.log('🪑 payment 감지됨');
+        await cleanup();
+        setPrevAdress('');
+      }
+    };
+
+    checkPrevAddress();
+  }, []);
 
   // selectedSeatNumber 변경 시 버튼 활성화 상태 업데이트
   useEffect(() => {

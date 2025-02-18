@@ -1,7 +1,7 @@
 // pages/ticketing/1.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Page1 from '@/components/features/ticketing/pages/1';
 import { ScheduleSelection } from '@/components/features/ticketing/ScheduleSelection';
 import QueuePopup from '@/components/ui/QueuePopup';
@@ -15,6 +15,7 @@ import { useErrorStore } from '@/store/useErrorStore';
 export default function Ticketing1() {
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const { queueNumber, waitingTime, peopleBehind } = useQueueStore();
 
   const { enterQueue } = useWebSocketQueue();
@@ -26,6 +27,12 @@ export default function Ticketing1() {
     setQueuePopupOpen(true);
     enterQueue();
   };
+
+  useEffect(() => {
+    if (error) {
+      setHasError(true);
+    }
+  }, [error]);
 
   return (
     <div>
@@ -47,7 +54,7 @@ export default function Ticketing1() {
         behindMe={peopleBehind}
         expectedTime={waitingTime}
         onClose={() => setQueuePopupOpen(false)}
-        isOpen={isQueuePopupOpen && !error} // 에러가 있으면 오픈되지 않음.
+        isOpen={isQueuePopupOpen && !hasError} // 에러가 있으면 오픈되지 않음.
       />
 
       {error && (

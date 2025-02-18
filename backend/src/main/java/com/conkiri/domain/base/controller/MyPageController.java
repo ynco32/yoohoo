@@ -39,7 +39,7 @@ public class MyPageController {
 	 * @param userPrincipal
 	 * @return
 	 */
-	@GetMapping("/scrap/")
+	@GetMapping("/scrap")
 	public SharingResponseDTO getScrappedList(
 		@RequestParam(value = "lastSharingId", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {

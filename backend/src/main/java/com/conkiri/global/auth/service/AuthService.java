@@ -90,7 +90,8 @@ public class AuthService {
 		response.addCookie(cookie);
 	}
 
+	@Transactional
 	public void logout(Long userId) {
-		authRepository.deleteByUserId(userId);
+		authRepository.deleteByUser_Id(userId);
 	}
 }

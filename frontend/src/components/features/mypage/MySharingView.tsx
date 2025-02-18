@@ -136,8 +136,15 @@ export const MySharingView = () => {
       </div>
       <div ref={containerRef} className={'flex-1 overflow-auto pt-[44px]'}>
         {currentTab === null ? (
-          <div className="flex h-full items-center justify-center text-gray-500">
-            탭을 선택하여 내용을 확인하세요
+          <div className="px-4 py-10">
+            <div className="rounded-md bg-white py-8 text-center">
+              <p className="text-lg font-medium text-gray-700">
+                탭을 눌러 내용을 확인하세요
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                북마크한 나눔이나 작성한 나눔글을 확인할 수 있습니다
+              </p>
+            </div>
           </div>
         ) : (
           <SharingList
@@ -146,6 +153,7 @@ export const MySharingView = () => {
             isLoading={isLoading}
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
+            currentTab={currentTab}
           />
         )}
       </div>

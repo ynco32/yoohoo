@@ -7,6 +7,9 @@ import HeaderWrapper from './header-wrapper';
 export const metadata: Metadata = {
   title: 'CONKIRI',
   description: 'CONKIRI',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

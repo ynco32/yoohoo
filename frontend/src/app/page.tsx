@@ -19,7 +19,7 @@ export default function Home() {
       } else {
         router.push('/login');
       }
-    }, 3000);
+    }, 1700);
 
     return () => clearTimeout(timer);
   }, [router]);

@@ -47,7 +47,7 @@ export default function Ticketing1() {
         behindMe={peopleBehind}
         expectedTime={waitingTime}
         onClose={() => setQueuePopupOpen(false)}
-        isOpen={isQueuePopupOpen}
+        isOpen={isQueuePopupOpen && !error} // 에러가 있으면 오픈되지 않음.
       />
 
       {error && (

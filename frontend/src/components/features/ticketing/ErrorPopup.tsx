@@ -9,7 +9,7 @@ interface errorPopupProps {
 
 export const ErrorPopup = ({ isOpen, onClick, children }: errorPopupProps) => {
   return (
-    <Popup className="text-center" isOpen={isOpen}>
+    <Popup className="z-100 text-center" isOpen={isOpen}>
       {children}
       <button onClick={onClick} className="mt-2 text-status-warning">
         확인

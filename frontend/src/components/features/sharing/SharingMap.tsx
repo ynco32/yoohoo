@@ -158,6 +158,20 @@ export const SharingMap = ({
     };
   }, [venueLocation]);
 
+  // 포스트 상태에 따른 마커 이미지 경로를 결정하는 함수
+  const getMarkerImageByStatus = (status: string) => {
+    switch (status) {
+      case 'UPCOMING':
+        return '/images/upcoming.png';
+      case 'ONGOING':
+        return '/images/ongoing.png';
+      case 'CLOSED':
+        return '/images/closed.png';
+      default:
+        return '/images/marker.png';
+    }
+  };
+
   // 2. 마커 생성 및 관리를 위한 useEffect
   useEffect(() => {
     // 맵이 초기화되고 포스트 데이터가 있을 때만 마커 생성
@@ -179,9 +193,25 @@ export const SharingMap = ({
             post.latitude,
             post.longitude
           );
+
+          // 포스트 상태에 따른 이미지 경로 결정
+          const markerImageSrc = getMarkerImageByStatus(post.status);
+
+          // 커스텀 마커 이미지 생성
+          const imageSize = new window.kakao.maps.Size(42, 45); // 마커 이미지의 크기
+          const imageOption = { offset: new window.kakao.maps.Point(21, 45) }; // 마커 이미지의 옵션
+
+          const markerImage = new window.kakao.maps.MarkerImage(
+            markerImageSrc,
+            imageSize,
+            imageOption
+          );
+
+          // 마커 생성 시 이미지 옵션 추가
           const marker = new window.kakao.maps.Marker({
             position,
             map: mapRef.current,
+            image: markerImage, // 커스텀 이미지 적용
           });
 
           window.kakao.maps.event.addListener(
@@ -240,9 +270,24 @@ export const SharingMap = ({
             post.latitude,
             post.longitude
           );
+
+          // 포스트 상태에 따른 이미지 경로 결정
+          const markerImageSrc = getMarkerImageByStatus(post.status);
+
+          // 커스텀 마커 이미지 생성
+          const imageSize = new window.kakao.maps.Size(42, 45);
+          const imageOption = { offset: new window.kakao.maps.Point(21, 45) };
+
+          const markerImage = new window.kakao.maps.MarkerImage(
+            markerImageSrc,
+            imageSize,
+            imageOption
+          );
+
           const marker = new window.kakao.maps.Marker({
             position,
             map: mapRef.current,
+            image: markerImage,
           });
 
           window.kakao.maps.event.addListener(

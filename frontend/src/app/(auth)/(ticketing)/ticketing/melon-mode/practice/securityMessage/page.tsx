@@ -1,66 +1,65 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessagePopup';
 import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
 import { useRouter } from 'next/navigation';
 
 export default function SecurityMessage() {
   const router = useRouter();
-  // [React] 상태 관리
   const [gameState, setGameState] = useState<
     'counting' | 'showing' | 'completed'
   >('counting');
   const [countdown, setCountdown] = useState(5);
-  const [startTime, setStartTime] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const startTimeRef = useRef<number>(0);
+  const autoRedirectTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // [Zustand] 전역 상태 관리
   const setReactionTime = useTicketintPracticeResultStore(
     (state) => state.setReactionTime
   );
 
-  // [React] 카운트다운 효과
   useEffect(() => {
-    let autoRedirectTimer: NodeJS.Timeout;
-    const startTimestamp = performance.now();
+    const startTimestamp = Date.now();
+    const endTimestamp = startTimestamp + 5000; // 5초 후
 
     const interval = setInterval(() => {
-      const elapsed = performance.now() - startTimestamp;
-      const secondsElapsed = Math.floor(elapsed / 1000);
-      const remaining = 5 - secondsElapsed;
+      const now = Date.now();
+      const remaining = Math.ceil((endTimestamp - now) / 1000);
 
       if (remaining <= 0) {
         clearInterval(interval);
         setCountdown(0);
         setGameState('showing');
         setShowPopup(true);
-        setStartTime(performance.now());
+        startTimeRef.current = performance.now();
 
-        autoRedirectTimer = setTimeout(() => {
-          if (gameState !== 'completed') {
-            setReactionTime(10000);
-            router.push('securityMessage/result');
-          }
-        }, 5000);
+        // 10초 제한시간 설정
+        autoRedirectTimerRef.current = setTimeout(() => {
+          setReactionTime(10000);
+          router.push('securityMessage/result');
+        }, 10000);
       } else {
         setCountdown(remaining);
       }
-    }, 100);
+    }, 50);
 
     return () => {
       clearInterval(interval);
-      if (autoRedirectTimer) {
-        clearTimeout(autoRedirectTimer);
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
       }
     };
-  }, [router, setReactionTime, gameState]);
+  }, [router, setReactionTime]);
 
-  // [React] 보안문자 입력 성공 핸들러
   const handleSuccess = () => {
     if (gameState !== 'showing') return;
 
+    if (autoRedirectTimerRef.current) {
+      clearTimeout(autoRedirectTimerRef.current);
+    }
+
     const endTime = performance.now();
-    const reactionTime = Math.max(0, endTime - startTime);
+    const reactionTime = endTime - startTimeRef.current;
 
     if (reactionTime > 10000) {
       console.warn('Invalid reaction time detected');
@@ -69,14 +68,11 @@ export default function SecurityMessage() {
 
     setReactionTime(reactionTime);
     setGameState('completed');
-    setTimeout(() => {
-      router.push('securityMessage/result');
-    }, 100);
+    router.push('securityMessage/result');
   };
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
-      {/* 카운트다운 오버레이 */}
       {gameState === 'counting' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="rounded-lg bg-white p-8 text-center">
@@ -87,7 +83,6 @@ export default function SecurityMessage() {
         </div>
       )}
 
-      {/* 보안문자 팝업 */}
       <SecurityMessagePopup
         isOpen={showPopup}
         onPostpone={() => {}}

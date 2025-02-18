@@ -18,6 +18,7 @@ export default function Result() {
   const [seat, setSeat] = useState('');
   const [ticketRank, setTicketRank] = useState<number | null>(null);
   const [processingTime, setProcessingTime] = useState<number | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   // const { selectedSeatNumber } = useTicketingSeatStore();
   const router = useRouter();
@@ -51,7 +52,9 @@ export default function Result() {
   const seatResult = getSeatMessage(seat);
 
   const handleSaveData = () => {
+    if (isSaved) return;
     saveData(section, seat);
+    setIsSaved(true);
   };
 
   const saveData = async (section: string, seat: string) => {

@@ -43,8 +43,11 @@ export const ReviewHeader = ({
       await deleteSightReview(reviewId);
       router.refresh();
     } catch (error) {
-      console.error('리뷰 삭제 실패:', error);
-      alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 

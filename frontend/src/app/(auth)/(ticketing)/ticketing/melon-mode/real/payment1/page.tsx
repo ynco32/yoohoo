@@ -5,14 +5,19 @@ import { TicketInfo } from '@/components/features/ticketing/TicketInfo';
 import { DiscountSection } from '@/components/features/ticketing/DiscountSelection';
 import { TicketPrice } from '@/components/features/ticketing/TicketPrice';
 import { PriceDetail } from '@/components/features/ticketing/PriceDetail';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TicketingBillButton } from '@/components/ui/TicketingBillButton';
 import Link from 'next/link';
-import { useReservationCleanup } from '@/hooks/useReservationCleanup';
+// import { useReservationCleanup } from '@/hooks/useReservationCleanup';
+import { useRevertSeat } from '@/store/useRevertSeatStore';
 
 export default function TicketingPage() {
   const [quantity, setQuantity] = useState(1);
-  useReservationCleanup();
+  // useReservationCleanup();
+  const setPrevAdress = useRevertSeat((state) => state.setPrevAdress);
+  useEffect(() => {
+    setPrevAdress('payment');
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   return (
     <div className="flex h-full flex-col bg-gray-50">

@@ -9,6 +9,8 @@ import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
 import { useUserStore } from '@/store/useUserStore';
 import { useSecurityPopupStore } from '@/store/useSecurityPopupStore';
 import SecurityMessagePopup from '@/components/features/ticketing/SecurityMessagePopup';
+import { useRevertSeat } from '@/store/useRevertSeatStore';
+import api from '@/lib/api/axios';
 
 export default function Seat() {
   const [isActive, setIsActive] = useState(false);
@@ -21,6 +23,26 @@ export default function Seat() {
 
   const userId = useUserStore((state) => state.user?.userId);
   const { onSuccess, setSecurityPopupState } = useSecurityPopupStore();
+
+  const setPrevAdress = useRevertSeat((state) => state.setPrevAdress);
+  const { prevAdress } = useRevertSeat();
+
+  const cleanup = async () => {
+    try {
+      console.log('예약 취소 API 호출 시도');
+      await api.delete('/api/v1/ticketing/result');
+      console.log('예약이 성공적으로 취소되었습니다.');
+    } catch (error) {
+      console.error('예약 취소 중 오류 발생:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (prevAdress === 'payment') {
+      cleanup();
+      setPrevAdress(''); // 삭제했으니 초기화
+    }
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // selectedSeatNumber 변경 시 버튼 활성화 상태 업데이트
   useEffect(() => {

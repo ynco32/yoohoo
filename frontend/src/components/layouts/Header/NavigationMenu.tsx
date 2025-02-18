@@ -4,10 +4,10 @@ import Link from 'next/link';
 const MENU_ITEMS = [
   { href: '/main', label: '메인' },
   { href: '/mypage', label: '마이페이지' },
-  { href: '/sight', label: '시야' },
-  { href: '/sharing', label: '나눔' },
-  { href: '/ticketing', label: '티켓팅' },
-  { href: '/congestion', label: '혼잡도' },
+  { href: '/sight', label: '시야 보기' },
+  { href: '/sharing', label: '나눔 지도' },
+  { href: '/ticketing', label: '티켓팅 연습' },
+  { href: '/congestion', label: '혼잡도 보기' },
 ] as const;
 
 interface NavigationMenuProps {

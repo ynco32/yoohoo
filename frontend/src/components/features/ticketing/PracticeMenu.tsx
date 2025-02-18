@@ -48,7 +48,7 @@ export default function PracticeMenu() {
 
       <div
         onClick={() =>
-          router.push('/ticketing/melon-mode/practice/sequrityMessage')
+          router.push('/ticketing/melon-mode/practice/securityMessage')
         }
         className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center"
       >

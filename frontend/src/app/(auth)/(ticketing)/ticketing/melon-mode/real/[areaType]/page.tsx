@@ -29,16 +29,18 @@ export default function Seat() {
 
   const cleanup = async () => {
     try {
-      console.log('예약 취소 API 호출 시도');
+      console.log('🪑 예약 취소 API 호출 시도');
       await api.delete('/api/v1/ticketing/result');
-      console.log('예약이 성공적으로 취소되었습니다.');
+      console.log('🪑 예약이 성공적으로 취소되었습니다.');
     } catch (error) {
-      console.error('예약 취소 중 오류 발생:', error);
+      console.error('🪑 예약 취소 중 오류 발생:', error);
     }
   };
 
   useEffect(() => {
+    console.log('🪑 useEffect 시작작');
     if (prevAdress === 'payment') {
+      console.log('🪑 전에 갔던 페이지가 결제창입니다.');
       cleanup();
       setPrevAdress(''); // 삭제했으니 초기화
     }

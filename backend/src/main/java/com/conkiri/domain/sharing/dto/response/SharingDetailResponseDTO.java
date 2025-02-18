@@ -24,6 +24,7 @@ public class SharingDetailResponseDTO {
 	private String writerLevel;
 	private Double latitude;
 	private Double longitude;
+	private Long concertId;
 
 	public static SharingDetailResponseDTO from(Sharing sharing) {
 		return SharingDetailResponseDTO.builder()
@@ -38,6 +39,7 @@ public class SharingDetailResponseDTO {
 			.writerLevel(sharing.getUser().getLevel())
 			.latitude(sharing.getLatitude())
 			.longitude(sharing.getLongitude())
+			.concertId(sharing.getConcert().getConcertId())
 			.build();
 	}
 }

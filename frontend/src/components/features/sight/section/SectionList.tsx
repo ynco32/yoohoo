@@ -49,49 +49,54 @@ export const SectionList = ({ isScrapMode }: SectionListProps) => {
   }
 
   return (
-    <div>
-      <TransformWrapper
-        initialScale={1}
-        minScale={0.5}
-        maxScale={3}
-        centerOnInit
-        panning={{ velocityDisabled: true }}
-        smooth={true}
-      >
-        <TransformComponent
-          wrapperClass="w-full h-full"
-          contentClass="w-full h-full"
+    <div className="relative h-64 w-full">
+      <div className="absolute inset-0 flex">
+        <TransformWrapper
+          initialScale={1}
+          minScale={0.5}
+          maxScale={3}
+          centerOnInit
+          panning={{ velocityDisabled: true }}
+          smooth={true}
         >
-          <svg
-            viewBox="-350 -350 700 700"
-            preserveAspectRatio="xMidYMid meet"
-            className="h-full w-full origin-center"
+          <TransformComponent
+            wrapperClass="w-full h-full flex-1"
+            contentClass="w-full h-full flex-1"
           >
-            <g transform="translate(-600, -400) scale(1.5)">
-              {sections.map((section, index) => {
-                const position = calculatePosition(index);
-                const sectionProps: SectionComponentProps = {
-                  sectionId: section.sectionId,
-                  sectionNumber: parseInt(section.sectionName),
-                  available: section.available,
-                  scrapped: section.isScraped,
-                  arenaId: section.arenaId,
-                  ...position,
-                  onClick: () =>
-                    router.push(
-                      `/sight/${arenaId}/${stageType}/${section.sectionId}`
-                    ),
-                  isScrapMode,
-                };
+            <svg
+              viewBox="-170-200 700 700"
+              preserveAspectRatio="xMidYMid meet"
+              className="h-full w-full origin-center"
+            >
+              <g transform="translate(-600, -400) scale(2)">
+                {sections.map((section, index) => {
+                  const position = calculatePosition(index);
+                  const sectionProps: SectionComponentProps = {
+                    sectionId: section.sectionId,
+                    sectionNumber: parseInt(section.sectionName),
+                    available: section.available,
+                    scrapped: section.isScraped,
+                    arenaId: section.arenaId,
+                    ...position,
+                    onClick: () =>
+                      router.push(
+                        `/sight/${arenaId}/${stageType}/${section.sectionId}`
+                      ),
+                    isScrapMode,
+                  };
 
-                return (
-                  <SectionComponent key={section.sectionId} {...sectionProps} />
-                );
-              })}
-            </g>
-          </svg>
-        </TransformComponent>
-      </TransformWrapper>
+                  return (
+                    <SectionComponent
+                      key={section.sectionId}
+                      {...sectionProps}
+                    />
+                  );
+                })}
+              </g>
+            </svg>
+          </TransformComponent>
+        </TransformWrapper>
+      </div>
     </div>
   );
 };

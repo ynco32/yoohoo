@@ -53,6 +53,11 @@ export const SightReviewCard = ({
     return `${score}점`;
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
   return (
     <div className="w-full rounded-lg p-4">
       <ReviewHeader
@@ -77,7 +82,7 @@ export const SightReviewCard = ({
         <span className="text-gray-600">{seatDistance}</span>
       </div>
       <div className="text-sm text-gray-600">
-        <span className="text-caption3">{writeTime}</span>
+        <span className="text-caption3">{formatDate(writeTime)}</span>
       </div>
 
       <ReviewContent content={content} />

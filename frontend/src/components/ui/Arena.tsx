@@ -47,8 +47,7 @@ export const Arena = ({
         )}
       </div>
 
-      {/* Text Container - Min Height for 2 Lines */}
-      <div className="mt-2 min-h-[1.75rem] w-24 px-1">
+      <div className="mt-2 min-h-[1.75rem] w-32 px-1">
         <span
           className={`line-clamp-2 text-center font-pretendard text-caption3 font-bold ${
             isDisabled ? 'text-gray-400' : 'text-text-menu'

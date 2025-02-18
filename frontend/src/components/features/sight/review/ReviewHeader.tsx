@@ -5,7 +5,7 @@ import { useUserStore } from '@/store/useUserStore';
 import { useEffect, useState } from 'react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { deleteSightReview } from '@/lib/api/sightReview';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Modal } from '@/components/common/Modal';
 
 interface ReviewHeaderProps {
@@ -28,6 +28,7 @@ export const ReviewHeader = ({
   const user = useUserStore((state) => state.user);
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const pathname = usePathname();
 
   const isAuthor = user?.userId === writerId;
   const router = useRouter();
@@ -39,7 +40,7 @@ export const ReviewHeader = ({
   const handleDelete = async () => {
     try {
       await deleteSightReview(reviewId);
-      router.refresh();
+      router.push(pathname);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);

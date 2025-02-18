@@ -92,6 +92,6 @@ public class AuthService {
 
 	@Transactional
 	public void logout(Long userId) {
-		authRepository.deleteByUser_Id(userId);
+		authRepository.deleteByUser_UserId(userId);
 	}
 }

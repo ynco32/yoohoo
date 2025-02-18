@@ -1,15 +1,15 @@
 // src/hooks/useReservationCleanup.ts
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 export const useReservationCleanup = () => {
   const pathname = usePathname();
-  const prevPathnameRef = useRef(pathname);
+  // const prevPathnameRef = useRef(pathname);
 
   useEffect(() => {
     // [React] 이전 pathname을 저장
-    const currentPrevPathname = prevPathnameRef.current;
-    prevPathnameRef.current = pathname;
+    // const currentPrevPathname = prevPathnameRef.current;
+    // prevPathnameRef.current = pathname;
 
     // [React] 컴포넌트 언마운트 또는 pathname 변경 시 실행
     return () => {
@@ -21,7 +21,7 @@ export const useReservationCleanup = () => {
         pathname?.includes('/real/B') ||
         pathname?.includes('/real/C');
 
-      if (pathname !== currentPrevPathname && isMovingToSeatSelection) {
+      if (isMovingToSeatSelection) {
         const cleanup = async () => {
           try {
             console.log('API 호출 시도');
@@ -42,9 +42,9 @@ export const useReservationCleanup = () => {
         cleanup();
       } else {
         console.log('조건이 맞지 않아 API를 호출하지 않습니다:', {
-          pathnameDiff: pathname !== currentPrevPathname,
-          pathname,
-          currentPrevPathname,
+          // pathnameDiff: pathname !== currentPrevPathname,
+          // pathname,
+          // currentPrevPathname,
         });
       }
     };

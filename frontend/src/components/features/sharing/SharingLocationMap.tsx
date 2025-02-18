@@ -120,7 +120,7 @@ export const SharingLocationMap = ({
         }}
       >
         <Image
-          src="/images/conkiri.png"
+          src="/images/selectMarker2.png"
           alt="location marker"
           width={48}
           height={48}

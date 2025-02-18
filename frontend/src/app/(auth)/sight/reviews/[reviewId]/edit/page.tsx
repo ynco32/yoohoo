@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { EditSightReviewFormContainer } from '@/components/features/sight/form/EditSightReviewFormContainer';
-import { Modal } from '@/components/common/Modal';
+import { SuccessModal } from '@/components/common/SuccessModal'; // Modal 대신 SuccessModal import
 import type { ApiReview } from '@/types/sightReviews';
 import { getReview } from '@/lib/api/sightReview';
 import { useSightReviewStore } from '@/store/useSightReviewStore';
@@ -49,7 +49,7 @@ export default function EditSightReviewPage() {
 
   const handleModalClose = () => {
     setIsCompleteModalOpen(false);
-    router.replace('/mypage/sight'); // 내 리뷰 목록 페이지로 이동
+    router.replace('/sight/reviews');
   };
 
   if (isLoading) {
@@ -72,12 +72,10 @@ export default function EditSightReviewPage() {
         className="min-h-screen"
         onSubmitComplete={handleSubmitComplete}
       />
-      <Modal
+      <SuccessModal
         isOpen={isCompleteModalOpen}
         onClose={handleModalClose}
-        title="수정이 완료되었습니다"
-        type="alert"
-        variant="primary"
+        message="리뷰가 수정되었습니다"
       />
     </>
   );

@@ -23,13 +23,6 @@ export default function TicketingPage() {
   const hasVisitedPayment = useRevertSeat((state) => state.hasVisitedPayment);
   const resetState = useRevertSeat((state) => state.resetState);
 
-  useEffect(() => {
-    // document.referrer가 비어있으면 직접 URL 입력으로 접근한 것
-    if (!document.referrer) {
-      router.replace('./'); // 메인으로 돌려보내기
-    }
-  }, [router]);
-
   // 초기 마운트 시 상태 초기화
   useEffect(() => {
     console.log('📝 Payment 페이지 마운트 - 상태 초기화 전:', {
@@ -99,6 +92,8 @@ export default function TicketingPage() {
       hasVisitedPayment,
       timestamp: new Date().toISOString(),
     });
+
+    document.cookie = 'ticketing-progress=4; path=/';
 
     setPrevAdress('payment-left');
 

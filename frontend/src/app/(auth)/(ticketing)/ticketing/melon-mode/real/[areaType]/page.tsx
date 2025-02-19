@@ -54,13 +54,6 @@ export default function Seat() {
   };
 
   useEffect(() => {
-    // document.referrer가 비어있으면 직접 URL 입력으로 접근한 것
-    if (!document.referrer) {
-      router.replace('./'); // 메인으로 돌려보내기
-    }
-  }, [router]);
-
-  useEffect(() => {
     let isMounted = true;
 
     const handleMount = async () => {
@@ -126,6 +119,7 @@ export default function Seat() {
 
     try {
       await tryReserveSeat(areaId, selectedSeatNumber);
+      document.cookie = 'ticketing-progress=3; path=/';
       router.push('payment1');
     } catch (_error) {
       // 에러는 store에서 처리됨

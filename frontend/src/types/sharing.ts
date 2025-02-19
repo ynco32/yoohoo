@@ -24,6 +24,7 @@ export interface SharingPost {
   latitude?: number;
   longitude?: number;
   isScraped?: boolean;
+  concertId: number;
 }
 
 /**

@@ -6,7 +6,6 @@ import { SharingPost, ViewTabItem } from '@/types/sharing';
 
 export interface SharingListProps {
   posts: SharingPost[];
-  concertId: number;
   isLoading: boolean;
   hasMore: boolean;
   onLoadMore: () => Promise<void>;
@@ -19,7 +18,6 @@ export interface SharingListProps {
  */
 export const SharingList = ({
   posts,
-  concertId,
   isLoading,
   hasMore,
   onLoadMore,
@@ -88,7 +86,7 @@ export const SharingList = ({
           >
             <SharingCard
               {...post}
-              concertId={concertId}
+              concertId={post.concertId}
               isLastItem={index === posts.length - 1}
             />
           </div>

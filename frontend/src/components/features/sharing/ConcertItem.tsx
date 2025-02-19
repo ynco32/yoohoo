@@ -45,8 +45,16 @@ export const ConcertItem = ({
   }, []);
 
   const truncateText = (text: string) => {
-    if (text.length > charsToFit) {
-      return text.slice(0, charsToFit - 3) + '...';
+    // 한글 문자가 포함되어 있는지 확인
+    const hasKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text);
+
+    // 영어 텍스트는 더 많은 글자 허용 (약 1.5배)
+    const adjustedMaxLength = hasKorean
+      ? charsToFit
+      : Math.floor(charsToFit * 1.5);
+
+    if (text.length > adjustedMaxLength) {
+      return text.slice(0, adjustedMaxLength - 3) + '...';
     }
     return text;
   };
@@ -56,7 +64,7 @@ export const ConcertItem = ({
 
   return (
     <Link href={`/sharing/${concertId}`} className="block">
-      <ContentCard className="shadow-concert overflow-hidden rounded-xl border-none bg-white p-3">
+      <ContentCard className="overflow-hidden rounded-xl border-none bg-white p-3 shadow-concert">
         <div className="flex items-center">
           <div className="relative -m-1 w-16 flex-shrink-0 overflow-hidden rounded-lg">
             <div style={{ paddingTop: '141.4%' }}>

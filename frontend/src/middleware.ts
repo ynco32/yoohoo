@@ -45,6 +45,10 @@ export default withAuth(
     callbacks: {
       authorized: () => true,
     },
+    pages: {
+      signIn: '/main',
+      error: '/main',
+    },
   }
 );
 

@@ -40,6 +40,7 @@ export const ReviewHeader = ({
   const handleDelete = async () => {
     try {
       await deleteSightReview(reviewId);
+      router.refresh();
       router.replace(pathname);
     } catch (error) {
       if (error instanceof Error) {

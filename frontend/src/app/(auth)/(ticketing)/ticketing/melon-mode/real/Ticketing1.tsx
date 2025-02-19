@@ -26,7 +26,8 @@ export default function Ticketing1() {
     setQueuePopupOpen(true);
 
     // 티켓팅 진행 상태 저장
-    document.cookie = 'ticketing-progress=2; path=/';
+    document.cookie = 'ticketing-progress=1; path=/';
+    console.log('쿠키 설정:', document.cookie);
 
     enterQueue();
   };

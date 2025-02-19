@@ -45,9 +45,13 @@ export default withAuth(
     callbacks: {
       authorized: () => true,
     },
+    pages: {
+      signIn: '/main',
+      error: '/main',
+    },
   }
 );
 
 export const config = {
-  matcher: ['/ticketing/:path*'],
+  matcher: ['/ticketing/melon-mode/real/:path*'],
 };

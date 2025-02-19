@@ -1,7 +1,6 @@
 'use client';
 
 import { ViewTabItem } from '@/types/sharing';
-import { useParams } from 'next/navigation';
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { MyViewTab } from './MyViewTap';
 import { SharingList } from '@/components/features/sharing/SharingList';
@@ -26,11 +25,6 @@ export const MySharingView = () => {
 
   // refs
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // URL 파라미터
-  const params = useParams();
-  const concertId =
-    params.concertId !== undefined ? Number(params.concertId) : 0;
 
   // 모든 데이터 가져오기
   const fetchData = useCallback(async () => {
@@ -107,7 +101,7 @@ export const MySharingView = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [concertId, mswInitialized, currentTab]);
+  }, [mswInitialized, currentTab]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -155,7 +149,6 @@ export const MySharingView = () => {
         ) : (
           <SharingList
             posts={displayedPosts}
-            concertId={concertId}
             isLoading={isLoading}
             hasMore={hasMore}
             onLoadMore={handleLoadMore}

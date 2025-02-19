@@ -319,6 +319,7 @@ export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
         photoUrl,
         latitude,
         longitude,
+        concertId,
       } = sharing;
       return {
         sharingId,
@@ -332,6 +333,7 @@ export const getSharingsByConcertId = (concertId: number): SharingPost[] => {
         photoUrl,
         latitude,
         longitude,
+        concertId,
       };
     });
 };
@@ -354,6 +356,7 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
       photoUrl,
       latitude,
       longitude,
+      concertId,
     } = sharing;
     return {
       sharingId: id,
@@ -367,6 +370,7 @@ export const getSharingById = (sharingId: number): SharingPost | undefined => {
       photoUrl,
       latitude,
       longitude,
+      concertId,
     };
   }
   return undefined;
@@ -419,6 +423,7 @@ export const getScrappedSharings = (
       photoUrl: sharing.photoUrl,
       latitude: sharing.latitude,
       longitude: sharing.longitude,
+      concertId: sharing.concertId,
     }));
 
   let filteredSharings;
@@ -465,6 +470,7 @@ export const getWroteSharings = (
       photoUrl: sharing.photoUrl,
       latitude: sharing.latitude,
       longitude: sharing.longitude,
+      concertId: sharing.concertId,
     }));
 
   let filteredSharings;

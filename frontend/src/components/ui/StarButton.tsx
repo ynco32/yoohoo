@@ -20,9 +20,12 @@ export const StarButton = ({ onScrapModeChange }: StarButtonProps) => {
   return (
     <button
       onClick={handleClick}
-      className="sm:right-8 md:right-12 lg:right-16 absolute right-4 top-16 z-50 rounded-full bg-white p-3 shadow-lg hover:bg-gray-50"
+      className="mx-auto rounded-full bg-white p-3 shadow-lg"
     >
-      <ButtonContent className="mb-3 h-8 w-8" aria-label="Scrap" />
+      <div className="flex flex-row items-center gap-2">
+        <ButtonContent className={`text-star h-8 w-8`} aria-label="Scrap" />
+        <span>스크랩 보기</span>
+      </div>
     </button>
   );
 };

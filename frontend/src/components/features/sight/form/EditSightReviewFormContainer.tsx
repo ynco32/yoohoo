@@ -12,6 +12,7 @@ import {
   mapFormDataToApiRequest,
 } from '@/lib/utils/sightReviewMapper';
 import { useSeatsStore } from '@/store/useSeatStore';
+import { useSectionStore } from '@/store/useSectionStore';
 
 interface EditSightReviewFormContainerProps {
   className?: string;
@@ -33,6 +34,8 @@ export function EditSightReviewFormContainer({
     useSightReviewStore();
 
   const { getSectionBySeatId } = useSeatsStore();
+  const { getSectionById } = useSectionStore();
+
   // 초기 데이터 설정
   useEffect(() => {
     if (initialData) {
@@ -48,9 +51,11 @@ export function EditSightReviewFormContainer({
             photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
           }
 
+          const initialSection = getSectionById(initialData.seatId);
+
           setFormData({
             ...initialData,
-            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
+            sectionNumber: Number(initialSection?.sectionName) ?? 0,
             seatDistance: mapApiToSeatDistance(initialData.seatDistance),
             sound: mapApiToSound(initialData.sound),
             photo: photoFile || null,
@@ -70,7 +75,7 @@ export function EditSightReviewFormContainer({
 
       setInitialData();
     }
-  }, [getSectionBySeatId, initialData, setFormData]);
+  }, [getSectionBySeatId, getSectionById, initialData, setFormData]);
 
   // initialData가 formData에 제대로 설정되었는지 확인
   useEffect(() => {

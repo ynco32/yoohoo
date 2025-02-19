@@ -113,53 +113,60 @@ export const DraggableReviewSheet = ({
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-10 flex justify-center">
-      <div className="container mx-auto">
-        <div className="relative mx-auto w-full max-w-layout">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 top-12 z-10 flex justify-center">
+      <div className="container px-0">
+        <div className="relative mx-auto h-full w-full max-w-layout">
           <div
             className="pointer-events-auto absolute bottom-0 w-full transform transition-transform duration-300 ease-out"
-            style={style}
+            style={{
+              ...style,
+              maxHeight: '100%',
+            }}
           >
-            <div className="mx-4 rounded-t-3xl bg-sight-bg shadow-lg">
+            <div className="mx-2 flex h-full flex-col overflow-hidden rounded-t-3xl bg-sight-bg shadow-lg">
               {/* 드래그 핸들러 영역 */}
-              <div className="cursor-grab touch-none" {...handlers}>
-                <div className="py-2 pt-4">
-                  <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
-                </div>
-
-                <div className="flex items-center justify-between px-4 py-2">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-title-bold text-gray-700">리뷰보기</h2>
-                    <span className="text-body-bold text-primary-main">
-                      {getSectionById(currentSectionId)?.sectionName}구역
-                    </span>
-                    {typeof currentSeatId === 'number' &&
-                      !Number.isNaN(currentSeatId) && (
-                        <>
-                          <div className="h-1 w-1 rounded-full bg-gray-300" />
-                          <span className="text-body text-gray-600">
-                            {currentRow}열
-                          </span>
-                        </>
-                      )}
+              <div className="flex-none">
+                <div className="cursor-grab touch-none" {...handlers}>
+                  <div className="py-2 pt-4">
+                    <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
                   </div>
 
-                  {typeof currentSeatId === 'number' &&
-                    !Number.isNaN(currentSeatId) && (
-                      <SeatScrapButton
-                        seatId={currentSeatId}
-                        stageType={currentStageType}
-                        initialScrapState={isScraped}
-                        size="lg"
-                        onScrap={handleScrap}
-                      />
-                    )}
+                  <div className="flex items-center justify-between px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-title-bold text-gray-700">
+                        리뷰보기
+                      </h2>
+                      <span className="text-body-bold text-primary-main">
+                        {getSectionById(currentSectionId)?.sectionName}구역
+                      </span>
+                      {typeof currentSeatId === 'number' &&
+                        !Number.isNaN(currentSeatId) && (
+                          <>
+                            <div className="h-1 w-1 rounded-full bg-gray-300" />
+                            <span className="text-body text-gray-600">
+                              {currentRow}열
+                            </span>
+                          </>
+                        )}
+                    </div>
+
+                    {typeof currentSeatId === 'number' &&
+                      !Number.isNaN(currentSeatId) && (
+                        <SeatScrapButton
+                          seatId={currentSeatId}
+                          stageType={currentStageType}
+                          initialScrapState={isScraped}
+                          size="lg"
+                          onScrap={handleScrap}
+                        />
+                      )}
+                  </div>
                 </div>
               </div>
 
               {/* 리뷰 리스트 영역 */}
               <div
-                className="h-[90vh] touch-pan-y overflow-y-auto"
+                className="flex-1 overflow-y-auto"
                 onTouchStart={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
               >

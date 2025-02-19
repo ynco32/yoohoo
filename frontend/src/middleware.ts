@@ -53,5 +53,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/ticketing/melon-mode/real/:path*'],
+  matcher: ['/ticketing/melon-mode/real', '/ticketing/melon-mode/real/:path*'],
 };

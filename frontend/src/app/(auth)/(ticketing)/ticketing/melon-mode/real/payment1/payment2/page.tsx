@@ -106,7 +106,7 @@ export default function PaymentPage() {
       type: 'confirm',
       confirmText: '결제완료',
       onConfirm: () => {
-        document.cookie = 'ticketing-progress=5; path=/';
+        // document.cookie = 'ticketing-progress=5; path=/';
         router.push('../result');
         useSecurityPopupStore.getState().reset(); // store 에 들어있는 보안 문자 정보 삭제
       },

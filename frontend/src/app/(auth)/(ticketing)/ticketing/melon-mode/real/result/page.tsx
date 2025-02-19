@@ -165,7 +165,7 @@ export default function Result() {
 
           <button
             onClick={() => {
-              document.cookie = 'ticketing-progress=6; path=/';
+              // document.cookie = 'ticketing-progress=6; path=/';
               router.push('/ticketing');
             }}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"

@@ -157,6 +157,7 @@ module.exports = {
           button: '#4986E8',
           form: '#A7DEFF',
         },
+        star: '#FFCC00',
         gray: {
           900: '#101014',
           800: '#272830',

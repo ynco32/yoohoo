@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
 
 interface SearchInputProps {
@@ -17,31 +17,60 @@ export const SearchInput = ({
   onChange,
 }: SearchInputProps) => {
   const [value, setValue] = useState('');
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // 입력값이 변경될 때마다 실행
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    const newValue = e.target.value;
+    setValue(newValue);
+
+    // 기존 onChange 콜백 호출
     onChange?.(e);
+
+    // 디바운싱 처리 - 타이핑 중에 과도한 API 호출 방지
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      onSearch?.(newValue);
+    }, 300); // 300ms 딜레이
   };
 
+  // 검색어 초기화
   const handleClear = () => {
     setValue('');
+
+    // 기존 onChange 콜백 호출 (이벤트 객체 모방)
     if (onChange) {
       const event = {
         target: { value: '' },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
+
+    // 검색어 초기화 시 즉시 검색 실행 (전체 결과 표시)
+    onSearch?.('');
   };
 
-  const handleSearch = () => {
-    onSearch?.(value);
-  };
-
+  // Enter 키 처리
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSearch();
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      onSearch?.(value);
     }
   };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative flex items-center">
@@ -52,7 +81,7 @@ export const SearchInput = ({
         placeholder={placeholder}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={`w-full rounded-xl  py-2.5 pl-10 pr-12 text-sm placeholder-gray-600 outline outline-1 outline-gray-600 focus:ring-1 focus:ring-gray-800 ${className}`}
+        className={`w-full rounded-xl py-2.5 pl-10 pr-12 text-sm placeholder-gray-600 outline outline-1 outline-gray-600 focus:ring-1 focus:ring-gray-800 ${className}`}
       />
       {value && (
         <div className="absolute right-2 flex items-center">

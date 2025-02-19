@@ -49,7 +49,7 @@ export default function EditSightReviewPage() {
 
   const handleModalClose = () => {
     setIsCompleteModalOpen(false);
-    router.replace('/sight/reviews');
+    router.replace('/mypage/sight');
   };
 
   if (isLoading) {

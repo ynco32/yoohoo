@@ -158,7 +158,6 @@ export const SharingView = () => {
         {viewMode === 'list' && (
           <SharingList
             posts={displayedPosts}
-            concertId={concertId}
             isLoading={isLoading}
             hasMore={hasMore}
             onLoadMore={handleLoadMore}

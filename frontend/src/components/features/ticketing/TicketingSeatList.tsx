@@ -1,23 +1,15 @@
-// components/features/ticketing/TicketingSeatList.tsx
 import React, { useEffect } from 'react';
 import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
 import { useTicketingGrid } from '@/hooks/useTicketingSeatsGrid';
 import TicketingSeat from '@/components/ui/TicketingSeat';
-// import { useUserStore } from '@/store/useUserStore';
 
 const TicketingSeatList = ({ areaId }: { areaId: string }) => {
-  const {
-    seats,
-    isLoading,
-    fetchSeatsByArea,
-    selectSeat,
-    selectedSeatNumber,
-    // isSeatAvailable,
-  } = useTicketingSeatStore();
+  const { seats, isLoading, fetchSeatsByArea, selectSeat, selectedSeatNumber } =
+    useTicketingSeatStore();
 
-  const SEAT_WIDTH = 40;
-  const SEAT_HEIGHT = 40;
-  const SEAT_MARGIN = 5;
+  const SEAT_WIDTH = 20;
+  const SEAT_HEIGHT = 20;
+  const SEAT_MARGIN = 3;
 
   const { grid, dimensions } = useTicketingGrid(
     seats,
@@ -43,31 +35,58 @@ const TicketingSeatList = ({ areaId }: { areaId: string }) => {
   };
 
   return (
-    <div className="flex w-full justify-center overflow-auto">
-      <svg
-        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-        width={dimensions.width}
-        height={dimensions.height}
-        className="max-w-full"
-      >
-        {grid.map((row, rowIndex) =>
-          row.map(({ x, y, seat }, colIndex) =>
-            seat ? (
-              <TicketingSeat
-                key={`${rowIndex}-${colIndex}`}
-                x={x}
-                y={y}
-                width={SEAT_WIDTH}
-                height={SEAT_HEIGHT}
-                number={seat.seatNumber}
-                status={seat.status}
-                isSelected={seat.seatNumber === selectedSeatNumber}
-                onClick={() => handleSeatClick(seat.seatNumber)}
-              />
-            ) : null
-          )
-        )}
-      </svg>
+    <div className="flex w-full flex-col items-center pt-20">
+      {/* Stage 영역 */}
+      <div className="mb-16 w-32">
+        <svg viewBox="0 0 100 30">
+          <rect
+            x="0"
+            y="0"
+            width="100"
+            height="30"
+            rx="4"
+            fill="#1F2937"
+            className="drop-shadow-md"
+          />
+          <text
+            x="50"
+            y="18"
+            textAnchor="middle"
+            fill="white"
+            className="text-sm font-semibold"
+          >
+            STAGE
+          </text>
+        </svg>
+      </div>
+
+      {/* 좌석 영역 */}
+      <div className="flex w-full justify-center overflow-auto">
+        <svg
+          viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+          width={dimensions.width}
+          height={dimensions.height}
+          className="max-w-full"
+        >
+          {grid.map((row, rowIndex) =>
+            row.map(({ x, y, seat }, colIndex) =>
+              seat ? (
+                <TicketingSeat
+                  key={`${rowIndex}-${colIndex}`}
+                  x={x}
+                  y={y}
+                  width={SEAT_WIDTH}
+                  height={SEAT_HEIGHT}
+                  number={seat.seatNumber}
+                  status={seat.status}
+                  isSelected={seat.seatNumber === selectedSeatNumber}
+                  onClick={() => handleSeatClick(seat.seatNumber)}
+                />
+              ) : null
+            )
+          )}
+        </svg>
+      </div>
     </div>
   );
 };

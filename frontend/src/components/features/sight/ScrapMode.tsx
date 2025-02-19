@@ -11,8 +11,10 @@ export const ScrapMode = () => {
   const currentSectionId = params.sectionId;
 
   return (
-    <>
-      <StarButton />
+    <div className="flex w-full flex-col items-center pt-4">
+      <div className="mb-8 flex w-full justify-center">
+        <StarButton />
+      </div>
       {!currentSectionId ? (
         <div className="max-w-3xl flex h-96 w-full flex-col items-center justify-center">
           <SectionList isScrapMode={isScrapMode} />
@@ -20,7 +22,7 @@ export const ScrapMode = () => {
       ) : (
         <SeatList isScrapMode={isScrapMode} />
       )}
-    </>
+    </div>
   );
 };
 

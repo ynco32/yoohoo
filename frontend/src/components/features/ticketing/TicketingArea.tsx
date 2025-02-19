@@ -21,6 +21,7 @@ const TicketingArea: React.FC = () => {
   };
 
   const handleMove = async () => {
+    document.cookie = 'ticketing-progress=2; path=/';
     if (selectedSection) {
       try {
         await router.push(`/ticketing/${selectedSection}`);

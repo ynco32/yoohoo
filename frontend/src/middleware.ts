@@ -1,39 +1,49 @@
-// middleware.ts
+// src/middleware.ts
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
+type StepPaths = {
+  '/ticketing/melon-mode/real': number;
+  '/ticketing/melon-mode/real/areaSelect': number;
+  '/ticketing/melon-mode/real/[areaType]': number;
+  '/ticketing/melon-mode/real/payment1': number;
+  '/ticketing/melon-mode/real/payment1/payment2': number;
+  '/ticketing/melon-mode/real/result': 6;
+};
+
+const steps: StepPaths = {
+  '/ticketing/melon-mode/real': 1,
+  '/ticketing/melon-mode/real/areaSelect': 2,
+  '/ticketing/melon-mode/real/[areaType]': 3,
+  '/ticketing/melon-mode/real/payment1': 4,
+  '/ticketing/melon-mode/real/payment1/payment2': 5,
+  '/ticketing/melon-mode/real/result': 6,
+};
+
 export default withAuth(
   function middleware(req) {
-    const path = req.nextUrl.pathname;
+    let path = req.nextUrl.pathname;
     const progress = parseInt(
       req.cookies.get('ticketing-progress')?.value || '1'
     );
 
-    // src/middleware.ts
-    type StepPaths = {
-      '/ticketing/melon-mode/real': number;
-      '/ticketing/melon-mode/real/areaSelect': number;
-      '/ticketing/melon-mode/real/[areaType]': number;
-      '/ticketing/melon-mode/real/payment1': number;
-      '/ticketing/melon-mode/real/payment1/payment2': number;
-    };
-
-    const steps: StepPaths = {
-      '/ticketing/melon-mode/real': 1,
-      '/ticketing/melon-mode/real/areaSelect': 2,
-      '/ticketing/melon-mode/real/[areaType]': 3,
-      '/ticketing/melon-mode/real/payment1': 4,
-      '/ticketing/melon-mode/real/payment1/payment2': 5,
-    };
+    if (
+      path.includes('/ticketing/melon-mode/real/') &&
+      path.split('/').length === 5
+    ) {
+      path = '/ticketing/melon-mode/real/[areaType]';
+    }
 
     const currentStep = steps[path as keyof StepPaths];
     if (currentStep > progress) {
-      return NextResponse.redirect(new URL('/ticketing/select', req.url));
+      return NextResponse.redirect(
+        new URL('/ticketing/melon-mode/real', req.url)
+      );
     }
   },
   {
     callbacks: {
-      authorized: ({ req }) => !!req.cookies.get('ticketing-progress'),
+      authorized: () => true,
     },
   }
 );

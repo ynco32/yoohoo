@@ -93,6 +93,8 @@ export default function TicketingPage() {
       timestamp: new Date().toISOString(),
     });
 
+    document.cookie = 'ticketing-progress=4; path=/';
+
     setPrevAdress('payment-left');
 
     setTimeout(() => {

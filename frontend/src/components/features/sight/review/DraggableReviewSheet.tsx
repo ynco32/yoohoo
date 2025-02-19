@@ -114,7 +114,7 @@ export const DraggableReviewSheet = ({
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 top-12 z-10 flex justify-center">
-      <div className="container mx-auto">
+      <div className="container px-0">
         <div className="relative mx-auto h-full w-full max-w-layout">
           <div
             className="pointer-events-auto absolute bottom-0 w-full transform transition-transform duration-300 ease-out"
@@ -123,7 +123,7 @@ export const DraggableReviewSheet = ({
               maxHeight: '100%',
             }}
           >
-            <div className="mx-4 flex h-full flex-col overflow-hidden rounded-t-3xl bg-sight-bg shadow-lg">
+            <div className="mx-2 flex h-full flex-col overflow-hidden rounded-t-3xl bg-sight-bg shadow-lg">
               {/* 드래그 핸들러 영역 */}
               <div className="flex-none">
                 <div className="cursor-grab touch-none" {...handlers}>

@@ -12,13 +12,16 @@ export type StepId = (typeof STEPS)[number]['id'];
 interface UseSightReviewStepsProps {
   formData: SightReviewFormData;
   initialStep: number;
+  isEditMode?: boolean;
 }
 
 export const useSightReviewSteps = ({
   formData,
   initialStep = 0,
+  isEditMode = false,
 }: UseSightReviewStepsProps) => {
   const [currentStep, setCurrentStep] = useState<number>(initialStep);
+
   function isValidPhoto(photo: File | null): photo is File {
     return photo instanceof File && photo.size > 0;
   }
@@ -57,9 +60,26 @@ export const useSightReviewSteps = ({
   }, [currentStep]);
 
   const handleBack = useCallback(() => {
+    // 수정 모드일 때는 step 1 이하로 내려가지 못하도록 제한
+    if (isEditMode && currentStep <= 1) {
+      return;
+    }
+
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
+  }, [currentStep, isEditMode]);
+
+  const getCurrentStep = useCallback(() => {
+    return {
+      current: currentStep,
+      total: STEPS.length,
+      title: STEPS[currentStep].title,
+    };
+  }, [currentStep]);
+
+  const getProgress = useCallback(() => {
+    return (currentStep + 1) / STEPS.length;
   }, [currentStep]);
 
   return {
@@ -67,5 +87,9 @@ export const useSightReviewSteps = ({
     canProceed,
     handleNext,
     handleBack,
+    isEditMode,
+    getCurrentStep,
+    getProgress,
+    STEPS,
   };
 };

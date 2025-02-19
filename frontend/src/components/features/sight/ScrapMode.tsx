@@ -11,7 +11,7 @@ export const ScrapMode = () => {
   const currentSectionId = params.sectionId;
 
   return (
-    <div className="flex w-full flex-col items-center pt-4">
+    <div className="flex w-full flex-col items-center pt-0">
       <div className="mb-8 flex w-full justify-center">
         <StarButton />
       </div>

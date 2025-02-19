@@ -5,7 +5,7 @@ import { WriteButton } from '@/components/common/WriteButton';
 export default function SeatSelectPage() {
   return (
     <main className="flex h-full w-full flex-col">
-      <div className="z-content mt-8 flex w-full flex-col items-center justify-center">
+      <div className="z-content mt-0 flex w-full flex-col items-center justify-center">
         <ScrapMode />
         <SightReviewList />
         <WriteButton path="/sight/reviews/write" />

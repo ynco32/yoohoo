@@ -6,7 +6,6 @@ import Page1 from '@/components/features/ticketing/pages/1';
 import { ScheduleSelection } from '@/components/features/ticketing/ScheduleSelection';
 import QueuePopup from '@/components/ui/QueuePopup';
 import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
-// import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import { useQueueStore } from '@/store/useQueueStore';
 import { ErrorPopup } from '@/components/features/ticketing/ErrorPopup';
@@ -25,6 +24,10 @@ export default function Ticketing1() {
   const handleScheduleSelect = () => {
     setSchedulePopupOpen(false);
     setQueuePopupOpen(true);
+
+    // 티켓팅 진행 상태 저장
+    document.cookie = 'ticketing-progress=2; path=/';
+
     enterQueue();
   };
 

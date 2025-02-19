@@ -48,9 +48,8 @@ export const SightReviewCard = ({
   viewQuality,
   writeTime,
 }: SightReviewCardProps) => {
-  // 시야 점수를 별점으로 표시하는 함수
   const renderViewScore = (score: number) => {
-    return `${score}점`;
+    return `${8 - score}점`;
   };
 
   const formatDate = (dateString: string) => {

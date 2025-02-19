@@ -100,8 +100,9 @@ export default function Result() {
     <div className="flex h-full flex-col items-center p-4">
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        message="티켓팅 결과 저장 성공! 마이페이지에서 확인하세요!"
-        onClose={() => {}}
+        message="티켓팅 결과 저장 성공! \n 마이페이지에서 확인하세요!"
+        onClose={() => setIsSuccessModalOpen(false)}
+        style={{ whiteSpace: 'pre-line' }}
       />
       <div className="mb-8 w-full text-center">
         <h1 className="text-xl font-semibold">티켓팅</h1>
@@ -163,7 +164,10 @@ export default function Result() {
           </button>
 
           <button
-            onClick={() => router.push('/ticketing')}
+            onClick={() => {
+              document.cookie = 'ticketing-progress=6; path=/';
+              router.push('/ticketing');
+            }}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"
           >
             <HomeIcon className="h-5 w-5" />

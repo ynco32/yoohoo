@@ -45,6 +45,12 @@ const Header = () => {
   const handleBack = () => {
     const pathSegments = pathname.split('/').filter(Boolean);
 
+    // ticketing 하위 경로에서는 일반 뒤로가기 수행
+    if (pathSegments[0] === 'ticketing' && pathSegments.length > 1) {
+      window.history.back();
+      return;
+    }
+
     // /sight/[arenaid]/[stageType] 경로에서는 바로 /sight로 이동
     if (pathSegments[0] === 'sight' && pathSegments.length === 3) {
       router.push('/sight');
@@ -72,6 +78,11 @@ const Header = () => {
       return;
     }
 
+    // ticketing 페이지에서는 항상 일반 뒤로가기 수행
+    if (pathSegments[0] === 'ticketing') {
+      window.history.back();
+      return;
+    }
     // 한 단계 위 경로로 이동
     if (pathSegments.length > 1) {
       const upperPath = '/' + pathSegments.slice(0, -1).join('/');

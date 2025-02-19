@@ -119,7 +119,7 @@ export default function Seat() {
 
     try {
       await tryReserveSeat(areaId, selectedSeatNumber);
-      document.cookie = 'ticketing-progress=3; path=/';
+      // document.cookie = 'ticketing-progress=3; path=/';
       router.push('payment1');
     } catch (_error) {
       // 에러는 store에서 처리됨

@@ -174,7 +174,7 @@ export const SharingDetailHeader = ({
             </div>
             <span className="text-sm font-medium">{writer}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {isAuthor ? (
               <StatusDropdown
                 currentStatus={status}
@@ -197,7 +197,7 @@ export const SharingDetailHeader = ({
                   <EllipsisVerticalIcon className="h-6 w-6 text-gray-600" />
                 </button>
                 {showMenu && (
-                  <div className="absolute right-0 top-8 z-10 min-w-[100px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div className="absolute right-0 top-9 z-10 min-w-[100px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
                     <button
                       onClick={handleEdit}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
@@ -217,7 +217,7 @@ export const SharingDetailHeader = ({
               <button
                 onClick={handleScrapClick}
                 disabled={isToggling}
-                className="transition-transform hover:scale-110 active:scale-95"
+                className="transition-transform hover:scale-110 active:scale-95 px-2"
               >
                 {scraped ? (
                   <StarSolid className="h-6 w-6 text-yellow-400" />

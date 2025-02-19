@@ -54,13 +54,6 @@ export default function Seat() {
   };
 
   useEffect(() => {
-    // document.referrer가 비어있으면 직접 URL 입력으로 접근한 것
-    if (!document.referrer) {
-      router.replace('./'); // 메인으로 돌려보내기
-    }
-  }, [router]);
-
-  useEffect(() => {
     let isMounted = true;
 
     const handleMount = async () => {

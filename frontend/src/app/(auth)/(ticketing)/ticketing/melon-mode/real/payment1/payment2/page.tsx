@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PaymentMethodGroup } from '@/components/features/ticketing/PaymentMethodGroup';
 import { BankTransferForm } from '@/components/features/ticketing/BankTransferForm';
 import { AgreementSection } from '@/components/features/ticketing/AgreementSection';
@@ -111,13 +111,6 @@ export default function PaymentPage() {
       },
     });
   };
-
-  useEffect(() => {
-    // document.referrer가 비어있으면 직접 URL 입력으로 접근한 것
-    if (!document.referrer) {
-      router.replace('../'); // 메인으로 돌려보내기
-    }
-  }, [router]);
 
   return (
     <div className="flex h-[calc(100vh-56px)] flex-col">

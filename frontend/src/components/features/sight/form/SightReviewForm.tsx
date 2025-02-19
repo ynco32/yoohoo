@@ -299,6 +299,7 @@ export const SightReviewForm = React.memo(
           isOpen={showSuccessModal}
           onClose={handleModalClose}
           message="리뷰가 성공적으로 등록되었습니다!"
+          buttonText="내 리뷰 보러가기"
         />
       </div>
     );

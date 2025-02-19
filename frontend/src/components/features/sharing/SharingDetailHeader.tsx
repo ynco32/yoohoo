@@ -174,7 +174,7 @@ export const SharingDetailHeader = ({
             </div>
             <span className="text-sm font-medium">{writer}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {isAuthor ? (
               <StatusDropdown
                 currentStatus={status}
@@ -217,7 +217,7 @@ export const SharingDetailHeader = ({
               <button
                 onClick={handleScrapClick}
                 disabled={isToggling}
-                className="transition-transform hover:scale-110 active:scale-95"
+                className="transition-transform hover:scale-110 active:scale-95 px-2"
               >
                 {scraped ? (
                   <StarSolid className="h-6 w-6 text-yellow-400" />

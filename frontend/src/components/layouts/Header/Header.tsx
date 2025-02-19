@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { NavigationMenu } from './NavigationMenu';
@@ -14,6 +14,15 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  // 경로 변경 추적
+  useEffect(() => {
+    // 이전 경로를 저장
+    const prevPath = sessionStorage.getItem('currentPath') || '';
+    // 현재 경로 업데이트
+    sessionStorage.setItem('previousPath', prevPath);
+    sessionStorage.setItem('currentPath', pathname);
+  }, [pathname]);
 
   const rootPaths = ['/main'];
   const shouldShowLogo = rootPaths.some((path) => path === pathname);
@@ -44,10 +53,25 @@ const Header = () => {
 
   const handleBack = () => {
     const pathSegments = pathname.split('/').filter(Boolean);
+    const previousPath = sessionStorage.getItem('previousPath') || '';
 
-    // ticketing 하위 경로에서는 일반 뒤로가기 수행
-    if (pathSegments[0] === 'ticketing' && pathSegments.length > 1) {
-      window.history.back();
+    // ticketing 페이지 처리
+    if (pathSegments[0] === 'ticketing') {
+      // /ticketing 루트 경로에서는 메인으로
+      if (pathSegments.length === 1) {
+        router.push('/main');
+        return;
+      }
+
+      // /ticketing/*/real 하위 경로에서는 일반 뒤로가기 실행
+      if (pathSegments.length >= 3 && pathSegments[2] === 'real') {
+        window.history.back();
+        return;
+      }
+
+      // 그 외 ticketing 하위 경로에서는 상위 경로로
+      const upperPath = '/' + pathSegments.slice(0, -1).join('/');
+      router.push(upperPath);
       return;
     }
 
@@ -57,13 +81,16 @@ const Header = () => {
       return;
     }
 
-    // /sharing/0/xxx 경로에서는 /mypage/sharing으로 이동
-    if (
-      pathSegments[0] === 'sharing' &&
-      pathSegments.length >= 2 &&
-      pathSegments[1] === '0'
-    ) {
-      router.push('/mypage/sharing');
+    // sharing 상세페이지에서의 뒤로가기 처리
+    if (pathSegments[0] === 'sharing' && pathSegments.length >= 3) {
+      // 이전 경로가 mypage였다면 mypage로 이동
+      if (previousPath.startsWith('/mypage')) {
+        router.push('/mypage/sharing');
+        return;
+      }
+      // 그 외에는 나눔 지도로 이동
+      const concertId = pathSegments[1];
+      router.push(`/sharing/${concertId}`);
       return;
     }
 

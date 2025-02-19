@@ -5,8 +5,8 @@ import { rest } from 'msw';
 const generateSeats = (area: number) => {
   const seats = [];
   // area에 따라 다른 좌석 배치 생성
-  const rowCount = area === 1 ? 5 : 4; // A구역은 5x5, B구역은 4x4
-  const colCount = area === 1 ? 5 : 4;
+  const rowCount = area === 1 ? 10 : 7; // A구역은 5x5, B구역은 4x4
+  const colCount = area === 1 ? 10 : 7;
 
   for (let row = 1; row <= rowCount; row++) {
     for (let col = 1; col <= colCount; col++) {

@@ -32,6 +32,8 @@ interface SectionState {
   // Actions
   fetchSectionsByArena: (arenaId: number, stageType: number) => Promise<void>;
   reset: () => void;
+  updateSectionScrapStatus: (sectionId: number, isScraped: boolean) => void;
+
   clearCache: () => void;
   cleanupCache: () => void;
 }
@@ -122,6 +124,37 @@ export const useSectionStore = create<SectionState>((set, get) => ({
         isLoading: false,
       });
     }
+  },
+  // 섹션 스크랩 상태 업데이트 함수 추가
+  updateSectionScrapStatus: (sectionId: number, isScraped: boolean) => {
+    set((state) => {
+      // 현재 섹션 목록 업데이트
+      const updatedSections = state.sections.map((section) =>
+        section.sectionId === sectionId ? { ...section, isScraped } : section
+      );
+
+      // 모든 캐시 업데이트
+      const updatedCache = Object.entries(state.arenaCache).reduce(
+        (cache, [key, value]) => ({
+          ...cache,
+          [key]: {
+            ...value,
+            sections: value.sections.map((section) =>
+              section.sectionId === sectionId
+                ? { ...section, isScraped }
+                : section
+            ),
+            lastAccessed: Date.now(),
+          },
+        }),
+        {}
+      );
+
+      return {
+        sections: updatedSections,
+        arenaCache: updatedCache,
+      };
+    });
   },
 
   cleanupCache: () => {

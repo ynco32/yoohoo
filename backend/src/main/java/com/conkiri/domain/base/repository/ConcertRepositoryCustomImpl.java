@@ -32,7 +32,8 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 		BooleanExpression conditions = concert.startTime.after(now); // 기본 조건: 시작 시간이 now이후
 
 		if (concertSearch != null && !concertSearch.isEmpty()) {
-			conditions = conditions.and(concert.concertName.containsIgnoreCase(concertSearch)); // 검색어 조건
+			conditions = conditions.and(
+				(concert.concertName.containsIgnoreCase(concertSearch)).or(concert.artist.containsIgnoreCase(concertSearch))); // 검색어 조건
 		}
 
 		if (lastConcertId != null) {

@@ -6,9 +6,9 @@ import KakaoLoginButton from '@/components/features/auth/KakaoLoginButton';
 
 export default function LoginPage() {
   return (
-    <div className="bg-gradient-radial relative min-h-screen w-full overflow-hidden from-[#DBEEF1] to-white px-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-radial from-[#DBEEF1] to-white px-4">
       {/* [텍스트] 로그인 안내문구 */}
-      <div className="sm:top-[420px] absolute left-1/2 top-[420px] w-full max-w-[226px] -translate-x-1/2">
+      <div className="sm:top-[420px] absolute left-1/2 top-[420px] w-full max-w-[300px] -translate-x-1/2">
         <div className="sm:text-xl text-center font-pretendard text-lg font-bold leading-[132%] text-[#515151]">
           간편하게 로그인하고
           <br />

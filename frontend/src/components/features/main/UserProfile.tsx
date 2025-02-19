@@ -87,9 +87,9 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
           </div> */}
           {/* 유저 정보 섹션 */}
           <div className="absolute bottom-3 left-5">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 min-w-8 items-center justify-center rounded-full border border-2 border-primary-500 px-1">
-                <span className="text-caption3-bold font-bold text-primary-500">
+            <div className="flex items-center gap-1">
+              <div className="flex h-6 min-w-8 items-center justify-center rounded-full border border-2 border-sight-button px-1">
+                <span className="text-caption3-bold font-bold text-sight-button">
                   Lv.{user.level}
                 </span>
               </div>

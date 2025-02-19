@@ -22,6 +22,11 @@ interface SightReviewFormProps {
   onClose?: () => void;
 }
 
+interface FormServerError {
+  message: string;
+  type: 'error' | 'warning';
+}
+
 export const SightReviewForm = React.memo(
   ({ onSubmit, className = '', onClose }: SightReviewFormProps) => {
     const {
@@ -41,12 +46,15 @@ export const SightReviewForm = React.memo(
     const params = useParams();
     const reviewId = params.reviewId;
     const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+    const [serverError, setServerError] =
+      React.useState<FormServerError | null>(null);
     const router = useRouter();
+
     const { currentStep, canProceed, handleNext, handleBack } =
       useSightReviewSteps({
         formData,
         initialStep: reviewId ? 1 : 0,
-        isEditMode: !!reviewId, // NEW: 수정 모드 여부를 전달
+        isEditMode: !!reviewId,
       });
 
     const { validateStep, getValidationField } = useSightReviewValidation({
@@ -55,10 +63,12 @@ export const SightReviewForm = React.memo(
       setValidation,
       setError,
     });
+
     React.useEffect(() => {
       const validationOnly = false;
       validateStep(STEPS[currentStep].id, validationOnly);
     }, [formData, currentStep, validateStep]);
+
     const handleFieldChange = <K extends keyof SightReviewFormData>(
       field: K,
       value: SightReviewFormData[K]
@@ -68,7 +78,10 @@ export const SightReviewForm = React.memo(
       if (validationField) {
         setTouched(validationField);
       }
+      // 필드 값이 변경되면 서버 에러 메시지 초기화
+      setServerError(null);
     };
+
     const handleModalClose = () => {
       setShowSuccessModal(false);
       router.replace('/mypage/sight');
@@ -78,8 +91,8 @@ export const SightReviewForm = React.memo(
       if (currentStep !== STEPS.length - 1) return;
 
       clearErrors();
+      setServerError(null);
 
-      // validation 상태를 수동으로 업데이트
       setValidation(
         'photo',
         formData.photo instanceof File || typeof formData.photo === 'string'
@@ -92,16 +105,14 @@ export const SightReviewForm = React.memo(
       );
 
       const stepValidation = validateStep(STEPS[currentStep].id);
-
       const formValidation = isFormValid();
-      // validation 체크
+
       if (!stepValidation) {
         console.log('Step validation failed');
         setError('submit', '현재 단계의 모든 항목을 입력해주세요.');
         return;
       }
 
-      // validation 상세 정보 로깅
       const validationDetails = {
         concertId: formData.concertId > 0,
         seat:
@@ -124,7 +135,6 @@ export const SightReviewForm = React.memo(
         return;
       }
 
-      // 이 시점에서 추가 확인
       if (!validationDetails.photo || !validationDetails.seat) {
         console.log('Critical validation check failed');
         setError('submit', '사진과 좌석 정보를 다시 확인해주세요.');
@@ -138,13 +148,23 @@ export const SightReviewForm = React.memo(
 
       try {
         setIsSubmitting(true);
-        if (onSubmit) {
-          await onSubmit(formData);
-          setShowSuccessModal(true);
-        }
+        await onSubmit(formData);
+        setShowSuccessModal(true);
       } catch (error) {
         console.error('Submit error:', error);
-        setError('submit', '제출 중 오류가 발생했습니다. 다시 시도해주세요.');
+
+        if (error instanceof Error) {
+          const isServerError = error.message.includes('서버 에러');
+          setServerError({
+            message: error.message,
+            type: isServerError ? 'error' : 'warning',
+          });
+        } else {
+          setServerError({
+            message: '알 수 없는 오류가 발생했습니다. 다시 시도해주세요.',
+            type: 'error',
+          });
+        }
       } finally {
         setIsSubmitting(false);
       }
@@ -222,7 +242,6 @@ export const SightReviewForm = React.memo(
       <div
         className={`relative flex h-full flex-col rounded-layout bg-white shadow-card-colored ${className}`}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute right-md top-md text-gray-500 hover:text-gray-700"
@@ -240,7 +259,6 @@ export const SightReviewForm = React.memo(
             return false;
           }}
         >
-          {/* 상단 고정 영역 */}
           <div className="bg-white px-md pt-2xl">
             <StepProgressBar
               currentStep={currentStep}
@@ -249,29 +267,44 @@ export const SightReviewForm = React.memo(
             />
           </div>
 
-          {/* 중앙 컨텐츠 영역 */}
           <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-md py-lg">
             <div className="max-w-2xl w-full">{renderStepContent()}</div>
           </div>
 
-          {/* 하단 버튼 영역 */}
           <div className="bg-white px-md py-md">
-            {errors.submit && (
-              <div className="mb-md rounded-lg bg-status-warning/10 p-md">
+            {/* 서버 에러 메시지 */}
+            {serverError && (
+              <div
+                className={`mb-md rounded-lg p-md ${
+                  serverError.type === 'error'
+                    ? 'bg-status-warning/10 text-status-warning'
+                    : 'bg-status-caution/10 text-status-caution'
+                }`}
+                role="alert"
+              >
+                <p className="text-sm">{serverError.message}</p>
+              </div>
+            )}
+
+            {errors.submit && !serverError && (
+              <div
+                className="mb-md rounded-lg bg-status-warning/10 p-md"
+                role="alert"
+              >
                 <p className="text-sm text-status-warning">{errors.submit}</p>
               </div>
             )}
+
             <div className="flex justify-between gap-md">
-              {currentStep > 0 &&
-                !reviewId && ( // reviewId가 있을 때는 step 1에서 이전 버튼 숨김
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    className="hover:button h-12 flex-1 rounded-lg border border-sight-button px-md py-2 text-sight-button transition-colors"
-                  >
-                    이전
-                  </button>
-                )}
+              {currentStep > 0 && !reviewId && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="hover:button h-12 flex-1 rounded-lg border border-sight-button px-md py-2 text-sight-button transition-colors"
+                >
+                  이전
+                </button>
+              )}
               {currentStep === STEPS.length - 1 ? (
                 <button
                   type="button"
@@ -297,6 +330,7 @@ export const SightReviewForm = React.memo(
             </div>
           </div>
         </form>
+
         <SuccessModal
           isOpen={showSuccessModal}
           onClose={handleModalClose}

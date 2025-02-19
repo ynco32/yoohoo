@@ -13,7 +13,7 @@ import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 import { useSectionStore } from '@/store/useSectionStore';
 
 interface DraggableReviewSheetProps {
-  isOpen: boolean;
+  position: 'full' | 'half' | 'closed';
   isLoading?: boolean;
   error?: string;
   onClose: () => void;
@@ -22,7 +22,7 @@ interface DraggableReviewSheetProps {
 }
 
 export const DraggableReviewSheet = ({
-  isOpen,
+  position,
   onClose,
   reviewDataList,
   children,
@@ -38,11 +38,10 @@ export const DraggableReviewSheet = ({
 
   const { getSeatScrapStatus, updateSeatScrapStatus, getSeatById } =
     useSeatsStore();
-
   const isScraped = currentSeatId ? getSeatScrapStatus(currentSeatId) : false;
 
   const { handlers, style } = useDraggableSheet({
-    position: isOpen ? 'half' : 'closed',
+    position,
     onClose,
   });
 
@@ -72,65 +71,80 @@ export const DraggableReviewSheet = ({
     }
 
     return (
-      <div className="px-4">
-        <div className="rounded-t-3xl bg-white">
-          {reviewDataList.map((reviewData, index) => {
-            if (
-              !isSoundStatus(reviewData.sound) ||
-              !isSeatDistanceStatus(reviewData.seatDistance)
-            ) {
-              return null;
-            }
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto px-4">
+          <div className="mb-24 rounded-t-3xl bg-white">
+            {reviewDataList.map((reviewData, index) => {
+              if (
+                !isSoundStatus(reviewData.sound) ||
+                !isSeatDistanceStatus(reviewData.seatDistance)
+              ) {
+                return null;
+              }
 
-            return (
-              <div
-                key={`${reviewData.seatId}-${reviewData.reviewId}-${index}`}
-                className="flex flex-col"
-              >
-                <SightReviewCard
-                  profilePicture={getUserProfileImage(reviewData.level)}
-                  writerId={reviewData.userId}
-                  concertTitle={reviewData.concertName}
-                  nickName={reviewData.nickname ?? 'Unknown'}
-                  reviewId={reviewData.reviewId}
-                  seatInfo={`${reviewData.rowLine}열 ${reviewData.columnLine}번`}
-                  image={reviewData.photoUrl}
-                  content={reviewData.content}
-                  viewQuality={reviewData.viewScore}
-                  soundQuality={reviewData.sound}
-                  seatDistance={reviewData.seatDistance}
-                  writeTime={reviewData.writeTime}
-                />
-                {index < reviewDataList.length - 1 && (
-                  <hr className="border-t border-gray-100" />
-                )}
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={`${reviewData.seatId}-${reviewData.reviewId}-${index}`}
+                  className="flex flex-col"
+                >
+                  <SightReviewCard
+                    profilePicture={getUserProfileImage(reviewData.level)}
+                    writerId={reviewData.userId}
+                    concertTitle={reviewData.concertName}
+                    nickName={reviewData.nickname ?? 'Unknown'}
+                    reviewId={reviewData.reviewId}
+                    seatInfo={`${reviewData.rowLine}열 ${reviewData.columnLine}번`}
+                    image={reviewData.photoUrl}
+                    content={reviewData.content}
+                    viewQuality={reviewData.viewScore}
+                    soundQuality={reviewData.sound}
+                    seatDistance={reviewData.seatDistance}
+                    writeTime={reviewData.writeTime}
+                  />
+                  {index < reviewDataList.length - 1 && (
+                    <hr className="border-t border-gray-100" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 top-12 z-10 flex justify-center">
-      <div className="container px-0">
-        <div className="relative mx-auto h-full w-full max-w-layout">
+    <div
+      className="fixed inset-x-0 bottom-0 z-50"
+      style={{
+        top: '3rem',
+        pointerEvents: position === 'closed' ? 'none' : 'auto',
+      }}
+    >
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 transition-opacity"
+        style={{
+          opacity: position === 'closed' ? 0 : 0.5,
+          pointerEvents: position === 'closed' ? 'none' : 'auto',
+        }}
+        onClick={onClose}
+      />
+
+      {/* Sheet Container */}
+      <div className="pointer-events-none relative h-full">
+        <div className="mx-auto h-full max-w-layout px-2">
           <div
-            className="pointer-events-auto absolute bottom-0 w-full transform transition-transform duration-300 ease-out"
-            style={{
-              ...style,
-              maxHeight: '100%',
-            }}
+            className="pointer-events-auto h-full transform transition-transform duration-300 ease-out"
+            style={style}
           >
-            <div className="mx-2 flex h-full flex-col overflow-hidden rounded-t-3xl bg-sight-bg shadow-lg">
-              {/* 드래그 핸들러 영역 */}
+            <div className="flex h-full flex-col overflow-hidden rounded-t-3xl bg-sight-bg shadow-lg">
+              {/* Header */}
               <div className="flex-none">
                 <div className="cursor-grab touch-none" {...handlers}>
                   <div className="py-2 pt-4">
                     <div className="mx-auto h-1 w-12 rounded-full bg-gray-300" />
                   </div>
-
                   <div className="flex items-center justify-between px-4 py-2">
                     <div className="flex items-center gap-2">
                       <h2 className="text-title-bold text-gray-700">
@@ -149,7 +163,6 @@ export const DraggableReviewSheet = ({
                           </>
                         )}
                     </div>
-
                     {typeof currentSeatId === 'number' &&
                       !Number.isNaN(currentSeatId) && (
                         <SeatScrapButton
@@ -164,13 +177,15 @@ export const DraggableReviewSheet = ({
                 </div>
               </div>
 
-              {/* 리뷰 리스트 영역 */}
+              {/* Content */}
               <div
-                className="flex-1 overflow-y-auto"
+                className="flex-1 touch-pan-y overflow-hidden"
                 onTouchStart={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
               >
-                {children || renderReviewContent()}
+                <div className="h-full overflow-y-auto">
+                  {children || renderReviewContent()}
+                </div>
               </div>
             </div>
           </div>

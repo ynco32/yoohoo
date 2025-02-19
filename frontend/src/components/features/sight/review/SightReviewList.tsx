@@ -29,7 +29,6 @@ import { mapApiToSightReview } from '@/lib/utils/sightReviewMapper';
 import type { SightReviewData } from '@/types/sightReviews';
 
 export function SightReviewList() {
-  const [isSheetOpen, setIsSheetOpen] = useState(true);
   const [reviews, setReviews] = useState<SightReviewData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,9 +40,14 @@ export function SightReviewList() {
   const seatId = Number(params.seatId);
   const stageType = Number(params.stageType);
 
+  const [sheetPosition, setSheetPosition] = useState<
+    'full' | 'half' | 'closed'
+  >('half');
+
+  // seatId 변경을 감지하는 useEffect
   useEffect(() => {
     if (params.seatId) {
-      setIsSheetOpen(true);
+      setSheetPosition('half');
     }
   }, [params.seatId]);
 
@@ -102,8 +106,8 @@ export function SightReviewList() {
   if (isLoading) {
     return (
       <DraggableReviewSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+        position={sheetPosition}
+        onClose={() => setSheetPosition('closed')}
         reviewDataList={[]}
         isLoading={true}
       />
@@ -113,8 +117,8 @@ export function SightReviewList() {
   if (error) {
     return (
       <DraggableReviewSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+        position={sheetPosition}
+        onClose={() => setSheetPosition('closed')}
         reviewDataList={[]}
         error={error}
       />
@@ -123,8 +127,8 @@ export function SightReviewList() {
 
   return (
     <DraggableReviewSheet
-      isOpen={isSheetOpen}
-      onClose={() => setIsSheetOpen(false)}
+      position={sheetPosition}
+      onClose={() => setSheetPosition('closed')}
       reviewDataList={reviews}
     />
   );

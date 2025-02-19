@@ -169,9 +169,7 @@ export async function getArenaReviews(
   }
 }
 
-export async function deleteSightReview(
-  reviewId: number
-): Promise<ApiResponse> {
+export async function deleteSightReview(reviewId: number): Promise<void> {
   try {
     const response = await withTimeout(
       fetch(SIGHT_REVIEW_API.REVIEW_BY_ID(reviewId), {
@@ -186,7 +184,7 @@ export async function deleteSightReview(
       throw new Error(errorData.message || `서버 에러: ${response.status}`);
     }
 
-    return response.json();
+    return;
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {

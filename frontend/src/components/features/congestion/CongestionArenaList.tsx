@@ -21,7 +21,8 @@ export const ArenaListContainer = () => {
 
 export const CongestionArenaList = ({ arenas }: ArenaResponse) => {
   return (
-    <div className="flex h-full flex-col items-center bg-sight-main-gra pt-5">
+    <div className="flex h-full flex-col items-center bg-sight-main-gra">
+            <div className="h-full w-full overflow-y-auto flex flex-col items-center">
       {arenas.map((arena) => (
         <ArenaItem
           key={arena.arenaId}
@@ -30,6 +31,7 @@ export const CongestionArenaList = ({ arenas }: ArenaResponse) => {
           photoUrl={arena.photoUrl}
         />
       ))}
+      </div>
     </div>
   );
 };

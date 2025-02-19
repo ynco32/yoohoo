@@ -48,9 +48,9 @@ interface SightReviewState {
   clearErrors: () => void;
   setIsSubmitting: (isSubmitting: boolean) => void;
   isFormValid: () => boolean;
-  reset: () => void; // 새로운 reset 함수 추가
-  initialize: (initialData?: Partial<SightReviewFormData>) => void; // 초기화 함수 추가
-  getAPIRequestData: () => CreateSightReviewRequest; // api 형식으로 변환
+  reset: () => void;
+  initialize: (initialData?: Partial<SightReviewFormData>) => void;
+  getAPIRequestData: () => CreateSightReviewRequest;
 }
 
 export const DEFAULT_FORM_DATA: SightReviewFormData = {
@@ -58,7 +58,6 @@ export const DEFAULT_FORM_DATA: SightReviewFormData = {
   sectionNumber: 0,
   rowLine: 0,
   columnLine: 0,
-
   photo: null,
   viewScore: 0,
   seatDistance: '평범해요',
@@ -100,9 +99,6 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     })),
 
   setFormData: (data) => {
-    console.log('=== Setting Form Data ===');
-    console.log('Received data:', data);
-
     const initialValidationState = {
       concertId: data.concertId > 0,
       photo: data.photo instanceof File || typeof data.photo === 'string',
@@ -120,7 +116,6 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     });
   },
 
-  // 새로운 초기화 함수
   initialize: (initialData = {}) => {
     const mergedData = {
       ...DEFAULT_FORM_DATA,
@@ -150,7 +145,6 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     });
   },
 
-  // 리셋 함수 추가
   reset: () => {
     set({
       formData: DEFAULT_FORM_DATA,
@@ -170,15 +164,12 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
     })),
 
   setValidation: (field, isValid) => {
-    // console.log(`Setting validation for ${field}:`, isValid);
-    set((state) => {
-      const newValidation = {
+    set((state) => ({
+      validation: {
         ...state.validation,
         [field]: isValid,
-      };
-      console.log('Updated validation state:', newValidation);
-      return { validation: newValidation };
-    });
+      },
+    }));
   },
 
   setTouched: (field) =>
@@ -195,15 +186,9 @@ export const useSightReviewStore = create<SightReviewState>((set, get) => ({
 
   isFormValid: () => {
     const validationState = get().validation;
-    console.log('=== Validation State ===');
-    console.log(validationState);
-
-    const isValid = Object.values(validationState).every((isValid) => isValid);
-    console.log('Final validation result:', isValid);
-    return isValid;
+    return Object.values(validationState).every((isValid) => isValid);
   },
 
-  // API 요청용 데이터 변환 메서드 추가
   getAPIRequestData: (): CreateSightReviewRequest => {
     const formData = get().formData;
     return {

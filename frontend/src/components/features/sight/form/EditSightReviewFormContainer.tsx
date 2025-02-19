@@ -39,43 +39,42 @@ export function EditSightReviewFormContainer({
   // 초기 데이터 설정
   useEffect(() => {
     if (initialData) {
-      // photo가 URL인 경우 File 객체로 변환
       const setInitialData = async () => {
         try {
           let photoFile;
-
-          // photo가 문자열(URL)인 경우 File 객체로 변환
           if (typeof initialData.photoUrl === 'string') {
             const response = await fetch(initialData.photoUrl);
             const blob = await response.blob();
             photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
           }
 
-          const initialSection = getSectionById(initialData.seatId);
+          // seatId로 sectionId를 찾고
+          const sectionId = getSectionBySeatId(initialData.seatId);
+          if (!sectionId) {
+            throw new Error('섹션 정보를 찾을 수 없습니다.');
+          }
+
+          // sectionId로 section 정보를 찾음
+          const section = getSectionById(sectionId);
+          // section.sectionName은 이미 sectionNumber를 toString()한 값이므로 다시 Number로 변환
+          const sectionNumber = section ? Number(section.sectionName) : 0;
 
           setFormData({
             ...initialData,
-            sectionNumber: Number(initialSection?.sectionName) ?? 0,
+            sectionNumber,
             seatDistance: mapApiToSeatDistance(initialData.seatDistance),
             sound: mapApiToSound(initialData.sound),
             photo: photoFile || null,
           });
         } catch (error) {
-          console.error('Error setting initial photo:', error);
-          // 에러 발생 시에도 나머지 데이터는 설정
-          setFormData({
-            ...initialData,
-            sectionNumber: getSectionBySeatId(initialData.seatId) ?? 0,
-            seatDistance: mapApiToSeatDistance(initialData.seatDistance),
-            sound: mapApiToSound(initialData.sound),
-            photo: null, // 또는 기본 File 객체
-          });
+          console.error('Error setting initial data:', error);
+          setError('submit', '초기 데이터 설정 중 오류가 발생했습니다.');
         }
       };
 
       setInitialData();
     }
-  }, [getSectionBySeatId, getSectionById, initialData, setFormData]);
+  }, [getSectionBySeatId, getSectionById, initialData, setFormData, setError]);
 
   // initialData가 formData에 제대로 설정되었는지 확인
   useEffect(() => {

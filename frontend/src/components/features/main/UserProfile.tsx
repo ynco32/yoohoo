@@ -85,11 +85,16 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
               className="text-sm mobile:text-base tablet:text-lg"
             />
           </div> */}
-          {/* 유저 정보 섹션 - absolute로 이미지와 겹치게 배치 */}
-          <div className="absolute bottom-3 left-0 right-0 w-full">
-            <div className="flex justify-end pe-5">
-              <span className="text-title-bold text-primary-500">
-                {user.nickname} 님
+          {/* 유저 정보 섹션 */}
+          <div className="absolute bottom-3 left-5">
+            <div className="flex items-center gap-1">
+              <div className="flex h-6 min-w-8 items-center justify-center rounded-full border border-2 border-sight-button px-1">
+                <span className="text-caption3-bold font-bold text-sight-button">
+                  Lv.{user.level}
+                </span>
+              </div>
+              <span className="text-title-bold font-black text-primary-500">
+                {user.nickname}
               </span>
             </div>
           </div>

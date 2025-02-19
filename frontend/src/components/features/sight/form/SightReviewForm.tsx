@@ -46,6 +46,7 @@ export const SightReviewForm = React.memo(
       useSightReviewSteps({
         formData,
         initialStep: reviewId ? 1 : 0,
+        isEditMode: !!reviewId, // NEW: 수정 모드 여부를 전달
       });
 
     const { validateStep, getValidationField } = useSightReviewValidation({
@@ -261,15 +262,16 @@ export const SightReviewForm = React.memo(
               </div>
             )}
             <div className="flex justify-between gap-md">
-              {currentStep > 0 && (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="hover:button h-12 flex-1 rounded-lg border border-sight-button px-md py-2 text-sight-button transition-colors"
-                >
-                  이전
-                </button>
-              )}
+              {currentStep > 0 &&
+                !reviewId && ( // reviewId가 있을 때는 step 1에서 이전 버튼 숨김
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="hover:button h-12 flex-1 rounded-lg border border-sight-button px-md py-2 text-sight-button transition-colors"
+                  >
+                    이전
+                  </button>
+                )}
               {currentStep === STEPS.length - 1 ? (
                 <button
                   type="button"

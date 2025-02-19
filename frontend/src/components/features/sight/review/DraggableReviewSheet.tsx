@@ -165,13 +165,15 @@ export const DraggableReviewSheet = ({
                     </div>
                     {typeof currentSeatId === 'number' &&
                       !Number.isNaN(currentSeatId) && (
-                        <SeatScrapButton
-                          seatId={currentSeatId}
-                          stageType={currentStageType}
-                          initialScrapState={isScraped}
-                          size="lg"
-                          onScrap={handleScrap}
-                        />
+                        <div className="mb-2">
+                          <SeatScrapButton
+                            seatId={currentSeatId}
+                            stageType={currentStageType}
+                            initialScrapState={isScraped}
+                            size="lg"
+                            onScrap={handleScrap}
+                          />
+                        </div>
                       )}
                   </div>
                 </div>

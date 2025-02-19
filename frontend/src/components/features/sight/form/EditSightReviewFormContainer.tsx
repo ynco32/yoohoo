@@ -11,8 +11,6 @@ import {
   mapApiToSound,
   mapFormDataToApiRequest,
 } from '@/lib/utils/sightReviewMapper';
-import { useSeatsStore } from '@/store/useSeatStore';
-import { useSectionStore } from '@/store/useSectionStore';
 
 interface EditSightReviewFormContainerProps {
   className?: string;
@@ -30,11 +28,7 @@ export function EditSightReviewFormContainer({
   onSubmitComplete,
 }: EditSightReviewFormContainerProps) {
   const router = useRouter();
-  const { setError, setIsSubmitting, setFormData, formData } =
-    useSightReviewStore();
-
-  const { getSectionBySeatId } = useSeatsStore();
-  const { getSectionById } = useSectionStore();
+  const { setError, setIsSubmitting, setFormData } = useSightReviewStore();
 
   // 초기 데이터 설정
   useEffect(() => {
@@ -48,23 +42,17 @@ export function EditSightReviewFormContainer({
             photoFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
           }
 
-          // seatId로 sectionId를 찾고
-          const sectionId = getSectionBySeatId(initialData.seatId);
-          if (!sectionId) {
-            throw new Error('섹션 정보를 찾을 수 없습니다.');
-          }
-
-          // sectionId로 section 정보를 찾음
-          const section = getSectionById(sectionId);
-          // section.sectionName은 이미 sectionNumber를 toString()한 값이므로 다시 Number로 변환
-          const sectionNumber = section ? Number(section.sectionName) : 0;
-
+          // initialData에서 필요한 데이터를 직접 사용
           setFormData({
-            ...initialData,
-            sectionNumber,
+            concertId: initialData.concertId,
+            sectionNumber: Number(initialData.level), // level을 sectionNumber로 사용
+            rowLine: initialData.rowLine,
+            columnLine: initialData.columnLine,
+            photo: photoFile || null,
+            viewScore: initialData.viewScore,
             seatDistance: mapApiToSeatDistance(initialData.seatDistance),
             sound: mapApiToSound(initialData.sound),
-            photo: photoFile || null,
+            content: initialData.content,
           });
         } catch (error) {
           console.error('Error setting initial data:', error);
@@ -74,12 +62,7 @@ export function EditSightReviewFormContainer({
 
       setInitialData();
     }
-  }, [getSectionBySeatId, getSectionById, initialData, setFormData, setError]);
-
-  // initialData가 formData에 제대로 설정되었는지 확인
-  useEffect(() => {
-    console.log('Current form data:', formData);
-  }, [formData]);
+  }, [initialData, setFormData, setError]);
 
   const handleSubmit = async (data: SightReviewFormData) => {
     try {
@@ -88,10 +71,30 @@ export function EditSightReviewFormContainer({
       if (!photo) {
         throw new Error('사진을 선택해주세요.');
       }
-      const mappedData = mapFormDataToApiRequest(reviewData);
-      await updateSightReview(reviewId, mappedData, photo);
 
-      // 성공적으로 수정이 완료되면 onSubmitComplete 호출
+      if (!initialData?.seatId) {
+        throw new Error('좌석 정보를 찾을 수 없습니다.');
+      }
+
+      const formData = new FormData();
+
+      // API 요청 데이터에 seatId 포함
+      const apiRequestData = {
+        ...mapFormDataToApiRequest(reviewData),
+        seatId: initialData.seatId,
+      };
+
+      // JSON 데이터를 Blob으로 변환하여 추가
+      formData.append(
+        'reviewRequestDTO',
+        new Blob([JSON.stringify(apiRequestData)], { type: 'application/json' })
+      );
+
+      // 이미지 파일 추가
+      formData.append('file', photo, photo.name);
+
+      await updateSightReview(reviewId, apiRequestData, photo);
+
       if (onSubmitComplete) {
         onSubmitComplete();
       }

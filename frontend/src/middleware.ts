@@ -43,7 +43,12 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: () => true,
+      authorized: ({ req }) => {
+        if (req.nextUrl.pathname === '/ticketing/melon-mode/real') {
+          return true;
+        }
+        return true;
+      },
     },
     pages: {
       signIn: '/main',

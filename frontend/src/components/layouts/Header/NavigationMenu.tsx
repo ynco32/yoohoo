@@ -3,11 +3,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   UserIcon,
-  EyeIcon,
   MapIcon,
   TicketIcon,
-  ChartBarIcon,
+  GiftIcon,
 } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 // 메인 메뉴는 로고를 사용하고, 나머지는 아이콘 사용
 const MENU_ITEMS = [
@@ -33,12 +33,14 @@ const MENU_ITEMS = [
   {
     href: '/sight',
     label: '시야 보기',
-    icon: <EyeIcon className="h-5 w-5 text-sight-button" />,
+    icon: (
+      <MagnifyingGlassIcon className="h-5 w-5 stroke-[4px] text-sight-button" />
+    ),
   },
   {
     href: '/sharing',
     label: '나눔 지도',
-    icon: <MapIcon className="h-5 w-5 text-sight-button" />,
+    icon: <GiftIcon className="h-5 w-5 text-sight-button" />,
   },
   {
     href: '/ticketing',
@@ -48,7 +50,7 @@ const MENU_ITEMS = [
   {
     href: '/congestion',
     label: '혼잡도 보기',
-    icon: <ChartBarIcon className="h-5 w-5 text-sight-button" />,
+    icon: <MapIcon className="h-5 w-5 text-sight-button" />,
   },
 ] as const;
 

@@ -43,7 +43,12 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: () => true,
+      authorized: ({ req }) => {
+        if (req.nextUrl.pathname === '/ticketing/melon-mode/real') {
+          return true;
+        }
+        return true;
+      },
     },
     pages: {
       signIn: '/main',
@@ -53,5 +58,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/ticketing/melon-mode/real/:path*'],
+  matcher: ['/ticketing/melon-mode/real', '/ticketing/melon-mode/real/:path*'],
 };

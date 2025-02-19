@@ -100,8 +100,9 @@ export default function Result() {
     <div className="flex h-full flex-col items-center p-4">
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        message="티켓팅 결과 저장 성공! 마이페이지에서 확인하세요!"
+        message="티켓팅 결과 저장 성공! \n 마이페이지에서 확인하세요!"
         onClose={() => {}}
+        style={{ whiteSpace: 'pre-line' }}
       />
       <div className="mb-8 w-full text-center">
         <h1 className="text-xl font-semibold">티켓팅</h1>

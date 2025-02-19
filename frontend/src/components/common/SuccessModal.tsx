@@ -6,6 +6,7 @@ interface SuccessModalProps {
   onClose: () => void;
   message: string;
   buttonText?: string;
+  style?: React.CSSProperties;
 }
 
 export function SuccessModal({
@@ -13,11 +14,12 @@ export function SuccessModal({
   onClose,
   message,
   buttonText = '돌아가기',
+  style,
 }: SuccessModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center">
+    <div className="fixed inset-0 z-50 flex justify-center" style={style}>
       <div className="relative w-full max-w-[430px] bg-success-gradient">
         <div className="flex h-screen flex-col justify-between p-6">
           <div className="flex flex-1 flex-col items-center justify-center">

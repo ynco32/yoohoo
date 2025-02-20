@@ -34,7 +34,7 @@ export function SuccessModal({
             </div>
 
             {secondMessage ? (
-              <div>
+              <div className="text-center">
                 <div>{message}</div>
                 <div>{secondMessage}</div>
               </div>

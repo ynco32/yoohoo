@@ -31,7 +31,7 @@ const Seat = ({
     // reviewCount에 따라 색상 설정
     if (reviewCount === 0) {
       setSeatColor('#e0f6ff');
-    } else if (reviewCount < 5) {
+    } else if (reviewCount < 2) {
       setSeatColor('#63beff');
     } else {
       setSeatColor('#4788ff');

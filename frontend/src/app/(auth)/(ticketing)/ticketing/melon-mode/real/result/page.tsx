@@ -1,11 +1,9 @@
 'use client';
 import React from 'react';
-// import { useTicketingSeatStore } from '@/store/useTicketingSeatStore';
 import { useState, useEffect } from 'react';
 import api from '@/lib/api/axios';
 import { AxiosError } from 'axios';
 import {
-  FaceSmileIcon,
   TicketIcon,
   HomeIcon,
   BookmarkIcon,
@@ -13,6 +11,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import { SuccessModal } from '@/components/common/SuccessModal';
+import Image from 'next/image';
+import { SVGIcons } from '@/assets/svgs';
 
 export default function Result() {
   const [section, setSection] = useState('');
@@ -21,8 +21,6 @@ export default function Result() {
   const [processingTime, setProcessingTime] = useState<number | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-
-  // const { selectedSeatNumber } = useTicketingSeatStore();
   const router = useRouter();
 
   const getSeatMessage = (seat: string | null) => {
@@ -97,90 +95,105 @@ export default function Result() {
   }, []);
 
   return (
-    <div className="flex h-full flex-col items-center p-4">
-      <SuccessModal
-        isOpen={isSuccessModalOpen}
-        message="티켓팅 결과 저장 성공!"
-        secondMessage="마이페이지에서 확인하세요!"
-        onClose={() => setIsSuccessModalOpen(false)}
-      />
-      <div className="mb-8 w-full text-center">
-        <h1 className="text-xl font-semibold">티켓팅</h1>
-      </div>
+    <div className="relative h-full min-h-screen w-full overflow-hidden">
+      {/* 래디얼 그라데이션 배경 */}
+      <div className="absolute left-1/2 top-10 h-[804px] w-[804px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(219,238,253,1)_0%,rgba(255,255,255,1)_100%)]" />
 
-      <div className="max-w-md w-full rounded-3xl bg-white p-8 shadow-lg">
-        <div className="mb-4 flex justify-center">
-          <FaceSmileIcon className="h-16 w-16 text-green-500" />
-        </div>
+      <div className="relative z-10 flex h-full flex-col items-center p-4">
+        <SuccessModal
+          isOpen={isSuccessModalOpen}
+          message="티켓팅 결과 저장 성공!"
+          secondMessage="마이페이지에서 확인하세요!"
+          onClose={() => setIsSuccessModalOpen(false)}
+        />
 
-        <h2 className="mb-8 text-center text-2xl font-bold text-green-500">
-          티켓팅 성공!
-        </h2>
+        <div className="w-full px-4">
+          <div className="w-full rounded-3xl bg-transparent">
+            <div className="text-center">
+              <h2 className="mb-8 text-center text-2xl font-bold text-[#4986E8]">
+                티켓팅 성공!
+              </h2>
 
-        <div className="mb-8">
-          <p className="mb-2 text-center text-gray-600">선택하신 좌석</p>
-          <p className="mb-4 text-center text-xl font-bold">
-            {section} 구역
-            {seat || '선택된 좌석 없음'}
-          </p>
-          <div className="space-y-2 text-center">
-            <p className="text-lg font-medium">
-              {seatResult.emoji} {seatResult.message}
+              <div className="mb-8 flex justify-center">
+                <Image
+                  src={SVGIcons.TicketingConKiri}
+                  alt="티켓팅성공끼리"
+                  width={240}
+                  height={240}
+                  className="max-w-full h-auto scale-x-[-1]"
+                  style={{ filter: 'none' }}
+                />
+              </div>
+            </div>
+
+            <div className="mb-12">
+              <p className="mb-4 text-center text-xl font-bold text-[#515151]">
+                {section} 구역 {seat || '선택된 좌석 없음'}
+              </p>
+              <div className="mb-12 space-y-1 text-center">
+                <p className="text-lg font-medium text-[#515151]">
+                  {seatResult.emoji} {seatResult.message}
+                </p>
+                <p className="text-sm text-[#949494]">
+                  {seatResult.description}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <TicketIcon className="h-5 w-5 text-[#4986E8]" />
+                  <span className="text-lg text-[#515151]">
+                    <span className="font-bold text-[#4986E8]">
+                      {ticketRank}
+                    </span>
+                    번째로 티켓팅 성공
+                  </span>
+                </div>
+                <div className="text-center">
+                  <span className="text-lg text-[#515151]">
+                    소요 시간{' '}
+                    <span className="font-bold text-[#4986E8]">
+                      {processingTime}
+                    </span>
+                    초
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 px-1">
+              <button
+                onClick={handleSaveData}
+                className="flex flex-col items-center justify-center gap-1 rounded-[12px] bg-white px-2 py-3 text-[#515151] shadow-[3px_3px_20px_0px_rgba(106,160,205,0.25)] transition-all hover:shadow-[3px_3px_25px_0px_rgba(106,160,205,0.35)]"
+              >
+                <BookmarkIcon className="h-5 w-5 fill-[#4986E8] text-[#4986E8]" />
+                <span className="text-sm">기록 저장</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  // document.cookie = 'ticketing-progress=6; path=/';
+                  router.push('/ticketing');
+                }}
+                className="flex flex-col items-center justify-center gap-1 rounded-[12px] bg-white px-2 py-3 text-[#515151] shadow-[3px_3px_20px_0px_rgba(106,160,205,0.25)] transition-all hover:shadow-[3px_3px_25px_0px_rgba(106,160,205,0.35)]"
+              >
+                <HomeIcon className="h-5 w-5 fill-[#4986E8] text-[#4986E8]" />
+                <span className="text-sm">홈으로</span>
+              </button>
+
+              <button
+                onClick={() => router.push('/mypage/ticketing')}
+                className="flex flex-col items-center justify-center gap-1 rounded-[12px] bg-white px-2 py-3 text-[#515151] shadow-[3px_3px_20px_0px_rgba(106,160,205,0.25)] transition-all hover:shadow-[3px_3px_25px_0px_rgba(106,160,205,0.35)]"
+              >
+                <UserIcon className="h-5 w-5 fill-[#4986E8] text-[#4986E8]" />
+                <span className="text-sm">내 기록</span>
+              </button>
+            </div>
+
+            <p className="mt-8 text-center text-sm text-[#949494]">
+              예매 상세 내역은 마이페이지에서 확인하실 수 있습니다
             </p>
-            <p className="text-sm text-gray-600">{seatResult.description}</p>
           </div>
-        </div>
-
-        <div className="mb-6 rounded-2xl bg-gray-50 p-4">
-          <div className="flex items-center justify-center gap-2">
-            <TicketIcon className="h-5 w-5 text-blue-500" />
-            <span className="text-gray-900">
-              <span className="font-bold text-blue-500">{ticketRank}</span>
-              번째로 티켓팅 성공
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-gray-900">
-            <span className="font-bold text-blue-500">{processingTime}</span>초
-            걸렸습니다
-          </span>
-        </div>
-
-        <p className="text-center text-sm text-gray-500">
-          예매 상세 내역은 마이페이지에서 확인하실 수 있습니다
-        </p>
-
-        <div className="mt-8 space-y-4">
-          <button
-            onClick={() => {
-              handleSaveData();
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 py-3 text-white transition-colors hover:bg-blue-600"
-          >
-            <BookmarkIcon className="h-5 w-5" />
-            <span>기록 저장하기</span>
-          </button>
-
-          <button
-            onClick={() => {
-              // document.cookie = 'ticketing-progress=6; path=/';
-              router.push('/ticketing');
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            <HomeIcon className="h-5 w-5" />
-            <span>홈으로 가기</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/mypage/ticketing')}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            <UserIcon className="h-5 w-5" />
-            <span>내 기록 보러가기</span>
-          </button>
         </div>
       </div>
     </div>

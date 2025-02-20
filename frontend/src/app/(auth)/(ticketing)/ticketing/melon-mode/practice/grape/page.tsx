@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
 import SeatGrid from '@/components/features/ticketing/PracticeSeatGrid';
@@ -14,8 +14,10 @@ const SeatPractice = () => {
   const [gameState, setGameState] = useState<
     'counting' | 'waiting' | 'completed'
   >('counting');
-  const [countdown, setCountdown] = useState(5);
-  const [startTime, setStartTime] = useState(0);
+  const [countdown, setCountdown] = useState(3);
+  const isGameCompletedRef = useRef(false);
+  const startTimeRef = useRef<number>(0);
+  const autoRedirectTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [seats, setSeats] = useState<
     Array<{ id: number; isActive: boolean; isSelected: boolean }>
   >([]);
@@ -36,47 +38,62 @@ const SeatPractice = () => {
     setSeats(initialSeats);
   }, []);
 
-  // [React] 카운트다운 효과
+  // [React] 카운트다운 및 게임 시작
   useEffect(() => {
-    let autoRedirectTimer: NodeJS.Timeout;
-    const startTimestamp = performance.now();
+    let intervalId: NodeJS.Timeout;
 
-    const interval = setInterval(() => {
-      const elapsed = performance.now() - startTimestamp;
-      const secondsElapsed = Math.floor(elapsed / 1000);
-      const remaining = 5 - secondsElapsed;
+    const startCountdown = () => {
+      let remainingTime = 3;
+      setCountdown(remainingTime);
 
-      if (remaining <= 0) {
-        clearInterval(interval);
-        setCountdown(0);
-        setGameState('waiting');
-        setStartTime(performance.now());
+      intervalId = setInterval(() => {
+        remainingTime -= 1;
+        if (remainingTime <= 0) {
+          clearInterval(intervalId);
+          const gameStartTime = Date.now();
+          console.log('게임 시작 시간:', gameStartTime);
+          setCountdown(0);
+          setGameState('waiting');
+          startTimeRef.current = gameStartTime;
 
-        autoRedirectTimer = setTimeout(() => {
-          if (gameState !== 'completed') {
-            setReactionTime(5000);
-            router.push('grape/result');
-          }
-        }, 5000);
-      } else {
-        setCountdown(remaining);
-      }
-    }, 100);
+          // 5초 제한시간 설정
+          autoRedirectTimerRef.current = setTimeout(() => {
+            if (!isGameCompletedRef.current) {
+              console.log('제한 시간 종료');
+              setReactionTime(5000);
+              router.push('grape/result');
+            }
+          }, 5000);
+        } else {
+          setCountdown(remainingTime);
+        }
+      }, 1000);
+    };
+
+    startCountdown();
 
     return () => {
-      clearInterval(interval);
-      if (autoRedirectTimer) {
-        clearTimeout(autoRedirectTimer);
+      clearInterval(intervalId);
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
       }
     };
-  }, [router, setReactionTime, gameState]);
+  }, []);
 
   // [React] 좌석 선택 핸들러
   const handleSeatClick = (seatId: number) => {
     if (gameState !== 'waiting') return;
-
-    // 올바른 좌석을 선택했는지 확인
     if (seatId !== targetSeatId) return;
+
+    isGameCompletedRef.current = true;
+    const clickTime = Date.now();
+    const reactionTime = clickTime - startTimeRef.current;
+    console.log('클릭 시간:', clickTime);
+    console.log('반응 시간:', reactionTime);
+
+    if (autoRedirectTimerRef.current) {
+      clearTimeout(autoRedirectTimerRef.current);
+    }
 
     setSeats(
       seats.map((seat) => ({
@@ -85,19 +102,9 @@ const SeatPractice = () => {
       }))
     );
 
-    const endTime = performance.now();
-    const reactionTime = Math.max(0, endTime - startTime);
-
-    if (reactionTime > 5000) {
-      console.warn('Invalid reaction time detected');
-      return;
-    }
-
-    setReactionTime(reactionTime);
     setGameState('completed');
-    setTimeout(() => {
-      router.push('grape/result');
-    }, 100);
+    setReactionTime(reactionTime);
+    router.push('grape/result');
   };
 
   return (

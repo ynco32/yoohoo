@@ -52,11 +52,11 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     .find((row) => row.startsWith('access_token='))
     ?.split('=')[1];
 
-  console.log('📤 요청 전송:', {
-    주소: config.url,
-    토큰존재: !!token,
-    메서드: config.method,
-  });
+  // console.log('📤 요청 전송:', {
+  //   주소: config.url,
+  //   토큰존재: !!token,
+  //   메서드: config.method,
+  // });
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -66,21 +66,21 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log('📥 응답 수신:', {
-      주소: response.config.url,
-      상태: response.status,
-    });
+    // console.log('📥 응답 수신:', {
+    //   주소: response.config.url,
+    //   상태: response.status,
+    // });
     return response;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as RequestWithRetry;
 
-    console.log('❌ 응답 에러 발생:', {
-      주소: originalRequest.url,
-      상태코드: error.response?.status,
-      재시도여부: originalRequest.hasRetried,
-      토큰갱신중: isRefreshing,
-    });
+    // console.log('❌ 응답 에러 발생:', {
+    //   주소: originalRequest.url,
+    //   상태코드: error.response?.status,
+    //   재시도여부: originalRequest.hasRetried,
+    //   토큰갱신중: isRefreshing,
+    // });
 
     if (error.response?.status === 401 && !originalRequest.hasRetried) {
       if (isRefreshing) {

@@ -45,7 +45,7 @@ const Header = () => {
 
     if (pathname.startsWith('/sight')) return '시야 보기';
     if (pathname.startsWith('/sharing')) return '나눔 지도';
-    if (pathname.startsWith('/mypage')) return '나의 프로필';
+    if (pathname.startsWith('/mypage')) return '마이페이지';
     if (pathname.startsWith('/ticketing')) return '티켓팅 연습';
     if (pathname.startsWith('/congestion')) return '혼잡도 보기';
     return '';

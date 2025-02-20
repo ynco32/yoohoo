@@ -127,7 +127,7 @@ export const DraggableReviewSheet = ({
       className="fixed inset-x-0 bottom-0 z-50"
       style={{
         top: '3rem',
-        pointerEvents: position === 'closed' ? 'none' : 'auto',
+        pointerEvents: 'none', // 기본적으로 pointer-events를 none으로 설정
       }}
     >
       {/* Sheet Container */}

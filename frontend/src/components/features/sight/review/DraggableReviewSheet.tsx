@@ -11,6 +11,7 @@ import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
 import { useSeatsStore } from '@/store/useSeatStore';
 import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 import { useSectionStore } from '@/store/useSectionStore';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface DraggableReviewSheetProps {
   position: 'full' | 'half' | 'closed';
@@ -68,6 +69,14 @@ export const DraggableReviewSheet = ({
 
     if (error) {
       return <div className="p-4 text-red-500">{error}</div>;
+    }
+
+    if (!reviewDataList || reviewDataList.length === 0) {
+      return (
+        <div className="p-4">
+          <EmptyState message="작성된 리뷰가 없습니다." />
+        </div>
+      );
     }
 
     return (
@@ -196,3 +205,5 @@ export const DraggableReviewSheet = ({
     </div>
   );
 };
+
+export default DraggableReviewSheet;

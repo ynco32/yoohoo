@@ -21,7 +21,7 @@ export const SVGIcons = {
   StageTypeBasic: '/svgs/sight/basic.svg',
   StageTypeExtended: '/svgs/sight/extended.svg',
   StageTypeAll: '/svgs/sight/allType.svg',
-  TicketingConKiri: '/svgs/ticketing/ticketingConKiri.svg',
+  TicketingConKiri: '/svgs/ticketing/ticketingConkiri.svg',
 } as const;
 
 // Export type for SVG icon names

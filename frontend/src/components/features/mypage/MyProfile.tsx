@@ -64,11 +64,15 @@ export const MyProfile = () => {
           </div>
         </div>
       </div>
-      <div className="mt-4 flex items-center gap-2">
-        <div className="inline-flex h-3.5 min-w-8 items-center justify-center rounded-3xl border border-sight-button px-1">
-          <span className="text-caption3 text-sight-button">{user.level}</span>
+      <div className="mt-4 flex flex-col items-center">
+        <div className="flex items-center justify-center gap-2">
+          <div className="inline-flex h-3.5 min-w-8 items-center justify-center rounded-3xl border border-2 border-sight-button p-2">
+            <span className="text-caption2-bold text-sight-button">
+              Lv. {user.level}
+            </span>
+          </div>
+          <span className="text-title-bold">{user.nickname}</span>
         </div>
-        <span className="text-title-bold">{user.nickname}</span>
       </div>
     </div>
   );

@@ -139,7 +139,7 @@ export const SharingView = () => {
 
   return (
     <div
-      className={`relative mx-auto max-w-[430px] ${viewMode === 'map' ? '-mt-[56px] h-[calc(100vh)]' : 'flex h-[calc(100vh-56px)] flex-col'}`}
+      className={`relative mx-auto max-w-[430px] ${viewMode === 'map' ? '-mt-[56px] h-[calc(100vh)]' : 'flex h-[calc(100vh-64px)] flex-col'}`}
     >
       <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <ViewTab currentTab={currentTab} onTabChange={setCurrentTab} />

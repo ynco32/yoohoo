@@ -53,6 +53,8 @@ const config = [
       '.next/**/*',
       'out/**/*',
       'tailwind.config.ts',
+      'public/sw.js',
+      'public/**/*.js',
     ],
   },
 ];

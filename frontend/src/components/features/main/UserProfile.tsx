@@ -17,6 +17,26 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
   const router = useRouter();
   const { user, isLoading, error } = useUserStore();
 
+  const getLevelMessage = (
+    level: string | null | undefined,
+    residForNextLevel: number
+  ) => {
+    if (!level) return '다음 코끼리까지 ${residForNextLevel} 번의 콘서트';
+
+    switch (level) {
+      case '1':
+        return `포장을 뜯기까지 ${residForNextLevel} 번의 콘서트`;
+      case '2':
+        return `풍선을 불기까지 ${residForNextLevel} 번의 콘서트`;
+      case '3':
+        return `마스터하기까지 ${residForNextLevel} 번의 콘서트`;
+      case '4':
+        return '당신은 아이돌입니까?';
+      default:
+        return `다음 코끼리까지 ${residForNextLevel} 번의 콘서트`;
+    }
+  };
+
   if (user) {
     console.log(user.profileUrl);
   }
@@ -86,16 +106,23 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
             />
           </div> */}
           {/* 유저 정보 섹션 */}
-          <div className="absolute bottom-3 left-5">
-            <div className="flex items-center gap-1">
-              <div className="flex h-6 min-w-8 items-center justify-center rounded-full border border-2 border-sight-button px-1">
-                <span className="text-caption3-bold font-bold text-sight-button">
-                  Lv.{user.level}
+          <div className="relative h-64 w-full bg-background-default">
+            <div className="absolute bottom-3 left-5">
+              <div className="flex items-center gap-1">
+                <div className="flex h-6 min-w-8 items-center justify-center rounded-full border-2 border-sight-button px-1">
+                  <span className="text-caption3-bold font-bold text-sight-button">
+                    Lv.{user.level}
+                  </span>
+                </div>
+                <span className="text-title-bold font-black text-primary-500">
+                  {user.nickname}
                 </span>
               </div>
-              <span className="text-title-bold font-black text-primary-500">
-                {user.nickname}
-              </span>
+              <div>
+                <span className="text-body text-gray-600">
+                  {getLevelMessage(user.level, user.residForNextLevel)}
+                </span>
+              </div>
             </div>
           </div>
         </div>

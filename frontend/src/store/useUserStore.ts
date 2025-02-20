@@ -8,6 +8,7 @@ interface UserData {
   level: string | null;
   tier: string | null;
   profileUrl: string | null;
+  residForNextLevel: number;
 }
 
 interface UserStore {

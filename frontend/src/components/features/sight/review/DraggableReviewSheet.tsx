@@ -130,16 +130,6 @@ export const DraggableReviewSheet = ({
         pointerEvents: position === 'closed' ? 'none' : 'auto',
       }}
     >
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 transition-opacity"
-        style={{
-          opacity: position === 'closed' ? 0 : 0.5,
-          pointerEvents: position === 'closed' ? 'none' : 'auto',
-        }}
-        onClick={onClose}
-      />
-
       {/* Sheet Container */}
       <div className="pointer-events-none relative h-full">
         <div className="mx-auto h-full max-w-layout px-2">

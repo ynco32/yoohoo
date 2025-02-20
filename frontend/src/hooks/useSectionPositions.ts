@@ -11,8 +11,8 @@ export const useSectionPositions = (totalSections: number) => {
   const BASE_INNER_RADIUS = 70;
   const BASE_OUTER_RADIUS = 200;
   const INNER_CIRCLE_SECTIONS = 22;
-  const INNER_ROTATION = 11; // 내부 원 11칸 회전
-  const OUTER_ROTATION = 15; // 외부 원 15칸 회전
+  const INNER_ROTATION = 9; // 내부 원 11칸 회전
+  const OUTER_ROTATION = 11.5; // 외부 원 15칸 회전
 
   return useMemo(() => {
     const getRotatedIndex = (index: number): number => {

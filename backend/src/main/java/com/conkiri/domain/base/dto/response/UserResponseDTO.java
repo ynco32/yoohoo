@@ -20,6 +20,13 @@ public class UserResponseDTO {
 	private String level;
 	private String tier;
 	private String profileUrl;
+	private int residForNextLevel;
+
+	private static int calcResidForNextLevel(User user) {
+		int level = Integer.parseInt(user.getLevel());
+		if (level >= 1 && level <= 3) { return (10 * level - user.getReviewCount()); }
+		return 0;
+	}
 
 	public static UserResponseDTO from(User user) {
 		return UserResponseDTO.builder()
@@ -30,6 +37,7 @@ public class UserResponseDTO {
 			.level(user.getLevel())
 			.tier(user.getTier())
 			.profileUrl(user.getProfileUrl())
+			.residForNextLevel(calcResidForNextLevel(user))
 			.build();
 	}
 }

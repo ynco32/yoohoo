@@ -28,7 +28,7 @@ export default function Error({
 
   // 직접 404 페이지를 렌더링
   return (
-    <div className="flex min-h-screen flex-col items-center pt-36 overflow-hidden px-4">
+    <div className="flex flex-col items-center pt-36 overflow-hidden px-4">
       <div className="max-w-md text-center">
         <div className="mx-auto mb-6">
           <Image

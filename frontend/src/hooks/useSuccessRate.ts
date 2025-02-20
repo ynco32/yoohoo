@@ -39,7 +39,7 @@ const PRACTICE_MODES: Record<PracticeModeType, PracticeMode> = {
       { time: 2000, rate: 20 },
     ],
     correction: 0.9,
-    timeLimit: 2500, // 포도알 연습 시간 제한
+    timeLimit: 5000, // 포도알 연습 시간 제한
   },
   security: {
     ranges: [
@@ -52,7 +52,7 @@ const PRACTICE_MODES: Record<PracticeModeType, PracticeMode> = {
       { time: 10000, rate: 20 },
     ],
     correction: 0.8,
-    timeLimit: 1500, // 보안 메시지 연습 시간 제한
+    timeLimit: 10000, // 보안 메시지 연습 시간 제한
   },
 };
 

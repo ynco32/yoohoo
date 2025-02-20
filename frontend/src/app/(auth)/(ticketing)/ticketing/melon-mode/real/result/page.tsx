@@ -95,7 +95,7 @@ export default function Result() {
   }, []);
 
   return (
-    <div className="relative h-full min-h-screen w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden">
       {/* 래디얼 그라데이션 배경 */}
       <div className="absolute left-1/2 top-10 h-[804px] w-[804px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(219,238,253,1)_0%,rgba(255,255,255,1)_100%)]" />
 

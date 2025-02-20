@@ -73,6 +73,38 @@ export default function MSWProvider() {
     };
   }, []);
 
+   // MSW 등록 후 PWA 서비스 워커를 다시 등록하도록 설정
+   useEffect(() => {
+    if (mswInitialized && "serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        let hasMSW = false;
+        let hasPWA = false;
+
+        registrations.forEach((registration) => {
+          if (registration.active?.scriptURL.includes("mockServiceWorker.js")) {
+            hasMSW = true;
+          }
+          if (registration.active?.scriptURL.includes("sw.js")) {
+            hasPWA = true;
+          }
+        });
+
+        // MSW가 실행되었어도 PWA 서비스 워커(`sw.js`)가 없으면 강제 등록
+        if (hasMSW && !hasPWA) {
+          console.log("🔄 Re-registering PWA Service Worker...");
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log("✅ PWA Service Worker registered:", registration);
+            })
+            .catch((error) => {
+              console.error("❌ PWA Service Worker registration failed:", error);
+            });
+        }
+      });
+    }
+  }, [mswInitialized]);
+
   if (!mswInitialized && process.env.NEXT_PUBLIC_API_MOCKING !== 'disabled') {
     return <div>Loading MSW...</div>;
   }

@@ -1,5 +1,12 @@
 import type { NextConfig } from 'next';
 import type { Configuration as WebpackConfig } from 'webpack';
+import  withPWAInit  from '@ducanh2912/next-pwa';
+
+const withPWA = withPWAInit({
+  dest: 'public',
+  disable: process.env.NODE_ENV === "development" ? false : undefined, // 개발 모드에서도 PWA 활성화
+  register: true, // 자동으로 service worker 등록
+});
 
 const nextConfig: NextConfig = {
   eslint: {
@@ -58,4 +65,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);

@@ -130,7 +130,7 @@ export const MySharingView = () => {
   }, [allPosts, currentPage, hasMore, isLoading]);
 
   return (
-    <div className="relative mx-auto flex h-[calc(100vh-56px)] max-w-[430px] flex-col">
+    <div className="relative mx-auto flex h-[calc(100vh-64px)] max-w-[430px] flex-col">
       <div className="fixed left-1/2 top-[56px] z-20 w-full max-w-[430px] -translate-x-1/2 bg-white">
         <MyViewTab currentTab={currentTab} onTabChange={setCurrentTab} />
       </div>

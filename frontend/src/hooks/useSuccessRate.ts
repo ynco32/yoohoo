@@ -43,13 +43,13 @@ const PRACTICE_MODES: Record<PracticeModeType, PracticeMode> = {
   },
   security: {
     ranges: [
-      { time: 200, rate: 99 },
-      { time: 300, rate: 95 },
-      { time: 400, rate: 85 },
-      { time: 600, rate: 70 },
-      { time: 800, rate: 55 },
-      { time: 1000, rate: 35 },
-      { time: 1200, rate: 20 },
+      { time: 2000, rate: 99 },
+      { time: 3000, rate: 95 },
+      { time: 4000, rate: 85 },
+      { time: 6000, rate: 70 },
+      { time: 8000, rate: 55 },
+      { time: 9000, rate: 35 },
+      { time: 10000, rate: 20 },
     ],
     correction: 0.8,
     timeLimit: 1500, // 보안 메시지 연습 시간 제한

@@ -17,9 +17,9 @@ export default function SecurityMessageResultPage() {
   return (
     <TicketingPracticeResultModal
       handleRetry={handleRetry}
-      bestScore={300}
-      goodScore={600}
-      badScore={1000}
+      bestScore={3000}
+      goodScore={5000}
+      badScore={6500}
       successRate={calculateSuccessRate(reactionTime)}
     />
   );

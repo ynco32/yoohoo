@@ -65,6 +65,7 @@ module.exports = {
         profile: ['16px,', { fontWeight: '700', lineHeight: '24px' }],
         body: ['16px', { fontWeight: '400', lineHeight: '24px' }],
         'body-bold': ['16px', { fontWeight: '500', lineHeight: '20px' }],
+        'body-black': ['16px', { fontWeight: '600', lineHeight: '20px' }],
         caption1: ['14px', { fontWeight: '400', lineHeight: '20px' }],
         'caption1-bold': ['14px', { fontWeight: '500', lineHeight: '20px' }],
         caption2: ['12px', { fontWeight: '400', lineHeight: '18px' }],
@@ -158,6 +159,7 @@ module.exports = {
           bg: '#DFF3FF',
           button: '#4986E8',
           form: '#A7DEFF',
+          dark: '#5A80BE',
         },
         star: '#FFCC00',
         gray: {

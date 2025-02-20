@@ -2,11 +2,13 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import TicketingPracticeResultModal from '@/components/features/ticketing/TicketingPracticeResultModal';
-// import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
+import { useTicketintPracticeResultStore } from '@/store/useTicketingPracticeResult';
+import { useSuccessRate } from '@/hooks/useSuccessRate';
 
 export default function SecurityMessageResultPage() {
   const router = useRouter();
-  // const { reactionTime } = useTicketintPracticeResultStore();
+  const { reactionTime } = useTicketintPracticeResultStore();
+  const { calculateSuccessRate } = useSuccessRate('entrance');
 
   const handleRetry = () => {
     router.push('./');
@@ -18,6 +20,7 @@ export default function SecurityMessageResultPage() {
       bestScore={300}
       goodScore={600}
       badScore={1000}
+      successRate={calculateSuccessRate(reactionTime)}
     />
   );
 }

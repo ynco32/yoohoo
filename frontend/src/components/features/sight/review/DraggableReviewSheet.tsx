@@ -11,6 +11,7 @@ import SeatScrapButton from '@/components/features/sight/seat/SeatScrapButton';
 import { useSeatsStore } from '@/store/useSeatStore';
 import { getUserProfileImage } from '@/lib/utils/profileCharacter';
 import { useSectionStore } from '@/store/useSectionStore';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface DraggableReviewSheetProps {
   position: 'full' | 'half' | 'closed';
@@ -70,6 +71,14 @@ export const DraggableReviewSheet = ({
       return <div className="p-4 text-red-500">{error}</div>;
     }
 
+    if (!reviewDataList || reviewDataList.length === 0) {
+      return (
+        <div className="p-4">
+          <EmptyState message="작성된 리뷰가 없습니다." />
+        </div>
+      );
+    }
+
     return (
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto px-4">
@@ -118,19 +127,9 @@ export const DraggableReviewSheet = ({
       className="fixed inset-x-0 bottom-0 z-50"
       style={{
         top: '3rem',
-        pointerEvents: position === 'closed' ? 'none' : 'auto',
+        pointerEvents: 'none', // 기본적으로 pointer-events를 none으로 설정
       }}
     >
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 transition-opacity"
-        style={{
-          opacity: position === 'closed' ? 0 : 0.5,
-          pointerEvents: position === 'closed' ? 'none' : 'auto',
-        }}
-        onClick={onClose}
-      />
-
       {/* Sheet Container */}
       <div className="pointer-events-none relative h-full">
         <div className="mx-auto h-full max-w-layout px-2">
@@ -196,3 +195,5 @@ export const DraggableReviewSheet = ({
     </div>
   );
 };
+
+export default DraggableReviewSheet;

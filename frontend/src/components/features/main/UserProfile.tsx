@@ -106,23 +106,22 @@ export const UserProfile = ({ onClick }: { onClick?: () => void }) => {
             />
           </div> */}
           {/* 유저 정보 섹션 */}
-          <div className="relative h-64 w-full bg-background-default">
-            <div className="absolute bottom-3 left-5">
-              <div className="flex items-center gap-1">
-                <div className="flex h-6 min-w-8 items-center justify-center rounded-full border-2 border-sight-button px-1">
-                  <span className="text-caption3-bold font-bold text-sight-button">
-                    Lv.{user.level}
-                  </span>
-                </div>
-                <span className="text-title-bold font-black text-primary-500">
-                  {user.nickname}
+
+          <div className="absolute bottom-3 left-5">
+            <div className="flex items-center gap-1">
+              <div className="flex h-6 min-w-8 items-center justify-center rounded-full border-2 border-sight-button px-1">
+                <span className="text-caption3-bold font-bold text-sight-button">
+                  Lv.{user.level}
                 </span>
               </div>
-              <div>
-                <span className="text-body text-gray-600">
-                  {getLevelMessage(user.level, user.residForNextLevel)}
-                </span>
-              </div>
+              <span className="text-title-bold font-black text-primary-500">
+                {user.nickname}
+              </span>
+            </div>
+            <div>
+              <span className="text-body-bold text-primary-500">
+                {getLevelMessage(user.level, user.residForNextLevel)}
+              </span>
             </div>
           </div>
         </div>

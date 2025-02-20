@@ -27,7 +27,7 @@ const MENU_ITEMS = [
   },
   {
     href: '/mypage',
-    label: '내 프로필',
+    label: '마이페이지',
     icon: <UserIcon className="h-5 w-5 text-sight-button" />,
   },
   {

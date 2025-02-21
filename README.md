@@ -120,6 +120,8 @@
 
 연습 모드
 
+![실전티켓팅](https://velog.velcdn.com/images/ynco32/post/5d9a5920-4e0b-49b8-9231-6414e6f71767/image.gif)
+
 실전 모드
 
 ### 3. 나눔 지도
@@ -132,7 +134,7 @@
 나눔 게시글 북마크
 
 ### 4. 혼잡도 보기
-![image-2.png](./image-2.png)
+![혼잡도](https://velog.velcdn.com/images/ynco32/post/03c25aed-61e7-4ba6-aad8-71e5b4d33f39/image.png)
 
 ### 5. 마이페이지
 ![마이페이지 후기 조회](https://velog.velcdn.com/images/ynco32/post/43b3c189-dd96-4fad-9880-7217e52d7de5/image.gif)
@@ -164,15 +166,16 @@
 [BE] 
 - 서버 부하 모니터링 기반 대기열 Batch 크기 동적 조절로 시스템 안정성 확보
 - Redis Sorted Set과 SETNX 기반 대기열 관리 및 동시성 제어
+
 [FE]
 - WebSocket, STOMP 로 대기열 구현
 - 자동 재연결 구현
 - 대기 시간별 갱신주기 최적화
-- 나눔 지도
 
 ### 나눔 지도
 [BE] 나눔 진행 상태 자동 변환
 - 스프링 스케줄러를 이용해 특정 시간에 DB 상태를 변경하도록 스레드에 작업 예약
+
 [FE] 메모리 최적화로 지도 성능 향상
 - 커스텀 React 고정 마커를 구현
 - useRef를 활용해 지도 인스턴스와 이벤트 리스너를 효율적으로 관리
@@ -194,11 +197,12 @@
 [API 문서](https://www.notion.so/lcln/API-173a48ef63c38137aff0fb059e649c62)
 
 ### ERD
-![image-1.png](./image-1.png)
+![ERD](https://velog.velcdn.com/images/ynco32/post/099bda2d-7209-455f-90de-c983900cd389/image.png)
 [ERD 문서](https://www.erdcloud.com/d/rMqXctuAHYrdqDQei)
 
 ### 아키텍쳐
-![image.png](./image.png)
+![아키텍쳐](https://velog.velcdn.com/images/ynco32/post/21d43168-37c4-4992-8c15-48f1a16af2f9/image.png)
+
 
 ### 깃 컨벤션
 | `feat` | 새로운 기능 추가 |

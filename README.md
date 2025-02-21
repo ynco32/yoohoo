@@ -6,6 +6,15 @@
 [문서](#-문서) <br>
 
 # 🐘 서비스
+<aside>
+💡 [콘서트 관람 전과정을 돕는 서비스]
+
+1. 공연장 좌석별 시야 후기 아카이브 제공
+2. 팬메이드 굿즈 나눔을 위한 지도 제공
+3. 티켓팅 연습 시뮬레이터 제공
+4. 공연장 주변 실시간 혼잡도 정보 제공
+</aside>
+
 
 # 👨‍👩‍👦‍👦 팀원
 <table>
@@ -90,6 +99,150 @@
 
 
 # 💻 화면
+### 0. 메인 화면 및 로그인 화면
+
+### 1. 시야 보기
+![후기 조회](https://velog.velcdn.com/images/ynco32/post/f050b47d-d312-495c-a21d-50e7f5761908/image.gif)
+
+시야 후기 보기 
+
+![좌석 스크랩하기](https://velog.velcdn.com/images/ynco32/post/6f4e1e09-c479-4ee0-b6b5-5153c7dc9c94/image.gif)
+
+좌석 스크랩
+
+![후기 작성](https://velog.velcdn.com/images/ynco32/post/e3eee618-b35f-42cb-800e-6de03f076c4d/image.gif)
+
+후기 작성
+
+
+### 2. 티켓팅
+![연습티켓팅](https://velog.velcdn.com/images/ynco32/post/387f0a04-0475-4c67-ada4-972401b73f1d/image.gif)
+
+연습 모드
+
+실전 모드
+
+### 3. 나눔 지도
+![](https://velog.velcdn.com/images/ynco32/post/27d1f725-8973-41c8-861e-36c554f22ede/image.gif)
+
+나눔 게시글 쓰기
+
+![](https://velog.velcdn.com/images/ynco32/post/4930c39e-38b0-4d0a-a017-16f268558fad/image.gif)
+
+나눔 게시글 북마크
+
+### 4. 혼잡도 보기
+![image-2.png](./image-2.png)
+
+### 5. 마이페이지
+![마이페이지 후기 조회](https://velog.velcdn.com/images/ynco32/post/43b3c189-dd96-4fad-9880-7217e52d7de5/image.gif)
+
+내가 작성한 시야 후기 조회 및 삭제
+
+![마이페이지 나눔](https://velog.velcdn.com/images/ynco32/post/c6ecf4a7-e986-4ebe-8213-281bd59aa0f6/image.gif)
+
+내가 스크랩한 나눔 게시글 조회, 내가 작성한 나눔 게시글 조회
+
+![마이페이지 티켓팅](https://velog.velcdn.com/images/ynco32/post/653b151c-1823-4a4d-b461-8f2a5ee89f12/image.gif)
+
+나의 티켓팅 기록 조회
+
+
+# 💡 활용 기술
+### 시야 보기
+[BE] N+1 문제를 해결해 쿼리 성능 개선
+- JPQL의 Fetch join 활용
+- Batch Size로 IN 쿼리 최적화
+
+[FE] 캐싱 시스템으로 API 호출 최적화
+- TTL 기반 메모리 캐싱 : 구역, 좌석 데이터를 재사용
+- LRU 알고리즘 : 최대 10개 섹션만 캐시
+- 티켓팅 연습
+
+### 티켓팅
+안정적인 대기열 시스템
+[BE] 
+- 서버 부하 모니터링 기반 대기열 Batch 크기 동적 조절로 시스템 안정성 확보
+- Redis Sorted Set과 SETNX 기반 대기열 관리 및 동시성 제어
+[FE]
+- WebSocket, STOMP 로 대기열 구현
+- 자동 재연결 구현
+- 대기 시간별 갱신주기 최적화
+- 나눔 지도
+
+### 나눔 지도
+[BE] 나눔 진행 상태 자동 변환
+- 스프링 스케줄러를 이용해 특정 시간에 DB 상태를 변경하도록 스레드에 작업 예약
+[FE] 메모리 최적화로 지도 성능 향상
+- 커스텀 React 고정 마커를 구현
+- useRef를 활용해 지도 인스턴스와 이벤트 리스너를 효율적으로 관리
+- 사용자 경험 및 위치 선택 정확도 향상
+
+### 혼잡도
+[FE] 혼잡도 데이터 시각화
+- 통신사 API로 실시간 혼잡도를 받아와서 데이터를 가공한 후 시각화하여 지도에 표시
+
 
 # 📕 문서
+### 플로우차트
+[플로우차트](https://www.figma.com/board/oRTRzvx7WlGlpDxcW3DVMW/%EA%B8%B0%ED%9A%8D?node-id=0-1&p=f&t=IwOpRX94lSMVsHKO-0)
 
+### 기능 명세서
+[기능명세서](https://www.notion.so/17da48ef63c3808ca05bca510ac61ef8?pvs=4)
+
+### API 문서
+[API 문서](https://www.notion.so/lcln/API-173a48ef63c38137aff0fb059e649c62)
+
+### ERD
+![image-1.png](./image-1.png)
+[ERD 문서](https://www.erdcloud.com/d/rMqXctuAHYrdqDQei)
+
+### 아키텍쳐
+![image.png](./image.png)
+
+### 깃 컨벤션
+| `feat` | 새로운 기능 추가 |
+| --- | --- |
+| `fix` | 버그 수정 |
+| `docs` | 문서 수정 |
+| `style` | 코드 formatting, 세미콜론 누락, 코드 자체의 변경이 없는 경우, 주석 없거나, 파일 또는 폴더 명 수정 |
+| `refactor` | 코드 리팩토링 |
+| `test` | 테스트 코드 |
+| `design` | CSS 등 사용자 UI 디자인 변경 |
+| `remove` | 파일을 삭제하는 작업만 수행한 경우 |
+| `hotfix` | 급하게 수정해야 할 버그 |
+
+
+브랜치 명
+
+*   영어로 기능 요약
+*   소문자
+*   띄어쓰기 `-` 로
+*   백엔드 프론트 구분
+*   스토리에서 기능 요약하고 스토리 고유 번호 브랜치에 기입
+*   ex) `feat-#66-be-login(기능 요약)`
+*   프론트엔드 | 퍼블리싱 브랜치의 경우 fe-p-기능요약
+*   ex) `feat-#66-fe-p-show-list(기능 요약)`
+
+커밋 메시지
+
+*   단위를 최소화해서 올리기 ex) 컨트롤러 작성, 서비스 작성
+*   끝에는 `.` 금지
+*   feat: 구현한 기능 요약
+*   ex) `feat: User의 Role을 가져오는 Controller 작성`
+
+Merge Request 제목
+
+*   끝에는 `.` 금지
+*   첫 문자는 대문자\`
+*   Feat는 스토리 번호 기입
+*   ex) `Feat #66 로그인 기능 구현`, `Fix: 카카오 로그인 버그 수정`, `Hotfix: 로그인 토큰 오류 수정`
+
+    ### 구현 및 변경사항
+    ex) 로그인 시, 구글 소셜 로그인 기능을 추가했습니다.
+    ex) 방을 만들때 사용하는 로직 작성
+    ex) 랜덤 패스워드를 생성하는 로직, Util로 분리
+    ex) ERD나 이미지 넣어도 괜찮습니다
+    
+    ### 테스트 결과
+    ex) 베이스 브랜치에 포함되기 위한 코드는 모두 정상적으로 동작해야 합니다. 결과물에 대한 스크린샷, GIF, 혹은 라이브 데모가 가능하도록 샘플API를 첨부할 수도 있습니다.

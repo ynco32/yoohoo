@@ -1,18 +1,17 @@
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:13306/common?useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: ssafy
-  jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        jdbc:
-          Asia/Seoul
+  profiles:
+    active:
+      - local
+    group:
+      local:
+        - oauth
+        - db-local
+        - cloud
+        - redis
+      dev:
+        - oauth
+        - db-dev
+        - cloud
+        - redis
+    include: oauth, db, cloud, redis
+  

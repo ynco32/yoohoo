@@ -1,9 +1,11 @@
 package com.yoohoo.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 public class User {
 
     @Id
@@ -29,60 +31,5 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    // Getters and Setters
-    public Long getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getKakaoId() {
-        return kakaoId;
-    }
-
-    public void setKakaoId(Long kakaoId) {
-        this.kakaoId = kakaoId;
-    }
-
-    public String getKakaoEmail() {
-        return kakaoEmail;
-    }
-
-    public void setKakaoEmail(String kakaoEmail) {
-        this.kakaoEmail = kakaoEmail;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Boolean getIsAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(Boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
-
-    public Shelter getShelter() {
-        return shelter;
-    }
-
-    public void setShelter(Shelter shelter) {
-        this.shelter = shelter;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

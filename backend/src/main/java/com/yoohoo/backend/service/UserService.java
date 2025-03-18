@@ -215,4 +215,15 @@ public class UserService {
         }
     }
 
+    public User updateNickname(Long userId, String newNickname) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setNickname(newNickname);
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+    }
+
 }

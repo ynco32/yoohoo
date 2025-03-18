@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.view.RedirectView;
 import jakarta.servlet.http.HttpSession;
 import com.yoohoo.backend.entity.User;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -101,5 +102,12 @@ public class UserController {
             logger.error("Error during unlink", e);
             return new RedirectView("/error");
         }
+    }
+
+    @PutMapping("/{userId}/nickname")
+    public ResponseEntity<User> updateNickname(@PathVariable Long userId, @RequestBody Map<String, String> requestBody) {
+        String newNickname = requestBody.get("newNickname");
+        User updatedUser = userService.updateNickname(userId, newNickname);
+        return ResponseEntity.ok(updatedUser);
     }
 }

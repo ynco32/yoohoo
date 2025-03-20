@@ -1,8 +1,10 @@
 package com.yoohoo.backend.controller;
 
+import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
+import com.yoohoo.backend.service.DogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +15,12 @@ import java.util.List;
 public class ShelterController {
 
     private final ShelterService shelterService;
+    private final DogService dogService;
 
     @Autowired
-    public ShelterController(ShelterService shelterService) {
+    public ShelterController(ShelterService shelterService, DogService dogService) {
         this.shelterService = shelterService;
+        this.dogService = dogService;
     }
 
     // 단체 목록 조회 (강아지 수 포함)
@@ -29,5 +33,11 @@ public class ShelterController {
     @GetMapping("/{shelterId}")
     public ShelterDetailDTO getShelterById(@PathVariable Long shelterId) {
         return shelterService.getShelterById(shelterId);
+    }
+
+    // 특정 shelterId에 속한 강아지 목록 조회
+    @GetMapping("/{shelterId}/dogs")
+    public List<DogDTO> getDogsByShelterId(@PathVariable Long shelterId) {
+        return dogService.getDogsByShelterId(shelterId);
     }
 }

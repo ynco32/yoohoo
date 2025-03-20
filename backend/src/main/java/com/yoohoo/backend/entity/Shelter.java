@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "Shelter")
@@ -41,4 +42,13 @@ public class Shelter {
 
     @Column(nullable = false)
     private Integer reliability;
+
+    // Shelter와 Dog의 관계 추가
+    @OneToMany(mappedBy = "shelter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Dog> dogs;
+
+    // 강아지 수를 반환하는 메서드 추가
+    public int getDogCount() {
+        return dogs != null ? dogs.size() : 0;
+    }
 }

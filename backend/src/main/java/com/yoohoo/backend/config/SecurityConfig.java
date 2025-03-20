@@ -19,10 +19,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // CSRF 비활성화 (API 요청을 위한 설정)
+            .csrf(csrf -> csrf.disable()) // CSRF 비활성화
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/auth/kakao-login", "/home", "/api/auth/kakao-logout","labrador.png").permitAll() // 로그인 페이지와 OAuth 경로 허용
-                .anyRequest().authenticated() // Change to authenticated if needed
+                .anyRequest().permitAll() // 모든 요청 허용
             )
             .addFilterBefore(sessionRefreshFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ShelterDTO {
+public class ShelterListDTO {
     private String name;
     private String content;
-    private int dogCount;
-    private int reliability;
+    private Long dogCount;  // Integer → Long 변경
+    private Integer reliability;
 }

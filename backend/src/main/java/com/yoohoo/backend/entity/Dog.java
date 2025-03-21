@@ -3,6 +3,7 @@ package com.yoohoo.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -43,7 +44,7 @@ public class Dog {
     private Integer status;
 
     @Column(nullable = false)
-    private Date admissionDate;
+    private LocalDate admissionDate;
 
     @ManyToOne
     @JoinColumn(name = "shelterId", nullable = false)

@@ -2,8 +2,8 @@ package com.yoohoo.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.time.LocalDate;
 
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +19,5 @@ public class DogDTO {
     private Boolean isVaccination;
     private Boolean isNeutered;
     private Integer status;
-    private Date admissionDate;
+    private LocalDate admissionDate;
 }

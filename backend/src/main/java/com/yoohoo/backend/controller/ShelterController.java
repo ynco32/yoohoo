@@ -8,6 +8,7 @@ import com.yoohoo.backend.service.DogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
 import java.util.List;
 
 @RestController
@@ -23,10 +24,29 @@ public class ShelterController {
         this.dogService = dogService;
     }
 
-    // 단체 목록 조회 (강아지 수 포함)
     @GetMapping
-    public List<ShelterListDTO> getAllSheltersWithDogCount() {
-        return shelterService.getAllSheltersWithDogCount();
+    public List<ShelterListDTO> getAllSheltersWithDogCount(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sort) {
+    
+        List<ShelterListDTO> shelters = shelterService.getAllSheltersWithDogCount();
+    
+        // 1. 검색 필터링 (단체명에 키워드 포함)
+        if (search != null && !search.isBlank()) {
+            String lowerSearch = search.toLowerCase();
+            shelters = shelters.stream()
+                    .filter(shelter -> shelter.getName().toLowerCase().contains(lowerSearch))
+                    .collect(Collectors.toList());
+        }
+    
+        // 2. 정렬
+        if ("reliability".equalsIgnoreCase(sort)) {
+            shelters.sort((s1, s2) -> Double.compare(s2.getReliability(), s1.getReliability())); // 내림차순
+        } else if ("dogcount".equalsIgnoreCase(sort)) {
+            shelters.sort((s1, s2) -> Long.compare(s2.getDogCount(), s1.getDogCount())); // 내림차순
+        }
+    
+        return shelters;
     }
 
     // 특정 shelterId로 단체 상세 조회 (강아지 목록 제외)
@@ -35,9 +55,31 @@ public class ShelterController {
         return shelterService.getShelterById(shelterId);
     }
 
-    // 특정 shelterId에 속한 강아지 목록 조회
+    // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 + status 필터링 추가
     @GetMapping("/{shelterId}/dogs")
-    public List<DogDTO> getDogsByShelterId(@PathVariable Long shelterId) {
-        return dogService.getDogsByShelterId(shelterId);
+    public List<DogDTO> getDogsByShelterId(
+            @PathVariable Long shelterId,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<Integer> status) {  // ✅ 다중 status를 List로 받음
+
+        List<DogDTO> dogs = dogService.getDogsByShelterId(shelterId);
+
+        // 🔹 status 필터링 적용
+        if (status != null && !status.isEmpty()) {
+            dogs = dogs.stream()
+                    .filter(dog -> status.contains(dog.getStatus()))  // ✅ status 리스트와 비교
+                    .collect(Collectors.toList());
+        }
+
+        // 🔹 search 파라미터가 있는 경우 이름 기준 필터링
+        if (search != null && !search.isBlank()) {
+            String lowerSearch = search.toLowerCase();
+            dogs = dogs.stream()
+                    .filter(dog -> dog.getName().toLowerCase().contains(lowerSearch))
+                    .collect(Collectors.toList());
+        }
+
+        return dogs;
     }
+
 }

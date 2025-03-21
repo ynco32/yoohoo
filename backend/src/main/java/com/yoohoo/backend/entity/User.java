@@ -31,5 +31,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    public Long getShelterId() {
+        return shelter != null ? shelter.getShelterId() : null;
+    }
 
 }

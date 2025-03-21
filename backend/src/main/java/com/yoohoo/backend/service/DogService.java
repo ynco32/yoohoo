@@ -1,6 +1,7 @@
 package com.yoohoo.backend.service;
 
 import com.yoohoo.backend.dto.DogDTO;
+import com.yoohoo.backend.dto.DogIdNameDTO;
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.repository.DogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ public class DogService {
                         dog.getStatus(),
                         dog.getAdmissionDate()
                 ))
+                .collect(Collectors.toList());
+    }
+
+    // ✅ 특정 shelterId의 강아지 ID + 이름만 조회 (dog.status = 0)
+    public List<DogIdNameDTO> getDogIdAndNamesByShelterId(Long shelterId) {
+        return dogRepository.findDogIdAndNamesByShelterIdAndStatus(shelterId, 0)
+                .stream()
+                .map(dog -> new DogIdNameDTO(dog.getDogId(), dog.getName()))
                 .collect(Collectors.toList());
     }
 

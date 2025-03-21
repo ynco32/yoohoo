@@ -1,6 +1,7 @@
 package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.dto.DogDTO;
+import com.yoohoo.backend.dto.DogIdNameDTO;
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.Shelter;
 import com.yoohoo.backend.service.DogService;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dogs")
@@ -22,6 +23,16 @@ public class DogController {
     public DogController(DogService dogService, UserService userService) {
         this.dogService = dogService;
         this.userService = userService;
+    }
+
+
+    @GetMapping("/names")
+    public List<DogIdNameDTO> getDogsByUserShelter(@RequestHeader("User-Id") Long userId) {
+        Long shelterId = userService.getShelterIdByUserId(userId);
+        if (shelterId == null) {
+            throw new RuntimeException("(❗권한제한) 등록된 단체가 없습니다.");
+        }
+        return dogService.getDogIdAndNamesByShelterId(shelterId);
     }
 
     @PostMapping("/register")

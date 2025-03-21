@@ -55,15 +55,23 @@ public class ShelterController {
         return shelterService.getShelterById(shelterId);
     }
 
-    // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 필터링
+    // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 + status 필터링 추가
     @GetMapping("/{shelterId}/dogs")
     public List<DogDTO> getDogsByShelterId(
             @PathVariable Long shelterId,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<Integer> status) {  // ✅ 다중 status를 List로 받음
 
         List<DogDTO> dogs = dogService.getDogsByShelterId(shelterId);
 
-        // search 파라미터가 있는 경우 이름 기준 필터링
+        // 🔹 status 필터링 적용
+        if (status != null && !status.isEmpty()) {
+            dogs = dogs.stream()
+                    .filter(dog -> status.contains(dog.getStatus()))  // ✅ status 리스트와 비교
+                    .collect(Collectors.toList());
+        }
+
+        // 🔹 search 파라미터가 있는 경우 이름 기준 필터링
         if (search != null && !search.isBlank()) {
             String lowerSearch = search.toLowerCase();
             dogs = dogs.stream()
@@ -73,4 +81,5 @@ public class ShelterController {
 
         return dogs;
     }
+
 }

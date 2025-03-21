@@ -24,11 +24,11 @@ public class DogController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public DogDTO registerDog(@RequestBody DogDTO dogDTO, @RequestHeader("User-Id") Long userId) {
         Long shelterId = userService.getShelterIdByUserId(userId);
         if (shelterId == null) {
-            throw new RuntimeException("User is not associated with any shelter");
+            throw new RuntimeException("(❗권한제한) 등록된 단체가 없습니다.");
         }
 
         Dog dog = new Dog();

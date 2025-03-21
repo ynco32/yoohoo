@@ -40,4 +40,8 @@ public class DogService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public Dog saveDog(Dog dog) {
+        return dogRepository.save(dog);
+    }
 }

@@ -225,5 +225,9 @@ public class UserService {
             throw new RuntimeException("User not found with ID: " + userId);
         }
     }
-
+    public Long getShelterIdByUserId(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        return userOptional.map(User::getShelterId).orElse(null);
+    }
+    
 }

@@ -8,6 +8,7 @@ import com.yoohoo.backend.service.DogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
 import java.util.List;
 
 @RestController
@@ -35,9 +36,22 @@ public class ShelterController {
         return shelterService.getShelterById(shelterId);
     }
 
-    // 특정 shelterId에 속한 강아지 목록 조회
+    // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 필터링
     @GetMapping("/{shelterId}/dogs")
-    public List<DogDTO> getDogsByShelterId(@PathVariable Long shelterId) {
-        return dogService.getDogsByShelterId(shelterId);
+    public List<DogDTO> getDogsByShelterId(
+            @PathVariable Long shelterId,
+            @RequestParam(required = false) String search) {
+
+        List<DogDTO> dogs = dogService.getDogsByShelterId(shelterId);
+
+        // search 파라미터가 있는 경우 이름 기준 필터링
+        if (search != null && !search.isBlank()) {
+            String lowerSearch = search.toLowerCase();
+            dogs = dogs.stream()
+                    .filter(dog -> dog.getName().toLowerCase().contains(lowerSearch))
+                    .collect(Collectors.toList());
+        }
+
+        return dogs;
     }
 }

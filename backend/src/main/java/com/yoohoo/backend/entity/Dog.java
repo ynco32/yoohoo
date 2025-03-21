@@ -48,7 +48,4 @@ public class Dog {
     @ManyToOne
     @JoinColumn(name = "shelterId", nullable = false)
     private Shelter shelter;
-
-    // Getters and Setters
-    // ...
 }

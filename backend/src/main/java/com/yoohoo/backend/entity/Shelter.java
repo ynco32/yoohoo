@@ -1,43 +1,48 @@
 package com.yoohoo.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "Shelter")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Shelter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long shelterId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private String name;
 
-    @OneToMany(mappedBy = "shelter")
-    private List<User> users;
+    @Column(nullable = false, length = 30)
+    private String address;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private LocalDate foundationDate;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
-    public String getName() {
-        return name;
-    }
+    @Column(nullable = false, length = 30)
+    private String email;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Column(nullable = false, length = 30)
+    private String phone;
 
-    public List<User> getUsers() {
-        return users;
-    }
+    @Column(nullable = false, length = 30)
+    private String businessNumber;
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
+    @Column(nullable = false)
+    private Integer reliability;
+
+    @OneToMany(mappedBy = "shelter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Dog> dogs; // 강아지 목록
 }

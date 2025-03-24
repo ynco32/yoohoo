@@ -38,4 +38,9 @@ public class DonationService {
     public void saveDonation(Donation donation) {
         donationRepository.save(donation);
     }
+
+    // 특정 강아지에게 후원 들어온 내역 조회
+    public List<Donation> getDonationsByDogId(Long dogId) {
+        return donationRepository.findByDog_DogId(dogId);
+    }
 }

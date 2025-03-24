@@ -9,8 +9,12 @@ import java.util.List;
 
 @Repository
 public interface DonationRepository extends JpaRepository<Donation, Long> {
-    List<Donation> findByUser_UserId(Long userId); // 특정 사용자의 후원 내역 조회
+    // 특정 사용자의 후원 내역 조회
+    List<Donation> findByUser_UserId(Long userId);
 
     // 특정 사용자의 후원 내역을 날짜 범위로 조회
     List<Donation> findByUser_UserIdAndDonationDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+
+    // 특정 강아지의 후원 내역을 조회회
+    List<Donation> findByDog_DogId(Long dogId);
 }

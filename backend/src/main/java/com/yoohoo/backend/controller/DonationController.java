@@ -190,4 +190,11 @@ public class DonationController {
         // 20자리 문자열 생성
         return transmissionDate + transmissionTime + randomNumber; // 총 20자리
     }
+
+    // 특정 강아지의 후원 내역 조회
+    @GetMapping("/dogs/{dogId}")
+    public ResponseEntity<List<Donation>> getDonationsByDogId(@PathVariable Long dogId) {
+        List<Donation> donations = donationService.getDonationsByDogId(dogId);
+        return ResponseEntity.ok(donations);
+    }
 }

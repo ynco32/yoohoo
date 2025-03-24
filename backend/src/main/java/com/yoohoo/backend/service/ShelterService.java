@@ -43,4 +43,9 @@ public class ShelterService {
                 shelter.getReliability()
         );
     }
+
+    public Shelter findById(Long shelterId) {
+        Optional<Shelter> shelter = shelterRepository.findById(shelterId);
+        return shelter.orElse(null); // 보호소가 없으면 null 반환
+    }
 }

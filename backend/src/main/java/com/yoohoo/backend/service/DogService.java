@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,5 +40,11 @@ public class DogService {
                         dog.getAdmissionDate()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    // 강아지 ID로 강아지 조회
+    public Dog findById(Long dogId) {
+        Optional<Dog> dog = dogRepository.findById(dogId);
+        return dog.orElse(null); // 강아지가 없으면 null 반환
     }
 }

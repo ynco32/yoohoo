@@ -2,7 +2,7 @@ package com.yoohoo.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -10,7 +10,7 @@ public class Donation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long donationeId;
+    private Long donationId;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
@@ -21,16 +21,16 @@ public class Donation {
     private Shelter shelter;
 
     @Column(nullable = false)
-    private Date donationDate;
+    private LocalDate donationDate;
 
     @Column(nullable = false)
     private String withdrawalAccount;
 
     @Column(nullable = false)
-    private Integer donationType;
+    private Integer donationType; // 0: 일시 후원, 1: 정기 후원
 
     @Column
-    private Date regularDonationDate;
+    private LocalDate regularDonationDate;
 
     @ManyToOne
     @JoinColumn(name = "dogId", nullable = true)
@@ -46,7 +46,7 @@ public class Donation {
     private Integer donationAmount;
 
     @Column(nullable = false)
-    private Long transactionUniqueNo;
+    private String transactionUniqueNo;
 
     // Getters and Setters
     // ...

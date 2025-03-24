@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.yoohoo.backend.dto.KakaoLoginDto;
 import com.yoohoo.backend.entity.User;
 import com.yoohoo.backend.service.TokenService;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -40,6 +41,9 @@ public class UserService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
     public String getAccessTokenFromKakao(String code) {
         RestTemplate restTemplate = new RestTemplate();
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
@@ -56,6 +60,8 @@ public class UserService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         try {
+            logger.info("Requesting access token from Kakao with params: {}", params);
+            
             ResponseEntity<Map> response = restTemplate.exchange(
                 tokenUrl,
                 HttpMethod.POST,
@@ -100,11 +106,14 @@ public class UserService {
             KakaoLoginDto userInfo = new KakaoLoginDto();
             userInfo.setKakaoId((Long) response.getBody().get("id"));
 
-            // Check if kakao_account is a Map
+            // kakao_account에서 이메일 가져오기
             Object kakaoAccountObj = response.getBody().get("kakao_account");
             if (kakaoAccountObj instanceof Map) {
                 Map<String, Object> kakaoAccount = (Map<String, Object>) kakaoAccountObj;
-                userInfo.setEmail((String) kakaoAccount.get("email"));
+                // 이메일을 설정하지 않음
+                if (kakaoAccount.get("email") != null) {
+                    userInfo.setEmail((String) kakaoAccount.get("email"));
+                }
             } else {
                 logger.error("kakao_account is not a Map: {}", kakaoAccountObj);
                 throw new RuntimeException("kakao_account is not a Map");
@@ -138,11 +147,18 @@ public class UserService {
     }
 
     public User saveUserWithToken(KakaoLoginDto userInfo, String accessToken) {
-        User user = saveUser(userInfo);
+        // 카카오 ID로 사용자 조회
+        User user = findUserByKakaoId(userInfo.getKakaoId());
         
+        // 이미 존재하는 경우 이메일을 업데이트
+        if (user.getKakaoEmail() == null) {
+            user.setKakaoEmail(userInfo.getEmail()); // 카카오 이메일 저장
+        }
+        
+        // 토큰 저장
         tokenService.saveToken(user.getUserId(), accessToken);
         
-        return user;
+        return userRepository.save(user); // 사용자 정보 저장
     }
 
     public String getUserToken(Long userId) {
@@ -151,7 +167,6 @@ public class UserService {
 
     public void unlinkUser(Long userId) {
         tokenService.deleteToken(userId);
-    
     }
 
     public String refreshAccessToken(Long userId) {
@@ -221,6 +236,30 @@ public class UserService {
             User user = optionalUser.get();
             user.setNickname(newNickname);
             return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with ID: " + userId);
+        }
+    }
+
+    public void storeUserKeyInRedis(Long userId, String userKey) {
+        String redisKey = "userKey:" + userId; // Redis 키 생성
+        redisTemplate.opsForValue().set(redisKey, userKey); // Redis에 userKey 저장
+    }
+
+    public User findUserByKakaoId(Long kakaoId) {
+        return userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new RuntimeException("User not found with Kakao ID: " + kakaoId));
+    }
+
+    public void deleteUserKeyFromRedis(Long userId) {
+        String redisKey = "userKey:" + userId; // Redis 키 생성
+        redisTemplate.delete(redisKey); // Redis에서 userKey 삭제
+    }
+
+    public User findById(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
         } else {
             throw new RuntimeException("User not found with ID: " + userId);
         }

@@ -29,6 +29,6 @@ public class Withdrawal {
     @Column(nullable = false)
     private Long transactionUniqueNo;
 
-    // Getters and Setters
-    // ...
+    @Column(nullable = false, length = 100)
+    private String content;
 }

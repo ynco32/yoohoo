@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import jakarta.servlet.http.HttpSession;
 import com.yoohoo.backend.entity.User;
 import java.util.Map;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,10 +44,50 @@ public class UserController {
             // 세션에 사용자 ID 저장 (인증 목적)
             session.setAttribute("userId", user.getUserId());
             logger.info("User ID stored in session: {}", user.getUserId());
+
+            // 카카오 ID를 통해 데이터베이스에서 이메일 정보 가져오기
+            Long kakaoId = user.getKakaoId(); // 데이터베이스에 저장된 카카오 ID
+            User dbUser = userService.findUserByKakaoId(kakaoId); // 카카오 ID로 사용자 조회
+            String userId = dbUser.getKakaoEmail(); // 데이터베이스에서 이메일 가져오기
+
+            // 요청 본문 준비
+            String apiKey = "54cc585638ea49a5b13f7ec7887c7c1b";
+            String requestBody = String.format("{\"apiKey\":\"%s\", \"userId\":\"%s\"}", apiKey, userId);
+            
+            // 로그 추가
+            logger.info("Sending POST request to external API with userId: {}", userId);
+            logger.info("Request body: {}", requestBody);
+            
+            // 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            // 요청 엔티티 생성
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            
+            // POST 요청 전송
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    "https://finopenapi.ssafy.io/ssafy/api/v1/member/search",
+                    HttpMethod.POST,
+                    entity,
+                    Map.class
+            );
+
+            // 응답 상태 코드 확인
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                logger.error("Failed to call external API: {}", response.getBody());
+                throw new RuntimeException("Failed to call external API");
+            }
+
+            // 응답에서 userKey 추출
+            String userKey = (String) response.getBody().get("userKey");
+            // Redis에 userKey 저장
+            userService.storeUserKeyInRedis(user.getUserId(), userKey);
             
             return new RedirectView("/home");
         } catch (Exception e) {
-            logger.error("Error during Kakao login", e);
+            logger.error("Kakao 로그인 중 오류 발생", e);
             return new RedirectView("/error");
         }
     }
@@ -92,6 +133,9 @@ public class UserController {
 
             // 토큰 삭제 및 사용자 정보 업데이트
             userService.unlinkUser(userId);
+            
+            // Redis에서 userKey 삭제
+            userService.deleteUserKeyFromRedis(userId);
             
             // 세션 정보 삭제
             session.invalidate();

@@ -265,4 +265,9 @@ public class UserService {
         }
     }
 
+    public Long getShelterIdByUserId(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        return userOptional.map(User::getShelterId).orElse(null);
+    }
+    
 }

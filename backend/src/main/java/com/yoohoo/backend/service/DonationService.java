@@ -43,4 +43,13 @@ public class DonationService {
     public List<Donation> getDonationsByDogId(Long dogId) {
         return donationRepository.findByDog_DogId(dogId);
     }
+
+    // 유저가 후원한 단체의 이름 목록 조회
+    public List<String> getShelterNamesByUserId(Long userId) {
+        List<Donation> donations = donationRepository.findByUser_UserId(userId);
+        return donations.stream()
+                .map(donation -> donation.getShelter().getName()) // Shelter의 이름을 가져옴
+                .distinct() // 중복된 이름 제거
+                .collect(Collectors.toList());
+    }
 }

@@ -197,4 +197,17 @@ public class DonationController {
         List<Donation> donations = donationService.getDonationsByDogId(dogId);
         return ResponseEntity.ok(donations);
     }
+
+    // 유저가 후원한 단체의 이름 목록 조회
+    @GetMapping("/shelters")
+    public ResponseEntity<List<String>> getShelterNames(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        
+        if (userId == null) {
+            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+        }
+
+        List<String> shelterNames = donationService.getShelterNamesByUserId(userId);
+        return ResponseEntity.ok(shelterNames);
+    }
 }

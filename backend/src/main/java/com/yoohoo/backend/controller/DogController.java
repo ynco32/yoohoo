@@ -6,7 +6,12 @@ import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.Shelter;
 import com.yoohoo.backend.service.DogService;
 import com.yoohoo.backend.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,21 +32,36 @@ public class DogController {
 
 
     @GetMapping("/names")
-    public List<DogIdNameDTO> getDogsByUserShelter(@RequestHeader("User-Id") Long userId) {
+    public ResponseEntity<List<DogIdNameDTO>> getDogsByUserShelter(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        
+        if (userId == null) {
+            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+        }
+    
         Long shelterId = userService.getShelterIdByUserId(userId);
+        
         if (shelterId == null) {
             throw new RuntimeException("(❗권한제한) 등록된 단체가 없습니다.");
         }
-        return dogService.getDogIdAndNamesByShelterId(shelterId);
+    
+        List<DogIdNameDTO> dogs = dogService.getDogIdAndNamesByShelterId(shelterId);
+        return ResponseEntity.ok(dogs);
     }
-
+    
     @PostMapping("/register")
-    public DogDTO registerDog(@RequestBody DogDTO dogDTO, @RequestHeader("User-Id") Long userId) {
+    public ResponseEntity<DogDTO> registerDog(@RequestBody DogDTO dogDTO, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+    
+        if (userId == null) {
+            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+        }
+    
         Long shelterId = userService.getShelterIdByUserId(userId);
         if (shelterId == null) {
             throw new RuntimeException("(❗권한제한) 등록된 단체가 없습니다.");
         }
-
+    
         Dog dog = new Dog();
         dog.setName(dogDTO.getName());
         dog.setAge(dogDTO.getAge());
@@ -54,13 +74,14 @@ public class DogController {
         dog.setIsNeutered(dogDTO.getIsNeutered());
         dog.setStatus(dogDTO.getStatus());
         dog.setAdmissionDate(LocalDate.now());  // 현재 날짜 자동 설정
-
+    
         Shelter shelter = new Shelter();
         shelter.setShelterId(shelterId);
         dog.setShelter(shelter);
-
+    
         Dog savedDog = dogService.saveDog(dog);
-        return new DogDTO(
+    
+        DogDTO responseDTO = new DogDTO(
                 savedDog.getDogId(),
                 savedDog.getName(),
                 savedDog.getAge(),
@@ -74,5 +95,8 @@ public class DogController {
                 savedDog.getStatus(),
                 savedDog.getAdmissionDate()
         );
+    
+        return ResponseEntity.ok(responseDTO);
     }
+    
 }

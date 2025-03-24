@@ -5,11 +5,16 @@ import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.DogService;
+import com.yoohoo.backend.service.ShelterFinanceService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/shelter")
@@ -17,11 +22,13 @@ public class ShelterController {
 
     private final ShelterService shelterService;
     private final DogService dogService;
+    private final ShelterFinanceService shelterFinanceService;
 
     @Autowired
-    public ShelterController(ShelterService shelterService, DogService dogService) {
+    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService) {
         this.shelterService = shelterService;
         this.dogService = dogService;
+        this.shelterFinanceService = shelterFinanceService;
     }
 
     @GetMapping
@@ -80,6 +87,19 @@ public class ShelterController {
         }
 
         return dogs;
+    }
+
+    // Shelter-06-01 : shelterUserKey:{shelterId}, shelterAccountNo:{shelterId} 를 Redis에 저장하고 리턴한다.
+    @PostMapping("/{shelterId}/accountinfo") 
+    public ResponseEntity<Map<String, String>> getAccountInfo(@PathVariable Long shelterId) {
+        Map<String, String> result = shelterFinanceService.getAccountAndUserKey(shelterId);
+        return ResponseEntity.ok(result);
+    }
+
+    // Shelter-06-01 : shelterUserKey:{shelterId}, shelterAccountNo:{shelterId}, shelterCardNo:{shelterId}, shelterCvc:{shelterId} 를 Redis에 저장하고 리턴한다.
+    @PostMapping("/{shelterId}/fininfo")
+    public ResponseEntity<Map<String, String>> getFullFinanceInfo(@PathVariable Long shelterId) {
+        return ResponseEntity.ok(shelterFinanceService.getAccountAndCardFromRedis(shelterId));
     }
 
 }

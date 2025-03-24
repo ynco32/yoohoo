@@ -38,6 +38,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // 세션을 Redis로 관리하기 위한 의존성 (선택사항)
     implementation 'org.springframework.session:spring-session-data-redis'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
 }
 // Dependency versions
 ext {

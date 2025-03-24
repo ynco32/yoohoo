@@ -137,6 +137,9 @@ public class UserController {
             // Redis에서 userKey 삭제
             userService.deleteUserKeyFromRedis(userId);
             
+            // Redis에서 사용자 정보 삭제
+            userService.deleteUserInfoFromRedis(userId);
+            
             // 세션 정보 삭제
             session.invalidate();
             

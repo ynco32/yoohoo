@@ -23,6 +23,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.http.*;
+import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Service
 public class UserService {
@@ -131,17 +135,15 @@ public class UserService {
         User user;
         if (existingUser.isPresent()) {
             user = existingUser.get();
+            // 기존 사용자 정보 유지
+            user.setKakaoEmail(userInfo.getEmail()); // 이메일 업데이트
         } else {
             user = new User();
             user.setCreatedAt(LocalDateTime.now());
-        }
-        user.setKakaoId(userInfo.getKakaoId());
-        user.setKakaoEmail(userInfo.getEmail());
-        user.setIsAdmin(false); // Set default value or modify as needed
-        if (user.getIsAdmin()) {
-            // Logic to set the shelter reference
-        } else {
-            user.setShelter(null); // Ensure shelter is null if not admin
+            user.setKakaoId(userInfo.getKakaoId());
+            user.setKakaoEmail(userInfo.getEmail());
+            user.setIsAdmin(false); // 기본값 설정
+            user.setShelter(null); // 기본값 설정
         }
         return userRepository.save(user);
     }
@@ -158,7 +160,30 @@ public class UserService {
         // 토큰 저장
         tokenService.saveToken(user.getUserId(), accessToken);
         
+        // Redis에 사용자 정보 저장
+        storeUserInfoInRedis(user);
+        
         return userRepository.save(user); // 사용자 정보 저장
+    }
+
+    private void storeUserInfoInRedis(User user) {
+        String redisKey = "user:" + user.getUserId();
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("user_id", user.getUserId());
+        userInfo.put("created_at", user.getCreatedAt());
+        userInfo.put("is_admin", user.getIsAdmin());
+        userInfo.put("kakao_email", user.getKakaoEmail());
+        userInfo.put("nickname", user.getNickname());
+        userInfo.put("shelter_id", user.getShelterId());
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // JavaTimeModule 등록
+            String jsonString = objectMapper.writeValueAsString(userInfo);
+            redisTemplate.opsForValue().set(redisKey, jsonString);
+        } catch (JsonProcessingException e) {
+            logger.error("Failed to convert user info to JSON for user ID {}: {}", user.getUserId(), e.getMessage());
+        }
     }
 
     public String getUserToken(Long userId) {
@@ -268,6 +293,11 @@ public class UserService {
     public Long getShelterIdByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         return userOptional.map(User::getShelterId).orElse(null);
+    }
+
+    public void deleteUserInfoFromRedis(Long userId) {
+        String redisKey = "user:" + userId; // Redis 키 생성
+        redisTemplate.delete(redisKey); // Redis에서 사용자 정보 삭제
     }
     
 }

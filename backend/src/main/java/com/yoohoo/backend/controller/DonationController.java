@@ -10,11 +10,13 @@ import com.yoohoo.backend.service.DonationService;
 import com.yoohoo.backend.service.DogService;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.UserService;
+import com.yoohoo.backend.service.FinanceService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @RestController
@@ -47,6 +50,9 @@ public class DonationController {
     @Autowired
     private StringRedisTemplate redisTemplate; // Redis 클라이언트
 
+    @Autowired
+    private FinanceService financeService;
+    
     @GetMapping
     public ResponseEntity<List<Donation>> getDonations(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -87,6 +93,23 @@ public class DonationController {
         List<Dog> dogs = donationService.getDogsByUserId(userId);
         return ResponseEntity.ok(dogs);
     }
+
+    @GetMapping("/accounts")
+    public ResponseEntity<?> getAccountInfo(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+        }
+
+        try {
+            Map<String, String> result = financeService.getAccount(userId);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            e.printStackTrace(); // 500 에러 원인 콘솔 확인
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 
     @PostMapping("/transfer")
     public ResponseEntity<String> handleTransfer(@RequestBody TransferRequestDTO transferRequest, HttpSession session) {

@@ -11,6 +11,9 @@ public class MerchantCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long merchantCategoryId;
 
+    @Column(nullable = false, length = 255)
+    private String categoryId;
+
     @Column(nullable = false)
     private String category;
 

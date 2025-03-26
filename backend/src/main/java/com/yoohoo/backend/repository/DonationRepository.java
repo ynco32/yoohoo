@@ -17,4 +17,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     // 특정 강아지의 후원 내역을 조회회
     List<Donation> findByDog_DogId(Long dogId);
+
+    
+
 }

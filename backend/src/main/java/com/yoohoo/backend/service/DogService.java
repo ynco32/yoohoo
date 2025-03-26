@@ -3,7 +3,9 @@ package com.yoohoo.backend.service;
 import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.DogIdNameDTO;
 import com.yoohoo.backend.entity.Dog;
+import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.repository.DogRepository;
+import com.yoohoo.backend.repository.DonationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,12 @@ import java.util.stream.Collectors;
 public class DogService {
 
     private final DogRepository dogRepository;
+    private final DonationRepository donationRepository;
 
     @Autowired
-    public DogService(DogRepository dogRepository) {
+    public DogService(DogRepository dogRepository, DonationRepository donationRepository) {
         this.dogRepository = dogRepository;
+        this.donationRepository = donationRepository;
     }
 
     // 특정 shelterId에 속한 강아지 목록 조회
@@ -60,4 +64,13 @@ public class DogService {
     public Dog saveDog(Dog dog) {
         return dogRepository.save(dog);
     }
+
+    // 사용자가 후원한 총 금액 계산
+    public Integer getTotalDonationAmountByUserId(Long userId) {
+        List<Donation> donations = donationRepository.findByUser_UserId(userId);
+        return donations.stream()
+                .mapToInt(Donation::getDonationAmount) // donationAmount를 int로 변환하여 합산
+                .sum(); // 총합 계산
+    }
+    
 }

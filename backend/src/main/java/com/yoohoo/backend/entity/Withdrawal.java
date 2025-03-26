@@ -9,26 +9,29 @@ public class Withdrawal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long withrawalId;
+    private Long withdrawalId;
 
-    @ManyToOne
-    @JoinColumn(name = "shelterId", nullable = false)
-    private Shelter shelter;
+    @Column(nullable = true)
+    private Long dogId;
 
-    @ManyToOne
-    @JoinColumn(name = "dogId", nullable = true)
-    private Dog dog;
-
-    @ManyToOne
-    @JoinColumn(name = "marchantCategoryId", nullable = false)
-    private MerchantCategory merchantCategory;
+    @Column(nullable = false, length = 50)
+    private String category;
 
     @Column(nullable = false)
-    private Integer transctionType;
-
-    @Column(nullable = false)
-    private Long transactionUniqueNo;
+    private String transactionBalance;
 
     @Column(nullable = false, length = 100)
     private String content;
+
+    @Column(nullable = false)
+    private String date;
+
+    @Column(nullable = true)
+    private Long merchantId;
+
+    @Column(nullable = false)
+    private Long shelterId;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String transactionUniqueNo;
 }

@@ -23,6 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yoohoo.backend.dto.DonationDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/donations")
@@ -54,43 +57,59 @@ public class DonationController {
     private FinanceService financeService;
     
     @GetMapping
-    public ResponseEntity<List<Donation>> getDonations(HttpSession session) {
+    public ResponseEntity<List<DonationDTO>> getDonations(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         
         if (userId == null) {
-            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+            return ResponseEntity.badRequest().build();
         }
 
         List<Donation> donations = donationService.getDonationsByUserId(userId);
-        return ResponseEntity.ok(donations);
+        List<DonationDTO> donationDTOs = donations.stream().map(donation -> {
+            DonationDTO dto = new DonationDTO();
+            dto.setDonationId(donation.getDonationId());
+            dto.setDonationAmount(donation.getDonationAmount());
+            dto.setTransactionUniqueNo(donation.getTransactionUniqueNo());
+            dto.setDonationDate(donation.getDonationDate());
+            dto.setDepositorName(donation.getDepositorName());
+            dto.setCheeringMessage(donation.getCheeringMessage());
+            dto.setUserNickname(donation.getUser().getNickname());
+            dto.setDogName(donation.getDog() != null ? donation.getDog().getName() : null);
+            dto.setShelterName(donation.getShelter() != null ? donation.getShelter().getName() : null);
+            return dto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(donationDTOs);
     }
 
     // 날짜 범위에 따른 후원 내역 조회
-    @GetMapping("/filter")
-    public ResponseEntity<List<Donation>> getDonationsByDateRange(
+    @PostMapping("/filter")
+    public ResponseEntity<List<DonationDTO>> getDonationsByDateRange(
             HttpSession session,
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        
+            @RequestBody Map<String, String> dateRange) {
+
         Long userId = (Long) session.getAttribute("userId");
-        
+
         if (userId == null) {
-            return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
+            return ResponseEntity.badRequest().build();
         }
 
-        List<Donation> donations = donationService.getDonationsByUserIdAndDateRange(userId, startDate, endDate);
+        LocalDate startDate = LocalDate.parse(dateRange.get("startDate"));
+        LocalDate endDate = LocalDate.parse(dateRange.get("endDate"));
+
+        List<DonationDTO> donations = donationService.getDonationsByUserIdAndDateRange(userId, startDate, endDate);
         return ResponseEntity.ok(donations);
     }
 
     @GetMapping("/dogs")
-    public ResponseEntity<List<Dog>> getDogsByUser(HttpSession session) {
+    public ResponseEntity<List<DonationDTO>> getDogsByUser(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
         }
 
-        List<Dog> dogs = donationService.getDogsByUserId(userId);
+        List<DonationDTO> dogs = donationService.getDogsByUserId(userId);
         return ResponseEntity.ok(dogs);
     }
 
@@ -216,8 +235,8 @@ public class DonationController {
 
     // 특정 강아지의 후원 내역 조회
     @GetMapping("/dogs/{dogId}")
-    public ResponseEntity<List<Donation>> getDonationsByDogId(@PathVariable Long dogId) {
-        List<Donation> donations = donationService.getDonationsByDogId(dogId);
+    public ResponseEntity<List<DonationDTO>> getDonationsByDogId(@PathVariable Long dogId) {
+        List<DonationDTO> donations = donationService.getDonationsByDogId(dogId);
         return ResponseEntity.ok(donations);
     }
 
@@ -232,5 +251,48 @@ public class DonationController {
 
         List<String> shelterNames = donationService.getShelterNamesByUserId(userId);
         return ResponseEntity.ok(shelterNames);
+    }
+
+    @GetMapping("/total-amount")
+    public ResponseEntity<Map<String, Object>> getTotalDonationAmount(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId"); 
+        
+        if (userId == null) {
+            return ResponseEntity.badRequest().body(null); // 사용자 ID가 없으면 null 반환
+        }
+
+        // 총 후원 금액 계산
+        Integer totalAmount = donationService.getTotalDonationAmountByUserId(userId);
+
+        // Redis에서 nickname 가져오기
+        String userKey = "user:" + userId;
+        String userJson = redisTemplate.opsForValue().get(userKey);
+        String nickname = null;
+
+        if (userJson != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> userMap = objectMapper.readValue(userJson, Map.class);
+                nickname = (String) userMap.get("nickname");
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 처리
+            }
+        }
+
+        // 기본값 설정
+        if (nickname == null) {
+            nickname = "익명"; // nickname이 없을 경우 기본값 설정
+        }
+        if (totalAmount == null) {
+            totalAmount = 0; // 총 금액이 없을 경우 기본값 설정
+        }
+
+        // 응답 객체 생성
+        Map<String, Object> response = Map.of(
+            "totalAmount", totalAmount,
+            "nickname", nickname
+        );
+
+        return ResponseEntity.ok(response); // 총 후원 금액과 nickname 반환
     }
 }

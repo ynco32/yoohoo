@@ -169,7 +169,7 @@ public class ShelterFinanceService {
         );
     }
 
-    private String generateUniqueTransactionNo(LocalDateTime now) {
+    public String generateUniqueTransactionNo(LocalDateTime now) {
         String date = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String time = now.format(DateTimeFormatter.ofPattern("HHmmss"));
         String rand = String.format("%06d", new Random().nextInt(1000000));

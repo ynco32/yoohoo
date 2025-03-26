@@ -9,9 +9,7 @@ import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-// org.springframework.http.HttpHeaders import
 import org.springframework.http.*;
-// import org.springframework.security.access.method.P;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
-// import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 

@@ -15,32 +15,25 @@ import java.util.stream.Collectors;
 public class DogService {
 
     private final DogRepository dogRepository;
+    private final S3Service s3Service;
+    
 
     @Autowired
-    public DogService(DogRepository dogRepository) {
+    public DogService(DogRepository dogRepository, S3Service s3Service) {
         this.dogRepository = dogRepository;
+        this.s3Service = s3Service;
     }
 
     // 특정 shelterId에 속한 강아지 목록 조회
     public List<DogDTO> getDogsByShelterId(Long shelterId) {
         List<Dog> dogs = dogRepository.findByShelter_ShelterId(shelterId);
-
+    
         return dogs.stream()
-                .map(dog -> new DogDTO(
-                        dog.getDogId(),
-                        dog.getName(),
-                        dog.getAge(),
-                        dog.getWeight(),
-                        dog.getGender(),
-                        dog.getBreed(),
-                        dog.getEnergetic(),
-                        dog.getFamiliarity(),
-                        dog.getIsVaccination(),
-                        dog.getIsNeutered(),
-                        dog.getStatus(),
-                        dog.getAdmissionDate()
-                ))
-                .collect(Collectors.toList());
+        .map(dog -> {
+            String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(1, dog.getDogId());
+            return DogDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
+        })
+        .collect(Collectors.toList());
     }
 
     // 강아지 ID로 강아지 조회

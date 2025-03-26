@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/dogs")
@@ -86,7 +87,8 @@ public class DogController {
     
         // 4. 강아지 저장
         Dog savedDog = dogService.saveDog(dog);
-    
+        Optional<String> fileUrlOptional = Optional.empty();
+
         // 5. 이미지 업로드 (있다면)
         if (file != null && !file.isEmpty()) {
             try {
@@ -107,8 +109,9 @@ public class DogController {
                 );
     
                 if (response.getStatusCode().is2xxSuccessful()) {
-                    String fileUrl = response.getBody();
+                    String fileUrl = response.getBody(); // ← 실제 S3 URL
                     s3Service.saveFileEntity(file, 1, savedDog.getDogId(), fileUrl);
+                    fileUrlOptional = Optional.of(fileUrl);
                 } else {
                     throw new RuntimeException("이미지 업로드 실패: " + response.getStatusCode());
                 }
@@ -119,7 +122,8 @@ public class DogController {
         }
     
         // 6. 응답 DTO 반환
-        return ResponseEntity.ok(DogDTO.fromEntity(savedDog));
+        DogDTO responseDTO = DogDTO.fromEntity(savedDog, fileUrlOptional);
+        return ResponseEntity.ok(responseDTO);
     }
        
     @PostMapping("/{dogId}/imageupload")

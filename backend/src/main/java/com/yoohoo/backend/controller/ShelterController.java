@@ -5,12 +5,16 @@ import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.DogService;
+import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
 import java.util.List;
@@ -23,28 +27,31 @@ public class ShelterController {
     private final ShelterService shelterService;
     private final DogService dogService;
     private final ShelterFinanceService shelterFinanceService;
+    private final S3Service s3Service;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService) {
+    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService, S3Service s3Service, RestTemplate restTemplate) {
         this.shelterService = shelterService;
         this.dogService = dogService;
         this.shelterFinanceService = shelterFinanceService;
+        this.s3Service = s3Service;
+        this.restTemplate = restTemplate;
     }
-
     @GetMapping
     public List<ShelterListDTO> getAllSheltersWithDogCount(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sort) {
-    
-        List<ShelterListDTO> shelters = shelterService.getAllSheltersWithDogCount();
-    
-        // 1. 검색 필터링 (단체명에 키워드 포함)
-        if (search != null && !search.isBlank()) {
-            String lowerSearch = search.toLowerCase();
-            shelters = shelters.stream()
-                    .filter(shelter -> shelter.getName().toLowerCase().contains(lowerSearch))
-                    .collect(Collectors.toList());
-        }
+        @RequestParam(required = false) String search,
+        @RequestParam(required = false) String sort) {
+
+    List<ShelterListDTO> shelters = shelterService.getAllShelters();
+
+    // 검색
+    if (search != null && !search.isBlank()) {
+        String lowerSearch = search.toLowerCase();
+        shelters = shelters.stream()
+                .filter(shelter -> shelter.getName().toLowerCase().contains(lowerSearch))
+                .collect(Collectors.toList());
+    }
     
         // 2. 정렬
         if ("reliability".equalsIgnoreCase(sort)) {
@@ -52,15 +59,15 @@ public class ShelterController {
         } else if ("dogcount".equalsIgnoreCase(sort)) {
             shelters.sort((s1, s2) -> Long.compare(s2.getDogCount(), s1.getDogCount())); // 내림차순
         }
-    
         return shelters;
     }
 
-    // 특정 shelterId로 단체 상세 조회 (강아지 목록 제외)
+    // 단체 상세 조회 (강아지 목록 제외)
     @GetMapping("/{shelterId}")
     public ShelterDetailDTO getShelterById(@PathVariable Long shelterId) {
         return shelterService.getShelterById(shelterId);
     }
+
 
     // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 + status 필터링 추가
     @GetMapping("/{shelterId}/dogs")
@@ -100,6 +107,47 @@ public class ShelterController {
     @PostMapping("/{shelterId}/fininfo")
     public ResponseEntity<Map<String, String>> getFullFinanceInfo(@PathVariable Long shelterId) {
         return ResponseEntity.ok(shelterFinanceService.getAccountAndCardFromRedis(shelterId));
+    }
+
+        // 보호소 로고 이미지 업로드
+    @PostMapping("/{shelterId}/imageupload")
+    public ResponseEntity<?> uploadShelterLogo(
+            @PathVariable Long shelterId,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("파일이 없습니다.");
+        }
+
+        String fileUrl = null;
+        try {
+            // S3Controller의 /s3/upload API 호출
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "http://localhost:8080/s3/upload", // S3Controller의 /s3/upload API URL
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                fileUrl = response.getBody();
+                s3Service.saveFileEntity(file, 0, shelterId, fileUrl); // entityType을 0으로 설정
+            } else {
+                throw new RuntimeException("파일 업로드 실패: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패", e);
+        }
+
+        return ResponseEntity.ok("보호소 로고 업로드 성공: " + fileUrl);
     }
 
 }

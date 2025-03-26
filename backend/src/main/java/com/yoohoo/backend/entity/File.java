@@ -33,6 +33,4 @@ public class File {
     @Column(nullable = false)
     private Date createdAt;
 
-    // Getters and Setters
-    // ...
 }

@@ -14,22 +14,31 @@ import java.util.Optional;
 public class ShelterService {
 
     private final ShelterRepository shelterRepository;
+    private final S3Service s3Service;
 
     @Autowired
-    public ShelterService(ShelterRepository shelterRepository) {
+    public ShelterService(ShelterRepository shelterRepository, S3Service s3Service) {
         this.shelterRepository = shelterRepository;
+        this.s3Service = s3Service;
     }
 
-    // 단체 전체 목록 조회 (강아지 수 포함)
-    public List<ShelterListDTO> getAllSheltersWithDogCount() {
-        return shelterRepository.findAllWithDogCount();
-    }
+    // 강아지 수 + 이미지 포함된 DTO 반환
+    public List<ShelterListDTO> getAllShelters() {
+        List<ShelterListDTO> list = shelterRepository.findAllWithDogCount();
 
+        list.forEach(shelter -> {
+            String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(0, shelter.getShelterId());
+            shelter.setImageUrl(imageUrl);
+        });
+
+        return list;
+    }
 
     // 특정 단체 상세 조회 (강아지 목록 제외)
     public ShelterDetailDTO getShelterById(Long shelterId) {
         Shelter shelter = shelterRepository.findByShelterId(shelterId)
                 .orElseThrow(() -> new RuntimeException("Shelter not found with id: " + shelterId));
+        String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(0, shelterId);
 
         return new ShelterDetailDTO(
                 shelter.getShelterId(),
@@ -40,8 +49,9 @@ public class ShelterService {
                 shelter.getEmail(),
                 shelter.getPhone(),
                 shelter.getBusinessNumber(),
-                shelter.getReliability()
-        );
+                shelter.getReliability(),
+                imageUrl
+                        );
     }
 
     public Shelter findById(Long shelterId) {

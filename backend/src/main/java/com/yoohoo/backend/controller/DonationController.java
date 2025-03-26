@@ -113,7 +113,7 @@ public class DonationController {
         return ResponseEntity.ok(dogs);
     }
 
-    @GetMapping("/accounts")
+    @PostMapping("/accounts")
     public ResponseEntity<?> getAccountInfo(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
@@ -121,10 +121,10 @@ public class DonationController {
         }
 
         try {
-            Map<String, String> result = financeService.getAccount(userId);
+            List<Map<String, String>> result  = financeService.getAccounts(userId);
             return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
-            e.printStackTrace(); // 500 에러 원인 콘솔 확인
+            e.printStackTrace(); 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

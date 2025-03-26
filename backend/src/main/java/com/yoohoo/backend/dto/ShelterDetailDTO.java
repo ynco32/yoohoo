@@ -17,4 +17,6 @@ public class ShelterDetailDTO {
     private String phone;
     private String businessNumber;
     private Integer reliability;
+    private String imageUrl; 
+
 }

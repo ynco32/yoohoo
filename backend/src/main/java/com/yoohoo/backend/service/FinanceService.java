@@ -7,6 +7,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -24,7 +27,7 @@ public class FinanceService {
     private static final String ACCOUNT_API_URL =
             "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireDemandDepositAccountList";
 
-    public Map<String, String> getAccount(Long userId) {
+    public List<Map<String, String>> getAccounts(Long userId) {
         String userKeyKey = "userKey:" + userId;
 
         // Redis에서 userKey 가져오기
@@ -32,46 +35,56 @@ public class FinanceService {
         if (userKey == null) {
             throw new RuntimeException("userKey가 Redis에 존재하지 않습니다.");
         }
+         // 계좌 API 요청
+    Map<String, Object> header = buildHeader("inquireDemandDepositAccountList", userKey);
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(Map.of("Header", header), jsonHeaders());
 
-        // 계좌번호 API 호출
-        Map<String, Object> header = buildHeader("inquireDemandDepositAccountList", userKey);
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(Map.of("Header", header), jsonHeaders());
+    ResponseEntity<Map> response = restTemplate.exchange(ACCOUNT_API_URL, HttpMethod.POST, entity, Map.class);
+    Map<String, Object> body = response.getBody();
 
-        ResponseEntity<Map> response = restTemplate.exchange(ACCOUNT_API_URL, HttpMethod.POST, entity, Map.class);
-        Map<String, Object> body = response.getBody();
+    if (body == null || !body.containsKey("REC")) {
+        throw new RuntimeException("계좌 정보가 없습니다.");
+    }
 
-        if (body == null || !body.containsKey("REC")) {
-            throw new RuntimeException("계좌 정보가 없습니다.");
-        }
-
-        List<Map<String, Object>> recList = (List<Map<String, Object>>) body.get("REC");
-        if (recList.isEmpty()) {
-            throw new RuntimeException("계좌 REC 목록이 비어있습니다.");
-        }
+    List<Map<String, Object>> recList = (List<Map<String, Object>>) body.get("REC");
+    if (recList.isEmpty()) {
+        throw new RuntimeException("계좌 REC 목록이 비어있습니다.");
+    }
+        // 계좌 목록 생성
+        List<Map<String, String>> accountList = new ArrayList<>();
 
         for (Map<String, Object> rec : recList) {
+            String bankName = (String) rec.get("bankName");
             String accountNo = (String) rec.get("accountNo");
             String accountBalance = (String) rec.get("accountBalance");
-        
-            if (accountNo == null || accountBalance == null) {
-                continue; // 누락된 항목은 무시
-            }
-        
-            // Redis 키 예시: accountNo:1:9990994821193495
-            redisTemplate.opsForValue().set("accountNo:" + userId, accountNo);
-            redisTemplate.opsForValue().set("accountBalance:" + userId, accountBalance);
-        
-
-            return Map.of(
+    
+            if (accountNo == null || accountBalance == null) continue;
+    
+            accountList.add(Map.of(
+                "bankName", bankName,
                 "accountNo", accountNo,
                 "accountBalance", accountBalance
-            );
+            ));
         }
     
-        // for문을 다 돌고도 유효한 데이터가 없을 경우
-        throw new RuntimeException("유효한 계좌 정보가 없습니다.");
-    }
+        if (accountList.isEmpty()) {
+            throw new RuntimeException("유효한 계좌 정보가 없습니다.");
+        }
     
+        // Redis 저장 (JSON 형태로 통째로)
+        String redisKey = "userFinInfo:" + userId;
+        ObjectMapper objectMapper = new ObjectMapper();
+    
+        try {
+            String jsonValue = objectMapper.writeValueAsString(accountList);
+            redisTemplate.opsForValue().set(redisKey, jsonValue);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis에 계좌 정보를 저장하는 중 오류 발생", e);
+        }
+    
+        return accountList;
+    }
+
 
     private Map<String, Object> buildHeader(String apiName, String userKey) {
         LocalDateTime now = LocalDateTime.now();

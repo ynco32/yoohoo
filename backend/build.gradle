@@ -40,6 +40,8 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    implementation 'software.amazon.awssdk:s3:2.25.26'
+
 }
 // Dependency versions
 ext {

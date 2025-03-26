@@ -5,14 +5,23 @@ import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.DogService;
+import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
+// import org.springframework.security.access.method.P;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpHeaders; // org.springframework.http.HttpHeaders import
+
 
 import java.util.stream.Collectors;
+// import java.net.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 
@@ -23,14 +32,17 @@ public class ShelterController {
     private final ShelterService shelterService;
     private final DogService dogService;
     private final ShelterFinanceService shelterFinanceService;
+    private final S3Service s3Service;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService) {
+    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService, S3Service s3Service, RestTemplate restTemplate) {
         this.shelterService = shelterService;
         this.dogService = dogService;
         this.shelterFinanceService = shelterFinanceService;
+        this.s3Service = s3Service;
+        this.restTemplate = restTemplate;
     }
-
     @GetMapping
     public List<ShelterListDTO> getAllSheltersWithDogCount(
             @RequestParam(required = false) String search,
@@ -100,6 +112,47 @@ public class ShelterController {
     @PostMapping("/{shelterId}/fininfo")
     public ResponseEntity<Map<String, String>> getFullFinanceInfo(@PathVariable Long shelterId) {
         return ResponseEntity.ok(shelterFinanceService.getAccountAndCardFromRedis(shelterId));
+    }
+
+        // 보호소 로고 이미지 업로드
+    @PostMapping("/{shelterId}/uploadlogo")
+    public ResponseEntity<?> uploadShelterLogo(
+            @PathVariable Long shelterId,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("파일이 없습니다.");
+        }
+
+        String fileUrl = null;
+        try {
+            // S3Controller의 /s3/upload API 호출
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "http://localhost:8080/s3/upload", // S3Controller의 /s3/upload API URL
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                fileUrl = response.getBody();
+                s3Service.saveFileEntity(file, 0, shelterId, fileUrl); // entityType을 0으로 설정
+            } else {
+                throw new RuntimeException("파일 업로드 실패: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패", e);
+        }
+
+        return ResponseEntity.ok("보호소 로고 업로드 성공: " + fileUrl);
     }
 
 }

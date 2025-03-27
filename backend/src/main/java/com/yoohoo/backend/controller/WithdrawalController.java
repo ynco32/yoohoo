@@ -57,6 +57,18 @@ public class WithdrawalController {
         }
     }
 
+    @PostMapping("/shelter/total-amount")
+    public ResponseEntity<Map<String, Double>> getTotalTransactionBalanceByShelterId(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Double totalBalance = withdrawalService.getTotalTransactionBalanceByShelterId(shelterId);
+        Map<String, Double> response = Map.of("totalAmount", totalBalance);
+        return ResponseEntity.ok(response);
+    }
+
     public static class DogIdRequest {
         private Long newDogId;
 

@@ -128,7 +128,7 @@ public class DogController {
     }
        
     
-    @GetMapping("/status/")
+    @GetMapping("/status")
     public ResponseEntity<Map<String, Integer>> getstatus (HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         

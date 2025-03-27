@@ -88,6 +88,12 @@ public class WithdrawalController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/weekly-sums")
+    public ResponseEntity<Map<String, Double>> getWeeklyExpenditureSumsAndPrediction() {
+        Map<String, Double> weeklySums = withdrawalService.getWeeklyExpenditureSumsAndPrediction();
+        return ResponseEntity.ok(weeklySums);
+    }
+
     public static class DogIdRequest {
         private Long newDogId;
 

@@ -5,6 +5,7 @@ import com.yoohoo.backend.dto.CardResponseDTO;
 import com.yoohoo.backend.entity.Withdrawal;
 import com.yoohoo.backend.entity.MerchantCategory;
 import com.yoohoo.backend.entity.Dog;
+import com.yoohoo.backend.entity.File;
 import com.yoohoo.backend.repository.WithdrawalRepository;
 import com.yoohoo.backend.repository.MerchantCategoryRepository;
 import com.yoohoo.backend.repository.DogRepository;
@@ -105,5 +106,40 @@ public class WithdrawalService {
 
             return response;
         }).collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getWithdrawalsByDogId(Long dogId) {
+        List<Withdrawal> withdrawals = withdrawalRepository.findByDogId(dogId);
+        return withdrawals.stream().map(withdrawal -> {
+            Map<String, Object> response = new HashMap<>();
+            response.put("withdrawalId", withdrawal.getWithdrawalId());
+            response.put("category", withdrawal.getCategory());
+            response.put("transactionBalance", withdrawal.getTransactionBalance());
+            response.put("date", withdrawal.getDate());
+            response.put("merchantId", withdrawal.getMerchantId());
+            response.put("shelterId", withdrawal.getShelterId());
+            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+
+            if (withdrawal.getDogId() == null) {
+                response.put("name", "단체");
+            } else {
+                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
+                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+    public Optional<String> getFileUrlByWithdrawalId(Long withdrawalId) {
+        Optional<Withdrawal> optionalWithdrawal = withdrawalRepository.findById(withdrawalId);
+        if (optionalWithdrawal.isPresent()) {
+            Withdrawal withdrawal = optionalWithdrawal.get();
+            File file = withdrawal.getFile();
+            if (file != null) {
+                return Optional.of(file.getFileUrl());
+            }
+        }
+        return Optional.empty();
     }
 }

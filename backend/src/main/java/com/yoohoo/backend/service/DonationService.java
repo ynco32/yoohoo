@@ -103,4 +103,30 @@ public class DonationService {
                 .mapToInt(Donation::getDonationAmount) // Convert donationAmount to int and sum
                 .sum(); // Calculate total
     }
+
+    public List<DonationDTO> getDonationsByShelterId(Long shelterId) {
+        List<Donation> donations = donationRepository.findByShelter_ShelterId(shelterId);
+        return donations.stream()
+                .map(donation -> {
+                    DonationDTO dto = new DonationDTO();
+                    dto.setDonationId(donation.getDonationId());
+                    dto.setDonationAmount(donation.getDonationAmount());
+                    dto.setTransactionUniqueNo(donation.getTransactionUniqueNo());
+                    dto.setDonationDate(donation.getDonationDate());
+                    dto.setDepositorName(donation.getDepositorName());
+                    dto.setCheeringMessage(donation.getCheeringMessage());
+                    dto.setUserNickname(donation.getUser().getNickname());
+                    dto.setDogName(donation.getDog() != null ? donation.getDog().getName() : null);
+                    dto.setShelterName(donation.getShelter() != null ? donation.getShelter().getName() : null);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Integer getTotalDonationAmountByShelterId(Long shelterId) {
+        List<Donation> donations = donationRepository.findByShelter_ShelterId(shelterId);
+        return donations.stream()
+                .mapToInt(Donation::getDonationAmount)
+                .sum();
+    }
 }

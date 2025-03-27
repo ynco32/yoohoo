@@ -18,6 +18,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     // 특정 강아지의 후원 내역을 조회회
     List<Donation> findByDog_DogId(Long dogId);
 
-    
-
+    // 특정 단체의 기부 내역 조회
+    List<Donation> findByShelter_ShelterId(Long shelterId);
 }

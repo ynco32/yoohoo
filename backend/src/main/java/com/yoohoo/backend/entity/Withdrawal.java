@@ -34,4 +34,8 @@ public class Withdrawal {
 
     @Column(nullable = false, unique = true, length = 50)
     private String transactionUniqueNo;
+
+    @ManyToOne
+    @JoinColumn(name = "file_id", nullable = true)
+    private File file;
 }

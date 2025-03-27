@@ -38,6 +38,25 @@ public class WithdrawalController {
         return ResponseEntity.ok(withdrawals);
     }
 
+    @GetMapping("/dog/{dogId}")
+    public ResponseEntity<List<Map<String, Object>>> getWithdrawalsByDogId(@PathVariable Long dogId) {
+        List<Map<String, Object>> withdrawals = withdrawalService.getWithdrawalsByDogId(dogId);
+        return ResponseEntity.ok(withdrawals);
+    }
+
+    @GetMapping("/{withdrawalId}/fileUrl")
+    public ResponseEntity<Map<String, String>> getFileUrlByWithdrawalId(@PathVariable Long withdrawalId) {
+        Optional<String> fileUrl = withdrawalService.getFileUrlByWithdrawalId(withdrawalId);
+        Map<String, String> response = new HashMap<>();
+        if (fileUrl.isPresent()) {
+            response.put("fileUrl", fileUrl.get());
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("error", "File not found.");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     public static class DogIdRequest {
         private Long newDogId;
 

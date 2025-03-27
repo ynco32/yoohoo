@@ -295,4 +295,27 @@ public class DonationController {
 
         return ResponseEntity.ok(response); // 총 후원 금액과 nickname 반환
     }
+
+    @PostMapping("/shelter-total")
+    public ResponseEntity<List<DonationDTO>> getDonationsByShelterId(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<DonationDTO> donations = donationService.getDonationsByShelterId(shelterId);
+        return ResponseEntity.ok(donations);
+    }
+
+    @PostMapping("/shelter/total-amount")
+    public ResponseEntity<Map<String, Integer>> getTotalDonationAmountByShelterId(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Integer totalAmount = donationService.getTotalDonationAmountByShelterId(shelterId);
+        Map<String, Integer> response = Map.of("totalAmount", totalAmount);
+        return ResponseEntity.ok(response);
+    }
 }

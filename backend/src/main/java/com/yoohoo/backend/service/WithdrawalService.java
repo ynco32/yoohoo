@@ -142,4 +142,11 @@ public class WithdrawalService {
         }
         return Optional.empty();
     }
+
+    public Double getTotalTransactionBalanceByShelterId(Long shelterId) {
+        List<Withdrawal> withdrawals = withdrawalRepository.findByShelterId(shelterId);
+        return withdrawals.stream()
+                .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
+                .sum();
+    }
 }

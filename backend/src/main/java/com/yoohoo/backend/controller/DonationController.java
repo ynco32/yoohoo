@@ -318,4 +318,10 @@ public class DonationController {
         Map<String, Integer> response = Map.of("totalAmount", totalAmount);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/weekly-sums")
+    public ResponseEntity<Map<String, Integer>> getWeeklyDonationSumsAndPrediction() {
+        Map<String, Integer> weeklySums = donationService.getWeeklyDonationSumsAndPrediction();
+        return ResponseEntity.ok(weeklySums);
+    }
 }

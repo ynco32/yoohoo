@@ -8,10 +8,15 @@ import com.yoohoo.backend.repository.DonationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DonationService {
@@ -128,5 +133,40 @@ public class DonationService {
         return donations.stream()
                 .mapToInt(Donation::getDonationAmount)
                 .sum();
+    }
+
+    public Map<String, Integer> getWeeklyDonationSumsAndPrediction() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
+        List<Integer> weeklySums = new ArrayList<>();
+
+        // Calculate sums for the last 5 weeks and this week
+        for (int i = 0; i < 6; i++) {
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+            int weeklySum = donationRepository.findByDonationDateBetween(startOfWeek, endOfWeek)
+                    .stream()
+                    .mapToInt(Donation::getDonationAmount)
+                    .sum();
+            weeklySums.add(weeklySum);
+            startOfWeek = startOfWeek.minusWeeks(1);
+        }
+
+        // Reverse the list to have the most recent week last
+        Collections.reverse(weeklySums);
+
+        // Calculate the prediction for the next week using extrapolation
+        int prediction = (int) weeklySums.subList(0, 5).stream().mapToInt(Integer::intValue).average().orElse(0);
+
+        // Create a map with named keys
+        Map<String, Integer> result = new HashMap<>();
+        result.put("5WeeksAgo", weeklySums.get(0));
+        result.put("4WeeksAgo", weeklySums.get(1));
+        result.put("3WeeksAgo", weeklySums.get(2));
+        result.put("2WeeksAgo", weeklySums.get(3));
+        result.put("1WeeksAgo", weeklySums.get(4));
+        result.put("ThisWeek", weeklySums.get(5));
+        result.put("Prediction", prediction);
+
+        return result;
     }
 }

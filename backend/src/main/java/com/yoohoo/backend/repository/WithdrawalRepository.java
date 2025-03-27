@@ -11,4 +11,7 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
 
     // Add method to find withdrawals by dogId
     List<Withdrawal> findByDogId(Long dogId);
+
+    // 특정 단체의 지출 내역 조회
+    List<Withdrawal> findByShelterId(Long shelterId);
 }

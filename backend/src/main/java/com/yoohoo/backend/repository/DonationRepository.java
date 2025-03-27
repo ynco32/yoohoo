@@ -20,4 +20,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     // 특정 단체의 기부 내역 조회
     List<Donation> findByShelter_ShelterId(Long shelterId);
+
+    // 특정 날짜 범위의 기부 내역 조회
+    List<Donation> findByDonationDateBetween(LocalDate startDate, LocalDate endDate);
 }

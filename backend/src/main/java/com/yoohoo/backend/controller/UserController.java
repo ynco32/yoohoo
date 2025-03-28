@@ -172,7 +172,7 @@ public class UserController {
         userInfo.put("userId", user.getUserId());
         userInfo.put("kakaoEmail", user.getKakaoEmail());
         userInfo.put("nickname", user.getNickname());
-        userInfo.put("isAdmin", user.getIsAdmin());
+        userInfo.put("isAdmin", user.getIsAdmin() != null && user.getIsAdmin());
         userInfo.put("shelterId", user.getShelterId());
         userInfo.put("createdAt", user.getCreatedAt());
 

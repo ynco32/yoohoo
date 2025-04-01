@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+<<<<<<< HEAD
     // @Value("${kakao.client-id}")
     // private String kakaoClientId;
 
@@ -25,4 +26,7 @@ public class HomeController {
     // public String home() {
     //     return "home"; // home.html을 반환
     // }
+=======
+
+>>>>>>> 7d492cd2b4943b90162585f4183863d178888a6e
 }

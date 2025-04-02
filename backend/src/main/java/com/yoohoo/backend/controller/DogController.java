@@ -1,6 +1,7 @@
 package com.yoohoo.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.DogIdNameDTO;
 import com.yoohoo.backend.entity.Dog;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -162,4 +164,69 @@ public class DogController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @PatchMapping("/{dogId}")
+    public ResponseEntity<DogDTO> updateDog(
+            @PathVariable Long dogId,
+            @RequestPart("dog") String dogJson,
+            HttpSession session) {
+
+        // 1. 사용자 인증 및 권한 확인
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Long shelterId = userService.getShelterIdByUserId(userId);
+        if (shelterId == null) {
+            throw new RuntimeException("(❗권한제한) 등록된 단체가 없습니다.");
+        }
+
+        // 2. JSON → DogDTO 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // LocalDate 변환 지원
+        DogDTO dogDTO;
+        try {
+            dogDTO = objectMapper.readValue(dogJson, DogDTO.class);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // 3. Dog 엔티티 조회 (수정 전 정보)
+        Dog existingDog = dogService.findById(dogId);
+        if (existingDog == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // 권한 검증 - 해당 강아지가 이 보호소의 것인지 확인
+        if (existingDog.getShelter() == null || !Objects.equals(existingDog.getShelter().getShelterId(), shelterId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(null); // 권한 없음
+        }
+        
+        // 4. 수정할 정보만 업데이트 (null이 아닌 값만)
+        if (dogDTO.getName() != null) existingDog.setName(dogDTO.getName());
+        if (dogDTO.getBreed() != null) existingDog.setBreed(dogDTO.getBreed());
+        if (dogDTO.getGender() != null) existingDog.setGender(dogDTO.getGender());
+        if (dogDTO.getAge() != null) existingDog.setAge(dogDTO.getAge());
+        if (dogDTO.getWeight() != null) existingDog.setWeight(dogDTO.getWeight());
+        if (dogDTO.getIsNeutered() != null) existingDog.setIsNeutered(dogDTO.getIsNeutered());
+        if (dogDTO.getEnergetic() != null) existingDog.setEnergetic(dogDTO.getEnergetic());
+        if (dogDTO.getFamiliarity() != null) existingDog.setFamiliarity(dogDTO.getFamiliarity());
+        if (dogDTO.getIsVaccination() != null) existingDog.setIsVaccination(dogDTO.getIsVaccination());
+        if (dogDTO.getStatus() != null) existingDog.setStatus(dogDTO.getStatus());
+        if (dogDTO.getAdmissionDate() != null) existingDog.setAdmissionDate(dogDTO.getAdmissionDate());
+
+
+        // 5. 강아지 정보 저장
+        Dog updatedDog = dogService.saveDog(existingDog);
+        
+        // 6. 이미지 URL 가져오기
+        String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(1, dogId);
+
+        // 7. 응답 DTO 반환
+        DogDTO responseDTO = DogDTO.fromEntity(updatedDog, Optional.ofNullable(imageUrl));
+        return ResponseEntity.ok(responseDTO);
+    }
+       
 }

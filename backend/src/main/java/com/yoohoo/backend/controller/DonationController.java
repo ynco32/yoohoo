@@ -167,12 +167,7 @@ public class DonationController {
         // 추가 필드 설정
         transferRequest.setDepositTransactionSummary("입금");
         transferRequest.setWithdrawalTransactionSummary("출금");
-<<<<<<< HEAD
-
-
-=======
   
->>>>>>> feat/#193-be-History7,9수정
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

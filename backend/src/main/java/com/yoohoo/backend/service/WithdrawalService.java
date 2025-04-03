@@ -62,12 +62,6 @@ public class WithdrawalService {
             String content = getMerchantIndustryAndNameByMerchantId(merchantId);
             String category = getMerchantCategory(merchantId);
 
-            // 로그 추가
-            System.out.println("Transaction Details:");
-            System.out.println("Merchant ID: " + merchantId);
-            System.out.println("Category ID: " + categoryId);
-            System.out.println("Content: " + content);
-            System.out.println("Category: " + category);
 
             // Check if the transaction already exists
             if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {

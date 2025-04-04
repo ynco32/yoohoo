@@ -266,21 +266,6 @@ public class WithdrawalService {
             saveCardTransactions(cardResponse, shelterId); // 기존 로직 재사용
         }
 
-        reliabilityCalculatorService.updateShelterReliability(shelterId); // 딱 한 번만 계산
+        reliabilityCalculatorService.updateShelterReliability(shelterId);
     }
-
-    // @Transactional
-    // public void saveWithdrawal(Withdrawal withdrawal) {
-    //     withdrawalRepository.save(withdrawal);
-    //     reliabilityCalculatorService.updateShelterReliability(withdrawal.getShelterId());
-    // }
-
-    // @Transactional
-    // public void deleteWithdrawal(Long withdrawalId) {
-    //     Withdrawal withdrawal = withdrawalRepository.findById(withdrawalId)
-    //         .orElseThrow(() -> new IllegalArgumentException("Not found"));
-    //     Long shelterId = withdrawal.getShelterId();
-    //     withdrawalRepository.deleteById(withdrawalId);
-    //     reliabilityCalculatorService.updateShelterReliability(shelterId);
-    // }
 }

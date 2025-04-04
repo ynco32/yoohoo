@@ -265,8 +265,9 @@ public class WithdrawalService {
             response.put("merchantId", withdrawal.getMerchantId());
             response.put("shelterId", withdrawal.getShelterId());
             response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
-
-            if (withdrawal.getDogId() == null) {
+            response.put("file_id", 
+            withdrawal.getFile() != null ? withdrawal.getFile().getFileId() : null);
+                    if (withdrawal.getDogId() == null) {
                 response.put("name", "단체");
             } else {
                 Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
@@ -276,6 +277,8 @@ public class WithdrawalService {
             return response;
         }).collect(Collectors.toList());
     }
+
+
     @Transactional
     public void syncAllWithdrawals(Long shelterId, BankbookResponseDTO bankbookResponse, CardResponseDTO cardResponse) {
         if (bankbookResponse != null && !bankbookResponse.getRec().getList().isEmpty()) {

@@ -50,6 +50,10 @@ public class ReliabilityCalculatorService {
             ? dogCost.divide(totalCost, 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(50)).intValue()
             : 0;
+
+        // Debug log
+        // System.out.println("🐶 강아지 비용: " + dogCost + " / 전체 비용: " + totalCost + " → dogScore = " + dogScore);
+
     
         // 2. 첨부파일 비율 계산
         Map<String, Long> fileMap = withdrawalRepository.countFilesByShelterId(shelterId);
@@ -59,13 +63,26 @@ public class ReliabilityCalculatorService {
             ? (int) Math.round((double) withFile / total * 30)
             : 0;
     
+        // Debug log
+        // System.out.println("📎 첨부파일 건수: " + withFile + " / 전체 건수: " + total + " → fileScore = " + fileScore);
+
         // 3. 설립 연차
         Shelter shelter = shelterRepository.findById(shelterId).orElseThrow();
         int years = LocalDate.now().getYear() - shelter.getFoundationDate().getYear(); // 설립 연차
         int foundationScore = Math.min(years * 2, 20);
-    
+        
+        // Debug log
+        // System.out.println("🏛️ 설립 연차: " + years + "년 → foundationScore = " + foundationScore);
+
+        // 최종 점수 계산
         int finalScore = dogScore + fileScore + foundationScore;
+    
+        // 최종 디버깅 로그
+        // System.out.println("✅ 최종 신뢰도 점수: " + finalScore + "점 (강아지 " + dogScore + " + 첨부 " + fileScore + " + 연차 " + foundationScore + ")");
+    
+        // DB 업데이트
         shelterRepository.updateReliability(shelterId, finalScore);
     }
+    
     
 }

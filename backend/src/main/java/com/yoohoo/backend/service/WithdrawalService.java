@@ -52,7 +52,7 @@ public class WithdrawalService {
         if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {
             Withdrawal withdrawal = new Withdrawal();
             withdrawal.setDogId(null);
-            withdrawal.setCategory("시설관리");
+            withdrawal.setCategory("인건비");
             withdrawal.setTransactionBalance(transaction.getTransactionBalance());
             withdrawal.setContent("인건비");
             withdrawal.setDate(transaction.getTransactionDate());
@@ -99,10 +99,10 @@ public class WithdrawalService {
         return "Unknown Merchant";
     }
 
-    private String getMerchantCategory(Long merchantId) {
-        MerchantCategory merchantCategory = merchantCategoryRepository.findByMerchantId(merchantId);
-        return merchantCategory != null ? merchantCategory.getCategory() : "Unknown";
-    }
+    // private String getMerchantCategory(Long merchantId) {
+    //     MerchantCategory merchantCategory = merchantCategoryRepository.findByMerchantId(merchantId);
+    //     return merchantCategory != null ? merchantCategory.getCategory() : "Unknown";
+    // }
 
     public Optional<String> updateDogId(Long withdrawalId, Long newDogId) {
         Optional<Withdrawal> optionalWithdrawal = withdrawalRepository.findById(withdrawalId);

@@ -43,7 +43,7 @@ public class WithdrawalService {
     private DogRepository dogRepository;
 
     @Autowired
-    private ReliabilityCalculatorService reliabilityCalculatorService;
+    private ReliabilityService reliabilityService;
 
     @Transactional
     public void saveWithdrawal(BankbookResponseDTO response, Long shelterId) {
@@ -295,6 +295,6 @@ public class WithdrawalService {
             saveCardTransactions(cardResponse, shelterId); // 기존 로직 재사용
         }
 
-        reliabilityCalculatorService.updateShelterReliability(shelterId);
+        reliabilityService.updateShelterReliability(shelterId);
     }
 }

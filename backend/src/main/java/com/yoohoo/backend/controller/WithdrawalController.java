@@ -193,5 +193,18 @@ public class WithdrawalController {
             } catch (Exception e) {
                 throw new RuntimeException("이미지 업로드 중 예외 발생", e);
             }
-        }
     }
+
+
+    @PostMapping("/category-percentages")
+    public ResponseEntity<List<Map<String, Object>>> getCategoryPercentages(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    
+        List<Map<String, Object>> percentages = withdrawalService.getCategoryPercentagesByShelterId(shelterId);
+        return ResponseEntity.ok(percentages);
+    }
+
+}

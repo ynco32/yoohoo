@@ -210,6 +210,7 @@ public class DonationService {
         result.put("Prediction", prediction);
 
         return result;
+        
     }
 
     public List<Map<String, String>> getShelterNamesWithFileUrlByUserId(Long userId) {

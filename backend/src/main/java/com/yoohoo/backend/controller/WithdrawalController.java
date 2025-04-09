@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import jakarta.servlet.http.HttpSession;
+import java.util.LinkedHashMap;
 
 @RestController
 @RequestMapping("/api/withdrawal")
@@ -130,10 +131,18 @@ public class WithdrawalController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/weekly-sums")
-    public ResponseEntity<Map<String, Double>> getWeeklyExpenditureSumsAndPrediction() {
-        Map<String, Double> weeklySums = withdrawalService.getWeeklyExpenditureSumsAndPrediction();
-        return ResponseEntity.ok(weeklySums);
+    @PostMapping("/weekly-sums")
+    public ResponseEntity<Map<String, Double>> getWeeklyExpenditureSumsAndPrediction(@RequestBody Map<String, Long> requestBody) {
+        Long shelterId = requestBody.get("shelterId"); // 요청 본문에서 shelterId를 가져옴
+        Map<String, Integer> weeklySums = withdrawalService.getWeeklyExpenditureSumsAndPrediction(shelterId);
+
+        // Double로 변환하여 반환
+        Map<String, Double> result = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : weeklySums.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().doubleValue());
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     public static class DogIdRequest {
@@ -193,5 +202,18 @@ public class WithdrawalController {
             } catch (Exception e) {
                 throw new RuntimeException("이미지 업로드 중 예외 발생", e);
             }
-        }
     }
+
+
+    @PostMapping("/category-percentages")
+    public ResponseEntity<List<Map<String, Object>>> getCategoryPercentages(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    
+        List<Map<String, Object>> percentages = withdrawalService.getCategoryPercentagesByShelterId(shelterId);
+        return ResponseEntity.ok(percentages);
+    }
+
+}

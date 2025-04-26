@@ -1,31 +1,31 @@
-version: '3.8'           # docker-compose 버전
+version: '3.8'
 
 services:
   nginx:
-    build: ./nginx # Dockerfile 위치
+    build: ./nginx
     ports:
-      - "80:80"    # HTTP 포트
-      - "443:443"  # HTTPS 포트 추가
+      - "80:80"    # HTTP
+      - "443:443"  # HTTPS
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot   # 인증 확인용 볼륨
+      - /etc/letsencrypt:/etc/letsencrypt  # 인증서 경로
+      - ./certbot/www:/var/www/certbot      # 인증 챌린지용 볼륨
     depends_on:
       - frontend
       - backend
-    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload" # nginx 설정 재로드, 컨테이너 시작 시 자동으로 하도록
+    command: /bin/sh -c "nginx -g 'daemon off;' && nginx -s reload"
 
   certbot:
     image: certbot/certbot
     volumes:
+      - /etc/letsencrypt:/etc/letsencrypt   # nginx와 공유하는 볼륨
       - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --standalone -d conkiri.com
+    command: certonly --standalone --preferred-challenges http -d conkiri.com --agree-tos --no-eff-email --email janguk95@naver.com --non-interactive
 
   backend:
-    build: ./backend     # backend Dockerfile 위치
+    build: ./backend
     ports:
-      - "8080:8080"      # 외부:내부 포트
-    environment:         # 환경변수 설정
+      - "8080:8080"
+    environment:
       - SPRING_PROFILES_ACTIVE=dev
       - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
       - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
@@ -41,7 +41,7 @@ services:
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET=${S3_BUCKET}
       - REDIS_HOST=${REDIS_HOST}
-    depends_on:          # 의존성 설정
+    depends_on:
       mysql:
         condition: service_healthy
       redis:
@@ -63,13 +63,13 @@ services:
       - backend
 
   mysql:
-    image: mysql:8.0.36     # MySQL 이미지
+    image: mysql:8.0.36
     healthcheck:
       test: ["CMD", "mysql", "--user=${MYSQL_USER}", "--password=${MYSQL_PASSWORD}", "-e", "SELECT 1"]
-      interval: 5s    # 5초마다 체크
-      timeout: 3s     # 체크 타임아웃 3초
-      retries: 2      # 2번 재시도
-      start_period: 10s  # 초기 시작 대기 시간 10초
+      interval: 5s
+      timeout: 3s
+      retries: 2
+      start_period: 10s
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=conkiri
@@ -78,7 +78,7 @@ services:
       - TZ=Asia/Seoul
     ports:
       - "13306:3306"
-    volumes:            # 데이터 영속성
+    volumes:
       - mysql_data:/var/lib/mysql
 
   redis:
@@ -91,5 +91,6 @@ services:
       timeout: 3s
       retries: 2
       start_period: 10s
+
 volumes:
-  mysql_data:          # MySQL 데이터 저장용 볼륨
+  mysql_data:

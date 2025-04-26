@@ -7,8 +7,9 @@ services:
       - "80:80"    # HTTP
       - "443:443"  # HTTPS
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt  # 인증서 경로
-      - ./certbot/www:/var/www/certbot      # 인증 챌린지용 볼륨
+      - /etc/letsencrypt:/etc/letsencrypt      # 기존 인증서 경로 유지
+      - ./certbot/www:/var/www/certbot          # 인증 챌린지용 볼륨
+      - /home/ubuntu/nginx/certbot/conf:/home/ubuntu/nginx/certbot/conf
     depends_on:
       - frontend
       - backend
@@ -17,7 +18,7 @@ services:
   certbot:
     image: certbot/certbot
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt   # nginx와 공유하는 볼륨
+      - /etc/letsencrypt:/etc/letsencrypt       # certbot용 기본 경로
       - ./certbot/www:/var/www/certbot
     command: certonly --standalone --preferred-challenges http -d conkiri.com --agree-tos --no-eff-email --email janguk95@naver.com --non-interactive
 

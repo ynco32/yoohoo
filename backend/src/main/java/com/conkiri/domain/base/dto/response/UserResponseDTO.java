@@ -18,8 +18,6 @@ public class UserResponseDTO {
 	private String email;
 	private String userName;
 	private String level;
-	private String tier;
-	private String profileUrl;
 	private int residForNextLevel;
 
 	private static int calcResidForNextLevel(User user) {
@@ -35,8 +33,6 @@ public class UserResponseDTO {
 			.email(user.getEmail())
 			.userName(user.getUserName())
 			.level(user.getLevel())
-			.tier(user.getTier())
-			.profileUrl(user.getProfileUrl())
 			.residForNextLevel(calcResidForNextLevel(user))
 			.build();
 	}

@@ -38,12 +38,6 @@ public class User {
 	@Column(name = "level", length = 100)
 	private String level = "1";
 
-	@Column(name = "tier", length = 100)
-	private String tier;
-
-	@Column(name = "profile_url")
-	private String profileUrl;
-
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}

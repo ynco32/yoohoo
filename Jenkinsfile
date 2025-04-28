@@ -1,8 +1,10 @@
 pipeline {  // 파이프라인 정의 시작
     agent any  // Jenkins 에이전트에서 어떤 노드에서든 실행 가능
+
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의
         DOCKER_COMPOSE = 'docker-compose'  // docker-compose 명령어를 환경 변수로 설정
+        BRANCH_NAME = 'master'
     }
     
     stages {  // 파이프라인의 주요 단계들 정의

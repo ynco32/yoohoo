@@ -5,7 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
-import com.conkiri.global.exception.user.DuplicateNicknameException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +32,7 @@ public class UserService {
 	private void validateNicknameDuplicate(String nickname) {
 
 		if (userRepository.existsByNickname(nickname)) {
-			throw new DuplicateNicknameException();
+			throw new BaseException(ErrorCode.DUPLICATE_NICKNAME);
 		}
 	}
 

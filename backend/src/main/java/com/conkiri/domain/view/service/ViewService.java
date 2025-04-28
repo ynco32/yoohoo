@@ -19,7 +19,6 @@ import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.base.service.ArenaReadService;
 import com.conkiri.domain.base.service.ConcertReadService;
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
@@ -34,13 +33,8 @@ import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScrapSeat;
 import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.domain.view.repository.ScrapSeatRepository;
-import com.conkiri.global.exception.view.DuplicateReviewException;
-import com.conkiri.global.exception.view.DuplicateScrapSeatException;
-import com.conkiri.global.exception.view.ReviewNotFoundException;
-import com.conkiri.global.exception.view.ScrapSeatNotFoundException;
-import com.conkiri.global.exception.view.SeatNotFoundException;
-import com.conkiri.global.exception.view.SectionNotFoundException;
-import com.conkiri.global.exception.view.UnauthorizedAccessException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
@@ -61,7 +55,6 @@ public class ViewService {
 	private final ArenaReadService arenaReadService;
 	private final ConcertReadService concertReadService;
 	private final S3Service s3Service;
-	private final UserRepository userRepository;
 
 	public ArenaResponseDTO getArenas() {
 
@@ -112,7 +105,7 @@ public class ViewService {
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
-			throw new DuplicateScrapSeatException();
+			throw new BaseException(ErrorCode.DUPLICATE_SCRAP_SEAT);
 		}
 
 		ScrapSeat scrapSeat = ScrapSeat.of(user, seat, selectedType);
@@ -126,7 +119,7 @@ public class ViewService {
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
-			.orElseThrow(ScrapSeatNotFoundException::new);
+			.orElseThrow(() -> new BaseException(ErrorCode.SCRAP_SEAT_NOT_FOUND));
 
 		scrapSeatRepository.delete(scrapSeat);
 	}
@@ -192,7 +185,7 @@ public class ViewService {
 		);
 
 		if(reviewRepository.existsByUserAndSeatAndConcert(user, seat, concert)) {
-			throw new DuplicateReviewException();
+			throw new BaseException(ErrorCode.DUPLICATE_REVIEW);
 		}
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
@@ -204,7 +197,7 @@ public class ViewService {
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
 
 		if(!review.getUser().getUserId().equals(userId)) {
-			throw new UnauthorizedAccessException();
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 
 		return ReviewDetailResponseDTO.from(review);
@@ -221,7 +214,7 @@ public class ViewService {
 
 		// 작성자 본인 여부 확인
 		if(!review.getUser().getUserId().equals(userId)) {
-			throw new UnauthorizedAccessException();
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
@@ -231,7 +224,7 @@ public class ViewService {
 		);
 
 		if (reviewRepository.existsByUserAndSeatAndConcertAndReviewIdNot(user, seat, concert, reviewId)) {
-			throw new DuplicateReviewException();
+			throw new BaseException(ErrorCode.DUPLICATE_REVIEW);
 		}
 
 		String oldPhotoUrl = review.getPhotoUrl();
@@ -251,7 +244,7 @@ public class ViewService {
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if(!review.getUser().getUserId().equals(userId)) {
-			throw new UnauthorizedAccessException();
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 
 		String photoUrl = review.getPhotoUrl();
@@ -269,21 +262,21 @@ public class ViewService {
 
 	private Section findSectionByArenaAndSectionNumberOrElseThrow(Arena arena, Long sectionNumber) {
 		return sectionRepository.findSectionByArenaAndSectionNumber(arena, sectionNumber)
-			.orElseThrow(SectionNotFoundException::new);
+			.orElseThrow(()-> new BaseException(ErrorCode.SECTION_NOT_FOUND));
 	}
 
 	private Seat findSeatByRowAndColumnAndSectionOrElseThrow(Long rowLine, Long columnLine, Section section) {
 		return seatRepository.findByRowLineAndColumnLineAndSection(rowLine, columnLine, section)
-			.orElseThrow(SeatNotFoundException::new);
+			.orElseThrow(()-> new BaseException(ErrorCode.SEAT_NOT_FOUND));
 	}
 
 	private Seat findSeatBySeatIdOrElseThrow(Long seatId) {
 		return seatRepository.findById(seatId)
-			.orElseThrow(SeatNotFoundException::new);
+			.orElseThrow(()-> new BaseException(ErrorCode.SEAT_NOT_FOUND));
 	}
 
 	private Review findReviewByReviewIdOrElseThrow(Long reviewId) {
 		return reviewRepository.findReviewByReviewId(reviewId)
-			.orElseThrow(ReviewNotFoundException::new);
+			.orElseThrow(()-> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 	}
 }

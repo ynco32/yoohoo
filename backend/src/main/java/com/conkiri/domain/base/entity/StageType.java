@@ -2,7 +2,8 @@ package com.conkiri.domain.base.entity;
 
 import java.util.Arrays;
 
-import com.conkiri.global.exception.view.InvalidStageTypeException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,6 @@ public enum StageType {
 		return Arrays.stream(StageType.values())
 			.filter(type -> type.getValue().equals(value))
 			.findFirst()
-			.orElseThrow(() -> new InvalidStageTypeException());
+			.orElseThrow(() -> new BaseException(ErrorCode.INVALID_STAGE_TYPE));
 	}
 }

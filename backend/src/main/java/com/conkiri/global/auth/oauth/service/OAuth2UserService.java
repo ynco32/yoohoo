@@ -30,7 +30,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		OAuth2User oauth2User = super.loadUser(userRequest);
-		//log.info("OAuth2 Request: {}", userRequest);
 
 		String provider = userRequest.getClientRegistration().getRegistrationId();  // "kakao"
 		String providerId = oauth2User.getName();  // OAuth2 제공자의 고유 ID
@@ -41,32 +40,29 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
 		String email = (String) kakaoAccount.get("email");
 		String nickname = (String) profile.get("nickname");
-		String profileImageUrl = (String) profile.get("profile_image_url");
 
-		User user = findOrCreateUser(email, nickname, profileImageUrl);
+		User user = findOrCreateUser(email, nickname);
 		findOrCreateAuth(user, provider, providerId);
 		return new UserPrincipal(oauth2User, user);
 	}
 
-	private User findOrCreateUser(String email, String nickname, String profileImageUrl) {
+	private User findOrCreateUser(String email, String nickname) {
 		return userRepository.findByEmail(email)
-			.orElseGet(() -> createUser(email, nickname, profileImageUrl));
+			.orElseGet(() -> createUser(email, nickname));
 	}
 
-	private User createUser(String email, String nickname, String profileImageUrl) {
+	private User createUser(String email, String nickname) {
 		User user = User.builder()
 			.email(email)
 			.userName(nickname)
-			.profileUrl(profileImageUrl)
-			.level("1")
-			.reviewCount(0)
 			.build();
 		return userRepository.save(user);
 	}
 
 	private void findOrCreateAuth(User user, String provider, String providerId) {
-		authRepository.findByUser(user)
-			.orElseGet(() -> createAuth(user, provider, providerId));
+		if (!authRepository.existsByUser(user)) {
+			createAuth(user, provider, providerId);
+		}
 	}
 
 	private Auth createAuth(User user, String provider, String providerId) {
@@ -77,4 +73,5 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			.build();
 		return authRepository.save(auth);
 	}
+
 }

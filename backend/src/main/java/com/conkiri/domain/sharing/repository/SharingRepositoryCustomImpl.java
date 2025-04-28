@@ -13,7 +13,8 @@ import com.conkiri.domain.sharing.entity.QSharing;
 import com.conkiri.domain.sharing.entity.Sharing;
 import com.conkiri.domain.sharing.entity.Status;
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.global.exception.concert.ConcertNotFoundException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -198,13 +199,13 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 		QSharing sharing = QSharing.sharing;
 
 		if (concert == null || concert.getConcertId() == null) {
-			throw new ConcertNotFoundException();
+			throw new BaseException(ErrorCode.CONCERT_NOT_FOUND);
 		}
 
 		Concert persistanceConcert = entityManager.find(Concert.class, concert.getConcertId());
 
 		if (persistanceConcert == null) {
-			throw new ConcertNotFoundException();
+			throw new BaseException(ErrorCode.CONCERT_NOT_FOUND);
 		}
 
 		jpaQueryFactory.update(sharing)

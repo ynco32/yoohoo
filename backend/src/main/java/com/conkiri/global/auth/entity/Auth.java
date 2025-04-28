@@ -2,8 +2,6 @@ package com.conkiri.global.auth.entity;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.conkiri.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -43,7 +41,6 @@ public class Auth {
 	private User user;
 
 	@Column(nullable = false, length = 20)
-	@ColumnDefault("'KAKAO'")
 	private String provider;
 
 	@Column(name = "provider_id", nullable = false)

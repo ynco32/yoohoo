@@ -49,13 +49,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		TokenDTO tokens = jwtUtil.generateTokens(email);
 
 		// Refresh Token DB 저장
-		authService.updateRefreshToken(tokens.getRefreshToken(), auth);
+		authService.updateRefreshToken(tokens.refreshToken(), auth);
 
 		// Refresh Token 쿠키에 저장
-		authService.addRefreshTokenCookie(response, tokens.getRefreshToken());
+		authService.addRefreshTokenCookie(response, tokens.refreshToken());
 
 		// Access Token 쿠키에 저장
-		authService.addAccessTokenCookie(response, tokens.getAccessToken());
+		authService.addAccessTokenCookie(response, tokens.accessToken());
 
 		// CORS 헤더 설정
 		response.setHeader("Access-Control-Allow-Origin", frontendUrl);

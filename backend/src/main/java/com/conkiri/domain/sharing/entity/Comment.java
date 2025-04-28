@@ -45,12 +45,12 @@ public class Comment extends BaseTime {
 	}
 
 	private Comment(CommentRequestDTO commentRequestDTO, Sharing sharing, User user) {
-		this.content = commentRequestDTO.getContent();
+		this.content = commentRequestDTO.content();
 		this.sharing = sharing;
 		this.user = user;
 	}
 
 	public void update(CommentUpdateRequestDTO commentUpdateRequestDTO) {
-		this.content = commentUpdateRequestDTO.getContent();
+		this.content = commentUpdateRequestDTO.content();
 	}
 }

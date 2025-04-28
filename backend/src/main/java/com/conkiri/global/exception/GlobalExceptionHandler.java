@@ -1,7 +1,5 @@
 package com.conkiri.global.exception;
 
-import static com.conkiri.global.exception.ErrorCode.*;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -15,7 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.conkiri.global.common.ApiResponse;
-import com.conkiri.global.common.MetaData;
+import com.conkiri.global.common.ExceptionResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +28,9 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		log.warn("요청 바디 검증 실패: {}", e.getMessage());
-		return ApiResponse.fail(INVALID_HTTP_MESSAGE_BODY, new MetaData());
+		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		return ApiResponse.fail(exceptionResponse);
 	}
 
 	// @ModelAttribute 으로 binding error 발생시 BindException 발생
@@ -38,7 +38,9 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(BindException.class)
 	public ApiResponse<Void> handleBindException(BindException e) {
 		log.warn("요청 파라미터 바인딩 실패: {}", e.getMessage());
-		return ApiResponse.fail(BIND_ERROR, new MetaData());
+		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		return ApiResponse.fail(exceptionResponse);
 	}
 
 	// enum type 일치하지 않아 binding 못할 경우 발생
@@ -46,7 +48,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ApiResponse<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.warn("요청 파라미터 타입 불일치. 파라미터명: {}, 오류: {}", e.getName(), e.getMessage());
-		return ApiResponse.fail(ARGUMENT_TYPE_MISMATCH, new MetaData());
+		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", "요청 파라미터 타입이 올바르지 않습니다.");
+		return ApiResponse.fail(exceptionResponse);
 	}
 
 	// 지원하지 않은 HTTP method 호출 할 경우 발생
@@ -54,7 +57,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ApiResponse<Void> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
 		log.warn("지원하지 않는 HTTP 메서드 호출: {}. 오류: {}", e.getMethod(), e.getMessage());
-		return ApiResponse.fail(UNSUPPORTED_HTTP_METHOD, new MetaData());
+		ExceptionResponse exceptionResponse = new ExceptionResponse("METHOD_NOT_ALLOWED", "지원하지 않는 HTTP 메서드입니다.");
+		return ApiResponse.fail(exceptionResponse);
 	}
 
 	// request 값을 읽을 수 없을 때 발생
@@ -62,7 +66,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ApiResponse<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.warn("HTTP 메시지를 읽는 도중 오류 발생: {}", e.getMessage());
-		return ApiResponse.fail(BAD_REQUEST_ERROR, new MetaData());
+		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST",  "요청 바디가 올바르지 않습니다.");
+		return ApiResponse.fail(exceptionResponse);
 	}
 
 	// 비즈니스 로직 에러
@@ -76,6 +81,7 @@ public class GlobalExceptionHandler {
 			((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
 		response.setStatus(errorCode.getHttpStatus().value());
 
-		return ApiResponse.fail(errorCode, new MetaData());
+		ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode.name(), errorCode.getMessage());
+		return ApiResponse.fail(exceptionResponse);
 	}
 }

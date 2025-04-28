@@ -23,6 +23,7 @@ import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.dto.response.ViewConcertResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.UserPrincipal;
+import com.conkiri.global.common.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,96 +37,112 @@ public class ViewController {
 
 	// 공연장 목록 조회 API
 	@GetMapping("/arenas")
-	public ArenaResponseDTO getArenas() {
-		return viewService.getArenas();
+	public ApiResponse<ArenaResponseDTO> getArenas() {
+
+		return ApiResponse.success(viewService.getArenas());
 	}
 
 	// 무대 유형에 따른 구역 정보 조회 API
 	@GetMapping("/arenas/{arenaId}/sections")
-	public SectionResponseDTO getSections(
+	public ApiResponse<SectionResponseDTO> getSections(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return viewService.getSections(arenaId, stageType, userPrincipal.getUserId());
+
+		return ApiResponse.success(viewService.getSections(arenaId, stageType, userPrincipal.getUserId()));
 	}
 
 	// 선택한 구역의 좌석 정보 조회 API
 	@GetMapping("/arenas/{arenaId}")
-	public SeatResponseDTO getSeats(
+	public ApiResponse<SeatResponseDTO> getSeats(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return viewService.getSeats(arenaId, stageType, sectionNumber, userPrincipal.getUserId());
+
+		return ApiResponse.success(viewService.getSeats(arenaId, stageType, sectionNumber, userPrincipal.getUserId()));
 	}
 
 	// 좌석 스크랩 등록 API
 	@PostMapping("/scraps/{seatId}")
-	public void createScrapSeat(
+	public ApiResponse<Void> createScrapSeat(
 		@PathVariable Long seatId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
 		viewService.createScrapSeat(seatId, stageType, userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
 	}
 
 	// 좌석 스크랩 해제 API
 	@DeleteMapping("/scraps/{seatId}")
-	public void deleteScrapSeat(
+	public ApiResponse<Void> deleteScrapSeat(
 		@PathVariable Long seatId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
 		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
 	}
 
 	// 해당 영역의 전체 후기 조회 API (구역 / 좌석)
 	@GetMapping("/arenas/{arenaId}/reviews")
-	public ReviewResponseDTO getReviews(
+	public ApiResponse<ReviewResponseDTO> getReviews(
 		@PathVariable Long arenaId,
 		@RequestParam(name = "stageType") Integer stageType,
 		@RequestParam(name = "section") Long sectionNumber,
 		@RequestParam(name = "seatId", required = false) Long seatId) {
-		return viewService.getReviews(arenaId, stageType, sectionNumber, seatId);
+
+		return ApiResponse.success(viewService.getReviews(arenaId, stageType, sectionNumber, seatId));
 	}
 
 	// 가수로 검색된 공연 전체 조회 API
 	@GetMapping("/concerts")
-	public ViewConcertResponseDTO getConcerts(@RequestParam(name = "artist") String artist) {
-		return viewService.getConcerts(artist);
+	public ApiResponse<ViewConcertResponseDTO> getConcerts(@RequestParam(name = "artist") String artist) {
+
+		return ApiResponse.success(viewService.getConcerts(artist));
 	}
 
 	// 후기 작성 API
 	@PostMapping("/reviews")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void createReview(
+	public ApiResponse<Void> createReview(
 		@Valid @RequestPart ReviewRequestDTO reviewRequestDTO,
 		@RequestPart("file") MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
 		viewService.createReview(reviewRequestDTO, file, userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
 	}
 
 	// 수정할 후기 조회 API
 	@GetMapping("/reviews/{reviewId}")
-	public ReviewDetailResponseDTO getReview(
+	public ApiResponse<ReviewDetailResponseDTO> getReview(
 		@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return viewService.getReview(reviewId, userPrincipal.getUserId());
+
+		return ApiResponse.success(viewService.getReview(reviewId, userPrincipal.getUserId()));
 	}
 
 	// 후기 수정 API
 	@PutMapping("/reviews/{reviewId}")
-	public void updateReview(
+	public ApiResponse<Void> updateReview(
 		@PathVariable Long reviewId,
 		@Valid @RequestPart ReviewRequestDTO reviewRequestDTO,
 		@RequestPart("file") MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
 		viewService.updateReview(reviewId, reviewRequestDTO, file, userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
 	}
 
 	// 후기 삭제 API
 	@DeleteMapping("/reviews/{reviewId}")
-	public void deleteReview(
+	public ApiResponse<Void> deleteReview(
 		@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
 		viewService.deleteReview(reviewId, userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
 	}
 }

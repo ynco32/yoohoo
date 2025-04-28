@@ -22,7 +22,6 @@ public class TicketingInfoResponseDTO {
 			.withNano(0);
 		this.isWithin10Minutes = serverTime.isAfter(startTime.minusMinutes(10))
 			&& serverTime.isBefore(startTime);
-		;
 		this.isFinished = serverTime.isAfter(startTime.plusHours(10));
 	}
 }

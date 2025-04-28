@@ -67,10 +67,10 @@ public class Review extends BaseTime {
 	private Concert concert;
 
 	private Review(ReviewRequestDTO reviewRequestDTO, String photoUrl, User user, Seat seat, Concert concert) {
-		this.content = reviewRequestDTO.getContent();
-		this.viewScore = reviewRequestDTO.getViewScore();
-		this.seatDistance = reviewRequestDTO.getSeatDistance();
-		this.sound = reviewRequestDTO.getSound();
+		this.content = reviewRequestDTO.content();
+		this.viewScore = reviewRequestDTO.viewScore();
+		this.seatDistance = reviewRequestDTO.seatDistance();
+		this.sound = reviewRequestDTO.sound();
 		this.photoUrl = photoUrl;
 		this.user = user;
 		this.seat = seat;
@@ -83,10 +83,10 @@ public class Review extends BaseTime {
 	}
 
 	public void update(ReviewRequestDTO reviewRequestDTO, String photoUrl, Seat seat, Concert concert) {
-		this.content = reviewRequestDTO.getContent();
-		this.viewScore = reviewRequestDTO.getViewScore();
-		this.seatDistance = reviewRequestDTO.getSeatDistance();
-		this.sound = reviewRequestDTO.getSound();
+		this.content = reviewRequestDTO.content();
+		this.viewScore = reviewRequestDTO.viewScore();
+		this.seatDistance = reviewRequestDTO.seatDistance();
+		this.sound = reviewRequestDTO.sound();
 		this.photoUrl = photoUrl;
 		this.seat = seat;
 		this.concert = concert;

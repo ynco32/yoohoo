@@ -51,9 +51,9 @@ public class AuthService {
 		}
 
 		TokenDTO newTokens = jwtUtil.generateTokens(email);
-		updateRefreshToken(newTokens.getRefreshToken(), savedAuth);
-		addRefreshTokenCookie(response, newTokens.getRefreshToken());
-		addAccessTokenCookie(response, newTokens.getAccessToken());
+		updateRefreshToken(newTokens.refreshToken(), savedAuth);
+		addRefreshTokenCookie(response, newTokens.refreshToken());
+		addAccessTokenCookie(response, newTokens.accessToken());
 	}
 
 	public void updateRefreshToken(String refreshToken, Auth auth) {

@@ -14,7 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.conkiri.global.auth.oauth.service.OAuth2UserService;
+import com.conkiri.global.auth.oauth.OAuth2UserService;
 import com.conkiri.global.auth.service.handler.OAuth2FailureHandler;
 import com.conkiri.global.auth.service.handler.OAuth2SuccessHandler;
 import com.conkiri.global.auth.token.JwtAuthenticationFilter;

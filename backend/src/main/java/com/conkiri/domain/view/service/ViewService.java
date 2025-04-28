@@ -173,14 +173,14 @@ public class ViewService {
 	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
-		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.getConcertId());
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.concertId());
 		Arena arena = concert.getArena();
-		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.sectionNumber());
 		String photoUrl = s3Service.uploadImage(file, "reviews");
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
-			reviewRequestDTO.getRowLine(),
-			reviewRequestDTO.getColumnLine(),
+			reviewRequestDTO.rowLine(),
+			reviewRequestDTO.columnLine(),
 			section
 		);
 
@@ -208,9 +208,9 @@ public class ViewService {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
-		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.getConcertId());
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.concertId());
 		Arena arena = concert.getArena();
-		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.getSectionNumber());
+		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.sectionNumber());
 
 		// 작성자 본인 여부 확인
 		if(!review.getUser().getUserId().equals(userId)) {
@@ -218,8 +218,8 @@ public class ViewService {
 		}
 
 		Seat seat = findSeatByRowAndColumnAndSectionOrElseThrow(
-			reviewRequestDTO.getRowLine(),
-			reviewRequestDTO.getColumnLine(),
+			reviewRequestDTO.rowLine(),
+			reviewRequestDTO.columnLine(),
 			section
 		);
 

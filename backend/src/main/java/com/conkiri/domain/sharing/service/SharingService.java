@@ -48,7 +48,7 @@ public class SharingService {
 	public Long writeSharing(SharingRequestDTO sharingRequestDTO, Long userId, MultipartFile file) {
 
 		User user = userReadService.findUserByIdOrElseThrow(userId);
-		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingRequestDTO.getConcertId());
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingRequestDTO.concertId());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
@@ -81,7 +81,7 @@ public class SharingService {
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
 		validateAuthorizedAccessToSharing(sharing, userId);
 
-		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingUpdateRequestDTO.getConcertId());
+		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingUpdateRequestDTO.concertId());
 
 		s3Service.deleteImage(sharing.getPhotoUrl());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
@@ -172,7 +172,7 @@ public class SharingService {
 	 */
 	public void writeComment(CommentRequestDTO commentRequestDTO, Long userId) {
 
-		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.getSharingId());
+		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.sharingId());
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		Comment comment = Comment.of(commentRequestDTO, sharing, user);

@@ -1,4 +1,4 @@
-package com.conkiri.domain.ticketing.dto;
+package com.conkiri.domain.ticketing.dto.response;
 
 
 public record ServerMetricsDTO(double cpuLoad, double memoryLoad, double totalLoad) {

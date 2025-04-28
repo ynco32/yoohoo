@@ -1,4 +1,4 @@
-package com.conkiri.global.exception.dto;
+package com.conkiri.global.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

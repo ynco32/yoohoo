@@ -1,4 +1,4 @@
-package com.conkiri.global.auth.oauth.service;
+package com.conkiri.global.auth.oauth;
 
 import java.util.Map;
 

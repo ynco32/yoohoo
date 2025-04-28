@@ -22,11 +22,8 @@ import com.conkiri.domain.sharing.repository.ScrapSharingRepository;
 import com.conkiri.domain.sharing.repository.SharingRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
-import com.conkiri.global.exception.sharing.AlreadyExistScrapSharingException;
-import com.conkiri.global.exception.sharing.CommentNotFoundException;
-import com.conkiri.global.exception.sharing.ScrapSharingNotFoundException;
-import com.conkiri.global.exception.sharing.SharingNotFoundException;
-import com.conkiri.global.exception.view.UnauthorizedAccessException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
@@ -56,8 +53,6 @@ public class SharingService {
 
 		Sharing sharing = Sharing.of(sharingRequestDTO, photoUrl, concert, user);
 		Sharing savedSharing = sharingRepository.save(sharing);
-
-		System.out.println("저장되고 난 후 불러올 때 시간 : " + savedSharing.getStartTime());
 
 		return savedSharing.getSharingId();
 	}
@@ -248,7 +243,7 @@ public class SharingService {
 	 */
 	private Sharing findSharingByIdOrElseThrow(Long sharingId) {
 		return sharingRepository.findById(sharingId)
-			.orElseThrow(SharingNotFoundException::new);
+			.orElseThrow(() -> new BaseException(ErrorCode.SHARING_NOT_FOUND));
 	}
 
 	/**
@@ -257,7 +252,7 @@ public class SharingService {
 	 */
 	private void validateSharingExistByIdOrElseThrow(Long sharingId) {
 		if (!sharingRepository.existsById(sharingId)) {
-			throw new SharingNotFoundException();
+			throw new BaseException(ErrorCode.SHARING_NOT_FOUND);
 		}
 	}
 
@@ -268,7 +263,7 @@ public class SharingService {
 	 */
 	private void validateScrapSharingExistOrElseThrow(Sharing sharing, User user) {
 		if (scrapSharingRepository.existsBySharingAndUser(sharing, user)) {
-			throw new AlreadyExistScrapSharingException();
+			throw new BaseException(ErrorCode.ALREADY_EXIST_SCRAP_SHARING);
 		}
 	}
 
@@ -280,7 +275,7 @@ public class SharingService {
 	 */
 	private ScrapSharing findScrapSharingBySharingAndUser(Sharing sharing, User user) {
 		return scrapSharingRepository.findBySharingAndUser(sharing, user)
-			.orElseThrow(ScrapSharingNotFoundException::new);
+			.orElseThrow(() -> new BaseException(ErrorCode.SCRAP_SHARING_NOT_FOUND));
 	}
 
 	/**
@@ -290,7 +285,7 @@ public class SharingService {
 	 */
 	private Comment findCommentByIdOrElseThrow(Long commentId) {
 		return commentRepository.findById(commentId)
-			.orElseThrow(CommentNotFoundException::new);
+			.orElseThrow(() -> new BaseException(ErrorCode.COMMENT_NOT_FOUND));
 	}
 
 	/**
@@ -300,7 +295,7 @@ public class SharingService {
 	 */
 	private void validateAuthorizedAccessToSharing(Sharing sharing, Long userId) {
 		if (!sharing.getUser().getUserId().equals(userId)) {
-			throw new UnauthorizedAccessException();
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 	}
 
@@ -311,7 +306,7 @@ public class SharingService {
 	 */
 	private void validateAuthorizedAccessToComment(Comment comment, Long userId) {
 		if (!comment.getUser().getUserId().equals(userId)) {
-			throw new UnauthorizedAccessException();
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 	}
 

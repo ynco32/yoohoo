@@ -81,7 +81,6 @@ public class Sharing extends BaseTime {
 		this.content = sharingRequestDTO.getContent();
 		LocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
 			.atTime(sharingRequestDTO.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
-		System.out.println("엔티티 생성할 때 시간 : " + startTime);
 		this.startTime = startTime;
 		this.photoUrl = photoUrl;
 		this.concert = concert;

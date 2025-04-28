@@ -3,7 +3,6 @@ package com.conkiri.domain.ticketing.service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Set;
-import java.time.ZoneId;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,8 +13,8 @@ import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
-import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
-import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RedisKeys;
 import com.conkiri.global.util.WebSocketConstants;
 
@@ -229,10 +228,10 @@ public class QueueProcessingService {
 	public void validateQueueRequest(Long userId) {
 
 		if (!canJoinTicketing(userId)) {
-			throw new DuplicateTicketingException();
+			throw new BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}
 		if (!isTicketingActive()) {
-			throw new NotStartedTicketingException();
+			throw new BaseException(ErrorCode.NOT_START_TICKETING);
 		}
 	}
 }

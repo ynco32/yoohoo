@@ -1,16 +1,12 @@
 package com.conkiri.global.exception.dto;
 
-import java.time.LocalDateTime;
-
-import org.springframework.http.HttpStatus;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class ExceptionResponse {
+
+	private String code;
 	private String message;
-	private HttpStatus httpStatus;
-	private LocalDateTime time;
 }

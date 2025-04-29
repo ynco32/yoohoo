@@ -1,7 +1,6 @@
 package com.conkiri.global.auth.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,21 +22,12 @@ public class AuthController {
 
 	private final AuthService authService;
 
-	@PostMapping("/refresh")
-	public ApiResponse<Void> refreshToken(
-		HttpServletRequest request,
-		HttpServletResponse response) {
-
-		authService.refreshToken(request, response);
-		return ApiResponse.ofSuccess();
-	}
-
 	@GetMapping("/login")
 	public ApiResponse<LoginDTO> checkAuthStatus(
-		@CookieValue(value = "access_token") String accessToken,
+		HttpServletRequest request,
 		@AuthenticationPrincipal UserPrincipal user) {
 
-		return ApiResponse.success(authService.loginStatus(accessToken, user.getNickname()));
+		return ApiResponse.success(authService.loginStatus(request, user.getNickname()));
 	}
 
 

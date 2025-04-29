@@ -12,11 +12,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
+import com.conkiri.global.auth.service.AuthService;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.ApiResponseUtil;
 import com.conkiri.global.util.JwtUtil;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
+	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final ApiResponseUtil apiResponseUtil;
 
@@ -54,14 +57,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		try {
 			authenticateUserWithToken(token, request);
-		} catch (Exception e) {
-			log.error("사용자 인증 설정 실패: {}", e.getMessage());
-			apiResponseUtil.writeErrorResponse(
-				response,
-				HttpServletResponse.SC_UNAUTHORIZED,
-				ErrorCode.INVALID_TOKEN.name(),
-				ErrorCode.INVALID_TOKEN.getMessage());
-			return;
+		} catch (ExpiredJwtException e) {
+			log.info("AccessToken 만료됨. RefreshToken으로 재발급 시도");
+			try {
+				String newAccessToken = authService.refreshToken(request, response);
+				request.setAttribute("access_token", newAccessToken);
+				authenticateUserWithToken(newAccessToken, request);
+				log.info("AccessToken 자동 재발급 완료");
+			} catch (BaseException ex) {
+				apiResponseUtil.writeErrorResponse(
+					response,
+					HttpServletResponse.SC_UNAUTHORIZED,
+					ex.getErrorCode().name(),
+					ex.getErrorCode().getMessage()
+				);
+				return;
+			}
 		}
 
 		filterChain.doFilter(request, response);

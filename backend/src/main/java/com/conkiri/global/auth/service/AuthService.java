@@ -29,12 +29,17 @@ public class AuthService {
 	private final AuthRepository authRepository;
 	private final UserReadService userReadService;
 
-	public LoginDTO loginStatus(String accessToken, String nickName) {
+	public LoginDTO loginStatus(HttpServletRequest request, String nickName) {
+
+		String accessToken = (String) request.getAttribute("access_token");
+		if (accessToken == null)
+			accessToken = jwtUtil.extractAccessToken(request);
+		
 		jwtUtil.validateToken(accessToken);
 		return (nickName == null) ? new LoginDTO(true, false): new LoginDTO(true, true);
 	}
 
-	public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+	public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
 		String refreshToken = jwtUtil.extractRefreshToken(request);
 		if (!jwtUtil.validateToken(refreshToken)) {
@@ -54,6 +59,7 @@ public class AuthService {
 		updateRefreshToken(newTokens.refreshToken(), savedAuth);
 		addRefreshTokenCookie(response, newTokens.refreshToken());
 		addAccessTokenCookie(response, newTokens.accessToken());
+		return newTokens.accessToken();
 	}
 
 	public void updateRefreshToken(String refreshToken, Auth auth) {

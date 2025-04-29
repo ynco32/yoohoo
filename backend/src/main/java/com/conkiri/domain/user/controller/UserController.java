@@ -42,12 +42,12 @@ public class UserController {
 
 	@Validated
 	@GetMapping("/nickname/check")
-	public boolean checkNicknameDuplicate(
+	public ApiResponse<Boolean> checkNicknameDuplicate(
 		@NotBlank(message = ValidationMessage.NICKNAME_NOT_EMPTY)
 		@Size(min = 2, max = 10, message = ValidationMessage.ERROR_NICKNAME_LENGTH)
 		@Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,10}$", message = ValidationMessage.ERROR_NICKNAME_FORMAT)
 		@RequestParam String nickname) {
 
-		return userService.checkNicknameExists(nickname);
+		return ApiResponse.success(userService.checkNicknameExists(nickname));
 	}
 }

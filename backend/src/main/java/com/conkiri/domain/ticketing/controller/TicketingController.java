@@ -33,9 +33,9 @@ public class TicketingController {
 
 	// 활성화 여부
 	@GetMapping("/status")
-	public boolean getTicketingStatus() {
+	public ApiResponse<Boolean> getTicketingStatus() {
 
-		return queueProcessingService.isTicketingActive();
+		return ApiResponse.success(queueProcessingService.isTicketingActive());
 	}
 
 	// 서버 시간 제공
@@ -55,9 +55,9 @@ public class TicketingController {
 
 	// 구역 조회 API
 	@GetMapping("/sections")
-	public List<String> getSections() {
+	public ApiResponse<List<String>> getSections() {
 
-		return ticketingService.getSections();
+		return ApiResponse.success(ticketingService.getSections());
 	}
 
 	// 특정 구역에 따른 좌석 조회 API
@@ -99,10 +99,10 @@ public class TicketingController {
 
 	// 마이페이지용 전체 결과 조회 API
 	@GetMapping("/results")
-	public List<TicketingResultResponseDTO> getAllResults(
+	public ApiResponse<List<TicketingResultResponseDTO>> getAllResults(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ticketingService.getAllTicketingResults(userPrincipal.getUserId());
+		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUserId()));
 	}
 
 	@DeleteMapping("/result")

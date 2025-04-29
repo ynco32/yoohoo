@@ -189,7 +189,7 @@ public class ViewService {
 		}
 
 		reviewRepository.save(Review.of(reviewRequestDTO, photoUrl, user, seat, concert));
-		user.incrementReviewCount();
+		//user.incrementReviewCount();
 	}
 
 	public ReviewDetailResponseDTO getReview(Long reviewId, Long userId) {
@@ -251,7 +251,7 @@ public class ViewService {
 		Seat seat = review.getSeat();
 
 		reviewRepository.deleteById(reviewId);
-		user.decrementReviewCount();
+		//user.decrementReviewCount();
 
 		if (photoUrl != null) {
 			s3Service.deleteImage(photoUrl);

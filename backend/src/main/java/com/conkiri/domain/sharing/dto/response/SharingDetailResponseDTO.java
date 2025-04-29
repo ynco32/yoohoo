@@ -11,7 +11,7 @@ public record SharingDetailResponseDTO(
 	String startTime,
 	String writer,
 	Long writerId,
-	String writerLevel,
+	//String writerLevel,
 	Double latitude,
 	Double longitude,
 	Long concertId
@@ -26,7 +26,7 @@ public record SharingDetailResponseDTO(
 			sharing.getStartTime().toString(),
 			sharing.getUser().getNickname(),
 			sharing.getUser().getUserId(),
-			sharing.getUser().getLevel(),
+			// sharing.getUser().getLevel(),
 			sharing.getLatitude(),
 			sharing.getLongitude(),
 			sharing.getConcert().getConcertId()

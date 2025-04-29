@@ -39,6 +39,7 @@ public enum ErrorCode {
 
 
 	// 인증
+	OAUTH2_FAILURE(HttpStatus.UNAUTHORIZED, "OAuth2 인증에 실패했습니다."),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 	AUTH_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보가 없습니다."),
 	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),

@@ -18,6 +18,8 @@ import com.conkiri.global.auth.oauth.OAuth2UserService;
 import com.conkiri.global.auth.service.handler.OAuth2FailureHandler;
 import com.conkiri.global.auth.service.handler.OAuth2SuccessHandler;
 import com.conkiri.global.auth.token.JwtAuthenticationFilter;
+import com.conkiri.global.exception.ErrorCode;
+import com.conkiri.global.util.ApiResponseUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+	private final ApiResponseUtil apiResponseUtil;
 	private final OAuth2UserService oAuth2UserService;
 	private final OAuth2SuccessHandler oAuth2SuccessHandler;
 	private final OAuth2FailureHandler oAuth2FailureHandler;
@@ -68,7 +72,12 @@ public class SecurityConfig {
             .exceptionHandling(handling -> handling
 			.authenticationEntryPoint((request, response, authException) -> {
 				// JWT 인증 실패 시 401 반환
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				apiResponseUtil.writeErrorResponse(
+					response,
+					HttpServletResponse.SC_UNAUTHORIZED,
+					ErrorCode.UNAUTHORIZED_ACCESS.name(),
+					ErrorCode.UNAUTHORIZED_ACCESS.getMessage()
+				);
 			})
 		);
 		return http.build();

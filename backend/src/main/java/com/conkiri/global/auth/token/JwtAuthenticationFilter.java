@@ -14,6 +14,7 @@ import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
+import com.conkiri.global.util.ApiResponseUtil;
 import com.conkiri.global.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -30,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
+	private final ApiResponseUtil apiResponseUtil;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -42,7 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String token = jwtUtil.extractAccessToken(request);
 		if (token == null) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			apiResponseUtil.writeErrorResponse(
+				response,
+				HttpServletResponse.SC_UNAUTHORIZED,
+				ErrorCode.AUTH_NOT_FOUND.name(),
+				ErrorCode.AUTH_NOT_FOUND.getMessage());
 			return;
 		}
 
@@ -50,7 +56,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			authenticateUserWithToken(token, request);
 		} catch (Exception e) {
 			log.error("사용자 인증 설정 실패: {}", e.getMessage());
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			apiResponseUtil.writeErrorResponse(
+				response,
+				HttpServletResponse.SC_UNAUTHORIZED,
+				ErrorCode.INVALID_TOKEN.name(),
+				ErrorCode.INVALID_TOKEN.getMessage());
 			return;
 		}
 

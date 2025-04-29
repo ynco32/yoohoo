@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 의존성 설치
-RUN npm install
+RUN npm ci --only=production
 
 # 소스 코드 복사
 COPY . .
@@ -24,7 +24,6 @@ ENV NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY
 ENV NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
-
 
 # 프로젝트 빌드
 RUN npm run build

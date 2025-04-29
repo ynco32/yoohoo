@@ -14,6 +14,7 @@ import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.auth.entity.Auth;
 import com.conkiri.global.auth.repository.AuthRepository;
 import com.conkiri.global.auth.token.UserPrincipal;
+import com.conkiri.global.util.MapUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 		String providerId = oauth2User.getName();  // OAuth2 제공자의 고유 ID
 
 		Map<String, Object> attributes = oauth2User.getAttributes();
-		Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-		Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+		Map<String, Object> kakaoAccount = MapUtil.cast(attributes.get("kakao_account"), Map.class);
+		Map<String, Object> profile = MapUtil.cast(kakaoAccount.get("profile"), Map.class);
 
 		String email = (String) kakaoAccount.get("email");
 		String nickname = (String) profile.get("nickname");
@@ -52,10 +53,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	}
 
 	private User createUser(String email, String nickname) {
-		User user = User.builder()
-			.email(email)
-			.userName(nickname)
-			.build();
+		User user = User.of(email, nickname, null);
 		return userRepository.save(user);
 	}
 
@@ -66,11 +64,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 	}
 
 	private Auth createAuth(User user, String provider, String providerId) {
-		Auth auth = Auth.builder()
-			.user(user)
-			.provider(provider)
-			.providerId(providerId)
-			.build();
+		Auth auth = Auth.of(null, null, user, provider, providerId);
 		return authRepository.save(auth);
 	}
 

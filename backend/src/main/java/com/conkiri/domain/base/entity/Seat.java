@@ -27,8 +27,4 @@ public class Seat {
 
 	@Column(name = "column_line")
 	private Long columnLine;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "section_id", nullable = false)
-	private Section section;
 }

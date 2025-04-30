@@ -49,7 +49,7 @@ public class ViewController {
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(viewService.getSections(arenaId, stageType, userPrincipal.getUserId()));
+		return ApiResponse.success(viewService.getSections(arenaId, stageType, userPrincipal.getUser()));
 	}
 
 	// 선택한 구역의 좌석 정보 조회 API
@@ -60,7 +60,7 @@ public class ViewController {
 		@RequestParam(name = "section") Long sectionNumber,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(viewService.getSeats(arenaId, stageType, sectionNumber, userPrincipal.getUserId()));
+		return ApiResponse.success(viewService.getSeats(arenaId, stageType, sectionNumber, userPrincipal.getUser()));
 	}
 
 	// 좌석 스크랩 등록 API
@@ -70,7 +70,7 @@ public class ViewController {
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		viewService.createScrapSeat(seatId, stageType, userPrincipal.getUserId());
+		viewService.createScrapSeat(seatId, stageType, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -81,7 +81,7 @@ public class ViewController {
 		@RequestParam(name = "stageType") Integer stageType,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUserId());
+		viewService.deleteScrapSeat(seatId, stageType, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -111,7 +111,7 @@ public class ViewController {
 		@RequestPart("file") MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		viewService.createReview(reviewRequestDTO, file, userPrincipal.getUserId());
+		viewService.createReview(reviewRequestDTO, file, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -121,7 +121,7 @@ public class ViewController {
 		@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(viewService.getReview(reviewId, userPrincipal.getUserId()));
+		return ApiResponse.success(viewService.getReview(reviewId, userPrincipal.getUser()));
 	}
 
 	// 후기 수정 API
@@ -132,7 +132,7 @@ public class ViewController {
 		@RequestPart("file") MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		viewService.updateReview(reviewId, reviewRequestDTO, file, userPrincipal.getUserId());
+		viewService.updateReview(reviewId, reviewRequestDTO, file, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -142,7 +142,7 @@ public class ViewController {
 		@PathVariable Long reviewId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		viewService.deleteReview(reviewId, userPrincipal.getUserId());
+		viewService.deleteReview(reviewId, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 }

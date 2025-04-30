@@ -45,9 +45,8 @@ public class SharingService {
 	 * @param sharingRequestDTO
 	 * @param file
 	 */
-	public Long writeSharing(SharingRequestDTO sharingRequestDTO, Long userId, MultipartFile file) {
+	public Long writeSharing(SharingRequestDTO sharingRequestDTO, User user, MultipartFile file) {
 
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(sharingRequestDTO.concertId());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
 
@@ -140,12 +139,11 @@ public class SharingService {
 	/**
 	 * 나눔 게시글 스크랩
 	 * @param sharingId
-	 * @param userId
+	 * @param user
 	 */
-	public void scrapSharing(Long sharingId, Long userId) {
+	public void scrapSharing(Long sharingId, User user) {
 
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		validateScrapSharingExistOrElseThrow(sharing, user);
 
 		ScrapSharing scrapSharing = ScrapSharing.of(sharing, user);
@@ -155,12 +153,11 @@ public class SharingService {
 	/**
 	 * 나눔 게시글 스크랩 취소
 	 * @param sharingId
-	 * @param userId
+	 * @param user
 	 */
-	public void cancelScrapSharing(Long sharingId, Long userId) {
+	public void cancelScrapSharing(Long sharingId, User user) {
 
 		Sharing sharing = findSharingByIdOrElseThrow(sharingId);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		ScrapSharing scrapSharing = findScrapSharingBySharingAndUser(sharing, user);
 		scrapSharingRepository.delete(scrapSharing);
@@ -170,10 +167,9 @@ public class SharingService {
 	 * 댓글 작성
 	 * @param commentRequestDTO
 	 */
-	public void writeComment(CommentRequestDTO commentRequestDTO, Long userId) {
+	public void writeComment(CommentRequestDTO commentRequestDTO, User user) {
 
 		Sharing sharing = findSharingByIdOrElseThrow(commentRequestDTO.sharingId());
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		Comment comment = Comment.of(commentRequestDTO, sharing, user);
 		commentRepository.save(comment);
@@ -205,14 +201,13 @@ public class SharingService {
 	/**
 	 * 회원이 등록한 해당 공연의 나눔 게시글 조회
 	 * @param concertId
-	 * @param userId
+	 * @param user
 	 * @param lastSharingId
 	 * @return
 	 */
-	public SharingResponseDTO getWroteSharingList(Long userId, Long concertId, Long lastSharingId) {
+	public SharingResponseDTO getWroteSharingList(User user, Long concertId, Long lastSharingId) {
 
 		Pageable pageable = Pageable.ofSize(10);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(concertId);
 
 		return sharingRepository.findWroteSharings(user, concert, lastSharingId, pageable);
@@ -220,15 +215,14 @@ public class SharingService {
 
 	/**
 	 * 회원이 스크랩한 해당 공연의 나눔 게시글 조회
-	 * @param userId
+	 * @param user
 	 * @param concertId
 	 * @param lastSharingId
 	 * @return
 	 */
-	public SharingResponseDTO getScrappedSharingList(Long userId, Long concertId, Long lastSharingId) {
+	public SharingResponseDTO getScrappedSharingList(User user, Long concertId, Long lastSharingId) {
 
 		Pageable pageable = Pageable.ofSize(10);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(concertId);
 
 		return sharingRepository.findScrappedSharings(user, concert, lastSharingId, pageable);

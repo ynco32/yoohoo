@@ -32,7 +32,7 @@ public class MyPageController {
 		@RequestParam(value = "lastSharingId", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(myPageService.getWroteList(lastSharingId, userPrincipal.getUserId()));
+		return ApiResponse.success(myPageService.getWroteList(lastSharingId, userPrincipal.getUser()));
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class MyPageController {
 		@RequestParam(value = "lastSharingId", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(myPageService.getScrappedList(lastSharingId, userPrincipal.getUserId()));
+		return ApiResponse.success(myPageService.getScrappedList(lastSharingId, userPrincipal.getUser()));
 	}
 
 	// 마이페이지에서 회원이 작성한 후기 게시글 조회
@@ -54,6 +54,6 @@ public class MyPageController {
 	public ApiResponse<ReviewResponseDTO> getReviews(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(myPageService.getReviews(userPrincipal.getUserId()));
+		return ApiResponse.success(myPageService.getReviews(userPrincipal.getUser()));
 	}
 }

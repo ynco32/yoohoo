@@ -1,5 +1,41 @@
 .body {
-  width: 100%;
+  min-height: 100dvh;
   max-width: 430px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  height: 100dvh;
+  width: 100%;
+
+  @media screen and (max-width: $breakpoint-sm) {
+    max-width: 100%;
+  }
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  width: 100%;
+  background-color: #ffffff;
+
+  // 스크롤바 완전히 숨기기
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -webkit-overflow-scrolling: touch;
+}
+
+// 헤더와 하단 네비게이션 사이의 컨텐츠 영역
+.content {
+  padding-top: 56px; // 헤더 높이
+  padding-bottom: 64px; // 하단 네비게이션 높이
+  min-height: calc(100vh - 120px); // 헤더와 네비게이션 높이를 제외한 최소 높이
 }

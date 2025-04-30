@@ -58,10 +58,13 @@ a {
   --text-sub: #949494;
 }
 
-html,
-body {
+html {
   background-image: url('/images/desktop.png');
   background-size: cover;
   background-position: center;
+  min-height: 100vh;
+}
+
+body {
   min-height: 100vh;
 }

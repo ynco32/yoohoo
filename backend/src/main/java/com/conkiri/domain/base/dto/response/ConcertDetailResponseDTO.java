@@ -10,7 +10,6 @@ public record ConcertDetailResponseDTO(
 	String artist,
 	LocalDateTime startTime,
 	String photoUrl,
-	String stageType,
 	String arena
 ) {
 	public static ConcertDetailResponseDTO from(Concert concert) {
@@ -20,7 +19,6 @@ public record ConcertDetailResponseDTO(
 			concert.getArtist(),
 			concert.getStartTime(),
 			concert.getPhotoUrl(),
-			concert.getStageType().name(),
 			concert.getArena().getArenaName()
 		);
 	}

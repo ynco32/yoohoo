@@ -41,10 +41,6 @@ public class Concert {
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "stage_type")
-	private StageType stageType;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;

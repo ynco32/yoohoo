@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 
 import Button from './Button';
+import IconBox from '../IconBox/IconBox';
 
 const meta = {
   title: 'Common/Button',
@@ -62,7 +63,7 @@ export const CustomDimensions: Story = {
 export const WithRightIcon: Story = {
   args: {
     children: '확인',
-    rightIcon: <span>✓</span>,
+    rightIcon: <IconBox name='chevron-right' size={16} />,
   },
 };
 

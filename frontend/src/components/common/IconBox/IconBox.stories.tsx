@@ -25,6 +25,7 @@ const iconNames: IconName[] = [
   'close',
   'search',
   'kakao',
+  'menu',
 ];
 
 const meta = {
@@ -86,9 +87,9 @@ export const RotatedIcon: Story = {
 // 두께 조절 (stroke를 사용하는 아이콘에만 적용됨)
 export const StrokeWidthIcon: Story = {
   args: {
-    name: 'chevron-right',
+    name: 'write',
     size: 24,
-    strokeWidth: 3,
+    strokeWidth: 1.5,
   },
 };
 

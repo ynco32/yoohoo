@@ -25,6 +25,7 @@ import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import SearchIcon from '@/assets/icons/search.svg';
 import KakaoIcon from '@/assets/icons/kakao.svg';
+import MenuIcon from '@/assets/icons/menu.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -49,6 +50,7 @@ const ICON_COMPONENTS = {
   close: CloseIcon,
   search: SearchIcon,
   kakao: KakaoIcon,
+  menu: MenuIcon,
 } as const;
 
 // 아이콘 이름 타입

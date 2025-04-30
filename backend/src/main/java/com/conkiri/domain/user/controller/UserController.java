@@ -37,7 +37,7 @@ public class UserController {
 		@Valid @RequestBody NicknameRequestDTO request,
 		@AuthenticationPrincipal UserPrincipal user) {
 
-		userService.updateNickname(user.getEmail(), request.nickname());
+		userService.updateNickname(user.getUser(), request.nickname());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -46,7 +46,7 @@ public class UserController {
 		@Valid @RequestBody NicknameRequestDTO request,
 		@AuthenticationPrincipal UserPrincipal user) {
 
-		userService.updateNickname(user.getEmail(), request.nickname());
+		userService.updateNickname(user.getUser(), request.nickname());
 		return ApiResponse.ofSuccess();
 	}
 

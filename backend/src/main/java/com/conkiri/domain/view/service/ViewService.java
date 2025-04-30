@@ -19,7 +19,6 @@ import com.conkiri.domain.base.repository.SectionRepository;
 import com.conkiri.domain.base.service.ArenaReadService;
 import com.conkiri.domain.base.service.ConcertReadService;
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
@@ -50,7 +49,6 @@ public class ViewService {
 	private final SeatRepository seatRepository;
 	private final ScrapSeatRepository scrapSeatRepository;
 	private final ConcertRepository concertRepository;
-	private final UserReadService userReadService;
 
 	private final ArenaReadService arenaReadService;
 	private final ConcertReadService concertReadService;
@@ -62,10 +60,9 @@ public class ViewService {
 		return ArenaResponseDTO.from(arenas);
 	}
 
-	public SectionResponseDTO getSections(Long arenaId, Integer stageType, Long userId) {
+	public SectionResponseDTO getSections(Long arenaId, Integer stageType, User user) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		StageType selectedType = StageType.fromValue(stageType);
 
 		List<Section> sections = sectionRepository.findByArena(arena);
@@ -78,11 +75,10 @@ public class ViewService {
 			.collect(Collectors.toList()));
 	}
 
-	public SeatResponseDTO getSeats(Long arenaId, Integer stageType, Long sectionNumber, Long userId) {
+	public SeatResponseDTO getSeats(Long arenaId, Integer stageType, Long sectionNumber, User user) {
 
 		Arena arena = arenaReadService.findArenaByAreaIdOrElseThrow(arenaId);
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, sectionNumber);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		StageType selectedType = StageType.fromValue(stageType);
 
 		List<Seat> seats = seatRepository.findBySection(section);
@@ -98,11 +94,10 @@ public class ViewService {
 			.collect(Collectors.toList()));
 	}
 
-	public void createScrapSeat(Long seatId, Integer stageType, Long userId) {
+	public void createScrapSeat(Long seatId, Integer stageType, User user) {
 
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 		StageType selectedType = StageType.fromValue(stageType);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		if (scrapSeatRepository.existsByUserAndSeatAndStageType(user, seat, selectedType)) {
 			throw new BaseException(ErrorCode.DUPLICATE_SCRAP_SEAT);
@@ -112,11 +107,10 @@ public class ViewService {
 		scrapSeatRepository.save(scrapSeat);
 	}
 
-	public void deleteScrapSeat(Long seatId, Integer stageType, Long userId) {
+	public void deleteScrapSeat(Long seatId, Integer stageType, User user) {
 
 		Seat seat = findSeatBySeatIdOrElseThrow(seatId);
 		StageType selectedType = StageType.fromValue(stageType);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 
 		ScrapSeat scrapSeat = scrapSeatRepository.findByUserAndSeatAndStageType(user, seat, selectedType)
 			.orElseThrow(() -> new BaseException(ErrorCode.SCRAP_SEAT_NOT_FOUND));
@@ -170,9 +164,8 @@ public class ViewService {
 	}
 
 	@Transactional
-	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
+	public void createReview(ReviewRequestDTO reviewRequestDTO, MultipartFile file, User user) {
 
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.concertId());
 		Arena arena = concert.getArena();
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.sectionNumber());
@@ -192,11 +185,11 @@ public class ViewService {
 		//user.incrementReviewCount();
 	}
 
-	public ReviewDetailResponseDTO getReview(Long reviewId, Long userId) {
+	public ReviewDetailResponseDTO getReview(Long reviewId, User user) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
 
-		if(!review.getUser().getUserId().equals(userId)) {
+		if(!review.getUser().getUserId().equals(user.getUserId())) {
 			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 
@@ -204,16 +197,15 @@ public class ViewService {
 	}
 
 	@Transactional
-	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, Long userId) {
+	public void updateReview(Long reviewId, ReviewRequestDTO reviewRequestDTO, MultipartFile file, User user) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Concert concert = concertReadService.findConcertByIdOrElseThrow(reviewRequestDTO.concertId());
 		Arena arena = concert.getArena();
 		Section section = findSectionByArenaAndSectionNumberOrElseThrow(arena, reviewRequestDTO.sectionNumber());
 
 		// 작성자 본인 여부 확인
-		if(!review.getUser().getUserId().equals(userId)) {
+		if(!review.getUser().getUserId().equals(user.getUserId())) {
 			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 
@@ -238,12 +230,11 @@ public class ViewService {
 	}
 
 	@Transactional
-	public void deleteReview(Long reviewId, Long userId) {
+	public void deleteReview(Long reviewId, User user) {
 
 		Review review = findReviewByReviewIdOrElseThrow(reviewId);
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 
-		if(!review.getUser().getUserId().equals(userId)) {
+		if(!review.getUser().getUserId().equals(user.getUserId())) {
 			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
 		}
 

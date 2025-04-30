@@ -18,6 +18,7 @@ public class ConcertReadService {
 	private final ConcertRepository concertRepository;
 
 	public Concert findConcertByIdOrElseThrow(Long concertId) {
+
 		return concertRepository.findById(concertId)
 			.orElseThrow(() -> new BaseException(ErrorCode.CONCERT_NOT_FOUND));
 	}

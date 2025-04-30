@@ -18,6 +18,7 @@ public class ArenaReadService {
 	private final ArenaRepository arenaRepository;
 
 	public Arena findArenaByAreaIdOrElseThrow(Long arenaId) {
+
 		return arenaRepository.findArenaByArenaId(arenaId)
 			.orElseThrow(() -> new BaseException(ErrorCode.ARENA_NOT_FOUND));
 	}

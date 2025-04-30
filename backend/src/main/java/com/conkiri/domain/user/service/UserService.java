@@ -16,11 +16,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final UserReadService userReadService;
 
-	public void updateNickname(String email, String nickname) {
+	public void updateNickname(User user, String nickname) {
 
-		User user = userReadService.findUserByEmailOrElseThrow(email);
 		validateNicknameDuplicate(nickname);
 		user.updateNickname(nickname);
 	}

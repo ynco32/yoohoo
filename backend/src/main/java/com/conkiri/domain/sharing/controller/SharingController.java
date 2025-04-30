@@ -49,7 +49,7 @@ public class SharingController {
 		@RequestPart MultipartFile file,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUserId(), file));
+		return ApiResponse.success(sharingService.writeSharing(sharingRequestDTO, userPrincipal.getUser(), file));
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class SharingController {
 		@PathVariable("sharingId") Long sharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		sharingService.scrapSharing(sharingId, userPrincipal.getUserId());
+		sharingService.scrapSharing(sharingId, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -161,7 +161,7 @@ public class SharingController {
 		@PathVariable("sharingId") Long sharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		sharingService.cancelScrapSharing(sharingId, userPrincipal.getUserId());
+		sharingService.cancelScrapSharing(sharingId, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -175,7 +175,7 @@ public class SharingController {
 		@Valid @RequestBody CommentRequestDTO commentRequestDTO,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		sharingService.writeComment(commentRequestDTO, userPrincipal.getUserId());
+		sharingService.writeComment(commentRequestDTO, userPrincipal.getUser());
 		return ApiResponse.ofSuccess();
 	}
 
@@ -220,7 +220,7 @@ public class SharingController {
 		@RequestParam(value = "last", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(sharingService.getWroteSharingList(userPrincipal.getUserId(), concertId, lastSharingId));
+		return ApiResponse.success(sharingService.getWroteSharingList(userPrincipal.getUser(), concertId, lastSharingId));
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class SharingController {
 		@RequestParam(value = "last", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(sharingService.getScrappedSharingList(userPrincipal.getUserId(), concertId, lastSharingId));
+		return ApiResponse.success(sharingService.getScrappedSharingList(userPrincipal.getUser(), concertId, lastSharingId));
 	}
 
 }

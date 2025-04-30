@@ -1,5 +1,6 @@
 import { mergeConfig } from 'vite';
 import path from 'path';
+import svgr from 'vite-plugin-svgr';
 import type { StorybookConfig } from '@storybook/experimental-nextjs-vite';
 
 const config: StorybookConfig = {
@@ -18,10 +19,16 @@ const config: StorybookConfig = {
 
   viteFinal: async (config) => {
     return mergeConfig(config, {
+      plugins: [
+        svgr({
+          include: '**/*.svg',
+        }),
+      ],
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '../src'),
         },
+        extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svg'],
       },
       css: {
         preprocessorOptions: {

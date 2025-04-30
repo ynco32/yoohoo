@@ -48,13 +48,14 @@ interface HeaderProviderProps {
 }
 
 export const HeaderProvider = ({ children }: HeaderProviderProps) => {
+  const pagesWithoutHeader = ['/', '/login'];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);
   const [arenaInfo, setArenaInfo] = useState<ArenaInfo | null>(null);
   const [seatDetail, setSeatDetail] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
-
+  const hasHeader = !pagesWithoutHeader.includes(pathname);
   // 경로 변경 추적
   useEffect(() => {
     // 이전 경로를 저장
@@ -146,7 +147,7 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
 
   return (
     <HeaderContext.Provider value={headerContextValue}>
-      <Header />
+      {hasHeader && <Header />}
       {children}
     </HeaderContext.Provider>
   );

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
 	private final UserService userService;
@@ -33,6 +34,15 @@ public class UserController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/nickname")
 	public ApiResponse<Void> setNickname(
+		@Valid @RequestBody NicknameRequestDTO request,
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		userService.updateNickname(user.getEmail(), request.nickname());
+		return ApiResponse.ofSuccess();
+	}
+
+	@PatchMapping("/nickname")
+	public ApiResponse<Void> modifyNickname(
 		@Valid @RequestBody NicknameRequestDTO request,
 		@AuthenticationPrincipal UserPrincipal user) {
 

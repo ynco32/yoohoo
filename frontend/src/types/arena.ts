@@ -18,10 +18,10 @@ export interface ArenaInfo {
   address: string;
 
   /** 위도 */
-  latitude: string | number;
+  latitude: number;
 
   /** 경도 */
-  longitude: string | number;
+  longitude: number;
 
   /** 경기장 사진 URL */
   photoUrl: string;

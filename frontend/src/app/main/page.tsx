@@ -80,7 +80,7 @@ export default function MainMenu() {
         <div
           className={`${styles.menuItem} ${styles.wide} ${styles.menuItemPractice}`}
         >
-          <Link href='/practice' className={styles.link}>
+          <Link href='/ticketing' className={styles.link}>
             <div className={styles.menuContent}>
               <div className={styles.textContainer}>
                 <span className={styles.label}>실전 티켓팅 연습</span>

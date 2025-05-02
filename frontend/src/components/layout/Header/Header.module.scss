@@ -4,7 +4,9 @@
   position: sticky;
   left: 0;
   top: 0;
+  padding: 0 0.5rem;
   z-index: 100;
+  color: $text-main;
 }
 
 .header {
@@ -39,6 +41,37 @@
 
 .menuContainer {
   flex: none;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm; // 아이콘 사이 간격
+}
+
+.iconContainer {
+  position: absolute;
+  right: $spacing-md;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm; // 아이콘 사이 간격
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: $con-blue;
 }
 
 .detailContainer {
@@ -77,6 +110,7 @@
 
 .backButton {
   position: absolute;
+  color: $con-blue;
   left: 0;
   top: 50%;
   transform: translateY(-50%);

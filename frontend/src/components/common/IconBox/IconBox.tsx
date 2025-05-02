@@ -26,6 +26,7 @@ import CloseIcon from '@/assets/icons/close.svg';
 import SearchIcon from '@/assets/icons/search.svg';
 import KakaoIcon from '@/assets/icons/kakao.svg';
 import MenuIcon from '@/assets/icons/menu.svg';
+import CheckIcon from '@/assets/icons/check.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -51,6 +52,7 @@ const ICON_COMPONENTS = {
   search: SearchIcon,
   kakao: KakaoIcon,
   menu: MenuIcon,
+  check: CheckIcon,
 } as const;
 
 // 아이콘 이름 타입

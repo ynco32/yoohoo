@@ -1,0 +1,41 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: $border-radius-full;
+  border: none;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: $shadow-sm;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.active {
+  background-color: #D7F2FF;
+  color: $text-main;
+}
+
+.default {
+  background-color: white;
+  color: $text-main;
+}
+
+.disabled {
+  background-color: #f4f4f4;
+  color: $text-sub;
+  cursor: not-allowed;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.icon {
+  margin-right: 8px;
+}

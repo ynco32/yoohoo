@@ -1,4 +1,4 @@
-package com.conkiri.domain.base.entity;
+package com.conkiri.domain.view.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,23 +15,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Seat {
+public class ReviewPhoto {
 
 	@Id
-	@Column(name = "seat_id")
+	@Column(name = "review_photo_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long seatId;
+	private Long reviewPhotoId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "arena_id", nullable = false)
-	private Arena arena;
+	@JoinColumn(name = "review_id", nullable = false)
+	private Review review;
 
-	@Column(name = "section", length = 10, nullable = false)
-	private String section;
+	@Column(name = "photo_url", nullable = false, length = 200)
+	private String photoUrl;
 
-	@Column(name = "row_line", nullable = false)
-	private Long rowLine;
+	public static ReviewPhoto of(Review review, String photoUrl) {
+		return new ReviewPhoto(review, photoUrl);
+	}
 
-	@Column(name = "column_line", nullable = false)
-	private Long columnLine;
+	private ReviewPhoto(Review review, String photoUrl) {
+		this.review = review;
+		this.photoUrl = photoUrl;
+	}
 }

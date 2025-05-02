@@ -59,6 +59,7 @@ public enum ErrorCode {
 	// 시야
 	ARENA_NOT_FOUND(HttpStatus.BAD_REQUEST, "공연장을 찾을 수 없습니다."),
 	UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "해당 사용자에게 권한이 없습니다."),
+	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "좌석을 찾을 수 없습니다."),
 
 	// 콘서트
 	DUPLICATE_TICKETING(HttpStatus.CONFLICT, "티켓팅에 참여한 내역이 있어 참여할 수 없습니다."),

@@ -80,7 +80,7 @@ const Header = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div className={styles.logoContainer}>
+          <div className={styles.leftSection}>
             {shouldShowLogo ? (
               <Link href='/main' className={styles.logo}>
                 <Image
@@ -101,9 +101,10 @@ const Header = () => {
               </button>
             )}
           </div>
-          <h1 className={styles.headerTitle}>{title}</h1>
-          <div className={styles.menuContainer}>
-            {/* 알림과 햄버거 메뉴 아이콘 추가 */}
+          <div className={styles.centerSection}>
+            <h1 className={styles.headerTitle}>{title}</h1>
+          </div>
+          <div className={styles.rightSection}>
             <button
               onClick={handleNotificationClick}
               className={styles.iconButton}

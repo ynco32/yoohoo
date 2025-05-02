@@ -29,9 +29,9 @@ public class Seat {
 	@Column(name = "section", length = 10, nullable = false)
 	private String section;
 
-	@Column(name = "`row_line`", nullable = false)
+	@Column(name = "row_line", nullable = false)
 	private Long rowLine;
 
-	@Column(name = "`column_line`", nullable = false)
+	@Column(name = "column_line", nullable = false)
 	private Long columnLine;
 }

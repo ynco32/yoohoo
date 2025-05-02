@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import Link from 'next/link'; // Import Link instead of useRouter
 import ClosedLockIcon from '@/assets/icons/locked.svg';
 import styles from './CardButton.module.scss';
 
@@ -28,18 +28,6 @@ const CardButton: React.FC<CardButtonProps> = ({
   onClick,
   size = 'medium',
 }) => {
-  const router = useRouter();
-
-  const handleClick = () => {
-    if (isDisabled) return;
-
-    if (onClick) {
-      onClick();
-    } else if (href) {
-      router.push(href);
-    }
-  };
-
   // 크기에 따른 스타일 클래스 결정
   let sizeClass = '';
   if (typeof size === 'string') {
@@ -59,46 +47,64 @@ const CardButton: React.FC<CardButtonProps> = ({
 
   const contentSize = getContentSize();
 
+  // 내부 컨텐츠 렌더링 함수
+  const renderContent = () => (
+    <div className={styles.contentWrapper}>
+      {imgSrc ? (
+        <div className={styles.imageContainer} style={contentSize}>
+          <Image
+            src={imgSrc}
+            alt={imgAlt || '이미지'}
+            fill
+            className={styles.image}
+          />
+        </div>
+      ) : isDisabled ? (
+        <ClosedLockIcon className={styles.lockIcon} style={contentSize} />
+      ) : Icon ? (
+        <Icon className={styles.icon} style={contentSize} />
+      ) : null}
+
+      {label && (
+        <span
+          className={`${styles.label} ${
+            isDisabled ? styles.labelDisabled : ''
+          }`}
+        >
+          {label}
+        </span>
+      )}
+    </div>
+  );
+
+  // 버튼 스타일 객체
+  const buttonStyle =
+    typeof size === 'number' ? { width: `${size}px`, height: `${size}px` } : {};
+
   return (
     <div className={styles.container}>
-      <div
-        onClick={handleClick}
-        className={`${styles.cardButton} ${sizeClass} ${
-          isDisabled ? styles.disabled : ''
-        } ${className}`}
-        style={
-          typeof size === 'number'
-            ? { width: `${size}px`, height: `${size}px` }
-            : {}
-        }
-      >
-        <div className={styles.contentWrapper}>
-          {imgSrc ? (
-            <div className={styles.imageContainer} style={contentSize}>
-              <Image
-                src={imgSrc}
-                alt={imgAlt || '이미지'}
-                fill
-                className={styles.image}
-              />
-            </div>
-          ) : isDisabled ? (
-            <ClosedLockIcon className={styles.lockIcon} style={contentSize} />
-          ) : Icon ? (
-            <Icon className={styles.icon} style={contentSize} />
-          ) : null}
-
-          {label && (
-            <span
-              className={`${styles.label} ${
-                isDisabled ? styles.labelDisabled : ''
-              }`}
-            >
-              {label}
-            </span>
-          )}
+      {isDisabled || !href ? (
+        // 비활성화되었거나 링크가 없는 경우 div로 렌더링
+        <div
+          onClick={isDisabled ? undefined : onClick}
+          className={`${styles.cardButton} ${sizeClass} ${
+            isDisabled ? styles.disabled : ''
+          } ${className}`}
+          style={buttonStyle}
+        >
+          {renderContent()}
         </div>
-      </div>
+      ) : (
+        // 활성화되고 href가 있는 경우 Link로 렌더링
+        <Link
+          href={href}
+          onClick={onClick}
+          className={`${styles.cardButton} ${sizeClass} ${className}`}
+          style={buttonStyle}
+        >
+          {renderContent()}
+        </Link>
+      )}
       {title && <h3 className={styles.title}>{title}</h3>}
     </div>
   );

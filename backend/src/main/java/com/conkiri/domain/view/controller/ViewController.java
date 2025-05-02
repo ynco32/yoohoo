@@ -42,9 +42,8 @@ public class ViewController {
 	// 단일 후기 조회 / 수정할 후기 조회
 	@GetMapping("/reviews/{reviewId}")
 	public ApiResponse<ReviewDetailResponseDTO> getAReview(
-		@PathVariable("reviewId") Long reviewId,
-		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+		@PathVariable("reviewId") Long reviewId) {
 
-		return ApiResponse.success(viewService.getAReview(reviewId, userPrincipal.getUser()));
+		return ApiResponse.success(viewService.getAReview(reviewId));
 	}
 }

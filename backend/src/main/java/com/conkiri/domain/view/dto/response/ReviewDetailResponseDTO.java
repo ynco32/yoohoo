@@ -26,16 +26,14 @@ public record ReviewDetailResponseDTO(
 ) {
 	public static ReviewDetailResponseDTO from(Review review) {
 
-		Seat seat = review.getSeat();
-
 		return new ReviewDetailResponseDTO(
 			review.getReviewId(),
 			review.getUser().getNickname(),
 			review.getConcert().getConcertName(),
-			seat.getSeatId(),
-			seat.getSection(),
-			seat.getRowLine(),
-			seat.getColumnLine(),
+			review.getSeat().getSeatId(),
+			review.getSeat().getSection(),
+			review.getSeat().getRowLine(),
+			review.getSeat().getColumnLine(),
 			review.getArtistGrade(),
 			review.getStageGrade(),
 			review.getScreenGrade(),

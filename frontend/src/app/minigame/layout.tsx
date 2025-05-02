@@ -1,9 +1,12 @@
-import styles from './layout.module.scss';
+// minigame/layout.tsx
+'use client';
+import React from 'react';
+import { TicketingProvider } from './TicketingContext';
 
-export default function MiniGameLayout({
+export default function MinigameLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className={styles.container}>{children}</div>;
+  return <TicketingProvider>{children}</TicketingProvider>;
 }

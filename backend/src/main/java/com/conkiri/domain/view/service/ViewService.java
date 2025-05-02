@@ -13,6 +13,7 @@ import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.base.repository.SeatRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
+import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ReviewPhoto;
 import com.conkiri.domain.view.repository.ReviewPhotoRepository;
@@ -54,6 +55,15 @@ public class ViewService {
 
 		return review.getReviewId();
 	}
+
+	// 단일 후기 조회 / 수정할 후기 조회
+	public ReviewDetailResponseDTO getAReview(Long reviewId) {
+		Review review = reviewRepository.findWithUserConcertSeatById(reviewId)
+			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
+		return ReviewDetailResponseDTO.from(review);
+	}
+
+	// -------------------- 이하 공통 --------------------
 
 	// 콘서트 조회
 	private Concert findConcertOrThrow(Long concertId) {

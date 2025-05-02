@@ -16,8 +16,15 @@
   }
 }
 
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; // 아이콘과 텍스트 사이의 간격
+}
+
 .active {
-  background-color: #D7F2FF;
+  background-color: #d7f2ff;
   color: $text-main;
 }
 
@@ -37,5 +44,11 @@
 }
 
 .icon {
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text {
+  display: inline-block;
 }

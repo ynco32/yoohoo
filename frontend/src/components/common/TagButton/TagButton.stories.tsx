@@ -15,7 +15,7 @@ const meta = {
     },
     iconName: {
       control: 'select',
-      options: [undefined, 'check'],
+      options: [undefined, 'check-box'],
     },
     iconSize: {
       control: { type: 'number', min: 10, max: 24, step: 1 },
@@ -42,7 +42,7 @@ export const Active: Story = {
   args: {
     children: '전체 좌석 리뷰 보기',
     type: 'active',
-    iconName: 'check',
+    iconName: 'check-box',
   },
 };
 
@@ -58,7 +58,7 @@ export const TagGroup: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div>
-        <TagButton type='active' iconName='check'>
+        <TagButton type='active' iconName='check-box'>
           전체 좌석 리뷰 보기
         </TagButton>
       </div>

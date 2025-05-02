@@ -66,16 +66,18 @@ export default function TagButton({
       onClick={onClick}
       disabled={type === 'disabled'}
     >
-      {iconName && (
-        <span className={styles.icon}>
-          <IconBox
-            name={iconName}
-            size={iconSize}
-            color={iconColor || defaultIconColor}
-          />
-        </span>
-      )}
-      {children}
+      <div className={styles.content}>
+        {iconName && (
+          <span className={styles.icon}>
+            <IconBox
+              name={iconName}
+              size={iconSize}
+              color={iconColor || defaultIconColor}
+            />
+          </span>
+        )}
+        <span className={styles.text}>{children}</span>
+      </div>
     </button>
   );
 }

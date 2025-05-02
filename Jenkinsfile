@@ -170,7 +170,7 @@ pipeline {  // 파이프라인 정의 시작
                         ]) {
                             sh '''
                                 # 이미지 빌드만 수행
-                                docker-compose -f docker-compose-${env.BRANCH_NAME}.yml build \
+                                docker-compose -f docker-compose-${BRANCH_NAME}.yml build \
                                     --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
@@ -219,14 +219,14 @@ pipeline {  // 파이프라인 정의 시작
                                 // 새 버전 컨테이너 시작
                                 sh """
                                     # 새 버전 컨테이너 시작
-                                    docker-compose -f docker-compose-${env.BRANCH_NAME}.yml up -d --name ${env.BACKEND_NEW_CONTAINER_NAME}
+                                    docker-compose -f docker-compose-${BRANCH_NAME}.yml up -d --name ${env.BACKEND_NEW_CONTAINER_NAME}
                                     
                                     # Nginx 설정 초기화
-                                    cp ${env.NGINX_CONF_PATH}/default.conf ${env.NGINX_CONF_PATH}/default.conf.backup
+                                    cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                     
                                     # 초기 트래픽 설정 (90:10)
-                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/default.conf
-                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/default.conf
+                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     docker exec nginx nginx -s reload
                                 """
 
@@ -238,8 +238,8 @@ pipeline {  // 파이프라인 정의 시작
                                         
                                         // 트래픽 조정
                                         sh """
-                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/default.conf
-                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/default.conf
+                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                             docker exec nginx nginx -s reload
                                         """
                                         
@@ -284,14 +284,14 @@ pipeline {  // 파이프라인 정의 시작
                                 // 새 버전 컨테이너 시작
                                 sh """
                                     # 새 버전 컨테이너 시작
-                                    docker-compose -f docker-compose-${env.BRANCH_NAME}.yml up -d --name ${env.FRONTEND_NEW_CONTAINER_NAME}
+                                    docker-compose -f docker-compose-${BRANCH_NAME}.yml up -d --name ${env.FRONTEND_NEW_CONTAINER_NAME}
                                     
                                     # Nginx 설정 초기화
-                                    cp ${env.NGINX_CONF_PATH}/default.conf ${env.NGINX_CONF_PATH}/default.conf.frontend.backup
+                                    cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.frontend.backup
                                     
                                     # 초기 트래픽 설정 (90:10)
-                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/default.conf
-                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/default.conf
+                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     docker exec nginx nginx -s reload
                                 """
 
@@ -303,8 +303,8 @@ pipeline {  // 파이프라인 정의 시작
                                         
                                         // 트래픽 조정
                                         sh """
-                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/default.conf
-                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/default.conf
+                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                             docker exec nginx nginx -s reload
                                         """
                                         
@@ -442,8 +442,8 @@ def checkBackendMetrics() {
 def rollbackBackend() {
     sh """
         # 트래픽을 이전 버전으로 완전히 되돌림
-        sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/default.conf
-        sed -i 's/weight=[0-9]*/weight=0/g' ${env.NGINX_CONF_PATH}/default.conf
+        sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+        sed -i 's/weight=[0-9]*/weight=0/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
         docker exec nginx nginx -s reload
         
         # 새 버전 컨테이너 중지 및 삭제
@@ -498,8 +498,8 @@ def checkFrontendMetrics() {
 def rollbackFrontend() {
     sh """
         # 트래픽을 이전 버전으로 완전히 되돌림
-        sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/default.conf
-        sed -i 's/weight=[0-9]*/weight=0/g' ${env.NGINX_CONF_PATH}/default.conf
+        sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+        sed -i 's/weight=[0-9]*/weight=0/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
         docker exec nginx nginx -s reload
         
         # 새 버전 컨테이너 중지 및 삭제

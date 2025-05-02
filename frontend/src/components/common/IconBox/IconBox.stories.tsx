@@ -29,7 +29,7 @@ const iconNames: IconName[] = [
 ];
 
 const meta = {
-  title: 'Common/IconBox',
+  title: 'Components/Common/IconBox',
   component: IconBox,
   parameters: {
     layout: 'centered',

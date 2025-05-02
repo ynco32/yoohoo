@@ -5,7 +5,7 @@ import Button from './Button';
 import IconBox from '../IconBox/IconBox';
 
 const meta = {
-  title: 'Common/Button',
+  title: 'Components/Common/Button',
   component: Button,
   parameters: {
     layout: 'centered',

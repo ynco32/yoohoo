@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import TagButton from './TagButton';
 
 const meta = {
-  title: 'Common/TagButton',
+  title: 'Components/Common/TagButton',
   component: TagButton,
   parameters: {
     layout: 'centered',

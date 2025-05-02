@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import ConcertCard from './ConcertCard';
 
 const meta: Meta<typeof ConcertCard> = {
-  title: 'Common/ConcertCard',
+  title: 'Components/Common/ConcertCard',
   component: ConcertCard,
   parameters: {
     layout: 'centered',

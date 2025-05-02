@@ -1,10 +1,8 @@
-// ArtistCard.stories.tsx
-import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import ArtistCard from './ArtistCard';
 
 const meta: Meta<typeof ArtistCard> = {
-  title: 'Common/ArtistCard',
+  title: 'Components/Common/ArtistCard',
   component: ArtistCard,
   tags: ['autodocs'],
   argTypes: {

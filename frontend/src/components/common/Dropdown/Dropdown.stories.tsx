@@ -4,7 +4,7 @@ import Dropdown, { DropdownProps } from './Dropdown';
 import SmallDropdown from './SmallDropdown';
 
 const meta = {
-  title: 'Common/Dropdown',
+  title: 'Components/Common/Dropdown',
   component: Dropdown,
   parameters: {
     layout: 'centered',

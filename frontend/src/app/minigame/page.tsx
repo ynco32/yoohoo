@@ -13,21 +13,21 @@ export default function MiniGamePage() {
             imgSrc='/images/queue.png'
             imgAlt='대기열 입장 연습'
             title='대기열 입장'
-            href='/ticketing/melon-mode/practice/entrance'
+            href='/minigame/entrance'
           />
 
           <CardButton
             imgSrc='/images/seatGrape.png'
             imgAlt='좌석 선택 연습'
             title='좌석 선택'
-            href='/ticketing/melon-mode/practice/grape'
+            href='/minigame/grape'
           />
           <div className={styles.centerCard}>
             <CardButton
               imgSrc='/images/capcha.png'
               imgAlt='보안문자 연습'
               title='보안 문자'
-              href='/ticketing/melon-mode/practice/securityMessage'
+              href='/minigame/securityMessage'
             />
           </div>
         </div>

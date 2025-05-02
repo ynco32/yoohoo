@@ -57,8 +57,8 @@ public class ViewService {
 	}
 
 	// 단일 후기 조회 / 수정할 후기 조회
-	public ReviewDetailResponseDTO getAReview(Long reviewId, User user) {
-		Review review = reviewRepository.findById(reviewId)
+	public ReviewDetailResponseDTO getAReview(Long reviewId) {
+		Review review = reviewRepository.findWithUserConcertSeatById(reviewId)
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 		return ReviewDetailResponseDTO.from(review);
 	}

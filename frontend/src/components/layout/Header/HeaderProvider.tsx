@@ -91,6 +91,19 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     if (pathname.startsWith('/mypage/sight')) return '나의 후기';
     if (pathname.startsWith('/mypage/sharing')) return '나의 나눔글';
     if (pathname.startsWith('/mypage/ticketing')) return '티켓팅 기록';
+
+    if (pathSegments[0] === 'minigame' && pathSegments[1] === 'entrance') {
+      return '대기열 입장 연습';
+    }
+    if (pathSegments[0] === 'minigame' && pathSegments[1] === 'grape') {
+      return '좌석 선택 연습';
+    }
+    if (
+      pathSegments[0] === 'minigame' &&
+      pathSegments[1] === 'securityMessage'
+    ) {
+      return '보안 문자 연습';
+    }
     if (pathname.startsWith('/minigame')) return '티켓팅 미니 게임';
 
     if (pathSegments[0] === 'sharing' && pathSegments[2] === 'write') {

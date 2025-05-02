@@ -4,7 +4,9 @@
   position: sticky;
   left: 0;
   top: 0;
+  padding: 0 0.5rem;
   z-index: 100;
+  color: $text-main;
 }
 
 .header {
@@ -12,11 +14,29 @@
 }
 
 .headerContent {
-  position: relative;
   display: flex;
   height: 100%;
   align-items: center;
   justify-content: space-between;
+}
+
+.leftSection {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.centerSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
 }
 
 .logoContainer {
@@ -29,16 +49,28 @@
 }
 
 .headerTitle {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
   font-size: $font-size-md;
   font-weight: $font-weight-medium;
+  margin: 0;
+  text-align: center;
 }
 
-.menuContainer {
-  flex: none;
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: $con-blue;
 }
 
 .detailContainer {
@@ -76,17 +108,16 @@
 }
 
 .backButton {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  color: $con-blue;
   width: 24px;
   height: 24px;
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  margin-right: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .backIcon {
@@ -111,4 +142,14 @@
   font-size: $font-size-sm;
   color: $text-sub;
   margin: 0;
+}
+
+.iconContainer {
+  position: absolute;
+  right: $spacing-md;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm; // 아이콘 사이 간격
 }

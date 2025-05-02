@@ -5,6 +5,14 @@ $con-blue: #4986e8;
 $con-lightblue: #a7deff;
 $con-gray: #dddddd;
 
+// Gradation
+$ticketing-bg: radial-gradient(
+  300px 300px at 50% 50%,
+  #dbeefd 0%,
+  #eef7fe 51.9%,
+  #fff 100%
+);
+
 // Text Colors
 $text-main: #515151;
 $text-sub: #949494;

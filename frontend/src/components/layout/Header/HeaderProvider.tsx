@@ -91,6 +91,7 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     if (pathname.startsWith('/mypage/sight')) return '나의 후기';
     if (pathname.startsWith('/mypage/sharing')) return '나의 나눔글';
     if (pathname.startsWith('/mypage/ticketing')) return '티켓팅 기록';
+    if (pathname.startsWith('/minigame')) return '티켓팅 미니 게임';
 
     if (pathSegments[0] === 'sharing' && pathSegments[2] === 'write') {
       return '나눔 등록';

@@ -3,19 +3,18 @@ package com.conkiri.domain.ticketing.service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Set;
-import java.time.ZoneId;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
+import com.conkiri.domain.ticketing.dto.response.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
-import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
-import com.conkiri.global.exception.ticketing.NotStartedTicketingException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RedisKeys;
 import com.conkiri.global.util.WebSocketConstants;
 
@@ -104,8 +103,8 @@ public class QueueProcessingService {
 	}
 
 	private void notifyWaitingTime(Long userId, WaitingTimeResponseDTO waitingTime) {
-		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.getEstimatedWaitingSeconds(),
-			waitingTime.getUsersAfter(), waitingTime.getPosition());  // 로그 추가
+		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
+			waitingTime.usersAfter(), waitingTime.position());  // 로그 추가
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		messagingTemplate.convertAndSendToUser(
 			user.getEmail(),
@@ -229,10 +228,10 @@ public class QueueProcessingService {
 	public void validateQueueRequest(Long userId) {
 
 		if (!canJoinTicketing(userId)) {
-			throw new DuplicateTicketingException();
+			throw new BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}
 		if (!isTicketingActive()) {
-			throw new NotStartedTicketingException();
+			throw new BaseException(ErrorCode.NOT_START_TICKETING);
 		}
 	}
 }

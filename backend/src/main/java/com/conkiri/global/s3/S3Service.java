@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.conkiri.global.exception.sharing.FileNotEmptyException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class S3Service {
 	// 이미지 업로드
 	public String uploadImage(MultipartFile file, String dirName) {
 
-		if (file.getSize() == 0) { throw new FileNotEmptyException(); }
+		if (file.getSize() == 0) { throw new BaseException(ErrorCode.FILE_NOT_EMPTY); }
 
 		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH");
 		String subDir = sdf.format(new Date());

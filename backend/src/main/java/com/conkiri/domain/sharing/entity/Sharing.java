@@ -10,7 +10,7 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.sharing.dto.request.SharingRequestDTO;
 import com.conkiri.domain.sharing.dto.request.SharingUpdateRequestDTO;
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.global.domain.BaseTime;
+import com.conkiri.global.common.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,9 +25,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -75,13 +73,12 @@ public class Sharing extends BaseTime {
 	}
 
 	private Sharing(SharingRequestDTO sharingRequestDTO, String photoUrl, Concert concert, User user) {
-		this.latitude = sharingRequestDTO.getLatitude();
-		this.longitude = sharingRequestDTO.getLongitude();
-		this.title = sharingRequestDTO.getTitle();
-		this.content = sharingRequestDTO.getContent();
+		this.latitude = sharingRequestDTO.latitude();
+		this.longitude = sharingRequestDTO.longitude();
+		this.title = sharingRequestDTO.title();
+		this.content = sharingRequestDTO.content();
 		LocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
-			.atTime(sharingRequestDTO.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
-		System.out.println("엔티티 생성할 때 시간 : " + startTime);
+			.atTime(sharingRequestDTO.startTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
 		this.startTime = startTime;
 		this.photoUrl = photoUrl;
 		this.concert = concert;
@@ -89,18 +86,18 @@ public class Sharing extends BaseTime {
 	}
 
 	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, Concert concert, String photoUrl) {
-		this.title = sharingUpdateRequestDTO.getTitle() != null ? sharingUpdateRequestDTO.getTitle() : this.title;
-		this.content = sharingUpdateRequestDTO.getContent() != null ? sharingUpdateRequestDTO.getContent() : this.content;
+		this.title = sharingUpdateRequestDTO.title() != null ? sharingUpdateRequestDTO.title() : this.title;
+		this.content = sharingUpdateRequestDTO.content() != null ? sharingUpdateRequestDTO.content() : this.content;
 		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;
-		this.latitude = sharingUpdateRequestDTO.getLatitude() != null ? sharingUpdateRequestDTO.getLatitude() : this.latitude;
-		this.longitude = sharingUpdateRequestDTO.getLongitude() != null ? sharingUpdateRequestDTO.getLongitude() : this.longitude;
-		this.startTime = sharingUpdateRequestDTO.getStartTime() != null ? concert
+		this.latitude = sharingUpdateRequestDTO.latitude() != null ? sharingUpdateRequestDTO.latitude() : this.latitude;
+		this.longitude = sharingUpdateRequestDTO.longitude() != null ? sharingUpdateRequestDTO.longitude() : this.longitude;
+		this.startTime = sharingUpdateRequestDTO.startTime() != null ? concert
 																			.getStartTime()
 																			.atZone(ZoneId.of("Asia/Seoul"))
 																			.toLocalDate()
 																			.atTime(
 																				sharingUpdateRequestDTO
-																					.getStartTime()
+																					.startTime()
 																					.atZone(ZoneId.of("Asia/Seoul"))
 																					.toLocalTime()) : this.startTime;
 	}

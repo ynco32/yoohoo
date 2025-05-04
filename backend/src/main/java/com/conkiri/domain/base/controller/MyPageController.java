@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.base.service.MyPageService;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
-import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.global.auth.token.UserPrincipal;
+import com.conkiri.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,10 +27,11 @@ public class MyPageController {
 	 * @return
 	 */
 	@GetMapping("/wrote")
-	public SharingResponseDTO getWroteList(
+	public ApiResponse<SharingResponseDTO> getWroteList(
 		@RequestParam(value = "lastSharingId", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return myPageService.getWroteList(lastSharingId, userPrincipal.getUserId());
+
+		return ApiResponse.success(myPageService.getWroteList(lastSharingId, userPrincipal.getUser()));
 	}
 
 	/**
@@ -40,15 +41,10 @@ public class MyPageController {
 	 * @return
 	 */
 	@GetMapping("/scrap")
-	public SharingResponseDTO getScrappedList(
+	public ApiResponse<SharingResponseDTO> getScrappedList(
 		@RequestParam(value = "lastSharingId", required = false) Long lastSharingId,
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return myPageService.getScrappedList(lastSharingId, userPrincipal.getUserId());
-	}
 
-	// 마이페이지에서 회원이 작성한 후기 게시글 조회
-	@GetMapping("/reviews")
-	public ReviewResponseDTO getReviews(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-		return myPageService.getReviews(userPrincipal.getUserId());
+		return ApiResponse.success(myPageService.getScrappedList(lastSharingId, userPrincipal.getUser()));
 	}
 }

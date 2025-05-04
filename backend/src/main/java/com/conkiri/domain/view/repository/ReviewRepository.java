@@ -1,31 +1,22 @@
 package com.conkiri.domain.view.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import com.conkiri.domain.base.entity.Concert;
-import com.conkiri.domain.base.entity.Seat;
-import com.conkiri.domain.base.entity.StageType;
-import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-	List<Review> findBySeatIn(List<Seat> seats);
+	@Query("""
+		select r from Review r
+		join fetch r.user
+		join fetch r.concert
+		join fetch r.seat s
+		where r.reviewId = :reviewId
+	""")
+	Optional<Review> findWithUserConcertSeatById(@Param("reviewId") Long reviewId);
 
-	List<Review> findBySeat(Seat seat);
-
-	List<Review> findByUserOrderByReviewIdDesc(User user);
-
-	boolean existsByUserAndSeatAndConcert(User user, Seat seat, Concert concert);
-
-	boolean existsByUserAndSeatAndConcertAndReviewIdNot(User user, Seat seat, Concert concert, Long reviewId);
-
-	Optional<Review> findReviewByReviewId(Long reviewId);
-
-	Long countBySeat(Seat seat);
-
-	Long countBySeatAndStageType(Seat seat, StageType stageType);
 }

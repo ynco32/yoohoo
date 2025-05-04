@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active:
+      - local
+    group:
+      local:
+        - oauth
+        - db-local
+        - cloud
+        - redis
+      dev:
+        - oauth
+        - db-dev
+        - cloud
+        - redis
+    include: oauth, db, cloud, redis
+  

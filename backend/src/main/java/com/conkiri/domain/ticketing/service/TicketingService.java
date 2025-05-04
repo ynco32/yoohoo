@@ -18,11 +18,8 @@ import com.conkiri.domain.ticketing.entity.Status;
 import com.conkiri.domain.ticketing.repository.ResultRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
-import com.conkiri.global.exception.ticketing.AlreadyReservedSeatException;
-import com.conkiri.global.exception.ticketing.DuplicateTicketingException;
-import com.conkiri.global.exception.ticketing.InvalidSeatException;
-import com.conkiri.global.exception.ticketing.InvalidSectionException;
-import com.conkiri.global.exception.ticketing.RecordNotFoundException;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RedisKeys;
 
 import lombok.RequiredArgsConstructor;
@@ -108,7 +105,7 @@ public class TicketingService {
 			.setIfAbsent(lockKey, "LOCKED", Duration.ofSeconds(3));
 
 		if (acquired == null || !acquired) {
-			throw new AlreadyReservedSeatException();
+			throw new BaseException(ErrorCode.ALREADY_RESERVED_SEAT);
 		}
 	}
 
@@ -170,15 +167,12 @@ public class TicketingService {
 	public void saveTicketingResult(Long userId) {
 		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
 		if (resultDTO == null) {
-			throw new RecordNotFoundException();
+			throw new BaseException(ErrorCode.RECORD_NOT_FOUND);
 		}
 
-		System.out.println("save 전!!");
-		System.out.println(resultDTO + " " + resultDTO.getSeat());
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Result result = Result.of(resultDTO, user);
 		resultRepository.save(result);
-		System.out.println("save 후!!");
 	}
 
 	// 마이페이지용 전체 결과 조회
@@ -225,7 +219,7 @@ public class TicketingService {
 
 		String currentStatus = (String)redisTemplate.opsForHash().get(sectionKey, seat);
 		if (!Status.AVAILABLE.getValue().equals(currentStatus)) {
-			throw new AlreadyReservedSeatException();
+			throw new BaseException(ErrorCode.ALREADY_RESERVED_SEAT);
 		}
 	}
 
@@ -243,7 +237,7 @@ public class TicketingService {
 	public void validateSection(String section) {
 
 		if (!Section.isValidSection(section)) {
-			throw new InvalidSectionException();
+			throw new BaseException(ErrorCode.INVALID_SECTION);
 		}
 	}
 
@@ -251,7 +245,7 @@ public class TicketingService {
 
 		try {
 			if (seat == null || !seat.matches("\\d+-\\d+")) {
-				throw new InvalidSeatException();
+				throw new BaseException(ErrorCode.INVALID_SEAT);
 			}
 
 			String[] parts = seat.split("-");
@@ -259,10 +253,10 @@ public class TicketingService {
 			int col = Integer.parseInt(parts[1]);
 
 			if (row < 1 || row > MAX_ROW || col < 1 || col > MAX_COL) {
-				throw new InvalidSeatException();
+				throw new BaseException(ErrorCode.INVALID_SEAT);
 			}
 		} catch (NumberFormatException e) {
-			throw new InvalidSeatException();
+			throw new BaseException(ErrorCode.INVALID_SEAT);
 		}
 	}
 
@@ -270,7 +264,7 @@ public class TicketingService {
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
 		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
 			log.info("User {} already has a reservation", userId);
-			throw new DuplicateTicketingException();
+			throw new  BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}
 	}
 

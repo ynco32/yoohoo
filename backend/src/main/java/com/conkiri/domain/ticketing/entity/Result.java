@@ -48,11 +48,11 @@ public class Result {
 
 	private Result(TicketingResultResponseDTO ticketingResultResponseDTO, User user){
 		this.user = user;
-		this.reserveTime = ticketingResultResponseDTO.getReserveTime();
-		this.section = ticketingResultResponseDTO.getSection();
-		this.seat = ticketingResultResponseDTO.getSeat();
-		this.ticketRank = ticketingResultResponseDTO.getTicketRank();
-		this.processingTime = ticketingResultResponseDTO.getProcessingTime();
+		this.reserveTime = ticketingResultResponseDTO.reserveTime();
+		this.section = ticketingResultResponseDTO.section();
+		this.seat = ticketingResultResponseDTO.seat();
+		this.ticketRank = ticketingResultResponseDTO.ticketRank();
+		this.processingTime = ticketingResultResponseDTO.processingTime();
 	}
 
 	public static Result of(TicketingResultResponseDTO ticketingResultResponseDTO, User user) {

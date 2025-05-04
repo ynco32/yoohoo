@@ -1,0 +1,33 @@
+// src/types/arena.ts
+import { ApiResponse } from './api';
+
+/**
+ * 공연장 정보 타입 정의
+ */
+export interface ArenaInfo {
+  /** 경기장 ID */
+  arenaId: string | number;
+
+  /** 경기장 이름 */
+  arenaName: string;
+
+  /** 경기장 영어 이름 */
+  arenaEngName: string;
+
+  /** 주소 */
+  address: string;
+
+  /** 위도 */
+  latitude: number;
+
+  /** 경도 */
+  longitude: number;
+
+  /** 경기장 사진 URL */
+  photoUrl: string;
+}
+
+/**
+ * 경기장 목록을 위한 API 응답 타입
+ */
+export type ArenaListResponse = ApiResponse<ArenaInfo[]>;

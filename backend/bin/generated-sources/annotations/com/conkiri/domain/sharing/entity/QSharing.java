@@ -22,18 +22,18 @@ public class QSharing extends EntityPathBase<Sharing> {
 
     public static final QSharing sharing = new QSharing("sharing");
 
-    public final com.conkiri.global.domain.QBaseTime _super = new com.conkiri.global.domain.QBaseTime(this);
+    public final com.conkiri.global.common.QBaseTime _super = new com.conkiri.global.common.QBaseTime(this);
 
     public final com.conkiri.domain.base.entity.QConcert concert;
 
     public final StringPath content = createString("content");
 
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
+
     public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifyTime = _super.modifyTime;
 
     public final StringPath photoUrl = createString("photoUrl");
 
@@ -46,9 +46,6 @@ public class QSharing extends EntityPathBase<Sharing> {
     public final StringPath title = createString("title");
 
     public final com.conkiri.domain.user.entity.QUser user;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> writeTime = _super.writeTime;
 
     public QSharing(String variable) {
         this(Sharing.class, forVariable(variable), INITS);

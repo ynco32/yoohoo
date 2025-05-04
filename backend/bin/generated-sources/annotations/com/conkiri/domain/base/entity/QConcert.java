@@ -32,8 +32,6 @@ public class QConcert extends EntityPathBase<Concert> {
 
     public final StringPath photoUrl = createString("photoUrl");
 
-    public final EnumPath<StageType> stageType = createEnum("stageType", StageType.class);
-
     public final DateTimePath<java.time.LocalDateTime> startTime = createDateTime("startTime", java.time.LocalDateTime.class);
 
     public QConcert(String variable) {

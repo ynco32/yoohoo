@@ -22,13 +22,15 @@ public class QSeat extends EntityPathBase<Seat> {
 
     public static final QSeat seat = new QSeat("seat");
 
+    public final QArena arena;
+
     public final NumberPath<Long> columnLine = createNumber("columnLine", Long.class);
 
     public final NumberPath<Long> rowLine = createNumber("rowLine", Long.class);
 
     public final NumberPath<Long> seatId = createNumber("seatId", Long.class);
 
-    public final QSection section;
+    public final StringPath section = createString("section");
 
     public QSeat(String variable) {
         this(Seat.class, forVariable(variable), INITS);
@@ -48,7 +50,7 @@ public class QSeat extends EntityPathBase<Seat> {
 
     public QSeat(Class<? extends Seat> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.section = inits.isInitialized("section") ? new QSection(forProperty("section"), inits.get("section")) : null;
+        this.arena = inits.isInitialized("arena") ? new QArena(forProperty("arena")) : null;
     }
 
 }

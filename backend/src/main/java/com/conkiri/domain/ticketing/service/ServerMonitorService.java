@@ -4,7 +4,7 @@ import java.lang.management.ManagementFactory;
 
 import org.springframework.stereotype.Component;
 
-import com.conkiri.domain.ticketing.dto.ServerMetricsDTO;
+import com.conkiri.domain.ticketing.dto.response.ServerMetricsDTO;
 import com.sun.management.OperatingSystemMXBean;
 
 import lombok.RequiredArgsConstructor;

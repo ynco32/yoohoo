@@ -21,15 +21,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath email = createString("email");
 
-    public final StringPath level = createString("level");
-
     public final StringPath nickname = createString("nickname");
-
-    public final StringPath profileUrl = createString("profileUrl");
-
-    public final NumberPath<Integer> reviewCount = createNumber("reviewCount", Integer.class);
-
-    public final StringPath tier = createString("tier");
 
     public final NumberPath<Long> userId = createNumber("userId", Long.class);
 

@@ -22,33 +22,30 @@ public class QReview extends EntityPathBase<Review> {
 
     public static final QReview review = new QReview("review");
 
-    public final com.conkiri.global.domain.QBaseTime _super = new com.conkiri.global.domain.QBaseTime(this);
+    public final com.conkiri.global.common.QBaseTime _super = new com.conkiri.global.common.QBaseTime(this);
+
+    public final EnumPath<ArtistGrade> artistGrade = createEnum("artistGrade", ArtistGrade.class);
+
+    public final StringPath cameraBrand = createString("cameraBrand");
+
+    public final StringPath cameraModel = createString("cameraModel");
 
     public final com.conkiri.domain.base.entity.QConcert concert;
 
     public final StringPath content = createString("content");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifyTime = _super.modifyTime;
-
-    public final StringPath photoUrl = createString("photoUrl");
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     public final NumberPath<Long> reviewId = createNumber("reviewId", Long.class);
 
+    public final EnumPath<ScreenGrade> screenGrade = createEnum("screenGrade", ScreenGrade.class);
+
     public final com.conkiri.domain.base.entity.QSeat seat;
 
-    public final EnumPath<SeatDistance> seatDistance = createEnum("seatDistance", SeatDistance.class);
-
-    public final EnumPath<Sound> sound = createEnum("sound", Sound.class);
-
-    public final EnumPath<com.conkiri.domain.base.entity.StageType> stageType = createEnum("stageType", com.conkiri.domain.base.entity.StageType.class);
+    public final EnumPath<StageGrade> stageGrade = createEnum("stageGrade", StageGrade.class);
 
     public final com.conkiri.domain.user.entity.QUser user;
-
-    public final NumberPath<Integer> viewScore = createNumber("viewScore", Integer.class);
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> writeTime = _super.writeTime;
 
     public QReview(String variable) {
         this(Review.class, forVariable(variable), INITS);

@@ -6,9 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.base.dto.response.UserResponseDTO;
-import com.conkiri.domain.user.entity.User;
-import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.auth.token.UserPrincipal;
+import com.conkiri.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,12 +16,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MainPageController {
 
-	private final UserReadService userReadService;
-
 	@GetMapping("/user-info")
-	public UserResponseDTO getUserInformation(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	public ApiResponse<UserResponseDTO> getUserInformation(
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		User user = userReadService.findUserByIdOrElseThrow(userPrincipal.getUserId());
-		return UserResponseDTO.from(user);
+		return ApiResponse.success(UserResponseDTO.from(userPrincipal.getUser()));
 	}
 }

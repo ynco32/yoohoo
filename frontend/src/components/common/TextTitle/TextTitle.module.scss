@@ -1,0 +1,62 @@
+.titleContainer {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-weight: $font-weight-bold;
+  color: $text-main;
+  margin: 0 0 5px 0;
+  line-height: 1.2;
+}
+
+.description {
+  font-weight: $font-weight-medium;
+  color: $con-blue;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.content {
+  margin-top: 16px;
+}
+
+// 크기별 스타일
+.large {
+  .title {
+    font-size: $font-size-2xl;
+  }
+
+  .description {
+    font-size: $font-size-md;
+  }
+}
+
+.medium {
+  .title {
+    font-size: $font-size-xl;
+  }
+
+  .description {
+    font-size: $font-size-sm;
+  }
+}
+
+.small {
+  .title {
+    font-size: $font-size-lg;
+  }
+
+  .description {
+    font-size: $font-size-xs;
+  }
+}
+
+// 가운데 정렬
+.centered {
+  text-align: center;
+
+  .content {
+    display: flex;
+    justify-content: center;
+  }
+}

@@ -22,21 +22,18 @@ public class QComment extends EntityPathBase<Comment> {
 
     public static final QComment comment = new QComment("comment");
 
-    public final com.conkiri.global.domain.QBaseTime _super = new com.conkiri.global.domain.QBaseTime(this);
+    public final com.conkiri.global.common.QBaseTime _super = new com.conkiri.global.common.QBaseTime(this);
 
     public final NumberPath<Long> commentId = createNumber("commentId", Long.class);
 
     public final StringPath content = createString("content");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> modifyTime = _super.modifyTime;
+    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
     public final QSharing sharing;
 
     public final com.conkiri.domain.user.entity.QUser user;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> writeTime = _super.writeTime;
 
     public QComment(String variable) {
         this(Comment.class, forVariable(variable), INITS);

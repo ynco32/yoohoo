@@ -19,9 +19,17 @@ public class QArena extends EntityPathBase<Arena> {
 
     public static final QArena arena = new QArena("arena");
 
+    public final StringPath address = createString("address");
+
+    public final StringPath arenaEngName = createString("arenaEngName");
+
     public final NumberPath<Long> arenaId = createNumber("arenaId", Long.class);
 
     public final StringPath arenaName = createString("arenaName");
+
+    public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
+
+    public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
     public final StringPath photoUrl = createString("photoUrl");
 

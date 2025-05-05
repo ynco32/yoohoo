@@ -69,6 +69,7 @@ public enum ErrorCode {
 	INVALID_SECTION(HttpStatus.BAD_REQUEST, "유효하지 않은 구역입니다."),
 	INVALID_SEAT(HttpStatus.BAD_REQUEST, "유효하지 않은 좌석입니다."),
 	RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "티켓팅 결과를 찾을 수 없습니다."),
+	NO_TICKETING_TODAY(HttpStatus.BAD_REQUEST, "오늘은 티켓팅이 없습니다."),
 
 	// 현장
 	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")

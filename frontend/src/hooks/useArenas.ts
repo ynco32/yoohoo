@@ -1,7 +1,7 @@
 // src/hooks/useArenas.ts
 'use client';
 import { useState, useEffect } from 'react';
-import { arenaApi } from '@/api/sight/arena.api';
+import { arenaApi } from '@/api/sight/arena';
 import { ArenaInfo } from '../types/arena';
 
 interface UseArenasResult {

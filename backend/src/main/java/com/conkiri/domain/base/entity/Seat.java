@@ -22,9 +22,16 @@ public class Seat {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long seatId;
 
-	@Column(name = "row_line")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "arena_id", nullable = false)
+	private Arena arena;
+
+	@Column(name = "section", length = 10, nullable = false)
+	private String section;
+
+	@Column(name = "row_line", nullable = false)
 	private Long rowLine;
 
-	@Column(name = "column_line")
+	@Column(name = "column_line", nullable = false)
 	private Long columnLine;
 }

@@ -59,6 +59,8 @@ public enum ErrorCode {
 	// 시야
 	ARENA_NOT_FOUND(HttpStatus.BAD_REQUEST, "공연장을 찾을 수 없습니다."),
 	UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "해당 사용자에게 권한이 없습니다."),
+	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "좌석을 찾을 수 없습니다."),
+	REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
 
 	// 콘서트
 	DUPLICATE_TICKETING(HttpStatus.CONFLICT, "티켓팅에 참여한 내역이 있어 참여할 수 없습니다."),
@@ -67,7 +69,10 @@ public enum ErrorCode {
 	INVALID_SECTION(HttpStatus.BAD_REQUEST, "유효하지 않은 구역입니다."),
 	INVALID_SEAT(HttpStatus.BAD_REQUEST, "유효하지 않은 좌석입니다."),
 	RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "티켓팅 결과를 찾을 수 없습니다."),
+	NO_TICKETING_TODAY(HttpStatus.BAD_REQUEST, "오늘은 티켓팅이 없습니다."),
 
+	// 현장
+	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
 
 	;
 	private final HttpStatus httpStatus;

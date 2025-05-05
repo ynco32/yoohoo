@@ -3,7 +3,7 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 // 게임 모드 타입 정의
-export type GameMode = 'grape' | 'queue' | 'capcha' | null;
+export type GameMode = 'GRAPE' | 'QUEUE' | 'CAPCHA' | null;
 
 type TicketingContextType = {
   reactionTime: number;

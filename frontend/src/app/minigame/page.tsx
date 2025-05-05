@@ -13,7 +13,7 @@ export default function MiniGamePage() {
             imgSrc='/images/queue.png'
             imgAlt='대기열 입장 연습'
             title='대기열 입장'
-            href='/minigame/entrance'
+            href='/minigame/queue'
           />
 
           <CardButton

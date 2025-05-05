@@ -32,7 +32,11 @@ pipeline {  // 파이프라인 정의 시작
 
         stage('Install Yarn') {  // yarn 전역 설치를 위한 새로운 스테이지
             steps {
-                sh 'npm install -g yarn'
+                sh '''
+                    echo "Node.js PATH: $PATH"
+                    ls -la /home/ubuntu/jenkins-data/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/NodeJS_20.18.3/node-v20.18.3-linux-x64/bin/
+                    /home/ubuntu/jenkins-data/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/NodeJS_20.18.3/node-v20.18.3-linux-x64/bin/npm install -g yarn
+                '''
             }
         }
 

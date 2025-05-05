@@ -52,7 +52,20 @@ public class MyPageService {
 
 	// 마이페이지에서 회원이 작성한 시야 후기 게시글 조회
 	public ReviewResponseDTO getMyReviews(User user) {
-		List<Review> reviews = reviewRepository.findAllWithPhotosByUser(user);
-		return ReviewResponseDTO.of(reviews);
+		List<Review> reviews = reviewRepository.findAllByUser(user);
+
+		List<Long> reviewIds = reviews.stream()
+			.map(Review::getReviewId)
+			.toList();
+
+		List<ReviewPhoto> allPhotos = reviewPhotoRepository.findAllByReviewIdIn(reviewIds);
+
+		Map<Long, List<String>> reviewPhotoMap = allPhotos.stream()
+			.collect(Collectors.groupingBy(
+				rp -> rp.getReview().getReviewId(),
+				Collectors.mapping(ReviewPhoto::getPhotoUrl, Collectors.toList())
+			));
+
+		return ReviewResponseDTO.of(reviews, reviewPhotoMap);
 	}
 }

@@ -68,9 +68,6 @@ public class Review extends BaseTime {
 	@Column(name = "camera_model", length = 50)
 	private String cameraModel;
 
-	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ReviewPhoto> reviewPhotos = new ArrayList<>();
-
 	public static Review of(ReviewRequestDTO dto, User user, Concert concert, Seat seat) {
 		return new Review(dto, user, concert, seat);
 	}

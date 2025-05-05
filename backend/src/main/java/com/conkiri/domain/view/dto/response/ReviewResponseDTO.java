@@ -9,15 +9,10 @@ import com.conkiri.domain.view.entity.ReviewPhoto;
 public record ReviewResponseDTO(
 	List<ReviewDetailResponseDTO> reviews
 ) {
-	public static ReviewResponseDTO of(List<Review> reviews) {
+	public static ReviewResponseDTO of(List<Review> reviews, Map<Long, List<String>> reviewPhotoMap) {
 		return new ReviewResponseDTO(
 			reviews.stream()
-				.map(review -> ReviewDetailResponseDTO.of(
-					review,
-					review.getReviewPhotos().stream()
-						.map(ReviewPhoto::getPhotoUrl)
-						.toList()
-				))
+				.map(review -> ReviewDetailResponseDTO.of(review, reviewPhotoMap.get(review.getReviewId())))
 				.toList()
 		);
 	}

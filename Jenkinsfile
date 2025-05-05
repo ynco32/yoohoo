@@ -65,13 +65,15 @@ pipeline {  // 파이프라인 정의 시작
         stage('Network Check') {
             steps {
                 script {
-                    def networkExists = sh(script: 'docker network ls | grep app-network || true', returnStdout: true).trim()
+                    withDockerTool('docker') {
+                        def networkExists = sh(script: 'docker network ls | grep app-network || true', returnStdout: true).trim()
 
-                    if (networkExists.isEmpty()) {
-                        sh 'docker network create app-network'
-                        echo 'app-network 생성됨'
-                    } else {
-                        echo 'app-network 이미 존재함'
+                        if (networkExists.isEmpty()) {
+                            sh 'docker network create app-network'
+                            echo 'app-network 생성됨'
+                        } else {
+                            echo 'app-network 이미 존재함'
+                        }
                     }
                 }
             }
@@ -144,53 +146,53 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                     try {
-                        withCredentials([
+                    withCredentials([
                             // Frontend credentials
                             string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
                             string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
                             // Backend credentials
-                            string(credentialsId: 'DB_URL', variable: 'DB_URL'),
-                            string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
-                            string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
-                            string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
-                            string(credentialsId: 'KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
-                            string(credentialsId: 'KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URL'),
-                            string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
-                            string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
-                            string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
-                            string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
-                            string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
-                            string(credentialsId: 'AWS_ACCESS_KEY', variable: 'AWS_ACCESS_KEY'),
-                            string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
-                            string(credentialsId: 'AWS_REGION', variable: 'AWS_REGION'),
-                            string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
+                        string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                        string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
+                        string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
+                        string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
+                        string(credentialsId: 'KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
+                        string(credentialsId: 'KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URL'),
+                        string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
+                        string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
+                        string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
+                        string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
+                        string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
+                        string(credentialsId: 'AWS_ACCESS_KEY', variable: 'AWS_ACCESS_KEY'),
+                        string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
+                        string(credentialsId: 'AWS_REGION', variable: 'AWS_REGION'),
+                        string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
                             string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST')
-                        ]) {
-                            sh '''
+                    ]) {
+                        sh '''
                                 # 이미지 빌드만 수행
                                 docker-compose -f docker-compose-${BRANCH_NAME}.yml build \
                                     --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
                                     --build-arg NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL \
-                                    --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
-                                    --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
-                                    --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
-                                    --build-arg DB_URL=$DB_URL \
-                                    --build-arg DB_USERNAME=$DB_USERNAME \
-                                    --build-arg DB_PASSWORD=$DB_PASSWORD \
-                                    --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-                                    --build-arg MYSQL_USER=$MYSQL_USER \
-                                    --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
-                                    --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
-                                    --build-arg FRONTEND_URL=$FRONTEND_URL \
-                                    --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
-                                    --build-arg AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
-                                    --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \
-                                    --build-arg AWS_REGION=$AWS_REGION \
-                                    --build-arg S3_BUCKET=$S3_BUCKET \
+                                --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
+                                --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
+                                --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
+                                --build-arg DB_URL=$DB_URL \
+                                --build-arg DB_USERNAME=$DB_USERNAME \
+                                --build-arg DB_PASSWORD=$DB_PASSWORD \
+                                --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
+                                --build-arg MYSQL_USER=$MYSQL_USER \
+                                --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
+                                --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
+                                --build-arg FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
+                                --build-arg AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+                                --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \
+                                --build-arg AWS_REGION=$AWS_REGION \
+                                --build-arg S3_BUCKET=$S3_BUCKET \
                                     --build-arg REDIS_HOST=$REDIS_HOST
                             '''
                         }

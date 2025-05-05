@@ -14,20 +14,20 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	@Query("""
 		select r from Review r
-		left join fetch r.user
-		left join fetch r.concert
-		left join fetch r.seat
-		left join fetch r.reviewPhotos
+		join fetch r.user
+		join fetch r.concert
+		join fetch r.seat
+		join fetch r.reviewPhotos
 		where r.reviewId = :reviewId
 	""")
 	Optional<Review> findWithAllDetailsById(@Param("reviewId") Long reviewId);
 
 	@Query("""
 		select distinct r from Review r
-		left join fetch r.seat
-		left join fetch r.concert
-		left join fetch r.user
-		left join fetch r.reviewPhotos
+		join fetch r.seat
+		join fetch r.concert
+		join fetch r.user
+		join fetch r.reviewPhotos
 		where r.user = :user
 	""")
 	List<Review> findAllWithPhotosByUser(@Param("user") User user);

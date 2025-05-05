@@ -4,7 +4,7 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
-import styles from './page.module.scss';
+import styles from '../page.module.scss';
 
 interface SearchSectionProps {
   defaultQuery?: string; // URL 파라미터로 전달된 초기 검색어

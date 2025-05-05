@@ -2,6 +2,7 @@ package com.conkiri.domain.ticketing.controller;
 
 import java.util.List;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,26 +29,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TicketingController {
 
+	private final RedisTemplate<String, String> redisTemplate;
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
 
 	// 활성화 여부
 	@GetMapping("/status")
 	public ApiResponse<Boolean> getTicketingStatus() {
-
 		return ApiResponse.success(queueProcessingService.isTicketingActive());
 	}
 
 	// 서버 시간 제공
 	@GetMapping("/time-info")
 	public ApiResponse<TicketingInfoResponseDTO> getTimeInfo() {
-
-		return ApiResponse.success(new TicketingInfoResponseDTO());
+		return ApiResponse.success(TicketingInfoResponseDTO.from(redisTemplate));
 	}
 
 	// 대기열 진입 API
 	@PostMapping("/queue")
-	public ApiResponse<Void> joinQueue(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	public ApiResponse<Void> joinQueue(
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
 		queueProcessingService.addToQueue(userPrincipal.getUserId());
 		return ApiResponse.ofSuccess();
@@ -106,7 +107,8 @@ public class TicketingController {
 	}
 
 	@DeleteMapping("/result")
-	public ApiResponse<Void> deleteTicketingResult(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	public ApiResponse<Void> deleteTicketingResult(
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
 		ticketingService.deleteTicketingResult(userPrincipal.getUserId());
 		return ApiResponse.ofSuccess();

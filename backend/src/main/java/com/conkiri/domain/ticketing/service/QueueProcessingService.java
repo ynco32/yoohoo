@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.ticketing.dto.response.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
 import com.conkiri.domain.user.entity.User;
@@ -32,10 +33,12 @@ public class QueueProcessingService {
 	private final UserReadService userReadService;
 
 	// 티켓팅 시작 및 종료 시간을 Redis 에 설정합니다
-	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime) {
-		log.info("Setting method ");
+	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime, Concert concert) {
+		log.info("티켓팅 시간 설정 - 시작: {}, 종료: {}", startTime, endTime);
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
+		redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName());
+		redisTemplate.opsForHash().put(RedisKeys.TIME, "ticketingPlatform", concert.getTicketingPlatform().name());
 
 		String dummyId = "dummy_user";
 		double dummyScore = Double.MIN_VALUE;

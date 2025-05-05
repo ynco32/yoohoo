@@ -1,13 +1,9 @@
 package com.conkiri.domain.base.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.service.ConcertService;
-import com.conkiri.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,11 +20,11 @@ public class ConcertController {
 	 * @param lastConcertId
 	 * @return
 	 */
-	@GetMapping
-	public ApiResponse<ConcertResponseDTO> getConcertList(
-		@RequestParam(value = "value", required = false) String concertSearch,
-		@RequestParam(value = "last", required = false) Long lastConcertId) {
-
-		return ApiResponse.success(concertService.getConcertList(concertSearch, lastConcertId));
-	}
+	// @GetMapping
+	// public ApiResponse<ConcertResponseDTO> getConcertList(
+	// 	@RequestParam(value = "value", required = false) String concertSearch,
+	// 	@RequestParam(value = "last", required = false) Long lastConcertId) {
+	//
+	// 	return ApiResponse.success(concertService.getConcertList(concertSearch, lastConcertId));
+	// }
 }

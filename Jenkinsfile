@@ -25,6 +25,7 @@ pipeline {  // 파이프라인 정의 시작
         FRONTEND_CONTAINER_NAME = "frontend-${env.BRANCH_NAME}"
         BACKEND_NEW_CONTAINER_NAME = "backend-${env.BRANCH_NAME}-new"
         FRONTEND_NEW_CONTAINER_NAME = "frontend-${env.BRANCH_NAME}-new"
+        PATH = "/home/ubuntu/jenkins-data/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/NodeJS_20.18.3/node-v20.18.3-linux-x64/bin:${env.PATH}"
     }
     
     stages {  // 파이프라인의 주요 단계들 정의

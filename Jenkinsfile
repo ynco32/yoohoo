@@ -28,29 +28,29 @@ pipeline {  // 파이프라인 정의 시작
     }
     
     stages {  // 파이프라인의 주요 단계들 정의
-        stage('Setup Docker') {
-            steps {
-                script {
-                    try {
-                        // Docker 설치 확인 및 설치
-                        sh '''
-                            if ! command -v docker &> /dev/null; then
-                                echo "Docker가 설치되어 있지 않습니다. 설치를 시작합니다..."
-                                curl -fsSL https://get.docker.com -o get-docker.sh
-                                sh get-docker.sh
-                                sudo usermod -aG docker jenkins
-                                sudo systemctl restart jenkins
-                            else
-                                echo "Docker가 이미 설치되어 있습니다."
-                            fi
-                        '''
-                    } catch (Exception e) {
-                        echo "Docker 설치 중 오류 발생: ${e.getMessage()}"
-                        throw e
-                    }
-                }
-            }
-        }
+        // stage('Setup Docker') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 // Docker 설치 확인 및 설치
+        //                 sh '''
+        //                     if ! command -v docker &> /dev/null; then
+        //                         echo "Docker가 설치되어 있지 않습니다. 설치를 시작합니다..."
+        //                         curl -fsSL https://get.docker.com -o get-docker.sh
+        //                         sh get-docker.sh
+        //                         sudo usermod -aG docker jenkins
+        //                         sudo systemctl restart jenkins
+        //                     else
+        //                         echo "Docker가 이미 설치되어 있습니다."
+        //                     fi
+        //                 '''
+        //             } catch (Exception e) {
+        //                 echo "Docker 설치 중 오류 발생: ${e.getMessage()}"
+        //                 throw e
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Debug') {  // 현재 브랜치 디버깅용 스테이지
             steps {

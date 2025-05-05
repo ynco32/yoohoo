@@ -60,7 +60,12 @@ public class ViewService {
 	public ReviewDetailResponseDTO getAReview(Long reviewId) {
 		Review review = reviewRepository.findWithUserConcertSeatById(reviewId)
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
-		return ReviewDetailResponseDTO.from(review);
+
+		List<String> photoUrls = reviewPhotoRepository.findAllByReview(review).stream()
+			.map(ReviewPhoto::getPhotoUrl)
+			.toList();
+
+		return ReviewDetailResponseDTO.of(review, photoUrls);
 	}
 
 	// -------------------- 이하 공통 --------------------

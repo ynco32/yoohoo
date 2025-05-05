@@ -78,6 +78,9 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
       // 여기서는 예시로 설정하지만 실제로는 API 호출 등으로 데이터를 가져올 수 있음
       // fetchVenueInfo(venueId);
       setSeatDetail('12구역 34열 56번');
+    } else if (path.match(/^\/place\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('현장'); // 현장 페이지
     } else {
       setShouldShowDetail(false);
       setArenaInfo(null);

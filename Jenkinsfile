@@ -434,8 +434,8 @@ pipeline {  // 파이프라인 정의 시작
                                 "🔄 변경사항: ${changes}\n" +
                                 "🌐 환경: ${env.DEPLOY_ENV}\n" +
                                 "🔍 <${env.BUILD_URL}|상세 정보 보기>",
-                        endpoint: 'https://meeting.ssafy.com/hooks/pmu7f349wb8y5q1djoar94k8mc',
-                        channel: '78077804f0d7f41a4976e15a024145e8'
+                        endpoint: 'https://meeting.ssafy.com/s12p30b2/channels/webhook',
+                        channel: '9fujkh75xfy57joc3tsof6eryc'
                 )
             }
         }
@@ -461,8 +461,8 @@ pipeline {  // 파이프라인 정의 시작
                                 "📝 실패 내용: ${failMessage}\n" +
                                 "🌐 환경: ${env.DEPLOY_ENV}\n" +
                                 "🔍 <${env.BUILD_URL}|상세 정보 보기>",
-                        endpoint: 'https://meeting.ssafy.com/hooks/pmu7f349wb8y5q1djoar94k8mc',
-                        channel: '78077804f0d7f41a4976e15a024145e8'
+                        endpoint: 'https://meeting.ssafy.com/s12p30b2/channels/webhook',
+                        channel: '9fujkh75xfy57joc3tsof6eryc'
                 )
             }
         }

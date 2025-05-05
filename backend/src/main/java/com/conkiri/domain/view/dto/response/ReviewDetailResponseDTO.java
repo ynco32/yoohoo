@@ -1,6 +1,7 @@
 package com.conkiri.domain.view.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.view.entity.ArtistGrade;
@@ -22,9 +23,10 @@ public record ReviewDetailResponseDTO(
 	String content,
 	String cameraBrand,
 	String cameraModel,
-	LocalDateTime createdAt
+	LocalDateTime createdAt,
+	List<String> photoUrls
 ) {
-	public static ReviewDetailResponseDTO from(Review review) {
+	public static ReviewDetailResponseDTO of(Review review, List<String> photoUrls) {
 
 		return new ReviewDetailResponseDTO(
 			review.getReviewId(),
@@ -40,7 +42,8 @@ public record ReviewDetailResponseDTO(
 			review.getContent(),
 			review.getCameraBrand(),
 			review.getCameraModel(),
-			review.getCreatedAt()
+			review.getCreatedAt(),
+			photoUrls
 		);
 	}
 }

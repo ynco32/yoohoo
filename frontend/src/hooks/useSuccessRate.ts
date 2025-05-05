@@ -1,71 +1,17 @@
 // src/hooks/useSuccessRate.ts
 import { GAME_CONFIG, GameMode } from '@/lib/constants/minigameConfig';
 
-interface ScoreRange {
-  time: number;
-  rate: number;
-}
-
-// [React] 연습 모드별 설정
-const PRACTICE_MODES: Record<
-  GameMode,
-  {
-    ranges: ScoreRange[];
-    correction: number;
-    timeLimit: number;
-  }
-> = {
-  QUEUE: {
-    ranges: [
-      { time: 30, rate: 99 }, // 최상급
-      { time: 50, rate: 95 }, // 매우 빠름
-      { time: 100, rate: 85 }, // 빠름
-      { time: 150, rate: 70 }, // 양호
-      { time: 200, rate: 55 }, // 보통
-      { time: 300, rate: 35 }, // 느림
-      { time: 400, rate: 20 }, // 매우 느림
-    ],
-    correction: 0.7,
-    timeLimit: GAME_CONFIG.QUEUE.maxReactionTime, // 5000ms
-  },
-  GRAPE: {
-    ranges: [
-      { time: 300, rate: 99 },
-      { time: 500, rate: 95 },
-      { time: 800, rate: 85 },
-      { time: 1000, rate: 70 },
-      { time: 1300, rate: 55 },
-      { time: 1600, rate: 35 },
-      { time: 2000, rate: 20 },
-    ],
-    correction: 0.9,
-    timeLimit: GAME_CONFIG.GRAPE.maxReactionTime, // 5000ms
-  },
-  CAPCHA: {
-    ranges: [
-      { time: 2000, rate: 99 },
-      { time: 3000, rate: 95 },
-      { time: 4000, rate: 85 },
-      { time: 6000, rate: 70 },
-      { time: 8000, rate: 55 },
-      { time: 9000, rate: 35 },
-      { time: 10000, rate: 20 },
-    ],
-    correction: 0.8,
-    timeLimit: GAME_CONFIG.CAPCHA.maxReactionTime, // 10000ms
-  },
-};
-
 // [React] 성공률 계산 커스텀 훅
 export const useSuccessRate = (mode: GameMode) => {
   const calculateSuccessRate = (reactionTime: number): number => {
     // mode가 undefined이거나 존재하지 않는 경우 처리
-    if (!mode || !PRACTICE_MODES[mode]) {
+    if (!mode || !GAME_CONFIG[mode]) {
       console.error(`Invalid mode: ${mode}`);
       return 5; // 기본값 반환
     }
 
-    const { ranges, correction, timeLimit } = PRACTICE_MODES[mode];
+    const config = GAME_CONFIG[mode];
+    const { ranges, correction, maxReactionTime: timeLimit } = config;
 
     // 시간 초과 체크
     if (reactionTime >= timeLimit) {

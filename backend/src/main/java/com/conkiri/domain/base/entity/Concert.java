@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,8 +46,9 @@ public class Concert {
 	@Column(name = "reservation")
 	private LocalDateTime reservation;
 
-	@Column(name = "ticketing_platform", length = 100)
-	private String ticketingPlatform;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ticketing_platform", length = 20)
+	private Platform ticketingPlatform;
 
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;

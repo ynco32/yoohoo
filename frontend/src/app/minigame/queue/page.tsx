@@ -1,94 +1,18 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useTicketing } from '../TicketingContext'; // 상위 폴더의 Context 사용
+import useReactionGame from '@/hooks/useReactionGame';
 import styles from './page.module.scss';
 
 export default function QueuePage() {
-  const router = useRouter();
-  const { setReactionTime, setGameMode } = useTicketing(); // Context에서 setter 함수 가져오기
+  const { gameState, countdown, completeGame } = useReactionGame({
+    gameMode: 'QUEUE',
+  });
 
-  const [gameState, setGameState] = useState<
-    'counting' | 'waiting' | 'completed'
-  >('counting');
-
-  const [countdown, setCountdown] = useState(5);
-  const [startTime, setStartTime] = useState(0);
-  useEffect(() => {
-    setGameMode('queue');
-  }, [setGameMode]);
-  // [React] 카운트다운 및 게임 상태 관리
-  useEffect(() => {
-    let autoRedirectTimer: NodeJS.Timeout;
-
-    // 카운트다운 시작 시점의 타임스탬프
-    const startTimestamp = performance.now();
-
-    // 100ms마다 카운트다운 상태 업데이트
-    const interval = setInterval(() => {
-      // 경과 시간 계산 (밀리초)
-      const elapsed = performance.now() - startTimestamp;
-      // 초 단위로 변환 (소수점 버림)
-      const secondsElapsed = Math.floor(elapsed / 1000);
-      // 남은 시간 계산
-      const remaining = 5 - secondsElapsed;
-
-      if (remaining <= 0) {
-        // 카운트다운 종료
-        clearInterval(interval);
-        setCountdown(0);
-        setGameState('waiting');
-        // 반응 속도 측정 시작 시간 설정
-        setStartTime(performance.now());
-
-        autoRedirectTimer = setTimeout(() => {
-          if (gameState != 'completed') {
-            setReactionTime(5000); // 5초로 설정
-            router.push('/minigame/complete');
-          }
-        }, 5000); // 5초 후 자동 이동
-
-        // cleanup에 autoRedirectTimer 정리 추가
-        return () => clearTimeout(autoRedirectTimer);
-      } else {
-        setCountdown(remaining);
-      }
-    }, 100); // 100ms 간격으로 업데이트
-
-    return () => {
-      clearInterval(interval);
-      if (autoRedirectTimer) {
-        // 👈 cleanup에서 자동 이동 타이머도 정리
-        clearTimeout(autoRedirectTimer);
-      }
-    };
-  }, [router, setReactionTime, gameState]); // 👈 gameState 의존성 추가
-
-  // [React] 버튼 클릭 핸들러
-  const onButtonClick = async () => {
-    try {
-      // 대기 상태가 아니면 클릭 무시
-      if (gameState !== 'waiting') return;
-
-      const endTime = performance.now();
-      const reactionTime = Math.max(0, endTime - startTime);
-
-      // 비정상적인 반응 시간 필터링 (5초 초과)
-      if (reactionTime > 5000) {
-        console.warn('Invalid reaction time detected');
-        return;
-      }
-
-      // 반응 시간 저장 후 결과 페이지로 이동
-      setGameState('completed');
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      // Context에 반응 시간 저장
-      setReactionTime(reactionTime);
-      router.push('/minigame/complete');
-    } catch (error) {
-      console.error('Error in reaction time game:', error);
-    }
+  // 버튼 클릭 핸들러
+  const onButtonClick = () => {
+    if (gameState !== 'waiting') return;
+    completeGame();
   };
 
   return (

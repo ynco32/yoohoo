@@ -35,33 +35,27 @@ public class ViewService {
 
 	// 후기 작성
 	public Long createReview(ReviewRequestDTO dto, List<MultipartFile> files, User user) {
-
 		Concert concert = findConcertOrThrow(dto.concertId());
-		Arena arena = concert.getArena();
-		Seat seat = findSeatOrThrow(dto.section(), dto.rowLine(), dto.columnLine(), arena.getArenaId());
+		Seat seat = findSeatOrThrow(dto.section(), dto.rowLine(), dto.columnLine(), concert.getArena().getArenaId());
 
 		Review review = Review.of(dto, user, concert, seat);
 
-		List<String> photoUrls = files.stream()
-			.map(file -> "https://example.com/dummy/" + file.getOriginalFilename())
-			.toList();
-
-		List<ReviewPhoto> photos = photoUrls.stream()
-			.map(url -> ReviewPhoto.of(review, url))
-			.toList();
+		// 더미 URL을 사용한 ReviewPhoto 생성
+		files.forEach(file -> {
+			String url = "https://example.com/dummy/" + file.getOriginalFilename();
+			ReviewPhoto.of(review, url); // 내부에서 review.getReviewPhotos().add(this) 호출됨
+		});
 
 		reviewRepository.save(review);
-		reviewPhotoRepository.saveAll(photos);
-
 		return review.getReviewId();
 	}
 
-	// 단일 후기 조회 / 수정할 후기 조회
+	// 단일 후기 / 수정할 후기 조회
 	public ReviewDetailResponseDTO getAReview(Long reviewId) {
-		Review review = reviewRepository.findWithUserConcertSeatById(reviewId)
+		Review review = reviewRepository.findWithAllDetailsById(reviewId)
 			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
 
-		List<String> photoUrls = reviewPhotoRepository.findAllByReview(review).stream()
+		List<String> photoUrls = review.getReviewPhotos().stream()
 			.map(ReviewPhoto::getPhotoUrl)
 			.toList();
 

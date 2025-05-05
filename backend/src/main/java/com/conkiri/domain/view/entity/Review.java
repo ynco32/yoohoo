@@ -1,11 +1,15 @@
 package com.conkiri.domain.view.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.global.common.BaseTime;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +20,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,6 +67,9 @@ public class Review extends BaseTime {
 
 	@Column(name = "camera_model", length = 50)
 	private String cameraModel;
+
+	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ReviewPhoto> reviewPhotos = new ArrayList<>();
 
 	public static Review of(ReviewRequestDTO dto, User user, Concert concert, Seat seat) {
 		return new Review(dto, user, concert, seat);

@@ -36,5 +36,6 @@ public class ReviewPhoto {
 	private ReviewPhoto(Review review, String photoUrl) {
 		this.review = review;
 		this.photoUrl = photoUrl;
+		review.getReviewPhotos().add(this);
 	}
 }

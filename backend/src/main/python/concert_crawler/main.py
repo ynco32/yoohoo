@@ -17,7 +17,7 @@ def main():
         print(f"\n🔍 '{concert['title']}' 상세 정보 및 공지사항 추출 중...")
         
         # 상세 페이지에서 공지사항 및 날짜 정보 추출
-        detail_info = DetailCrawler.get_concert_detail(concert['show_id'])
+        detail_info = DetailCrawler.get_concert_detail(concert['show_id'], concert)
         
         if detail_info:
             concert.update(detail_info)

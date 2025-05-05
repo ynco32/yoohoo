@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from ai.concert_info_extractor import ConcertInfoExtractor
 
 # concert_crawler 디렉토리 경로 추가
 current_dir = os.path.dirname(os.path.abspath(__file__))  # crawler 디렉토리
@@ -22,7 +23,7 @@ from ocr.text_processor import TextProcessor
 
 class DetailCrawler:
     @staticmethod
-    def get_concert_detail(show_id):
+    def get_concert_detail(show_id, base_info=None):
         """공연 상세 페이지에서 예매 링크를 찾고, 해당 링크에서 공지사항 이미지 및 기타 정보 추출"""
         detail_url = DETAIL_URL_TEMPLATE.format(show_id)
         
@@ -141,24 +142,6 @@ class DetailCrawler:
                             # OCR 텍스트 저장
                             detail_info['ocr_text'] = ocr_text
                 
-                # 이미지가 없는 경우에도 본문 텍스트로 정보 추출 시도
-                # if ocr_text or content_text:
-                #     combined_text = (ocr_text + ' ' + content_text).strip()
-                    
-                #     # 병합된 텍스트로 날짜 정보 추출 (OCR + 본문)
-                #     advance_reservation, reservation, start_times = TextProcessor.extract_dates_from_text(combined_text)
-                    
-                #     if advance_reservation or reservation or start_times:
-                #         print("🗓️ 텍스트에서 날짜 정보 추출 성공")
-                #         if advance_reservation:
-                #             detail_info['advance_reservation'] = advance_reservation
-                #             print(f"🗓️ 사전 예매일: {advance_reservation}")
-                #         if reservation:
-                #             detail_info['reservation'] = reservation
-                #             print(f"🗓️ 일반 예매일: {reservation}")
-                #         if start_times:
-                #             detail_info['start_times'] = start_times
-                #             print(f"🕒 공연 시작 시간: {', '.join(start_times)}")
                 if ocr_text or content_text:
                     combined_text = ""
                     if ocr_text:
@@ -170,20 +153,21 @@ class DetailCrawler:
                         print("\n========= 본문 텍스트 =========")
                         print(content_text)
                     
-                    # 병합된 텍스트로 날짜 정보 추출 (OCR + 본문)
-                    print("\n========= TextProcessor 추출 전 =========")
-                    advance_reservation, reservation, start_times = TextProcessor.extract_dates_from_text(combined_text)
-                    
-                    print("\n========= TextProcessor 추출 결과 =========")
-                    if advance_reservation:
-                        print(f"사전 예매일: {advance_reservation}")
-                    if reservation:
-                        print(f"일반 예매일: {reservation}")
-                    if start_times:
-                        print(f"공연 시작 시간: {', '.join(start_times)}")
-                    
-                    if advance_reservation or reservation or start_times:
-                        print("🗓️ 텍스트에서 날짜 정보 추출 성공")
+                    if ocr_text or content_text:
+                        combined_text = f"{ocr_text}\n{content_text}".strip()
+                        
+
+
+                        # GPT API를 사용하여 정보 추출
+                        gpt_result = ConcertInfoExtractor.extract_info_via_gpt(combined_text, base_info)
+
+                        # GPT가 반환한 정보 detail_info에 병합
+                        if gpt_result:
+                            detail_info.update(gpt_result)
+
+                        print("\n========= GPT 추출 결과 =========")
+                        for k, v in gpt_result.items():
+                            print(f"{k}: {v}")
                 else:
                     print("❌ 이미지와 본문 모두 찾을 수 없습니다.")
                                 

@@ -76,6 +76,7 @@ class ConcertCrawler:
                 print(f"👤 출연: {artist_text}")
                 print(f"🔗 상세페이지: {detail_url}")
                 print("-" * 50)
+                
         
         return concerts, new_data_found
     

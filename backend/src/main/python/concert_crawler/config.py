@@ -1,7 +1,18 @@
+import os
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
+
+# 환경 변수에서 API 키 불러오기
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 # OCR API 설정
 OCR_API_URL = "https://oe7fe4lwbg.apigw.ntruss.com/custom/v1/41432/d0512270cb2eb7d3b6f7d52775d9cbffe7040d7e4012480b58c6801ffcad068f/general"
 OCR_SECRET_KEY = "eG9WbHd3cHhPU1JnemRQYXRtRUFEVXBnWHFSZFFPa1E="  
 OCR_API_KEY = "Edx7NLBFZ7q4W1Je02zTwCWnoWPLZ1SmPcBYha7e"        
+
+
 
 # 데이터베이스 설정
 DB_CONFIG = {

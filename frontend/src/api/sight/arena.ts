@@ -1,4 +1,4 @@
-// src/api/arena.api.ts
+// src/api/sight/arena.api.ts
 import { apiClient } from '../api';
 import { ArenaInfo } from '@/types/arena';
 

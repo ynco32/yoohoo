@@ -29,6 +29,12 @@ pipeline {  // 파이프라인 정의 시작
     
     stages {  // 파이프라인의 주요 단계들 정의
 
+        stage('Install Yarn') {  // yarn 전역 설치를 위한 새로운 스테이지
+            steps {
+                sh 'npm install -g yarn'
+            }
+        }
+
         stage('Debug') {  // 현재 브랜치 디버깅용 스테이지
             steps {
                 sh 'whoami'
@@ -60,13 +66,6 @@ pipeline {  // 파이프라인 정의 시작
                     echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
                     echo "Backend 변경 여부: ${BACKEND_CHANGES}"
                 }
-            }
-        }
-
-        stage('Install deps') {
-            steps {
-                sh 'node -v && yarn --version'
-                sh 'yarn install --frozen-lockfile'
             }
         }
         

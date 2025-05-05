@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,20 +27,26 @@ public class Concert {
 	@EqualsAndHashCode.Include
 	private Long concertId;
 
-	@Column(name = "concert_name", length = 100)
-	private String concertName;
-
-	@Column(name = "artist", length = 100)
-	private String artist;
-
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Column(name = "photo_url", length = 200)
-	private String photoUrl;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "artist_id", nullable = false)
+	private Artist artist;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;
 
+	@Column(name = "concert_name", length = 100)
+	private String concertName;
+
+	@Column(name = "advanced_reservation")
+	private LocalDateTime advancedReservation;
+
+	@Column(name = "reservation")
+	private LocalDateTime reservation;
+
+	@Column(name = "ticketing_platform", length = 100)
+	private String ticketingPlatform;
+
+	@Column(name = "photo_url", length = 200)
+	private String photoUrl;
 }

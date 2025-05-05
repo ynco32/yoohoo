@@ -1,7 +1,6 @@
 package com.conkiri.domain.sharing.entity;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.TimeZoneColumn;
@@ -77,8 +76,8 @@ public class Sharing extends BaseTime {
 		this.longitude = sharingRequestDTO.longitude();
 		this.title = sharingRequestDTO.title();
 		this.content = sharingRequestDTO.content();
-		LocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
-			.atTime(sharingRequestDTO.startTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
+		//ocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
+		//	.atTime(sharingRequestDTO.startTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
 		this.startTime = startTime;
 		this.photoUrl = photoUrl;
 		this.concert = concert;
@@ -91,15 +90,15 @@ public class Sharing extends BaseTime {
 		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;
 		this.latitude = sharingUpdateRequestDTO.latitude() != null ? sharingUpdateRequestDTO.latitude() : this.latitude;
 		this.longitude = sharingUpdateRequestDTO.longitude() != null ? sharingUpdateRequestDTO.longitude() : this.longitude;
-		this.startTime = sharingUpdateRequestDTO.startTime() != null ? concert
-																			.getStartTime()
-																			.atZone(ZoneId.of("Asia/Seoul"))
-																			.toLocalDate()
-																			.atTime(
-																				sharingUpdateRequestDTO
-																					.startTime()
-																					.atZone(ZoneId.of("Asia/Seoul"))
-																					.toLocalTime()) : this.startTime;
+		//this.startTime = sharingUpdateRequestDTO.startTime() != null ? concert
+		//																	.getStartTime()
+		//																	.atZone(ZoneId.of("Asia/Seoul"))
+		//																	.toLocalDate()
+		//																	.atTime(
+		//																		sharingUpdateRequestDTO
+		//																			.startTime()
+		//																			.atZone(ZoneId.of("Asia/Seoul"))
+		//																			.toLocalTime()) : this.startTime;
 	}
 
 	public void updateStatus(String status) {

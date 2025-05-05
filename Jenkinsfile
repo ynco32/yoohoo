@@ -12,7 +12,7 @@ pipeline {  // 파이프라인 정의 시작
 
 
     tools {
-        nodejs 'NodeJS 20.18.3'
+        nodejs 'nodejs'
     }
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의
@@ -65,15 +65,13 @@ pipeline {  // 파이프라인 정의 시작
         stage('Network Check') {
             steps {
                 script {
-                    withDockerTool('docker') {
-                        def networkExists = sh(script: 'docker network ls | grep app-network || true', returnStdout: true).trim()
+                    def networkExists = sh(script: 'docker network ls | grep app-network || true', returnStdout: true).trim()
 
-                        if (networkExists.isEmpty()) {
-                            sh 'docker network create app-network'
-                            echo 'app-network 생성됨'
-                        } else {
-                            echo 'app-network 이미 존재함'
-                        }
+                    if (networkExists.isEmpty()) {
+                        sh 'docker network create app-network'
+                        echo 'app-network 생성됨'
+                    } else {
+                        echo 'app-network 이미 존재함'
                     }
                 }
             }

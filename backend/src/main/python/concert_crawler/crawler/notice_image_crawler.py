@@ -1,6 +1,21 @@
 import os
+import sys
 import requests
 from bs4 import BeautifulSoup
+import time
+import random
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# concert_crawler 디렉토리 경로 추가
+current_dir = os.path.dirname(os.path.abspath(__file__))  # crawler 디렉토리
+parent_dir = os.path.dirname(current_dir)  # concert_crawler 디렉토리
+sys.path.append(parent_dir)
+
+# 상대 경로 import 대신 절대 경로 사용
 from config import DETAIL_URL_TEMPLATE, HEADERS, TEMP_IMAGE_DIR
 from ocr.naver_ocr import NaverOCR
 from ocr.text_processor import TextProcessor
@@ -11,93 +26,106 @@ class DetailCrawler:
         """공연 상세 페이지에서 예매 링크를 찾고, 해당 링크에서 공지사항 이미지 및 기타 정보 추출"""
         detail_url = DETAIL_URL_TEMPLATE.format(show_id)
         
+        # 셀레니움 설정
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-blink-features=AutomationControlled')  # 자동화 감지 방지
+        options.add_argument(f'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36')
+        
+        driver = None
+        
         try:
+            driver = webdriver.Chrome(options=options)
+            
             # 1. 먼저 상세 페이지에서 예매 버튼 링크 찾기
-            res = requests.get(detail_url, headers=HEADERS)
-            soup = BeautifulSoup(res.text, "html.parser")
+            driver.get(detail_url)
+            time.sleep(random.uniform(2, 3))  # 인간 행동 시뮬레이션
             
             # 예매하기 버튼 링크 찾기
             reservation_link = None
-            reservation_img = soup.find('img', src=lambda s: s and 'btn_reserve.gif' in s)
-            if reservation_img and reservation_img.parent and reservation_img.parent.name == 'a':
-                reservation_link = reservation_img.parent.get('href')
+            try:
+                reservation_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//img[contains(@src, 'btn_reserve.gif')]/parent::a"))
+                )
+                reservation_link = reservation_button.get_attribute('href')
                 print(f"🎫 예매 링크 발견: {reservation_link}")
-            else:
-                print("❌ 예매 링크를 찾을 수 없습니다.")
+            except Exception as e:
+                print(f"❌ 예매 링크를 찾을 수 없습니다: {str(e)}")
                 return {}
+            
+            # 티켓팅 플랫폼 확인
+            ticketing_platform = "인터파크"  # 기본값 설정
+            if "interpark.com" in reservation_link:
+                ticketing_platform = "인터파크"
+            elif "yes24.com" in reservation_link:
+                ticketing_platform = "YES24"
+            elif "ticket.melon.com" in reservation_link:
+                ticketing_platform = "멜론티켓"
+            elif "ticketlink.co.kr" in reservation_link:
+                ticketing_platform = "티켓링크"
+            
+            detail_info = {
+                'reservation_link': reservation_link,
+                'ticketing_platform': ticketing_platform
+            }
             
             # 2. 예매 페이지로 이동하여 공지사항 이미지 및 정보 수집
             try:
-                res = requests.get(reservation_link, headers=HEADERS)
-                booking_soup = BeautifulSoup(res.text, "html.parser")
+                driver.get(reservation_link)
+                time.sleep(random.uniform(4, 6))  # 페이지 로딩 시간 기다리기
                 
-                # 티켓팅 플랫폼 확인
-                ticketing_platform = "인터파크"  # 기본값 설정
-                if "interpark.com" in reservation_link:
-                    ticketing_platform = "인터파크"
-                elif "yes24.com" in reservation_link:
-                    ticketing_platform = "YES24"
-                elif "ticket.melon.com" in reservation_link:
-                    ticketing_platform = "멜론티켓"
-                elif "ticketlink.co.kr" in reservation_link:
-                    ticketing_platform = "티켓링크"
+                # HTML 저장 (디버깅용, 선택적)
+                debug_folder = os.path.join(TEMP_IMAGE_DIR, "debug")
+                os.makedirs(debug_folder, exist_ok=True)
+                with open(f"{debug_folder}/page_{show_id}.html", "w", encoding="utf-8") as f:
+                    f.write(driver.page_source)
                 
-                detail_info = {
-                    'reservation_link': reservation_link,
-                    'ticketing_platform': ticketing_platform
-                }
+                # 모든 이미지 목록 출력
+                images = driver.find_elements(By.TAG_NAME, "img")
+                print(f"🔍 티켓 이미지 후보 {len(images)}개 발견")
                 
-                # 1. 인터파크 이미지 찾기 - 경로 패턴 수정
-                notice_imgs = booking_soup.find_all('img', src=lambda s: s and (
-                    s.startswith('//ticketimage.interpark.com') or
-                    'ticketimage.interpark.com' in s or
-                    '/Play/image/' in s
-                ))
+                ticket_images = []
+                for idx, img in enumerate(images):
+                    src = img.get_attribute('src')
+                    if src and ('ticketimage.interpark.com' in src or '/Play/image/' in src):
+                        print(f"  이미지 {idx+1}: {src}")
+                        ticket_images.append((img, src))
                 
-                print(f"🔍 티켓 이미지 후보 {len(notice_imgs)}개 발견")
-                
-                # 2. 본문 내용 추출 (prdContents detail 클래스)
-                content_div = booking_soup.find('div', class_='prdContents detail')
+                # 본문 텍스트 추출 시도
                 content_text = ''
-                
-                if content_div:
-                    # HTML 태그 제거하고 텍스트만 추출
-                    content_text = content_div.get_text(separator=' ', strip=True)
+                try:
+                    content_div = driver.find_element(By.CSS_SELECTOR, 'div.prdContents.detail')
+                    content_text = content_div.text
                     print(f"✅ 본문 텍스트 추출 성공 ({len(content_text)} 자)")
-                else:
+                except:
                     print("❌ 본문 텍스트를 찾을 수 없습니다.")
                 
                 # OCR 처리와 텍스트 처리 부분
                 ocr_text = ''
                 
-                # 이미지에서 OCR 추출
-                if notice_imgs:
-                    # 이미지가 여러 개인 경우 가장 큰 이미지 또는 첫 번째 이미지 선택
-                    largest_img = None
-                    max_size = 0
+                # 티켓 이미지에서 OCR 추출
+                if ticket_images:
+                    # 이미지 선택 (가장 큰 것 또는 첫 번째 이미지)
+                    selected_img_src = ticket_images[0][1]  # 기본값
                     
-                    for img in notice_imgs:
-                        # 크기 속성이 있으면 비교
-                        try:
-                            width = int(img.get('width', 0))
-                            height = int(img.get('height', 0))
-                            size = width * height
-                            if size > max_size:
-                                max_size = size
-                                largest_img = img
-                        except:
-                            continue
+                    # 가능하면 이미지 크기 비교하여 가장 큰 이미지 선택
+                    max_width = 0
+                    for _, src in ticket_images:
+                        if 'etc' in src:  # etc 폴더 내 이미지는 일반적으로 공지사항
+                            selected_img_src = src
+                            break
                     
-                    # 크기 비교가 안 되면 첫 번째 이미지 사용
-                    notice_img = largest_img if largest_img else notice_imgs[0]
+                    print(f"🖼️ 공지사항 이미지 발견: {selected_img_src}")
                     
-                    img_url = notice_img['src']
-                    if img_url.startswith('//'):
-                        img_url = f"https:{img_url}"
-                    elif not img_url.startswith('http'):
-                        img_url = f"https://ticketimage.interpark.com{img_url}"
-                    
-                    print(f"🖼️ 공지사항 이미지 발견: {img_url}")
+                    # 이미지 URL 정규화
+                    if selected_img_src.startswith('//'):
+                        img_url = f"https:{selected_img_src}"
+                    elif not selected_img_src.startswith('http'):
+                        img_url = f"https://ticketimage.interpark.com{selected_img_src}"
+                    else:
+                        img_url = selected_img_src
                     
                     # 이미지 다운로드
                     os.makedirs(TEMP_IMAGE_DIR, exist_ok=True)
@@ -110,33 +138,55 @@ class DetailCrawler:
                         if ocr_text:
                             print(f"✅ OCR 텍스트 추출 성공 ({len(ocr_text)} 자)")
                             detail_info['notice_image_url'] = img_url
-                            # OCR 텍스트와 본문 텍스트 결합
-                            combined_text = ocr_text + ' ' + content_text
-                            # OCR 결과만 저장 (데이터베이스 변경 없음)
+                            # OCR 텍스트 저장
                             detail_info['ocr_text'] = ocr_text
                 
                 # 이미지가 없는 경우에도 본문 텍스트로 정보 추출 시도
-                elif content_text:
-                    combined_text = content_text
+                # if ocr_text or content_text:
+                #     combined_text = (ocr_text + ' ' + content_text).strip()
+                    
+                #     # 병합된 텍스트로 날짜 정보 추출 (OCR + 본문)
+                #     advance_reservation, reservation, start_times = TextProcessor.extract_dates_from_text(combined_text)
+                    
+                #     if advance_reservation or reservation or start_times:
+                #         print("🗓️ 텍스트에서 날짜 정보 추출 성공")
+                #         if advance_reservation:
+                #             detail_info['advance_reservation'] = advance_reservation
+                #             print(f"🗓️ 사전 예매일: {advance_reservation}")
+                #         if reservation:
+                #             detail_info['reservation'] = reservation
+                #             print(f"🗓️ 일반 예매일: {reservation}")
+                #         if start_times:
+                #             detail_info['start_times'] = start_times
+                #             print(f"🕒 공연 시작 시간: {', '.join(start_times)}")
+                if ocr_text or content_text:
+                    combined_text = ""
+                    if ocr_text:
+                        combined_text += ocr_text + " "
+                        print("\n========= OCR 전체 결과 =========")
+                        print(ocr_text)
+                    if content_text:
+                        combined_text += content_text
+                        print("\n========= 본문 텍스트 =========")
+                        print(content_text)
+                    
+                    # 병합된 텍스트로 날짜 정보 추출 (OCR + 본문)
+                    print("\n========= TextProcessor 추출 전 =========")
+                    advance_reservation, reservation, start_times = TextProcessor.extract_dates_from_text(combined_text)
+                    
+                    print("\n========= TextProcessor 추출 결과 =========")
+                    if advance_reservation:
+                        print(f"사전 예매일: {advance_reservation}")
+                    if reservation:
+                        print(f"일반 예매일: {reservation}")
+                    if start_times:
+                        print(f"공연 시작 시간: {', '.join(start_times)}")
+                    
+                    if advance_reservation or reservation or start_times:
+                        print("🗓️ 텍스트에서 날짜 정보 추출 성공")
                 else:
                     print("❌ 이미지와 본문 모두 찾을 수 없습니다.")
-                    return detail_info
-                
-                # 병합된 텍스트로 날짜 정보 추출 (OCR + 본문)
-                advance_reservation, reservation, start_times = TextProcessor.extract_dates_from_text(combined_text)
-                
-                if advance_reservation or reservation or start_times:
-                    print("🗓️ 텍스트에서 날짜 정보 추출 성공")
-                    if advance_reservation:
-                        detail_info['advance_reservation'] = advance_reservation
-                        print(f"🗓️ 사전 예매일: {advance_reservation}")
-                    if reservation:
-                        detail_info['reservation'] = reservation
-                        print(f"🗓️ 일반 예매일: {reservation}")
-                    if start_times:
-                        detail_info['start_times'] = start_times
-                        print(f"🕒 공연 시작 시간: {', '.join(start_times)}")
-                
+                                
                 return detail_info
                 
             except Exception as e:
@@ -150,3 +200,7 @@ class DetailCrawler:
         except Exception as e:
             print(f"❌ 상세 정보 추출 오류: {str(e)}")
             return {}
+        
+        finally:
+            if driver:
+                driver.quit()

@@ -264,4 +264,8 @@ gradle-app.setting
 __pycache__/
 *.pyc
 
+#env
+.env
+*.env
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,intellij,java,gradle

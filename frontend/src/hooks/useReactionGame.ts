@@ -37,7 +37,7 @@ const useReactionGame = (
 
   // 게임 모드 설정 (queue, grape, capcha로 변환)
   useEffect(() => {
-    setGameMode(gameMode.toLowerCase() as 'queue' | 'grape' | 'capcha');
+    setGameMode(gameMode);
   }, [setGameMode, gameMode]);
 
   // 카운트다운 시작

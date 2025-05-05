@@ -1,5 +1,5 @@
 # OCR API 설정
-OCR_API_URL = "https://naveropenapi.apigw.ntruss.com/ocr/v1/general"
+OCR_API_URL = "https://oe7fe4lwbg.apigw.ntruss.com/custom/v1/41432/d0512270cb2eb7d3b6f7d52775d9cbffe7040d7e4012480b58c6801ffcad068f/general"
 OCR_SECRET_KEY = "eG9WbHd3cHhPU1JnemRQYXRtRUFEVXBnWHFSZFFPa1E="  
 OCR_API_KEY = "Edx7NLBFZ7q4W1Je02zTwCWnoWPLZ1SmPcBYha7e"        
 

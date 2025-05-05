@@ -12,7 +12,7 @@ pipeline {  // 파이프라인 정의 시작
 
 
     tools {
-        nodeJS 'NodeJS 20.18.3'
+        nodejs 'NodeJS 20.18.3'
     }
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의

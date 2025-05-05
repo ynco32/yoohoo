@@ -22,10 +22,17 @@
   border-radius: $border-radius-lg;
   padding: $spacing-xl;
   text-align: center;
+  min-width: 120px; // 최소 너비 설정
+  min-height: 120px; // 최소 높이 설정
+  display: flex; // flex로 내부 콘텐츠 중앙 정렬
+  align-items: center;
+  justify-content: center;
 }
 
 .countdownNumber {
   font-size: $font-size-4xl;
   font-weight: $font-weight-bold;
   color: $con-blue;
+  width: 100%; // 숫자가 중앙에 위치하도록
+  line-height: 1; // 라인 높이를 1로 설정하여 균일하게
 }

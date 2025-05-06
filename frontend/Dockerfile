@@ -1,12 +1,15 @@
 # Node.js 20.18 버전을 기반으로 하는 이미지 사용
-# 1) Node 공식 이미지 (Corepack 내장)
+# Node 공식 이미지 (Corepack 내장)
 FROM node:20.18-alpine AS build
 
 WORKDIR /app
 
-# 2) Corepack 활성화 및 Yarn 4.7.0 준비
+# 1) Corepack 활성화 & Yarn 4.7.0 준비
 RUN corepack enable \
- && corepack prepare yarn@4.7.0 --activate
+ && corepack prepare yarn@4.7.0 --activate \
+ \
+ # 2) node_modules 플러그인 불러오기 (이게 핵심)
+ && yarn plugin import node-modules
 
 # package.json과 yarn.lock 파일 복사
 COPY package.json yarn.lock ./

@@ -37,22 +37,22 @@ public class Result {
 	@Column(name = "seat", length = 100)
 	private String seat;
 
-	@Column(name = "ticket_rank")
-	private Long ticketRank;
+	@Column(name = "concert_name", length = 100)
+	private String concertName;
 
-	@Column(name = "processing_time")
-	private Long processingTime;
+	@Column(name = "ticketing_platform", length = 100)
+	private String ticketingPlatform;
 
 	@Column(name = "reserve_time")
 	private LocalDateTime reserveTime;
 
 	private Result(TicketingResultResponseDTO ticketingResultResponseDTO, User user){
 		this.user = user;
+		this.concertName = ticketingResultResponseDTO.concertName();
+		this.ticketingPlatform = ticketingResultResponseDTO.ticketingPlatform();
 		this.reserveTime = ticketingResultResponseDTO.reserveTime();
 		this.section = ticketingResultResponseDTO.section();
 		this.seat = ticketingResultResponseDTO.seat();
-		this.ticketRank = ticketingResultResponseDTO.ticketRank();
-		this.processingTime = ticketingResultResponseDTO.processingTime();
 	}
 
 	public static Result of(TicketingResultResponseDTO ticketingResultResponseDTO, User user) {

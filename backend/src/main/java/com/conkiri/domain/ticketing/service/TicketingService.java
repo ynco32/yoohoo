@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -72,7 +71,7 @@ public class TicketingService {
 				entry.getKey().toString(),
 				entry.getValue().toString()
 			))
-			.collect(Collectors.toList());
+			.toList();
 
 		return SeatResponseDTO.from(seatDetails);
 	}
@@ -115,22 +114,18 @@ public class TicketingService {
 	private void processSeatReservation(Long userId, String section, String seat, String sectionKey) {
 
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
-		Long rank = redisTemplate.opsForValue().increment(RedisKeys.RESERVATION);
 		redisTemplate.opsForHash().put(sectionKey, seat, Status.RESERVED.getValue());
-		saveReservationHistory(historyKey, userId, section, seat, rank);
+		saveReservationHistory(historyKey, userId, section, seat);
 	}
 
 	// 예매 정보 저장
-	private void saveReservationHistory(String userHistoryKey, Long userId, String section, String seat, Long rank) {
+	private void saveReservationHistory(String userHistoryKey, Long userId, String section, String seat) {
 		LocalDateTime now = LocalDateTime.now();
 
 		// 사용자의 예매 내역 저장
 		redisTemplate.opsForHash().put(userHistoryKey, "section", section);
 		redisTemplate.opsForHash().put(userHistoryKey, "seat", seat);
 		redisTemplate.opsForHash().put(userHistoryKey, "reserveTime", now.toString());
-		redisTemplate.opsForHash().put(userHistoryKey, "rank", String.valueOf(rank));
-		redisTemplate.opsForHash().put(userHistoryKey, "reserveNanoTime", String.valueOf(System.nanoTime()));  // 예매 시점의 나노타임 저장
-
 
 		// 해당 좌석의 예매 내역 저장
 		String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
@@ -143,23 +138,16 @@ public class TicketingService {
 	public TicketingResultResponseDTO getTicketingResult(Long userId) {
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
 		Map<Object, Object> history = redisTemplate.opsForHash().entries(historyKey);
-
 		if (history.isEmpty()) {
-			return null;
+			throw new BaseException(ErrorCode.RECORD_NOT_FOUND);
 		}
 
 		String section = (String) history.get("section");
 		String seat = (String) history.get("seat");
-		Long rank = Long.parseLong((String) history.get("rank"));
-
-		// Double로 파싱한 후 Long으로 변환
-		double queueTimeDouble = Double.parseDouble((String) history.get("queueTime"));
-		double reserveNanoTimeDouble = Double.parseDouble((String) history.get("reserveNanoTime"));
-		Long processingTime = (long)((reserveNanoTimeDouble - queueTimeDouble) / 1_000_000_000);
-
 		LocalDateTime reserveTime = LocalDateTime.parse((String) history.get("reserveTime"));
-
-		return new TicketingResultResponseDTO(section, seat, rank, processingTime, reserveTime);
+		String concertName = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "concertName");
+		String ticketingPlatform = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "ticketingPlatform");
+		return TicketingResultResponseDTO.of(concertName, ticketingPlatform, section, seat, reserveTime);
 	}
 
 
@@ -179,27 +167,24 @@ public class TicketingService {
 	public List<TicketingResultResponseDTO> getAllTicketingResults(Long userId) {
 		return resultRepository.findByUser_UserIdOrderByReserveTimeDesc(userId)
 			.stream()
-			.map(result -> new TicketingResultResponseDTO(
+			.map(result -> TicketingResultResponseDTO.of(
+				result.getConcertName(),
+				result.getTicketingPlatform(),
 				result.getSection(),
 				result.getSeat(),
-				result.getTicketRank(),
-				result.getProcessingTime(),
 				result.getReserveTime()
 			))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public void deleteTicketingResult(Long userId) {
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
-
 		String section = (String) redisTemplate.opsForHash().get(userHistoryKey, "section");
 		String seat = (String) redisTemplate.opsForHash().get(userHistoryKey, "seat");
 		if (section != null && seat != null) {
-			// 좌석 상태 변경
 			String sectionKey = RedisKeys.getSectionKey(section);
 			redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
 
-			// 좌석 히스토리 삭제
 			String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
 			redisTemplate.delete(seatHistoryKey);
 		}
@@ -208,10 +193,6 @@ public class TicketingService {
 		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
 		redisTemplate.opsForHash().delete(userHistoryKey, "section");
 		redisTemplate.opsForHash().delete(userHistoryKey, "seat");
-		redisTemplate.opsForHash().delete(userHistoryKey, "rank");
-		redisTemplate.opsForHash().delete(userHistoryKey, "reserveNanoTime");
-
-		// 대기열 관련 정보(queueTime, position)는 유지
 	}
 
 	//  좌석 상태 유효성 검사
@@ -261,6 +242,7 @@ public class TicketingService {
 	}
 
 	private void validateNoExistingReservation(Long userId) {
+
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
 		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
 			log.info("User {} already has a reservation", userId);

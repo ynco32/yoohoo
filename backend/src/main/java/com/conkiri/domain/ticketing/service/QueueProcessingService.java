@@ -37,7 +37,6 @@ public class QueueProcessingService {
 		log.info("티켓팅 시간 설정 - 시작: {}, 종료: {}", startTime, endTime);
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
-		redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "ticketingPlatform", concert.getTicketingPlatform().name());
 
 		String dummyId = "dummy_user";
@@ -205,7 +204,7 @@ public class QueueProcessingService {
 	public WaitingTimeResponseDTO getEstimatedWaitingTime(Long userId) {
 		Long position = getQueuePosition(userId);
 		if (position == null) {
-			return WaitingTimeResponseDTO.of(0L, 0L, 0L, 0L);
+			return WaitingTimeResponseDTO.of(0L, 0L, 0L);
 		}
 
 		ServerMetricsDTO serverLoad = serverMonitorService.getCurrentServerLoad();
@@ -224,7 +223,7 @@ public class QueueProcessingService {
 		Long totalWaiting = redisTemplate.opsForZSet().size(RedisKeys.QUEUE) - 1;
 		Long usersAfter = Math.max(0L, totalWaiting - waitingNumber);
 
-		return WaitingTimeResponseDTO.of(waitingNumber, usersAhead, estimatedSeconds, usersAfter);
+		return WaitingTimeResponseDTO.of(waitingNumber, estimatedSeconds, usersAfter);
 	}
 
 	// 대기열 참여 요청의 유효성을 검증합니다.

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React from 'react';
 import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
@@ -8,138 +8,30 @@ import NumberInput from '@/components/common/NumberInput/NumberInput';
 import ImageUpload from '@/components/sight/ImageUpload/ImageUpload';
 import { ReviewSelect } from '@/components/sight/ReviewSelect/ReviewSelect';
 import Button from '@/components/common/Button/Button';
+import { useReviewForm } from '@/hooks/useReviewForm';
 import {
-  ReviewRequestDTO,
-  ArtistGrade,
-  StageGrade,
-  ScreenGrade,
+  CAMERA_BRANDS,
+  CAMERA_MODELS,
   ARTIST_GRADE_OPTIONS,
   SCREEN_GRADE_OPTIONS,
   STAGE_GRADE_OPTIONS,
-} from '@/types/review';
-import { useReview } from '@/hooks/useReview';
-import { useRouter } from 'next/navigation';
-
-// 카메라 브랜드 및 기종 데이터
-const CAMERA_BRANDS = [
-  { label: '삼성', value: '삼성' },
-  { label: '애플', value: '애플' },
-];
-
-// 브랜드별 기종 데이터
-const CAMERA_MODELS: Record<string, { label: string; value: string }[]> = {
-  삼성: [
-    { label: '갤럭시 S24 Ultra', value: '갤럭시 S24 Ultra' },
-    { label: '갤럭시 S24', value: '갤럭시 S24' },
-    { label: '갤럭시 S23', value: '갤럭시 S23' },
-    { label: '갤럭시 노트 20', value: '갤럭시 노트 20' },
-    { label: '갤럭시 Z 플립', value: '갤럭시 Z 플립' },
-    { label: '갤럭시 Z 폴드', value: '갤럭시 Z 폴드' },
-  ],
-  애플: [
-    { label: 'iPhone 16 Pro Max', value: 'iPhone 16 Pro Max' },
-    { label: 'iPhone 16 Pro', value: 'iPhone 16 Pro' },
-    { label: 'iPhone 16', value: 'iPhone 16' },
-    { label: 'iPhone 15 Pro Max', value: 'iPhone 15 Pro Max' },
-    { label: 'iPhone 15 Pro', value: 'iPhone 15 Pro' },
-    { label: 'iPhone 15', value: 'iPhone 15' },
-    { label: 'iPhone 14', value: 'iPhone 14' },
-  ],
-};
+} from '@/lib/constants';
 
 export default function WriteReviewPage() {
-  const router = useRouter();
-  const { createReview, isLoading, error } = useReview();
-
-  // 리뷰 데이터 상태 관리
-  const [reviewData, setReviewData] = useState<Partial<ReviewRequestDTO>>({
-    content: '',
-  });
-
-  // 이미지 파일 상태 관리
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-
-  // 카메라 브랜드 상태
-  const [selectedBrand, setSelectedBrand] = useState<string | undefined>(
-    undefined
-  );
-
-  // 제출 성공 상태
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  // 선택된 브랜드에 따라 사용 가능한 모델 목록 결정
-  const availableModels = useMemo(() => {
-    if (!selectedBrand) return [];
-    return CAMERA_MODELS[selectedBrand] || [];
-  }, [selectedBrand]);
-
-  // 값 변경 핸들러
-  const handleChange = (key: keyof ReviewRequestDTO, value: any) => {
-    setReviewData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // 브랜드 변경 핸들러
-  const handleBrandChange = (brandValue: string) => {
-    setSelectedBrand(brandValue);
-    // 브랜드가 변경되면 기존에 선택한 기종 초기화
-    setReviewData((prev) => ({
-      ...prev,
-      cameraBrand: brandValue,
-      cameraModel: undefined,
-    }));
-  };
-
-  // 완료 버튼 클릭 핸들러 - API 연결
-  const handleSubmit = async () => {
-    if (!isFormValid()) return;
-
-    try {
-      // ReviewRequestDTO 타입에 맞게 데이터 변환
-      const submitData: ReviewRequestDTO = {
-        concertId: reviewData.concertId!,
-        section: reviewData.section!, // 문자열
-        rowLine: reviewData.rowLine!,
-        columnLine: reviewData.columnLine!,
-        artistGrade: reviewData.artistGrade!,
-        stageGrade: reviewData.stageGrade!,
-        screenGrade: reviewData.screenGrade!,
-        content: reviewData.content!,
-        cameraBrand: reviewData.cameraBrand,
-        cameraModel: reviewData.cameraModel,
-      };
-
-      // API 호출
-      const reviewId = await createReview(submitData, imageFiles);
-
-      if (reviewId) {
-        // 성공 처리
-        setSubmitSuccess(true);
-        setTimeout(() => {
-          // 성공 후 페이지 이동
-          router.push(`/reviews/${reviewId}`);
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('리뷰 제출 오류:', err);
-    }
-  };
-
-  // 폼 유효성 검사
-  const isFormValid = () => {
-    // 필수 필드 검사
-    const requiredFields = [
-      reviewData.concertId !== undefined,
-      reviewData.section !== undefined && reviewData.section.trim() !== '',
-      reviewData.rowLine !== undefined && reviewData.rowLine > 0,
-      reviewData.columnLine !== undefined && reviewData.columnLine > 0,
-      reviewData.artistGrade !== undefined,
-      reviewData.stageGrade !== undefined,
-      reviewData.screenGrade !== undefined,
-      reviewData.content !== undefined && reviewData.content.trim() !== '',
-    ];
-
-    return requiredFields.every((field) => field === true);
-  };
+  const {
+    reviewData,
+    imageFiles,
+    selectedBrand,
+    availableModels,
+    isLoading,
+    error,
+    submitSuccess,
+    handleChange,
+    handleBrandChange,
+    handleImageChange,
+    handleSubmit,
+    isFormValid,
+  } = useReviewForm();
 
   return (
     <div className={styles.container}>
@@ -187,6 +79,7 @@ export default function WriteReviewPage() {
             />
           </div>
         </div>
+
         <div className={styles.image}>
           {/* 이미지 업로드 */}
           <TextTitle
@@ -195,21 +88,10 @@ export default function WriteReviewPage() {
           />
           <ImageUpload
             value={imageFiles.length > 0 ? imageFiles : null}
-            onChange={(files: (File | string)[] | null) => {
-              if (files) {
-                // File 타입만 추출
-                const fileObjects = files.filter(
-                  (file) => file instanceof File
-                ) as File[];
-                // 최대 3개로 제한
-                const limitedFiles = fileObjects.slice(0, 3);
-                setImageFiles(limitedFiles);
-              } else {
-                setImageFiles([]);
-              }
-            }}
+            onChange={handleImageChange}
           />
         </div>
+
         <div className={styles.sightReview}>
           {/* 시야 후기 */}
           <TextTitle
@@ -236,6 +118,7 @@ export default function WriteReviewPage() {
             onChange={(value) => handleChange('stageGrade', value)}
           />
         </div>
+
         <div className={styles.content}>
           <TextTitle
             title='상세후기'
@@ -253,6 +136,7 @@ export default function WriteReviewPage() {
             </div>
           </div>
         </div>
+
         <div className={styles.camera}>
           {/* 촬영 기종 */}
           <TextTitle
@@ -277,7 +161,7 @@ export default function WriteReviewPage() {
             />
           </div>
 
-          {/* 버튼 컴포넌트 사용 - 로딩 상태 추가 */}
+          {/* 버튼 컴포넌트 */}
           <Button
             variant='primary'
             onClick={handleSubmit}

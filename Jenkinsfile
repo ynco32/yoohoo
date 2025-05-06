@@ -1,5 +1,11 @@
 pipeline {  // 파이프라인 정의 시작
-    agent any  // Jenkins 에이전트에서 어떤 노드에서든 실행 가능
+
+    agent {
+        docker {
+        image 'node:20.18'       // Node 20.x 공식 이미지 (npm 내장)
+        args  '-u root'          // 필요하다면 root 권한으로
+        }
+    }
 
 /*
 1. BRANCH_NAME 변수 설정
@@ -7,13 +13,6 @@ pipeline {  // 파이프라인 정의 시작
 3. ddukdoc 으로 되어있는 부분 확인해서 고치기
 4. 컨테이너 이름 정해놓기
 */
-
-
-
-
-    tools {
-        nodejs 'NodeJS 20.18.3'
-    }
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의
         BRANCH_NAME = '${env.BRANCH_NAME ?: "dev"}'
@@ -28,12 +27,6 @@ pipeline {  // 파이프라인 정의 시작
     }
     
     stages {  // 파이프라인의 주요 단계들 정의
-
-        stage('Install Yarn') {  // yarn 전역 설치를 위한 새로운 스테이지
-            steps {
-                sh 'which node && which npm && npm install -g yarn'
-            }
-        }
 
         stage('Debug') {  // 현재 브랜치 디버깅용 스테이지
             steps {
@@ -92,6 +85,7 @@ pipeline {  // 파이프라인 정의 시작
                                             export NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
                                             export NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
                                             
+                                            npm install -g yarn
                                             yarn install
                                             yarn build
                                         '''

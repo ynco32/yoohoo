@@ -47,28 +47,28 @@ pipeline {  // 파이프라인 정의 시작
             }
         }
 
-        stage('Check Changes') {
-            steps {
-                script {
-                    // 변경된 파일 목록 가져오기
-                    def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD || echo "initial commit"', returnStdout: true).trim()
+        // stage('Check Changes') {
+        //     steps {
+        //         script {
+        //             // 변경된 파일 목록 가져오기
+        //             def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD || echo "initial commit"', returnStdout: true).trim()
 
-                    env.FRONTEND_CHANGES = changedFiles.contains('frontend/') ? 'true' : 'false'
-                    env.BACKEND_CHANGES = changedFiles.contains('backend/') ? 'true' : 'false'
+        //             env.FRONTEND_CHANGES = changedFiles.contains('frontend/') ? 'true' : 'false'
+        //             env.BACKEND_CHANGES = changedFiles.contains('backend/') ? 'true' : 'false'
 
-                    echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
-                    echo "Backend 변경 여부: ${BACKEND_CHANGES}"
-                }
-            }
-        }
+        //             echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
+        //             echo "Backend 변경 여부: ${BACKEND_CHANGES}"
+        //         }
+        //     }
+        // }
         
         stage('Build') {  // 빌드 단계
             failFast true  // 하나라도 실패하면 전체 중단
             parallel {
                 stage('Frontend Build') {
-                    when {
-                        expression { env.FRONTEND_CHANGES == 'true' }
-                    }
+                    // when {
+                    //     expression { env.FRONTEND_CHANGES == 'true' }
+                    // }
                     steps {
                         script {
                             try {
@@ -101,9 +101,9 @@ pipeline {  // 파이프라인 정의 시작
                 }
 
                 stage('Backend Build') {
-                    when {
-                        expression { env.BACKEND_CHANGES == 'true' }
-                    }
+                    // when {
+                    //     expression { env.BACKEND_CHANGES == 'true' }
+                    // }
                     steps {
                         script {
                             try {
@@ -124,9 +124,9 @@ pipeline {  // 파이프라인 정의 시작
         }
 
         stage('Docker Build') {
-            when {
-                expression { env.FRONTEND_CHANGES == 'true' || env.BACKEND_CHANGES == 'true' }
-            }
+            // when {
+            //     expression { env.FRONTEND_CHANGES == 'true' || env.BACKEND_CHANGES == 'true' }
+            // }
             steps {
                 script {
                     try {
@@ -195,7 +195,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('SonarQube Analysis - Backend') {
                     when {
                         allOf {
-                            expression { return env.BACKEND_CHANGES == 'true' }
+                            // expression { return env.BACKEND_CHANGES == 'true' }
                             expression { return env.DEPLOY_ENV == 'development' }
                         }
                     }
@@ -224,7 +224,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('SonarQube Analysis - Frontend') {
                     when {
                         allOf {
-                            expression { return env.FRONTEND_CHANGES == 'true' }
+                            // expression { return env.FRONTEND_CHANGES == 'true' }
                             expression { return env.DEPLOY_ENV == 'development' }
                         }
                     }
@@ -257,9 +257,9 @@ pipeline {  // 파이프라인 정의 시작
             failFast true
             parallel {
                 stage('Backend Deploy') {
-                    when {
-                        expression { env.BACKEND_CHANGES == 'true' }
-                    }
+                    // when {
+                    //     expression { env.BACKEND_CHANGES == 'true' }
+                    // }
                     steps {
                         script {
                             try {
@@ -322,9 +322,9 @@ pipeline {  // 파이프라인 정의 시작
                 }
 
                 stage('Frontend Deploy') {
-                    when {
-                        expression { env.FRONTEND_CHANGES == 'true' }
-                    }
+                    // when {
+                    //     expression { env.FRONTEND_CHANGES == 'true' }
+                    // }
                     steps {
                         script {
                             try {

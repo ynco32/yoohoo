@@ -3,7 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import { ReviewSelect } from './ReviewSelect';
 
 export default {
-  title: 'Components/ReviewSelect',
+  title: 'sight/ReviewSelect',
   component: ReviewSelect,
   parameters: {
     layout: 'centered',

@@ -19,8 +19,8 @@ export const ARTIST_GRADE_OPTIONS: GradeOption<ArtistGrade>[] = [
     label: '전광판을 봐야 해요',
     color: '#FACC15',
   },
-  { value: ArtistGrade.FAR, label: '일광귀에 필요해요', color: '#FB7185' },
-  { value: ArtistGrade.VERY_FAR, label: '갈은 곳에 있어요', color: '#F43F5E' },
+  { value: ArtistGrade.FAR, label: '망원경이 필요해요', color: '#FB7185' },
+  { value: ArtistGrade.VERY_FAR, label: '같은 곳에 있어요', color: '#F43F5E' },
 ];
 
 // 스크린 시야 등급 옵션

@@ -4,7 +4,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import ImageUpload from './ImageUpload';
 
 const meta: Meta<typeof ImageUpload> = {
-  title: 'Components/Common/ImageUpload',
+  title: 'Sight/ImageUpload',
   component: ImageUpload,
   parameters: {
     layout: 'centered',
@@ -39,9 +39,6 @@ export const Default: Story = {
           onError={handleError}
           error={error}
         />
-        <div style={{ marginTop: '20px' }}>
-          <p>현재 업로드된 이미지: {images ? images.length : 0}장</p>
-        </div>
       </div>
     );
   },

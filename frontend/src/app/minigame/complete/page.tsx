@@ -3,7 +3,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTicketing } from '../TicketingContext';
 import { useSuccessRate } from '@/hooks/useSuccessRate';
-import styles from './Page.module.scss';
+import styles from './page.module.scss';
 
 const ResultPage = () => {
   const router = useRouter();

@@ -255,135 +255,67 @@ pipeline {  // 파이프라인 정의 시작
         }
 
         stage('Deploy') {  // 배포 단계
-            failFast true
-            parallel {
-                stage('Backend Deploy') {
-                    // when {
-                    //     expression { env.BACKEND_CHANGES == 'true' }
-                    // }
-                    steps {
-                        script {
-                            try {
-                                // 현재 실행 중인 컨테이너 이름 저장
-                                env.OLD_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.BACKEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
+            steps {
+                script {
+                    try {
+                        // 현재 실행 중인 컨테이너 이름 저장
+                        env.OLD_BACKEND_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.BACKEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
+                        env.OLD_FRONTEND_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.FRONTEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
+                        
+                        // 새 버전 컨테이너 시작
+                        sh """
+                            # 새 버전 컨테이너 시작
+                            docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
+                            
+                            # Nginx 설정 초기화
+                            cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
+                            
+                            # 초기 트래픽 설정 (90:10)
+                            sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                            sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                            docker exec nginx nginx -s reload
+                        """
+
+                        // 타임아웃 설정과 함께 카나리 배포 수행
+                        timeout(time: 1, unit: 'HOURS') {
+                            def trafficPercentages = [10, 30, 50, 80, 100]
+                            for (percentage in trafficPercentages) {
+                                echo "트래픽 ${percentage}%로 증가 중..."
                                 
-                                // 새 버전 컨테이너 시작
+                                // 트래픽 조정
                                 sh """
-                                    # 새 버전 컨테이너 시작
-                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
-                                    
-                                    # Nginx 설정 초기화
-                                    cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
-                                    
-                                    # 초기 트래픽 설정 (90:10)
-                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     docker exec nginx nginx -s reload
                                 """
-
-                                // 타임아웃 설정과 함께 카나리 배포 수행
-                                timeout(time: 1, unit: 'HOURS') {
-                                    def trafficPercentages = [10, 30, 50, 80, 100]
-                                    for (percentage in trafficPercentages) {
-                                        echo "트래픽 ${percentage}%로 증가 중..."
-                                        
-                                        // 트래픽 조정
-                                        sh """
-                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                            docker exec nginx nginx -s reload
-                                        """
-                                        
-                                        // 5분 대기
-                                        sleep 15
-
-                                        // 메트릭 체크
-                                        def metrics = checkBackendMetrics()
-                                        echo "현재 메트릭 - 에러율: ${metrics.errorRate}, 응답시간: ${metrics.responseTime}"
-                                        
-                                        if (!metrics.isHealthy) {
-                                            echo "메트릭 이상 감지. 롤백을 시작합니다."
-                                            rollbackBackend()
-                                            error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
-                                        }
-
-                                        // 100% 전환 완료 시 이전 버전 정리
-                                        if (percentage == 100) {
-                                            cleanupOldBackendVersion()
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                env.FAILURE_STAGE = "백엔드 배포"
-                                env.FAILURE_MESSAGE = e.getMessage()
-                                throw e
-                            }
-                        }
-                    }
-                }
-
-                stage('Frontend Deploy') {
-                    // when {
-                    //     expression { env.FRONTEND_CHANGES == 'true' }
-                    // }
-                    steps {
-                        script {
-                            try {
-                                // 현재 실행 중인 컨테이너 이름 저장
-                                env.OLD_FRONTEND_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.FRONTEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
                                 
-                                // 새 버전 컨테이너 시작
-                                sh """
-                                    # 새 버전 컨테이너 시작
-                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
-                                    
-                                    # Nginx 설정 초기화
-                                    cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.frontend.backup
-                                    
-                                    # 초기 트래픽 설정 (90:10)
-                                    sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    docker exec nginx nginx -s reload
-                                """
+                                // 15초 대기
+                                sleep 15
 
-                                // 타임아웃 설정과 함께 카나리 배포 수행
-                                timeout(time: 1, unit: 'HOURS') {
-                                    def trafficPercentages = [10, 30, 50, 80, 100]
-                                    for (percentage in trafficPercentages) {
-                                        echo "프론트엔드 트래픽 ${percentage}%로 증가 중..."
-                                        
-                                        // 트래픽 조정
-                                        sh """
-                                            sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                            sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                            docker exec nginx nginx -s reload
-                                        """
-                                        
-                                        // 5분 대기
-                                        sleep 15
-
-                                        // 프론트엔드 메트릭 체크
-                                        def metrics = checkFrontendMetrics()
-                                        echo "현재 프론트엔드 메트릭 - 에러율: ${metrics.errorRate}, 응답시간: ${metrics.responseTime}"
-                                        
-                                        if (!metrics.isHealthy) {
-                                            echo "프론트엔드 메트릭 이상 감지. 롤백을 시작합니다."
-                                            rollbackFrontend()
-                                            error "프론트엔드 트래픽 전환 과정 중 문제 발생. 롤백 수행"
-                                        }
-
-                                        // 100% 전환 완료 시 이전 버전 정리
-                                        if (percentage == 100) {
-                                            cleanupOldFrontendVersion()
-                                        }
-                                    }
+                                // 백엔드 메트릭 체크
+                                def backendMetrics = checkBackendMetrics()
+                                echo "현재 백엔드 메트릭 - 에러율: ${backendMetrics.errorRate}, 응답시간: ${backendMetrics.responseTime}"
+                                
+                                // 프론트엔드 메트릭 체크
+                                def frontendMetrics = checkFrontendMetrics()
+                                echo "현재 프론트엔드 메트릭 - 에러율: ${frontendMetrics.errorRate}, 응답시간: ${frontendMetrics.responseTime}"
+                                
+                                if (!backendMetrics.isHealthy || !frontendMetrics.isHealthy) {
+                                    echo "메트릭 이상 감지. 롤백을 시작합니다."
+                                    rollbackDeployment()
+                                    error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
                                 }
-                            } catch (Exception e) {
-                                env.FAILURE_STAGE = "프론트엔드 배포"
-                                env.FAILURE_MESSAGE = e.getMessage()
-                                throw e
+
+                                // 100% 전환 완료 시 이전 버전 정리
+                                if (percentage == 100) {
+                                    cleanupOldVersions()
+                                }
                             }
                         }
+                    } catch (Exception e) {
+                        env.FAILURE_STAGE = "배포"
+                        env.FAILURE_MESSAGE = e.getMessage()
+                        throw e
                     }
                 }
             }
@@ -489,8 +421,8 @@ def checkBackendMetrics() {
     return metrics
 }
 
-// 롤백 함수
-def rollbackBackend() {
+// 롤백 함수 통합
+def rollbackDeployment() {
     sh """
         # 트래픽을 이전 버전으로 완전히 되돌림
         sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
@@ -498,22 +430,27 @@ def rollbackBackend() {
         docker exec nginx nginx -s reload
         
         # 새 버전 컨테이너 중지 및 삭제
-        docker stop ${env.BACKEND_NEW_CONTAINER_NAME} || true
-        docker rm ${env.BACKEND_NEW_CONTAINER_NAME} || true
+        docker stop ${env.BACKEND_NEW_CONTAINER_NAME} ${env.FRONTEND_NEW_CONTAINER_NAME} || true
+        docker rm ${env.BACKEND_NEW_CONTAINER_NAME} ${env.FRONTEND_NEW_CONTAINER_NAME} || true
     """
 }
 
-// 백엔드 배포 성공 후 정리 함수
-def cleanupOldBackendVersion() {
+// 배포 성공 후 정리 함수 통합
+def cleanupOldVersions() {
     sh """
         # 이전 버전 컨테이너 중지 및 삭제
-        if [ ! -z "${env.OLD_CONTAINER_NAME}" ]; then
-            docker stop ${env.OLD_CONTAINER_NAME} || true
-            docker rm ${env.OLD_CONTAINER_NAME} || true
+        if [ ! -z "${env.OLD_BACKEND_CONTAINER_NAME}" ]; then
+            docker stop ${env.OLD_BACKEND_CONTAINER_NAME} || true
+            docker rm ${env.OLD_BACKEND_CONTAINER_NAME} || true
+        fi
+        if [ ! -z "${env.OLD_FRONTEND_CONTAINER_NAME}" ]; then
+            docker stop ${env.OLD_FRONTEND_CONTAINER_NAME} || true
+            docker rm ${env.OLD_FRONTEND_CONTAINER_NAME} || true
         fi
         
         # 새 버전 컨테이너 이름 변경
         docker rename ${env.BACKEND_NEW_CONTAINER_NAME} ${env.BACKEND_CONTAINER_NAME}
+        docker rename ${env.FRONTEND_NEW_CONTAINER_NAME} ${env.FRONTEND_CONTAINER_NAME}
     """
 }
 
@@ -543,32 +480,4 @@ def checkFrontendMetrics() {
     }
     
     return metrics
-}
-
-// 프론트엔드 롤백 함수
-def rollbackFrontend() {
-    sh """
-        # 트래픽을 이전 버전으로 완전히 되돌림
-        sed -i 's/weight=[0-9]*/weight=100/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-        sed -i 's/weight=[0-9]*/weight=0/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-        docker exec nginx nginx -s reload
-        
-        # 새 버전 컨테이너 중지 및 삭제
-        docker stop ${env.FRONTEND_NEW_CONTAINER_NAME} || true
-        docker rm ${env.FRONTEND_NEW_CONTAINER_NAME} || true
-    """
-}
-
-// 프론트엔드 배포 성공 후 정리 함수
-def cleanupOldFrontendVersion() {
-    sh """
-        # 이전 버전 컨테이너 중지 및 삭제
-        if [ ! -z "${env.OLD_FRONTEND_CONTAINER_NAME}" ]; then
-            docker stop ${env.OLD_FRONTEND_CONTAINER_NAME} || true
-            docker rm ${env.OLD_FRONTEND_CONTAINER_NAME} || true
-        fi
-        
-        # 새 버전 컨테이너 이름 변경
-        docker rename ${env.FRONTEND_NEW_CONTAINER_NAME} ${env.FRONTEND_CONTAINER_NAME}
-    """
 }

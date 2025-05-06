@@ -4,12 +4,16 @@ FROM node:20.18-alpine AS build
 
 WORKDIR /app
 
+# 1) Corepack 활성화 & Yarn 4.7.0 준비
 RUN corepack enable \
  && corepack prepare yarn@4.7.0 --activate
 
+# 2) 매니페스트 + 설정 복사
 COPY package.json yarn.lock .yarnrc.yml ./
 
-RUN yarn install --immutable
+# 3) 프로젝트 전용 릴리즈 생성 + 의존성 설치
+RUN yarn set version 4.7.0 \
+ && yarn install --immutable
 
 # 소스 코드 복사
 COPY . .

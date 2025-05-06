@@ -379,18 +379,20 @@ def checkBackendMetrics() {
     
     try {
         // 에러율 체크
-        def errorRate = sh(script: "curl -s http://localhost:8080/api/actuator/health", returnStdout: true).trim()
-        metrics.errorRate = errorRate.toFloat()
+        def response = sh(script: "curl -s -w '%{http_code}' http://localhost:8081/api/actuator/health", returnStdout: true).trim()
+        def statusCode = response.tokenize('\n').last()
+        metrics.errorRate = (statusCode == '200') ? 0 : 1
         
         // 응답시간 체크
-        def responseTime = sh(script: "curl -s -w '%{time_total}' http://localhost:8080/api/actuator/health", returnStdout: true).trim()
+        def responseTime = sh(script: "curl -s -w '%{time_total}' -o /dev/null http://localhost:8081/api/actuator/health", returnStdout: true).trim()
         metrics.responseTime = responseTime.toFloat()
         
         // 지표 검증
-        if (metrics.errorRate > 1.0 || metrics.responseTime > 1000) {
+        if (metrics.errorRate > 0 || metrics.responseTime > 1000) {
             metrics.isHealthy = false
         }
     } catch (Exception e) {
+        echo "백엔드 메트릭 체크 중 오류 발생: ${e.getMessage()}"
         metrics.isHealthy = false
     }
     
@@ -439,19 +441,21 @@ def checkFrontendMetrics() {
     ]
     
     try {
-        // 에러율 체크 (프론트엔드 에러 로그 확인)
-        def errorRate = sh(script: "curl -s http://localhost:3000/api/health", returnStdout: true).trim()
-        metrics.errorRate = errorRate.toFloat()
+        // 에러율 체크
+        def response = sh(script: "curl -s -w '%{http_code}' http://localhost:3002/api/health", returnStdout: true).trim()
+        def statusCode = response.tokenize('\n').last()
+        metrics.errorRate = (statusCode == '200') ? 0 : 1
         
         // 응답시간 체크
-        def responseTime = sh(script: "curl -s -w '%{time_total}' http://localhost:3000/api/health", returnStdout: true).trim()
+        def responseTime = sh(script: "curl -s -w '%{time_total}' -o /dev/null http://localhost:3002/api/health", returnStdout: true).trim()
         metrics.responseTime = responseTime.toFloat()
         
-        // 지표 검증 (프론트엔드 기준으로 조정)
-        if (metrics.errorRate > 1.0 || metrics.responseTime > 2000) {  // 프론트엔드는 응답시간 기준을 좀 더 여유있게
+        // 지표 검증
+        if (metrics.errorRate > 0 || metrics.responseTime > 1000) {
             metrics.isHealthy = false
         }
     } catch (Exception e) {
+        echo "프론트엔드 메트릭 체크 중 오류 발생: ${e.getMessage()}"
         metrics.isHealthy = false
     }
     

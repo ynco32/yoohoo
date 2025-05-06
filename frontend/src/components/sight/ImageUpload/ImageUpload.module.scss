@@ -3,6 +3,9 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+  padding: $spacing-sm $spacing-sm $spacing-lg $spacing-sm;
+  border-radius: $border-radius-md;
+  border: solid 1px $con-gray;
 }
 
 .hiddenInput {

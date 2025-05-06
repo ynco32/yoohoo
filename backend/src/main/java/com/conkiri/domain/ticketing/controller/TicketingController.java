@@ -1,6 +1,7 @@
 package com.conkiri.domain.ticketing.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,11 +48,12 @@ public class TicketingController {
 
 	// 대기열 진입 API
 	@PostMapping("/queue")
-	public ApiResponse<Void> joinQueue(
-		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+	public ApiResponse<String> joinQueue(
+		@AuthenticationPrincipal UserPrincipal userPrincipal){
 
-		queueProcessingService.addToQueue(userPrincipal.getUserId());
-		return ApiResponse.ofSuccess();
+		String sessionId = UUID.randomUUID().toString();
+		queueProcessingService.addToQueue(userPrincipal.getUserId(), sessionId);
+		return ApiResponse.success(sessionId);
 	}
 
 	// 구역 조회 API

@@ -87,6 +87,7 @@ public class TicketingService {
 		validateReservationRequest(userId, section, seat);
 		String lockKey = RedisKeys.getSeatLockKey(section, seat);
 
+
 		try {
 			acquireLock(lockKey);
 			String sectionKey = RedisKeys.getSectionKey(section);
@@ -246,7 +247,7 @@ public class TicketingService {
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
 		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
 			log.info("User {} already has a reservation", userId);
-			throw new  BaseException(ErrorCode.DUPLICATE_TICKETING);
+			throw new BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}
 	}
 

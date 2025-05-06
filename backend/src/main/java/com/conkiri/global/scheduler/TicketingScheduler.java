@@ -17,6 +17,7 @@ import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
+import com.conkiri.global.util.RedisKeys;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +81,7 @@ public class TicketingScheduler {
 		queueProcessingService.setTicketingTime(ticketingTime, endTime, concert);
 		Section.getSections().forEach(ticketingService::initializeSeatsForSection);
 		log.info("콘서트 [{}] 티켓팅 초기화 완료: {} ~ {} (플랫폼: {})",
-			concert.getConcertName(), ticketingTime, endTime, concert.getTicketingPlatform().getDisplayName());
+			concert.getConcertName(), ticketingTime, endTime, concert.getTicketingPlatform().getPlatform());
 	}
 
 	// 티켓팅 시간 계산: 오늘이 사전/일반 예매일이면 1시간 전 반환
@@ -90,12 +91,14 @@ public class TicketingScheduler {
 		if (concert.getAdvancedReservation() != null &&
 			concert.getAdvancedReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 사전 예매 시간 감지", concert.getConcertName());
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 선예매");
 			return concert.getAdvancedReservation().minusHours(1);
 		}
 
 		if (concert.getReservation() != null &&
 			concert.getReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 일반 예매 시간 감지", concert.getConcertName());
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 일반예매");
 			return concert.getReservation().minusHours(1);
 		}
 

@@ -1,11 +1,6 @@
 pipeline {  // 파이프라인 정의 시작
 
-    agent {
-        docker {
-        image 'node:20.18'       // Node 20.x 공식 이미지 (npm 내장)
-        args  '-u root'          // 필요하다면 root 권한으로
-        }
-    }
+    agent any
 
 /*
 1. BRANCH_NAME 변수 설정
@@ -69,6 +64,12 @@ pipeline {  // 파이프라인 정의 시작
                     // when {
                     //     expression { env.FRONTEND_CHANGES == 'true' }
                     // }
+                    agent {
+                        docker {
+                        image 'node:20.18'       // Node 20.x 공식 이미지 (npm 내장)
+                        args  '-u root'          // 필요하다면 root 권한으로
+                        }
+                    }
                     steps {
                         script {
                             try {
@@ -85,7 +86,6 @@ pipeline {  // 파이프라인 정의 시작
                                             export NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
                                             export NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
                                             
-                                            npm install -g yarn
                                             yarn install
                                             yarn build
                                         '''

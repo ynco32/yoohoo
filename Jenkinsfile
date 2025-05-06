@@ -131,12 +131,12 @@ pipeline {  // 파이프라인 정의 시작
                 script {
                     try {
                     withCredentials([
-                            // Frontend credentials
-                            string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
-                            string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
-                            string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
-                            string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
-                            // Backend credentials
+                        // Frontend credentials
+                        string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
+                        string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
+                        string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
+                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
+                        // Backend credentials
                         string(credentialsId: 'DB_URL', variable: 'DB_URL'),
                         string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
                         string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
@@ -152,15 +152,15 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
                         string(credentialsId: 'AWS_REGION', variable: 'AWS_REGION'),
                         string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
-                            string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST')
+                        string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST')
                     ]) {
-                        sh '''
+                        sh """
                                 # 이미지 빌드만 수행
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml build \
-                                    --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
-                                    --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
-                                    --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
-                                    --build-arg NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
+                                --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
+                                --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
+                                --build-arg NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL \
                                 --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
                                 --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
                                 --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
@@ -177,8 +177,8 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \
                                 --build-arg AWS_REGION=$AWS_REGION \
                                 --build-arg S3_BUCKET=$S3_BUCKET \
-                                    --build-arg REDIS_HOST=$REDIS_HOST
-                            '''
+                                --build-arg REDIS_HOST=$REDIS_HOST
+                            """
                         }
                     } catch (Exception e) {
                         env.FAILURE_STAGE = "Docker 빌드"

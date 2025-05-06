@@ -6,7 +6,7 @@ import { ApiResponse } from './api';
  */
 export interface ArenaInfo {
   /** 경기장 ID */
-  arenaId: string | number;
+  arenaId: number;
 
   /** 경기장 이름 */
   arenaName: string;

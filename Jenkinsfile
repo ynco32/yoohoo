@@ -245,49 +245,49 @@ pipeline {  // 파이프라인 정의 시작
                                 # Nginx 설정 초기화
                                 cp ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                 
-                                # 초기 트래픽 설정 (90:10)
-                                sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                docker exec nginx nginx -s reload
                             '''
+                                // # 초기 트래픽 설정 (90:10)
+                                // sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                // sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                // docker exec nginx nginx -s reload
                         }
 
                         // 타임아웃 설정과 함께 카나리 배포 수행
-                        timeout(time: 1, unit: 'HOURS') {
-                            def trafficPercentages = [10, 30, 50, 80, 100]
-                            for (percentage in trafficPercentages) {
-                                echo "트래픽 ${percentage}%로 증가 중..."
+                        // timeout(time: 1, unit: 'HOURS') {
+                        //     def trafficPercentages = [10, 30, 50, 80, 100]
+                        //     for (percentage in trafficPercentages) {
+                        //         echo "트래픽 ${percentage}%로 증가 중..."
                                 
-                                // 트래픽 조정
-                                sh """
-                                    sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    docker exec nginx nginx -s reload
-                                """
+                        //         // 트래픽 조정
+                        //         sh """
+                        //             sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                        //             sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                        //             docker exec nginx nginx -s reload
+                        //         """
                                 
-                                // 15초 대기
-                                sleep 15
+                        //         // 15초 대기
+                        //         sleep 15
 
-                                // 백엔드 메트릭 체크
-                                def backendMetrics = checkBackendMetrics()
-                                echo "현재 백엔드 메트릭 - 에러율: ${backendMetrics.errorRate}, 응답시간: ${backendMetrics.responseTime}"
+                        //         // 백엔드 메트릭 체크
+                        //         def backendMetrics = checkBackendMetrics()
+                        //         echo "현재 백엔드 메트릭 - 에러율: ${backendMetrics.errorRate}, 응답시간: ${backendMetrics.responseTime}"
                                 
-                                // 프론트엔드 메트릭 체크
-                                def frontendMetrics = checkFrontendMetrics()
-                                echo "현재 프론트엔드 메트릭 - 에러율: ${frontendMetrics.errorRate}, 응답시간: ${frontendMetrics.responseTime}"
+                        //         // 프론트엔드 메트릭 체크
+                        //         def frontendMetrics = checkFrontendMetrics()
+                        //         echo "현재 프론트엔드 메트릭 - 에러율: ${frontendMetrics.errorRate}, 응답시간: ${frontendMetrics.responseTime}"
                                 
-                                if (!backendMetrics.isHealthy || !frontendMetrics.isHealthy) {
-                                    echo "메트릭 이상 감지. 롤백을 시작합니다."
-                                    rollbackDeployment()
-                                    error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
-                                }
+                        //         if (!backendMetrics.isHealthy || !frontendMetrics.isHealthy) {
+                        //             echo "메트릭 이상 감지. 롤백을 시작합니다."
+                        //             rollbackDeployment()
+                        //             error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
+                        //         }
 
-                                // 100% 전환 완료 시 이전 버전 정리
-                                if (percentage == 100) {
-                                    cleanupOldVersions()
-                                }
-                            }
-                        }
+                        //         // 100% 전환 완료 시 이전 버전 정리
+                        //         if (percentage == 100) {
+                        //             cleanupOldVersions()
+                        //         }
+                        //     }
+                        // }
                     } catch (Exception e) {
                         env.FAILURE_STAGE = "Docker 빌드 및 배포"
                         env.FAILURE_MESSAGE = e.getMessage()

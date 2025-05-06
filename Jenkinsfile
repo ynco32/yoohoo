@@ -243,11 +243,11 @@ pipeline {  // 파이프라인 정의 시작
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                                 
                                 # Nginx 설정 초기화
-                                cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
+                                cp ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                 
                                 # 초기 트래픽 설정 (90:10)
-                                sed -i 's/weight=[0-9]*/weight=90/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                sed -i 's/weight=[0-9]*/weight=10/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                 docker exec nginx nginx -s reload
                             '''
                         }
@@ -260,8 +260,8 @@ pipeline {  // 파이프라인 정의 시작
                                 
                                 // 트래픽 조정
                                 sh """
-                                    sed -i 's/weight=[0-9]*/weight=${100-percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    sed -i 's/weight=[0-9]*/weight=${percentage}/g' ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     docker exec nginx nginx -s reload
                                 """
                                 

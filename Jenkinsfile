@@ -197,7 +197,7 @@ pipeline {  // 파이프라인 정의 시작
                     when {
                         allOf {
                             // expression { return env.BACKEND_CHANGES == 'true' }
-                            expression { return env.DEPLOY_ENV == 'development' }
+                            expression { return env.BRANCH_NAME == 'dev' }
                         }
                     }
                     steps {
@@ -226,7 +226,7 @@ pipeline {  // 파이프라인 정의 시작
                     when {
                         allOf {
                             // expression { return env.FRONTEND_CHANGES == 'true' }
-                            expression { return env.DEPLOY_ENV == 'development' }
+                            expression { return env.BRANCH_NAME == 'dev' }
                         }
                     }
                     steps {
@@ -270,7 +270,7 @@ pipeline {  // 파이프라인 정의 시작
                                 // 새 버전 컨테이너 시작
                                 sh """
                                     # 새 버전 컨테이너 시작
-                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d --name ${env.BACKEND_NEW_CONTAINER_NAME}
+                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                                     
                                     # Nginx 설정 초기화
                                     cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
@@ -335,7 +335,7 @@ pipeline {  // 파이프라인 정의 시작
                                 // 새 버전 컨테이너 시작
                                 sh """
                                     # 새 버전 컨테이너 시작
-                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d --name ${env.FRONTEND_NEW_CONTAINER_NAME}
+                                    docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                                     
                                     # Nginx 설정 초기화
                                     cp ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.frontend.backup

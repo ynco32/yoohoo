@@ -11,8 +11,9 @@ RUN corepack enable \
 # 2) 매니페스트 + 설정 복사
 COPY package.json yarn.lock .yarnrc.yml ./
 
-# 3) 프로젝트 전용 릴리즈 생성 + 의존성 설치
-RUN yarn set version 4.7.0 \
+# 3) Yarn 설정 및 의존성 설치
+RUN mkdir -p .yarn/releases \
+ && cp $(which yarn) .yarn/releases/yarn-4.7.0.cjs \
  && yarn install --immutable
 
 # 소스 코드 복사

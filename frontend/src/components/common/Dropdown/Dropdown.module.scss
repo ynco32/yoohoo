@@ -117,3 +117,12 @@
     font-weight: 500;
   }
 }
+.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+
+  .trigger {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

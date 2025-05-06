@@ -34,6 +34,11 @@ export interface DropdownProps {
    * 추가 CSS 클래스
    */
   className?: string;
+
+  /**
+   * 비활성화 여부
+   */
+  disabled?: boolean;
 }
 
 export default function Dropdown({
@@ -43,6 +48,7 @@ export default function Dropdown({
   placeholder = '선택하세요',
   size = 'default',
   className = '',
+  disabled = false,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -52,7 +58,9 @@ export default function Dropdown({
 
   // 클릭 핸들러
   const handleToggle = () => {
-    setIsOpen(!isOpen);
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
   };
 
   const handleOptionClick = (optionValue: string) => {
@@ -87,10 +95,17 @@ export default function Dropdown({
 
   return (
     <div
-      className={`${styles.dropdown} ${sizeClass} ${className}`}
+      className={`${styles.dropdown} ${sizeClass} ${className} ${
+        disabled ? styles.disabled : ''
+      }`}
       ref={dropdownRef}
     >
-      <button type='button' className={styles.trigger} onClick={handleToggle}>
+      <button
+        type='button'
+        className={styles.trigger}
+        onClick={handleToggle}
+        disabled={disabled}
+      >
         <span className={styles.selectedText}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
@@ -104,7 +119,7 @@ export default function Dropdown({
         </span>
       </button>
 
-      {isOpen && (
+      {isOpen && !disabled && (
         <ul className={styles.options}>
           {options.map((option) => (
             <li

@@ -15,7 +15,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	@Query("""
 		select r from Review r
 		join fetch r.user
-		join fetch r.concert
+		join fetch r.concert c
+		join fetch c.arena
 		join fetch r.seat
 		where r.reviewId = :reviewId
 	""")
@@ -24,7 +25,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	@Query("""
 		select distinct r from Review r
 		join fetch r.seat
-		join fetch r.concert
+		join fetch r.concert c
+		join fetch c.arena
 		join fetch r.user
 		where r.user = :user
 	""")

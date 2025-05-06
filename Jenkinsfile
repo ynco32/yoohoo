@@ -10,8 +10,8 @@ pipeline {  // 파이프라인 정의 시작
 */
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의
-        BRANCH_NAME = '${env.BRANCH_NAME ?: "dev"}'
-        DEPLOY_ENV = '${env.DEPLOY_ENV}'
+        BRANCH_NAME = "${env.BRANCH_NAME ?: "dev"}"
+        DEPLOY_ENV = "${env.DEPLOY_ENV}"
         NGINX_CONF_PATH = '/home/ubuntu/nginx/conf.d'
         NGINX_HTML_PATH = '/home/ubuntu/nginx/html'
         DOCKER_COMPOSE_PATH = '/home/ubuntu'
@@ -154,13 +154,14 @@ pipeline {  // 파이프라인 정의 시작
                         string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
                         string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST')
                     ]) {
-                        sh """
-                                # 이미지 빌드만 수행
-                                docker compose -f docker-compose-${BRANCH_NAME}.yml build \
+                        sh '''
+                            set -e
+                            BRANCH=${BRANCH_NAME:-dev}
+                            docker compose -f docker-compose-${BRANCH}.yml build \
                                 --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
                                 --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
                                 --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
-                                --build-arg NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg NEXT_PUBLIC_FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL \
                                 --build-arg KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
                                 --build-arg KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
                                 --build-arg JWT_SECRET_KEY=$JWT_SECRET_KEY \
@@ -171,14 +172,14 @@ pipeline {  // 파이프라인 정의 시작
                                 --build-arg MYSQL_USER=$MYSQL_USER \
                                 --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
                                 --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
-                                --build-arg FRONTEND_URL=$FRONTEND_URL \
+                                --build-arg FRONTEND_URL=$NEXT_PUBLIC_FRONTEND_URL \
                                 --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
                                 --build-arg AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
                                 --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \
                                 --build-arg AWS_REGION=$AWS_REGION \
                                 --build-arg S3_BUCKET=$S3_BUCKET \
                                 --build-arg REDIS_HOST=$REDIS_HOST
-                            """
+                        '''
                         }
                     } catch (Exception e) {
                         env.FAILURE_STAGE = "Docker 빌드"

@@ -13,7 +13,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 
 # 3) Yarn 설정 및 의존성 설치
 RUN mkdir -p .yarn/releases \
- && wget -O .yarn/releases/yarn-4.7.0.cjs https://github.com/yarnpkg/yarn/releases/download/4.7.0/yarn-4.7.0.cjs \
+ && wget -O .yarn/releases/yarn-4.7.0.cjs https://repo.yarnpkg.com/4.7.0/packages/yarnpkg-cli/bin/yarn.js \
  && chmod +x .yarn/releases/yarn-4.7.0.cjs \
  && yarn install --immutable
 

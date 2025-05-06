@@ -4,18 +4,15 @@ FROM node:20.18-alpine AS build
 
 WORKDIR /app
 
-# 1) Corepack 활성화 & Yarn 4.7.0 준비
 RUN corepack enable \
- && corepack prepare yarn@4.7.0 --activate \
- \
- # 2) node_modules 플러그인 불러오기 (이게 핵심)
- && yarn plugin import node-modules
+ && corepack prepare yarn@4.7.0 --activate
 
-# package.json과 yarn.lock 파일 복사
+# 2) 매니페스트 복사
 COPY package.json yarn.lock ./
 
-# 의존성 설치
-RUN yarn install
+# 3) node‑modules 플러그인 임포트 & 의존성 설치
+RUN yarn plugin import node-modules \
+ && yarn install --immutable
 
 # 소스 코드 복사
 COPY . .

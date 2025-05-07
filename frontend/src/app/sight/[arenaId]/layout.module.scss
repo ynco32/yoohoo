@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  padding: 0 $spacing-md;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.help {
+  color: $text-sub;
+  padding: $spacing-xl 0;
+}
+
+.selects {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: flex-start;
+  padding-left: $spacing-sm;
+  align-self: flex-start;
+}

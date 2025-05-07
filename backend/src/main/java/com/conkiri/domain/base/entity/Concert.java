@@ -12,10 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -52,4 +49,17 @@ public class Concert {
 
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
+
+	//생성자
+	@Builder
+	public Concert(Artist artist, Arena arena, String concertName, LocalDateTime advancedReservation,
+    LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
+    	this.artist = artist;
+   		this.arena = arena;
+    	this.concertName = concertName;
+    	this.advancedReservation = advancedReservation;
+    	this.reservation = reservation;
+    	this.ticketingPlatform = ticketingPlatform;
+    	this.photoUrl = photoUrl;
+}
 }

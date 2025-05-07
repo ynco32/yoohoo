@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 interface MapOptions {
   center: { lat: number; lng: number };
   level: number;
+  maxLevel?: number;
+  minLevel?: number;
 }
 
 export default function useKakaoMap(
@@ -26,6 +28,8 @@ export default function useKakaoMap(
             options.center.lng
           ),
           level: options.level,
+          maxLevel: options.maxLevel,
+          minLevel: options.minLevel,
         });
 
         setMap(kakaoMap);

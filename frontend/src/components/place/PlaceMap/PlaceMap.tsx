@@ -38,6 +38,8 @@ export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
   const { map } = useKakaoMap(mapRef, {
     center: { lat: latitude, lng: longitude },
     level: 3,
+    maxLevel: 5,
+    minLevel: 1,
   });
 
   // 지도 클릭 시 오버레이 닫기 (한 번만 등록)

@@ -1,3 +1,12 @@
+.container {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: auto;
+  flex-direction: column;
+  background: $ticketing-bg;
+}
+
 .titleWrapper {
   display: flex;
   align-items: center;

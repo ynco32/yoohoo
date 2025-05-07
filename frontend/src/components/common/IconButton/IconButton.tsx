@@ -2,11 +2,19 @@ import React, { CSSProperties } from 'react';
 import styles from './IconButton.module.scss';
 import IconBox, { IconName } from '../IconBox/IconBox';
 
+// variant 타입 정의 추가
+type IconButtonVariant = 'medium' | 'large';
+
 interface IconButtonProps {
   /**
    * 아이콘 이름 (IconBox 컴포넌트에서 지원하는 모든 아이콘)
    */
   icon: IconName;
+
+  /**
+   * 버튼 크기 변형(medium: 40px, large: 60px)
+   */
+  variant?: IconButtonVariant;
 
   /**
    * 클릭 이벤트 핸들러
@@ -34,23 +42,28 @@ interface IconButtonProps {
  */
 export default function IconButton({
   icon,
+  variant = 'medium',
   onClick,
   className = '',
-  iconSize = 20,
+  iconSize,
   style,
   ...props
 }: IconButtonProps) {
+  // variant에 따라 기본 아이콘 크기 설정
+  const defaultIconSize = variant === 'large' ? 28 : 20;
+  const finalIconSize = iconSize || defaultIconSize;
+
   return (
     <button
       type='button'
-      className={`${styles.iconButton} ${className}`}
+      className={`${styles.iconButton} ${styles[variant]} ${className}`}
       onClick={onClick}
       style={style}
       {...props}
     >
-      <IconBox name={icon} size={iconSize} color='white' />
+      <IconBox name={icon} size={finalIconSize} color='white' />
     </button>
   );
 }
 
-export type { IconButtonProps };
+export type { IconButtonProps, IconButtonVariant };

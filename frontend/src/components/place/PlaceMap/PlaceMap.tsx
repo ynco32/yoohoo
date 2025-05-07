@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface PlaceMapProps {
-  arenaId: string;
+  arenaId: number;
 }
 
 export default function PlaceMap({ arenaId }: PlaceMapProps) {

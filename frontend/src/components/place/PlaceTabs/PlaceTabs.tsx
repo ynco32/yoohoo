@@ -10,7 +10,7 @@ import styles from './PlaceTabs.module.scss';
 const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보기' }];
 
 const dummyArenaInfo = {
-  arenaId: '1',
+  arenaId: 1,
   arenaName: '올림픽 체조 경기장',
   arenaEngName: 'Olympic Gymnastics Arena',
   address: '서울 송파구 올림픽로 424',
@@ -19,9 +19,11 @@ const dummyArenaInfo = {
   photoUrl: '/images/dummyArena.jpg', // 실제 이미지 경로로 교체
 };
 
-export default function PlaceTabs({ arenaId }: { arenaId: string }) {
+export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
   const [activeTab, setActiveTab] = useState(0);
   const { setArenaInfo } = useHeader();
+  const arenaIdNum =
+    typeof arenaId === 'string' ? parseInt(arenaId, 10) : arenaId;
 
   useEffect(() => {
     // 실제로는 arenaId로 API 호출해서 정보 받아와야 함
@@ -42,8 +44,8 @@ export default function PlaceTabs({ arenaId }: { arenaId: string }) {
         />
       </div>
       <div className={styles.tabContent}>
-        {activeTab === 0 && <PlaceMap arenaId={arenaId} />}
-        {activeTab === 1 && <PlaceChat arenaId={arenaId} />}
+        {activeTab === 0 && <PlaceMap arenaId={arenaIdNum} />}
+        {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}
       </div>
     </div>
   );

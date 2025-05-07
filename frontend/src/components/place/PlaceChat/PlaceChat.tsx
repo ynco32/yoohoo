@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface PlaceChatProps {
-  arenaId: string;
+  arenaId: number;
 }
 
 export default function PlaceChat({ arenaId }: PlaceChatProps) {

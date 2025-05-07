@@ -17,6 +17,7 @@
   display: flex;
   gap: $spacing-md;
   justify-content: flex-start;
-  padding-left: $spacing-sm;
+  padding: $spacing-xl $spacing-sm $spacing-xl 0;
+
   align-self: flex-start;
 }

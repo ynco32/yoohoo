@@ -11,7 +11,7 @@ export default function SectionSelectLayout({
 }) {
   return (
     <div className={styles.container}>
-      <div className={styles.help}>구역을 선택해 좌석을 확인하세요!</div>
+      {/* <div className={styles.help}>구역을 선택해 좌석을 확인하세요!</div> */}
       <div className={styles.selects}>
         <Suspense fallback={<div>층 정보 로딩 중...</div>}>
           <StairsSelector />

@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,5 +46,16 @@ public class ViewController {
 		@PathVariable("reviewId") Long reviewId) {
 
 		return ApiResponse.success(viewService.getAReview(reviewId));
+	}
+
+	// 후기 수정
+	@PutMapping(value = "/reviews/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ApiResponse<Long> updateReview(
+		@PathVariable("reviewId") Long reviewId,
+		@Valid @RequestPart ReviewRequestDTO reviewRequestDTO,
+		@RequestPart List<MultipartFile> files,
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+		return ApiResponse.success(viewService.updateReview(reviewId, reviewRequestDTO, files, userPrincipal.getUser()));
 	}
 }

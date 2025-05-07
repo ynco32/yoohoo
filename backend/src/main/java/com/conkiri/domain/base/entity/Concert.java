@@ -29,20 +29,27 @@ public class Concert {
 	@EqualsAndHashCode.Include
 	private Long concertId;
 
-	@Column(name = "concert_name", length = 100)
-	private String concertName;
-
-	@Column(name = "artist", length = 100)
-	private String artist;
-
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Column(name = "photo_url", length = 200)
-	private String photoUrl;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "artist_id", nullable = false)
+	private Artist artist;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;
 
+	@Column(name = "concert_name", length = 100)
+	private String concertName;
+
+	@Column(name = "advanced_reservation")
+	private LocalDateTime advancedReservation;
+
+	@Column(name = "reservation")
+	private LocalDateTime reservation;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ticketing_platform", nullable = false)
+	private Platform ticketingPlatform;
+
+	@Column(name = "photo_url", length = 200)
+	private String photoUrl;
 }

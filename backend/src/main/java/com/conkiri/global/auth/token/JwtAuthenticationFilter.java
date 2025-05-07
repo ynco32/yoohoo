@@ -95,7 +95,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	그러면 인증이 필요한 API 요청에서 403 Forbidden 오류가 발생할 수 있습니다.*/
 	private UserPrincipal createUserPrincipal(User user) {
 		return new UserPrincipal(
-			Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")),
+			Collections.singletonList(new SimpleGrantedAuthority(user.getRole())),
 			user
 		);
 	}

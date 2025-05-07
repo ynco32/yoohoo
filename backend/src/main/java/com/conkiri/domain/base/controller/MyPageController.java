@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.base.service.MyPageService;
 import com.conkiri.domain.sharing.dto.response.SharingResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.global.auth.token.UserPrincipal;
 import com.conkiri.global.common.ApiResponse;
 
@@ -46,5 +47,13 @@ public class MyPageController {
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
 		return ApiResponse.success(myPageService.getScrappedList(lastSharingId, userPrincipal.getUser()));
+	}
+
+	// 마이페이지에서 회원이 작성한 시야 후기 게시글 조회
+	@GetMapping("/reviews")
+	public ApiResponse<ReviewResponseDTO> getMyReviews(
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+		return ApiResponse.success(myPageService.getMyReviews(userPrincipal.getUser()));
 	}
 }

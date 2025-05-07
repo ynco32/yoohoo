@@ -1,7 +1,6 @@
 package com.conkiri.domain.base.dto.response;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.conkiri.domain.base.entity.Concert;
 
@@ -13,7 +12,7 @@ public record ConcertResponseDTO(
 		return new ConcertResponseDTO(
 			concerts.stream()
 				.map(ConcertDetailResponseDTO::from)
-				.collect(Collectors.toList()),
+				.toList(),
 			!hasNext
 		);
 	}

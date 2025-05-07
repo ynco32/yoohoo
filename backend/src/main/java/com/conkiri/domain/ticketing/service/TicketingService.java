@@ -165,8 +165,8 @@ public class TicketingService {
 	}
 
 	// 마이페이지용 전체 결과 조회
-	public List<TicketingResultResponseDTO> getAllTicketingResults(Long userId) {
-		return resultRepository.findByUser_UserIdOrderByReserveTimeDesc(userId)
+	public List<TicketingResultResponseDTO> getAllTicketingResults(User user) {
+		return resultRepository.findByUserOrderByReserveTimeDesc(user)
 			.stream()
 			.map(result -> TicketingResultResponseDTO.of(
 				result.getConcertName(),
@@ -245,7 +245,9 @@ public class TicketingService {
 	private void validateNoExistingReservation(Long userId) {
 
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
-		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
+		Boolean hasReservation = redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime");
+
+		if (Boolean.TRUE.equals(hasReservation)) {
 			log.info("User {} already has a reservation", userId);
 			throw new BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}

@@ -48,12 +48,12 @@ public class TicketingController {
 
 	// 대기열 진입 API
 	@PostMapping("/queue")
-	public ApiResponse<String> joinQueue(
+	public ApiResponse<Void> joinQueue(
 		@AuthenticationPrincipal UserPrincipal userPrincipal){
 
 		String sessionId = UUID.randomUUID().toString();
 		queueProcessingService.addToQueue(userPrincipal.getUserId(), sessionId);
-		return ApiResponse.success(sessionId);
+		return ApiResponse.ofSuccess();
 	}
 
 	// 구역 조회 API
@@ -105,7 +105,7 @@ public class TicketingController {
 	public ApiResponse<List<TicketingResultResponseDTO>> getAllResults(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUserId()));
+		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUser()));
 	}
 
 	@DeleteMapping("/result")

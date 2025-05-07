@@ -2,6 +2,7 @@ package com.conkiri.domain.ticketing.service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,6 +35,7 @@ public class QueueProcessingService {
 
 	// 티켓팅 시작 및 종료 시간을 Redis 에 설정합니다
 	public void setTicketingTime(LocalDateTime startTime, LocalDateTime endTime, Concert concert) {
+
 		log.info("티켓팅 시간 설정 - 시작: {}, 종료: {}", startTime, endTime);
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "startTime", startTime.toString());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "endTime", endTime.toString());
@@ -73,6 +75,7 @@ public class QueueProcessingService {
 	}
 
 	private void notifyWaitingTime(Long userId, String sessionId, WaitingTimeResponseDTO waitingTime) {
+
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());  // 로그 추가
 		User user = userReadService.findUserByIdOrElseThrow(userId);
@@ -110,13 +113,15 @@ public class QueueProcessingService {
 
 	// 대기열이 비어있는지 확인합니다.
 	private boolean isQueueEmpty() {
+
 		return redisTemplate.opsForZSet().size(RedisKeys.QUEUE) == 0;
 	}
 
 	// 다음 처리할 배치의 사용자들을 조회합니다.
 	private Set<String> fetchNextBatch(int batchSize) {
-		return redisTemplate.opsForZSet()
-			.range(RedisKeys.QUEUE, 1, batchSize);
+
+		Set<String> result = redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 1, batchSize);
+		return result != null ? result : Collections.emptySet();
 	}
 
 	// 배치의 사용자들을 입장 처리합니다
@@ -141,6 +146,7 @@ public class QueueProcessingService {
 
 	// 처리 완료된 사용자들을 대기열에서 제거합니다, batchSize = 제거할 배치 크기
 	private void removeProcessedUsersFromQueue(int batchSize) {
+
 		redisTemplate.opsForZSet().removeRange(RedisKeys.QUEUE, 1, batchSize);
 	}
 
@@ -153,11 +159,14 @@ public class QueueProcessingService {
 
 	// 현재 대기 중인 모든 사용자를 조회합니다.
 	private Set<String> getAllWaitingUsers() {
-		return redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 1, -1);
+
+		Set<String> result = redisTemplate.opsForZSet().range(RedisKeys.QUEUE, 1, -1);
+		return result != null ? result : Collections.emptySet();
 	}
 
 	// 개별 사용자의 대기 시간을 업데이트합니다.
 	private void updateUserWaitingTime(String queueKey) {
+
 		String[] parts = queueKey.split(":");
 		if (parts.length != 2) return;
 		Long userId = Long.parseLong(parts[0]);
@@ -170,6 +179,7 @@ public class QueueProcessingService {
 	}
 
 	public WaitingTimeResponseDTO getEstimatedWaitingTime(String sessionId) {
+
 		String userId = (String) redisTemplate.opsForHash().get(RedisKeys.SESSION_MAP, sessionId);
 		if (userId == null) {
 			return WaitingTimeResponseDTO.of(0L, 0L, 0L);
@@ -202,6 +212,7 @@ public class QueueProcessingService {
 
 	// 대기열 참여 요청의 유효성을 검증합니다.
 	public void validateQueueRequest() {
+
 		if (!isTicketingActive()) {
 			throw new BaseException(ErrorCode.NOT_START_TICKETING);
 		}

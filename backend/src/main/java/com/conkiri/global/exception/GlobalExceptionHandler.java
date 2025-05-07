@@ -27,8 +27,13 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
 		log.warn("요청 바디 검증 실패: {}", e.getMessage());
-		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		String defaultMessage = "요청 데이터가 유효하지 않습니다."; // Default fallback message
+		if (e.getBindingResult().getFieldError() != null) {
+			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		}
+
 		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
@@ -37,8 +42,13 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(BindException.class)
 	public ApiResponse<Void> handleBindException(BindException e) {
+
 		log.warn("요청 파라미터 바인딩 실패: {}", e.getMessage());
-		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		String defaultMessage = "요청 데이터가 유효하지 않습니다."; // Default fallback message
+		if (e.getBindingResult().getFieldError() != null) {
+			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+		}
+
 		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
@@ -76,10 +86,11 @@ public class GlobalExceptionHandler {
 		log.error("비즈니스 로직 처리 중 오류 발생. 에러 코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 		ErrorCode errorCode = e.getErrorCode();
 
-		// 동적 HTTP 상태 코드 설정
-		HttpServletResponse response =
-			((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-		response.setStatus(errorCode.getHttpStatus().value());
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attributes != null && attributes.getResponse() != null) {
+			HttpServletResponse response = attributes.getResponse();
+			response.setStatus(errorCode.getHttpStatus().value());
+		}
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode.name(), errorCode.getMessage());
 		return ApiResponse.fail(exceptionResponse);

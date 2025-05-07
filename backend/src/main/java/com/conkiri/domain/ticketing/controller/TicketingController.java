@@ -17,6 +17,7 @@ import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingResultResponseDTO;
+import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -60,7 +61,7 @@ public class TicketingController {
 	@GetMapping("/sections")
 	public ApiResponse<List<String>> getSections() {
 
-		return ApiResponse.success(ticketingService.getSections());
+		return ApiResponse.success(Section.getSections());
 	}
 
 	// 좌석 조회 API

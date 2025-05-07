@@ -4,6 +4,10 @@ from crawler.notice_image_crawler import DetailCrawler
 from database.concert_db import ConcertDB
 from config import TEMP_IMAGE_DIR
 
+def save_concert_to_java_api(concert_data):
+    """콘서트 데이터를 Java API로 전송"""
+    api_url = "http://localhost:8080/api/v1/concert"
+
 def main():
     # 임시 이미지 디렉토리 생성
     os.makedirs(TEMP_IMAGE_DIR, exist_ok=True)
@@ -33,6 +37,7 @@ def main():
         
         # 3단계: 데이터베이스에 저장
         ConcertDB.save_concert(concert)
+        save_concert_to_java_api(concert)
     
     # 임시 이미지 파일 정리
     print("\n🧹 임시 파일 정리 중...")

@@ -44,7 +44,12 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
         />
       </div>
       <div className={styles.tabContent}>
-        {activeTab === 0 && <PlaceMap arenaId={arenaIdNum} />}
+        {activeTab === 0 && (
+          <PlaceMap
+            latitude={dummyArenaInfo.latitude}
+            longitude={dummyArenaInfo.longitude}
+          />
+        )}{' '}
         {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}
       </div>
     </div>

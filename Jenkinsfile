@@ -170,7 +170,7 @@ pipeline {  // 파이프라인 정의 시작
                                     dir('frontend') {
                                         sh """
                                         ${scannerHome}/bin/sonar-scanner \\
-                                        -Dsonar.projectKey=S12P21B108-fe \\
+                                        -Dsonar.projectKey=Conkiri-frontend \\
                                         -Dsonar.sources=src \\
                                         -Dsonar.sourceEncoding=UTF-8 \\
                                         -Dsonar.typescript.tsconfigPath=sonar-tsconfig.json \\

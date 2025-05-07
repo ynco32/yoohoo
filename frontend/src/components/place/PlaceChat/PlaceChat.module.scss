@@ -1,0 +1,119 @@
+/* PlaceChat.module.scss */
+
+.chatContainer {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.messagesWrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageList {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 16px;
+}
+  
+  
+  .dateLabel {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #999;
+    text-align: center;
+    margin: 12px 0 8px;
+    width: 100%;
+    
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #eee;
+      margin: 0 8px;
+    }
+  }
+  
+  .disclaimerContainer {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  
+  .disclaimer {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    line-height: 1.4;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    max-width: 90%;
+  }
+  
+  .inputArea {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    z-index: 10;
+    border-top: 1px solid #eee;
+  }
+  
+  
+  .nicknameDisplay {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    color: #333;
+  }
+  
+  .inputWrapper {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #fff;
+    
+    input {
+      flex: 1;
+      height: 44px;
+      border-radius: 22px;
+      border: 1px solid #e0e0e0;
+      padding: 0 16px;
+      font-size: 15px;
+      outline: none;
+      background-color: #fff;
+      
+      &::placeholder {
+        color: #999;
+      }
+      
+      &:focus {
+        border-color: $con-blue;
+      }
+    }
+  }
+  
+  .sendButton {
+    margin-left: 8px;
+    height: 44px;
+    min-width: 80px;
+    border-radius: 22px;
+    background-color:  $con-blue;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    
+    &:disabled {
+      background-color: #d0d0d0;
+      cursor: not-allowed;
+    }
+  }

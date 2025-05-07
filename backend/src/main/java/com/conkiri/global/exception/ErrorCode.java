@@ -36,7 +36,7 @@ public enum ErrorCode {
 	NICKNAME_NOT_EMPTY(HttpStatus.BAD_REQUEST, "닉네임은 필수값입니다."),
 	ERROR_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 2자 이상 10자 이하여야 합니다."),
 	ERROR_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "닉네임은 공백 없이 한글, 영문, 숫자만 가능합니다."),
-
+	ACCESS_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
 	// 인증
 	OAUTH2_FAILURE(HttpStatus.UNAUTHORIZED, "OAuth2 인증에 실패했습니다."),
@@ -70,6 +70,7 @@ public enum ErrorCode {
 	INVALID_SEAT(HttpStatus.BAD_REQUEST, "유효하지 않은 좌석입니다."),
 	RECORD_NOT_FOUND(HttpStatus.BAD_REQUEST, "티켓팅 결과를 찾을 수 없습니다."),
 	NO_TICKETING_TODAY(HttpStatus.BAD_REQUEST, "오늘은 티켓팅이 없습니다."),
+	INVALID_TICKETING_TIME(HttpStatus.BAD_REQUEST, "종료 시간은 시작 시간보다 이전일 수 없습니다"),
 
 	// 현장
 	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")

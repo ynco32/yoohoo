@@ -154,11 +154,8 @@ public class TicketingService {
 
 	// 결과 저장
 	public void saveTicketingResult(Long userId) {
-		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
-		if (resultDTO == null) {
-			throw new BaseException(ErrorCode.RECORD_NOT_FOUND);
-		}
 
+		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Result result = Result.of(resultDTO, user);
 		resultRepository.save(result);

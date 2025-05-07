@@ -1,15 +1,11 @@
 package com.conkiri.domain.view.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.global.common.BaseTime;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -74,6 +69,17 @@ public class Review extends BaseTime {
 
 	private Review(ReviewRequestDTO dto, User user, Concert concert, Seat seat) {
 		this.user = user;
+		this.concert = concert;
+		this.seat = seat;
+		this.artistGrade = dto.artistGrade();
+		this.stageGrade = dto.stageGrade();
+		this.screenGrade = dto.screenGrade();
+		this.content = dto.content();
+		this.cameraBrand = dto.cameraBrand() != null ? dto.cameraBrand() : null;
+		this.cameraModel = dto.cameraModel() != null ? dto.cameraModel() : null;
+	}
+
+	public void update(ReviewRequestDTO dto, Seat seat, Concert concert) {
 		this.concert = concert;
 		this.seat = seat;
 		this.artistGrade = dto.artistGrade();

@@ -1,5 +1,10 @@
 package com.conkiri.domain.base.controller;
 
+import com.conkiri.domain.base.dto.request.ConcertCreateRequestDTO;
+import com.conkiri.global.common.ApiResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,4 +32,10 @@ public class ConcertController {
 	//
 	// 	return ApiResponse.success(concertService.getConcertList(concertSearch, lastConcertId));
 	// }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<?>> createConcert(@RequestBody ConcertCreateRequestDTO request) {
+        Long concertId = concertService.createConcert(request);
+        return ResponseEntity.ok(ApiResponse.success(concertId));
+    }
 }

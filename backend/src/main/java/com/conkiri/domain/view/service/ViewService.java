@@ -79,6 +79,18 @@ public class ViewService {
 		return review.getReviewId();
 	}
 
+	// 후기 삭제
+	public Void deleteReview(Long reviewId, User user) {
+		Review review = getReview(reviewId);
+		validateReviewOwner(review, user);
+		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReview(review);
+
+		reviewPhotoRepository.deleteAll(reviewPhotos);
+		reviewRepository.delete(review);
+
+		return null;
+	}
+
 	// ========== 이하 공통 메서드 ==========
 
 	private int getFileCount(List<MultipartFile> files) {

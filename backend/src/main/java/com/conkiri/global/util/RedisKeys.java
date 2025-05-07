@@ -2,6 +2,8 @@ package com.conkiri.global.util;
 
 public class RedisKeys {
 
+	private RedisKeys() {}
+
 	public static final String PREFIX = "ticketing:";
 	public static final String SEATS = PREFIX + "seats:";
 	public static final String HISTORY = PREFIX + "history:";

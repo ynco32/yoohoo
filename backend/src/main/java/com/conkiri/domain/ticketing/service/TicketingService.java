@@ -245,7 +245,9 @@ public class TicketingService {
 	private void validateNoExistingReservation(Long userId) {
 
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
-		if (redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime")) {
+		Boolean hasReservation = redisTemplate.opsForHash().hasKey(userHistoryKey, "reserveTime");
+
+		if (Boolean.TRUE.equals(hasReservation)) {
 			log.info("User {} already has a reservation", userId);
 			throw new BaseException(ErrorCode.DUPLICATE_TICKETING);
 		}

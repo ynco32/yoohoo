@@ -17,6 +17,7 @@ import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
+import com.conkiri.global.util.RedisKeys;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TicketingScheduler {
 
-	private static final int TICKETING_DURATION_HOURS = 1;
+	private static final int TICKETING_DURATION_HOURS = 10;
 	private static final String TICKETING_KEY_PATTERN = "ticketing:*";
 
 	private final RedisTemplate<String, String> redisTemplate;
@@ -90,12 +91,14 @@ public class TicketingScheduler {
 		if (concert.getAdvancedReservation() != null &&
 			concert.getAdvancedReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 사전 예매 시간 감지", concert.getConcertName());
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 선예매");
 			return concert.getAdvancedReservation().minusHours(1);
 		}
 
 		if (concert.getReservation() != null &&
 			concert.getReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 일반 예매 시간 감지", concert.getConcertName());
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 일반예매");
 			return concert.getReservation().minusHours(1);
 		}
 

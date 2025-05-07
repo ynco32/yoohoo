@@ -1,8 +1,11 @@
 package com.conkiri.global.exception;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,14 +25,20 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	private static final String BAD_REQUEST = "BAD_REQUEST";
+
 	// javax.validation.Valid or @Validated 으로 binding error 발생시 발생
 	// 주로 @RequestBody, @RequestPart 어노테이션에서 발생
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
 		log.warn("요청 바디 검증 실패: {}", e.getMessage());
-		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		String defaultMessage = Optional.ofNullable(e.getBindingResult().getFieldError())
+			.map(FieldError::getDefaultMessage)
+			.orElse("요청 데이터가 유효하지 않습니다.");
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -37,9 +46,13 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(BindException.class)
 	public ApiResponse<Void> handleBindException(BindException e) {
+
 		log.warn("요청 파라미터 바인딩 실패: {}", e.getMessage());
-		String defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		String defaultMessage = Optional.ofNullable(e.getBindingResult().getFieldError())
+			.map(FieldError::getDefaultMessage)
+			.orElse("요청 데이터가 유효하지 않습니다.");
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -48,7 +61,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ApiResponse<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.warn("요청 파라미터 타입 불일치. 파라미터명: {}, 오류: {}", e.getName(), e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", "요청 파라미터 타입이 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, "요청 파라미터 타입이 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -66,7 +79,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ApiResponse<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.warn("HTTP 메시지를 읽는 도중 오류 발생: {}", e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST",  "요청 바디가 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST,  "요청 바디가 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -76,10 +89,11 @@ public class GlobalExceptionHandler {
 		log.error("비즈니스 로직 처리 중 오류 발생. 에러 코드: {}, 메시지: {}", e.getErrorCode(), e.getMessage());
 		ErrorCode errorCode = e.getErrorCode();
 
-		// 동적 HTTP 상태 코드 설정
-		HttpServletResponse response =
-			((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-		response.setStatus(errorCode.getHttpStatus().value());
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpServletResponse response = attributes != null ? attributes.getResponse() : null;
+		if (response != null) {
+			response.setStatus(errorCode.getHttpStatus().value());
+		}
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode.name(), errorCode.getMessage());
 		return ApiResponse.fail(exceptionResponse);

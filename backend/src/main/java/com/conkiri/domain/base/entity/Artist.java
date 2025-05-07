@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,5 +25,12 @@ public class Artist {
 
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
+
+	@Builder
+	public Artist(Long artistId, String artistName, String photoUrl) {
+		this.artistId = artistId;
+		this.artistName = artistName;
+		this.photoUrl = photoUrl;
+	}
 
 }

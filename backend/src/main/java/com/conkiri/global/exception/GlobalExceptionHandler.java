@@ -1,8 +1,11 @@
 package com.conkiri.global.exception;
 
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,10 +34,9 @@ public class GlobalExceptionHandler {
 	public ApiResponse<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
 		log.warn("요청 바디 검증 실패: {}", e.getMessage());
-		String defaultMessage = "요청 데이터가 유효하지 않습니다."; // Default fallback message
-		if (e.getBindingResult().getFieldError() != null) {
-			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
-		}
+		String defaultMessage = Optional.ofNullable(e.getBindingResult().getFieldError())
+			.map(FieldError::getDefaultMessage)
+			.orElse("요청 데이터가 유효하지 않습니다.");
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
@@ -46,10 +48,9 @@ public class GlobalExceptionHandler {
 	public ApiResponse<Void> handleBindException(BindException e) {
 
 		log.warn("요청 파라미터 바인딩 실패: {}", e.getMessage());
-		String defaultMessage = "요청 데이터가 유효하지 않습니다."; // Default fallback message
-		if (e.getBindingResult().getFieldError() != null) {
-			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
-		}
+		String defaultMessage = Optional.ofNullable(e.getBindingResult().getFieldError())
+			.map(FieldError::getDefaultMessage)
+			.orElse("요청 데이터가 유효하지 않습니다.");
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);

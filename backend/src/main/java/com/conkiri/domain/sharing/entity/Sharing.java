@@ -78,7 +78,7 @@ public class Sharing extends BaseTime {
 		this.content = sharingRequestDTO.content();
 		//ocalDateTime startTime = concert.getStartTime().atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
 		//	.atTime(sharingRequestDTO.startTime().atZone(ZoneId.of("Asia/Seoul")).toLocalTime());
-		this.startTime = startTime;
+		this.startTime = LocalDateTime.now();
 		this.photoUrl = photoUrl;
 		this.concert = concert;
 		this.user = user;

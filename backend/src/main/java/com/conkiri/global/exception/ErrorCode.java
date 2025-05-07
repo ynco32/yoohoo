@@ -72,8 +72,10 @@ public enum ErrorCode {
 	NO_TICKETING_TODAY(HttpStatus.BAD_REQUEST, "오늘은 티켓팅이 없습니다."),
 
 	// 현장
-	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
+	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다."),
 
+	// 콘서트 정보 저장
+	RESOURCE_NOT_FOUND(HttpStatus.BAD_REQUEST, "공연장 정보가 없습니다.")
 	;
 	private final HttpStatus httpStatus;
 	private final String message;

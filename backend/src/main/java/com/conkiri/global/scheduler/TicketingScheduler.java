@@ -81,7 +81,7 @@ public class TicketingScheduler {
 		queueProcessingService.setTicketingTime(ticketingTime, endTime, concert);
 		Section.getSections().forEach(ticketingService::initializeSeatsForSection);
 		log.info("콘서트 [{}] 티켓팅 초기화 완료: {} ~ {} (플랫폼: {})",
-			concert.getConcertName(), ticketingTime, endTime, concert.getTicketingPlatform().getPlatform());
+			concert.getConcertName(), ticketingTime, endTime, concert.getTicketingPlatform().getDisplayName());
 	}
 
 	// 티켓팅 시간 계산: 오늘이 사전/일반 예매일이면 1시간 전 반환

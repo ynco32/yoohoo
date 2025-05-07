@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './PlaceMap.module.scss';
 import useKakaoMap from '@/hooks/useKakaoMap';
+import IconButton from '@/components/common/IconButton/IconButton';
 
 interface PlaceMapProps {
   latitude: number;
@@ -35,12 +36,51 @@ export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('화장실');
   const mapRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null); // ✅ 현재 오버레이 저장
+  const userMarkerRef = useRef<kakao.maps.Marker | null>(null);
   const { map } = useKakaoMap(mapRef, {
     center: { lat: latitude, lng: longitude },
     level: 3,
     maxLevel: 5,
     minLevel: 1,
   });
+
+  // 내 위치 이동 함수
+  const moveToMyLocation = () => {
+    if (!map || !navigator.geolocation) {
+      alert('위치 서비스를 사용할 수 없습니다.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const latlng = new window.kakao.maps.LatLng(latitude, longitude);
+
+        // 기존 마커 제거
+        if (userMarkerRef.current) {
+          userMarkerRef.current.setMap(null);
+        }
+
+        // 마커 표시
+        const marker = new window.kakao.maps.Marker({
+          map,
+          position: latlng,
+        });
+        userMarkerRef.current = marker;
+
+        // 지도 중심 이동
+        map.setCenter(latlng);
+      },
+      (err) => {
+        alert('위치 정보를 불러오는 데 실패했습니다.');
+        console.error(err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+      }
+    );
+  };
 
   // 지도 클릭 시 오버레이 닫기 (한 번만 등록)
   useEffect(() => {
@@ -118,6 +158,14 @@ export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
           </TagButton>
         ))}
       </div>
+
+      <IconButton
+        icon='gps'
+        onClick={moveToMyLocation}
+        className={styles.myLocationBtn}
+        iconSize={24}
+      />
+
       <div ref={mapRef} className={styles.kakaoMap} />
     </div>
   );

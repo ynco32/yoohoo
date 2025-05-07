@@ -47,7 +47,7 @@ public class Concert {
 	private LocalDateTime reservation;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "ticketing_platform", length = 20)
+	@Column(name = "ticketing_platform", nullable = false)
 	private Platform ticketingPlatform;
 
 	@Column(name = "photo_url", length = 200)

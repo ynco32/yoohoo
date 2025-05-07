@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	private static final String BAD_REQUEST = "BAD_REQUEST";
+
 	// javax.validation.Valid or @Validated 으로 binding error 발생시 발생
 	// 주로 @RequestBody, @RequestPart 어노테이션에서 발생
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
 			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
 		}
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -49,7 +51,7 @@ public class GlobalExceptionHandler {
 			defaultMessage = e.getBindingResult().getFieldError().getDefaultMessage();
 		}
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", defaultMessage);
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -58,7 +60,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ApiResponse<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.warn("요청 파라미터 타입 불일치. 파라미터명: {}, 오류: {}", e.getName(), e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST", "요청 파라미터 타입이 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, "요청 파라미터 타입이 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -76,7 +78,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ApiResponse<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.warn("HTTP 메시지를 읽는 도중 오류 발생: {}", e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse("BAD_REQUEST",  "요청 바디가 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST,  "요청 바디가 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 

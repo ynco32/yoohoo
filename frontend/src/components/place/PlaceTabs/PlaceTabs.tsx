@@ -5,6 +5,7 @@ import { useHeader } from '@/components/layout/Header/HeaderProvider';
 import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 import PlaceMap from '../PlaceMap/PlaceMap';
 import PlaceChat from '../PlaceChat/PlaceChat';
+import styles from './PlaceTabs.module.scss';
 
 const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보기' }];
 
@@ -29,14 +30,21 @@ export default function PlaceTabs({ arenaId }: { arenaId: string }) {
   }, [arenaId, setArenaInfo]);
 
   return (
-    <div>
-      <TabMenu
-        menuItems={tabItems}
-        activeIndex={activeTab}
-        onMenuItemClick={(_, idx) => setActiveTab(idx)}
-      />
-      {activeTab === 0 && <PlaceMap arenaId={arenaId} />}
-      {activeTab === 1 && <PlaceChat arenaId={arenaId} />}
+    <div className={styles.placeTabsContainer}>
+      <div className={styles.tabMenuWrapper}>
+        <TabMenu
+          menuItems={tabItems}
+          activeIndex={activeTab}
+          onMenuItemClick={(_, idx) => setActiveTab(idx)}
+          fullWidth={true}
+          size='md'
+          className={styles.customTabMenu}
+        />
+      </div>
+      <div className={styles.tabContent}>
+        {activeTab === 0 && <PlaceMap arenaId={arenaId} />}
+        {activeTab === 1 && <PlaceChat arenaId={arenaId} />}
+      </div>
     </div>
   );
 }

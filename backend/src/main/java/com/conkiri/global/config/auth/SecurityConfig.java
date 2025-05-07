@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -51,6 +53,7 @@ public class SecurityConfig {
 			//요청 권한 설정
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/error").permitAll()
+				.requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
@@ -77,6 +80,16 @@ public class SecurityConfig {
 					HttpServletResponse.SC_UNAUTHORIZED,
 					ErrorCode.UNAUTHORIZED_ACCESS.name(),
 					ErrorCode.UNAUTHORIZED_ACCESS.getMessage()
+				);
+			})
+				// 권한 부족 핸들러 (403 에러)
+
+			.accessDeniedHandler((request, response, accessDeniedException) -> {
+				apiResponseUtil.writeErrorResponse(
+					response,
+					HttpServletResponse.SC_FORBIDDEN,
+					ErrorCode.ACCESS_DENIED.name(),
+					ErrorCode.ACCESS_DENIED.getMessage()
 				);
 			})
 		);

@@ -12,5 +12,5 @@ public enum Platform {
 	COUPANG_PLAY("쿠팡플레이"),
 	INTERPARK("인터파크");
 
-	private final String platform;
+	private final String displayName;
 }

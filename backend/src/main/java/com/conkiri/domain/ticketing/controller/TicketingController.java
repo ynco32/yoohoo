@@ -105,7 +105,7 @@ public class TicketingController {
 	public ApiResponse<List<TicketingResultResponseDTO>> getAllResults(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUserId()));
+		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUser()));
 	}
 
 	@DeleteMapping("/result")

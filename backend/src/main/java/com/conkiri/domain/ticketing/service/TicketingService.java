@@ -165,8 +165,8 @@ public class TicketingService {
 	}
 
 	// 마이페이지용 전체 결과 조회
-	public List<TicketingResultResponseDTO> getAllTicketingResults(Long userId) {
-		return resultRepository.findByUser_UserIdOrderByReserveTimeDesc(userId)
+	public List<TicketingResultResponseDTO> getAllTicketingResults(User user) {
+		return resultRepository.findByUserOrderByReserveTimeDesc(user)
 			.stream()
 			.map(result -> TicketingResultResponseDTO.of(
 				result.getConcertName(),

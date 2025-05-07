@@ -90,8 +90,8 @@ public class GlobalExceptionHandler {
 		ErrorCode errorCode = e.getErrorCode();
 
 		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		if (attributes != null && attributes.getResponse() != null) {
-			HttpServletResponse response = attributes.getResponse();
+		HttpServletResponse response = attributes != null ? attributes.getResponse() : null;
+		if (response != null) {
 			response.setStatus(errorCode.getHttpStatus().value());
 		}
 

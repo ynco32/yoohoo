@@ -2,8 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
   border: none;
   background-color: $con-blue;
@@ -19,4 +17,16 @@
   &:active {
     transform: translateY(0);
   }
+}
+
+// 기본 사이즈 (medium)
+.medium {
+  width: 40px;
+  height: 40px;
+}
+
+// 큰 사이즈 (large)
+.large {
+  width: 60px;
+  height: 60px;
 }

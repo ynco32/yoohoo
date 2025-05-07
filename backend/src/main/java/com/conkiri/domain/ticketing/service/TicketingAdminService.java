@@ -22,6 +22,7 @@ public class TicketingAdminService {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final TicketingService ticketingService;
 
+	// 시간 설정
 	public void setTime(TicketingTimeRequestDTO dto){
 		log.info("티켓팅 시간 설정 - 시작: {}, 종료: {}", dto.startTime(), dto.endTime());
 		redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", dto.concertName());
@@ -35,6 +36,7 @@ public class TicketingAdminService {
 		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, dummyId, dummyScore);
 	}
 
+	// 비활성화
 	public void deActiveTicketing(){
 		LocalDateTime now = LocalDateTime.now();
 		String concertName = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "concertName");

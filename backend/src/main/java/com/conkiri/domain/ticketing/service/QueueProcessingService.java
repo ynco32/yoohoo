@@ -74,10 +74,11 @@ public class QueueProcessingService {
 		notifyWaitingTime(userId, sessionId, waitingTimeResponseDTO);
 	}
 
+	// 실시간 대기번호 예상시간 알림
 	private void notifyWaitingTime(Long userId, String sessionId, WaitingTimeResponseDTO waitingTime) {
 
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
-			waitingTime.usersAfter(), waitingTime.position());  // 로그 추가
+			waitingTime.usersAfter(), waitingTime.position());
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		messagingTemplate.convertAndSendToUser(
 			user.getEmail() + ":" + sessionId,
@@ -87,7 +88,7 @@ public class QueueProcessingService {
 	}
 
 	// 서버 부하에 따라 대기열을 주기적으로 처리합니다.
-	@Scheduled(fixedRate = 5000)  // 5초마다 체크
+	@Scheduled(fixedRate = 5000)
 	public void processWaitingQueue() {
 
 		if (!isTicketingActive()) {

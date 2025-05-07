@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -53,6 +54,8 @@ public class SecurityConfig {
 			//요청 권한 설정
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/error").permitAll()
+				.requestMatchers("/api/v1/arena/**", "/api/v1/view/arenas/**", "/api/v1/concert/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/v1/view/reviews/**").permitAll()
 				.requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()
 			)

@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record TicketingTimeRequestDTO(
 	@NotBlank(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String concertName,
-	@NotBlank(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String platform,
+	@NotBlank(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String ticketingPlatform,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) LocalDateTime startTime,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) LocalDateTime endTime
 ) {

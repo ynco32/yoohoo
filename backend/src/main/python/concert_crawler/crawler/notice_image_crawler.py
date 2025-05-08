@@ -57,15 +57,15 @@ class DetailCrawler:
                 return {}
             
             # 티켓팅 플랫폼 확인
-            ticketing_platform = "인터파크"  # 기본값 설정
-            if "interpark.com" in reservation_link:
-                ticketing_platform = "인터파크"
-            elif "yes24.com" in reservation_link:
+            ticketing_platform = "INTERPARK"  # 기본값 설정
+            if "interpark" in reservation_link:
                 ticketing_platform = "YES24"
-            elif "ticket.melon.com" in reservation_link:
-                ticketing_platform = "멜론티켓"
-            elif "ticketlink.co.kr" in reservation_link:
-                ticketing_platform = "티켓링크"
+            elif "yes24" in reservation_link:
+                ticketing_platform = "YES24"
+            elif "ticket.melon" in reservation_link:
+                ticketing_platform = "MELON"
+            elif "coupang" in reservation_link:
+                ticketing_platform = "COUPANG_PLAY"
             
             detail_info = {
                 'reservation_link': reservation_link,

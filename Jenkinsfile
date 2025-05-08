@@ -91,7 +91,8 @@ pipeline {  // 파이프라인 정의 시작
                                             string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL')
                                         ])
                                     }
-                                    withCredentials {
+
+                                    withCredentials(credentialsList) {
                                         sh '''
                                             export NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY
                                             export NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY

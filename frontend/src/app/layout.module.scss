@@ -9,10 +9,6 @@
   overflow: hidden;
   height: 100dvh;
   width: 100%;
-
-  @media screen and (max-width: $breakpoint-sm) {
-    max-width: 100%;
-  }
 }
 
 .main {

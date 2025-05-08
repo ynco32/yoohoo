@@ -19,13 +19,13 @@ def save_concert_to_java_api(concert_data):
         "reservation": concert_data.get('reservation'),
         "ticketingPlatform": ticketing_platform,
         "startTimes": concert_data.get('start_times', []),
-        "noticeImageUrl": concert_data.get('notice_image_url'),
+        "noticeImageUrl": concert_data.get('notice_image_url'), #S3 url
         "noticeText": concert_data.get('ocr_text')
     }
 
     try:
         print(f"\n📡 Java API로 콘서트 데이터 전송: {request_data['concertName']}")
-        response = requests.post(API_CONCERT_ENDPOINT, json=request_data)
+        response = requests.post(API_CONCERT_ENDPOINT + "/api/v1/concert", json=request_data)
         
         if response.status_code == 200:
             result = response.json()

@@ -17,9 +17,10 @@ parent_dir = os.path.dirname(current_dir)  # concert_crawler 디렉토리
 sys.path.append(parent_dir)
 
 # 상대 경로 import 대신 절대 경로 사용
-from config import DETAIL_URL_TEMPLATE, HEADERS, TEMP_IMAGE_DIR
-from ocr.naver_ocr import NaverOCR
-from ocr.text_processor import TextProcessor
+from config import DETAIL_URL_TEMPLATE, HEADERS, S3_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_REGION
+from ocr_processor import ImageProcessor
+
+import boto3
 
 class DetailCrawler:
     @staticmethod
@@ -59,7 +60,7 @@ class DetailCrawler:
             # 티켓팅 플랫폼 확인
             ticketing_platform = "INTERPARK"  # 기본값 설정
             if "interpark" in reservation_link:
-                ticketing_platform = "YES24"
+                ticketing_platform = "INTERPARK"
             elif "yes24" in reservation_link:
                 ticketing_platform = "YES24"
             elif "ticket.melon" in reservation_link:
@@ -103,8 +104,6 @@ class DetailCrawler:
                 except:
                     print("❌ 본문 텍스트를 찾을 수 없습니다.")
                 
-                # OCR 처리와 텍스트 처리 부분
-                ocr_text = ''
                 
                 # 티켓 이미지에서 OCR 추출
                 if ticket_images:
@@ -112,7 +111,6 @@ class DetailCrawler:
                     selected_img_src = ticket_images[0][1]  # 기본값
                     
                     # 가능하면 이미지 크기 비교하여 가장 큰 이미지 선택
-                    max_width = 0
                     for _, src in ticket_images:
                         if 'etc' in src:  # etc 폴더 내 이미지는 일반적으로 공지사항
                             selected_img_src = src
@@ -129,18 +127,13 @@ class DetailCrawler:
                         img_url = selected_img_src
                     
                     # 이미지 다운로드
-                    os.makedirs(TEMP_IMAGE_DIR, exist_ok=True)
-                    img_filename = f"{TEMP_IMAGE_DIR}/notice_{show_id}.jpg"
+                    s3_image_url, ocr_text = ImageProcessor.process_notice_image(img_url, show_id)
                     
-                    if NaverOCR.download_image(img_url, img_filename):
-                        # OCR 처리
-                        ocr_text = NaverOCR.extract_text(img_filename)
+                    if s3_image_url and ocr_text:
+                        print(f"✅ OCR 텍스트 추출 성공 ({len(ocr_text)} 자)")
+                        detail_info['notice_image_url'] = s3_image_url
+                        detail_info['ocr_text'] = ocr_text
                         
-                        if ocr_text:
-                            print(f"✅ OCR 텍스트 추출 성공 ({len(ocr_text)} 자)")
-                            detail_info['notice_image_url'] = img_url
-                            # OCR 텍스트 저장
-                            detail_info['ocr_text'] = ocr_text
                 
                 if ocr_text or content_text:
                     combined_text = ""

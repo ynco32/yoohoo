@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ConcertService {
 
 	private final ConcertRepository concertRepository;
@@ -35,6 +35,7 @@ public class ConcertService {
 	private final ArtistRepository artistRepository;
 	private final ArenaRepository arenaRepository;
 
+	@Transactional(readOnly = true)
 	public ConcertResponseDTO getConcertList(String concertSearch, Long lastConcertId) {
 
 		Pageable pageable = Pageable.ofSize(10);

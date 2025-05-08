@@ -32,4 +32,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	""")
 	List<Review> findAllByUser(@Param("user") User user);
 
+	// 후기가 있는 좌석 ID 목록 조회
+	@Query("SELECT r.seat.seatId FROM Review r WHERE r.seat.seatId IN :seatIds")
+	List<Long> findSeatIdsWithReviews(@Param("seatIds") List<Long> seatIds);
 }

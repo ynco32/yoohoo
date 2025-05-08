@@ -56,8 +56,10 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
+  const [textareaHeight, setTextareaHeight] = useState('44px');
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 처음 채팅에 진입했을 때 안내 메시지를 표시하는 효과
   useEffect(() => {
@@ -113,13 +115,36 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
     setMessages((prev) => [...prev, newMsg]);
     setInput('');
     setReplyingTo(null);
+    setTextareaHeight('44px');
+
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.style.height = '44px';
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // 시프트 엔터는 줄바꿈 (기본 동작 유지)
+        return;
+      } else {
+        // 엔터만 누르면 메시지 전송
+        e.preventDefault();
+        handleSend();
+      }
     }
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+
+    // 높이 자동 조절
+    e.target.style.height = '44px'; // 기본 높이로 초기화
+    const scrollHeight = e.target.scrollHeight;
+    const newHeight = Math.min(scrollHeight, 120) + 'px'; // 최대 높이 제한
+    e.target.style.height = newHeight;
+    setTextareaHeight(newHeight);
   };
 
   const handleReply = (message: Message) => {
@@ -197,14 +222,16 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
         )}
         <div className={styles.nicknameDisplay}>나</div>
         <div className={styles.inputWrapper}>
-          <input
-            type='text'
+          <textarea
+            ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder={
               replyingTo ? '답글 작성하기' : '궁금한 내용을 물어볼 수 있어요!'
             }
+            className={styles.messageInput}
+            style={{ height: textareaHeight }}
           />
           <button
             onClick={handleSend}

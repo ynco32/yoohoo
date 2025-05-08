@@ -65,6 +65,7 @@ public enum ErrorCode {
 	SECTION_LAYOUT_NOT_FOUND(HttpStatus.NOT_FOUND, "좌석 레이아웃 정보를 찾을 수 없습니다."),
 	LAYOUT_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "좌석 레이아웃 파싱에 실패했습니다."),
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 엔티티를 찾을 수 없습니다."),
+	JSON_DATA_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "JSON 데이터 형식 오류입니다."),
 
 	// 콘서트
 	DUPLICATE_TICKETING(HttpStatus.CONFLICT, "티켓팅에 참여한 내역이 있어 참여할 수 없습니다."),

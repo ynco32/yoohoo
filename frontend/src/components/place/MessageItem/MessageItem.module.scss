@@ -12,10 +12,14 @@
 }
 
 .message {
-  max-width: 70%;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.mine .message {
+  align-items: flex-end;
 }
 
 .bubbleRow {
@@ -25,20 +29,28 @@
 }
 
 .bubble {
-  background: #ECF7FF;
+  background: #ecf7ff;
   padding: 10px 14px;
   border-radius: 16px;
-  font-size: 15px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $text-main;
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
   position: relative;
   min-width: 36px;
   min-height: 24px;
+  cursor: pointer;
 }
 
 .mine .bubble {
   background: #d2e4ff;
+  order: 1;
+}
+
+.mine .meta {
+  order: 0;
 }
 
 .meta {
@@ -46,42 +58,52 @@
   color: #999;
   margin-bottom: 2px;
   margin-left: 4px;
-  font-weight: normal;
+  margin-right: 4px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
   align-self: flex-end;
   white-space: nowrap;
 }
 
 .nickname {
   font-size: 12px;
-  color:  $con-blue;
+  color: $con-blue;
   margin-top: 2px;
   margin-left: 4px;
-  font-weight: 600;
+  margin-bottom: 4px;
+  font-weight: $font-weight-medium;
 }
 
 .replyBox {
-  background: #f4f8fc;
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: #666;
+  padding: 10px 0 0;
+  cursor: pointer;
+  color: $text-sub;
+  font-size: $font-size-xs;
+}
+
+.replyDivider {
+  border: none;
+  border-top: 1px solid #a7deff;
+  margin: 8px 0;
   width: 100%;
+}
 
-  .replyNickname {
-    font-weight: bold;
-    color:  $con-blue;
-    margin-bottom: 4px;
-  }
+.replyContent {
+  font-size: 13px;
+  color: $text-sub;
+  font-size: $font-size-xs;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
 
-  .replyDivider {
-    border: none;
-    border-top: 1px solid #A7DEFF;
-    margin: 4px 0;
-  }
+.messageContent {
+  cursor: pointer;
+}
 
-  .replyContent {
-    font-size: 13px;
-    color: #777;
-  }
+.timeWrapper {
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-end;
 }

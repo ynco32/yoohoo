@@ -24,7 +24,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     SELECT DISTINCT new com.conkiri.domain.view.dto.response.SectionResponseDTO(s.section, s.floor)
     FROM Seat s
     WHERE s.arena.arenaId = :arenaId
-    ORDER BY s.section, s.floor
     """)
 	List<SectionResponseDTO> findDistinctSectionsByArenaId(@Param("arenaId") Long arenaId);
 }

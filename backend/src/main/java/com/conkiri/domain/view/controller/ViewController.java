@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
+import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.service.ViewService;
 import com.conkiri.global.auth.token.UserPrincipal;
 import com.conkiri.global.common.ApiResponse;
@@ -67,5 +68,13 @@ public class ViewController {
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
 		return ApiResponse.success(viewService.deleteReview(reviewId, userPrincipal.getUser()));
+	}
+
+	// (선택한 공연장의) 구역 정보 조회
+	@GetMapping("/arenas/{arenaId}/sections")
+	public ApiResponse<List<SectionResponseDTO>> getSections(
+		@PathVariable("arenaId") Long arenaId) {
+
+		return ApiResponse.success(viewService.getSections(arenaId));
 	}
 }

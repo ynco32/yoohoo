@@ -1,12 +1,13 @@
 package com.conkiri.domain.view.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.base.repository.ConcertRepository;
@@ -35,48 +36,128 @@ public class ViewService {
 
 	// 후기 작성
 	public Long createReview(ReviewRequestDTO dto, List<MultipartFile> files, User user) {
-		Concert concert = findConcertOrThrow(dto.concertId());
-		Seat seat = findSeatOrThrow(dto.section(), dto.rowLine(), dto.columnLine(), concert.getArena().getArenaId());
+		int fileCount = getFileCount(files);
+		validatePhotoCount(fileCount);
+
+		Concert concert = getConcert(dto.concertId());
+		Seat seat = getSeat(dto, concert);
 
 		Review review = Review.of(dto, user, concert, seat);
-
-		List<String> photoUrls = files.stream()
-			.map(file -> "https://example.com/dummy/" + file.getOriginalFilename())
-			.toList();
-
-		List<ReviewPhoto> photos = photoUrls.stream()
-			.map(url -> ReviewPhoto.of(review, url))
-			.toList();
-
 		reviewRepository.save(review);
-		reviewPhotoRepository.saveAll(photos);
+
+		saveReviewPhotos(files, review);
 
 		return review.getReviewId();
 	}
 
-	// 단일 후기 / 수정할 후기 조회
+	// 후기 단건(수정할 후기) 조회
 	public ReviewDetailResponseDTO getAReview(Long reviewId) {
-		Review review = reviewRepository.findByReviewId(reviewId)
-			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
-
-		List<String> photoUrls = reviewPhotoRepository.findAllByReview(review).stream()
+		Review review = getReview(reviewId);
+		List<String> photoUrls = reviewPhotoRepository.findAllByReview(review)
+			.stream()
 			.map(ReviewPhoto::getPhotoUrl)
 			.toList();
 
 		return ReviewDetailResponseDTO.of(review, photoUrls);
 	}
 
-	// -------------------- 이하 공통 --------------------
+	// 후기 수정
+	public Long updateReview(Long reviewId, ReviewRequestDTO dto, List<MultipartFile> newFiles, User user) {
+		Review review = getReview(reviewId);
+		validateReviewOwner(review, user);
 
-	// 콘서트 조회
-	private Concert findConcertOrThrow(Long concertId) {
+		Concert concert = getConcert(dto.concertId());
+		Seat seat = getSeat(dto, concert);
+
+		List<String> keepUrls = getKeepUrls(dto);
+		int totalPhotoCount = keepUrls.size() + getFileCount(newFiles);
+		validatePhotoCount(totalPhotoCount);
+
+		updateReviewPhotos(review, keepUrls, newFiles);
+		review.update(dto, seat, concert);
+
+		return review.getReviewId();
+	}
+
+	// 후기 삭제
+	public Void deleteReview(Long reviewId, User user) {
+		Review review = getReview(reviewId);
+		validateReviewOwner(review, user);
+		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReview(review);
+
+		reviewPhotoRepository.deleteAll(reviewPhotos);
+		reviewRepository.delete(review);
+
+		return null;
+	}
+
+	// ========== 이하 공통 메서드 ==========
+
+	private int getFileCount(List<MultipartFile> files) {
+		return files == null ? 0 : (int) files.stream().filter(f -> f != null && !f.isEmpty()).count();
+	}
+
+	private void validatePhotoCount(int count) {
+		if (count == 0) throw new BaseException(ErrorCode.FILE_NOT_EMPTY);
+		if (count > 3) throw new BaseException(ErrorCode.MAX_FILE_COUNT_EXCEEDED);
+	}
+
+	private Concert getConcert(Long concertId) {
 		return concertRepository.findById(concertId)
 			.orElseThrow(() -> new BaseException(ErrorCode.CONCERT_NOT_FOUND));
 	}
 
-	// 좌석 조회
-	private Seat findSeatOrThrow(String section, Long rowLine, Long columnLine, Long arenaId) {
-		return seatRepository.findSeatBySectionAndRowLineAndColumnLineAndArena_ArenaId(section, rowLine, columnLine, arenaId)
+	private Seat getSeat(ReviewRequestDTO dto, Concert concert) {
+		return seatRepository
+			.findSeatBySectionAndRowLineAndColumnLineAndArena_ArenaId(dto.section(), dto.rowLine(), dto.columnLine(), concert.getArena().getArenaId())
 			.orElseThrow(() -> new BaseException(ErrorCode.SEAT_NOT_FOUND));
+	}
+
+	private Review getReview(Long reviewId) {
+		return reviewRepository.findByReviewId(reviewId)
+			.orElseThrow(() -> new BaseException(ErrorCode.REVIEW_NOT_FOUND));
+	}
+
+	private void validateReviewOwner(Review review, User user) {
+		if (!review.getUser().getUserId().equals(user.getUserId()))
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
+	}
+
+	private List<String> getKeepUrls(ReviewRequestDTO dto) {
+		return dto.existingPhotoUrls() == null ? List.of() : dto.existingPhotoUrls().stream()
+			.filter(StringUtils::hasText)
+			.toList();
+	}
+
+	private void saveReviewPhotos(List<MultipartFile> files, Review review) {
+		if (files == null || files.isEmpty()) return;
+		List<ReviewPhoto> photos = files.stream()
+			.filter(f -> f != null && !f.isEmpty())
+			.map(file -> createReviewPhoto(file, review))
+			.toList();
+
+		reviewPhotoRepository.saveAll(photos);
+	}
+
+	private void updateReviewPhotos(Review review, List<String> keepUrls, List<MultipartFile> newFiles) {
+		List<ReviewPhoto> existingPhotos = reviewPhotoRepository.findAllByReview(review);
+		List<ReviewPhoto> photosToDelete = existingPhotos.stream()
+			.filter(photo -> keepUrls.stream().noneMatch(url -> url.trim().equals(photo.getPhotoUrl().trim())))
+			.toList();
+
+		List<ReviewPhoto> photosToAdd = (newFiles == null ? List.<MultipartFile>of() : newFiles).stream()
+			.filter(f -> f != null && !f.isEmpty())
+			.map(file -> createReviewPhoto(file, review))
+			.toList();
+
+		reviewPhotoRepository.deleteAll(photosToDelete);
+		reviewPhotoRepository.saveAll(photosToAdd);
+	}
+
+	private ReviewPhoto createReviewPhoto(MultipartFile file, Review review) {
+		String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+		String uniqueName = UUID.randomUUID() + ext;
+		String url = "https://example.com/dummy/" + uniqueName;
+		return ReviewPhoto.of(review, url);
 	}
 }

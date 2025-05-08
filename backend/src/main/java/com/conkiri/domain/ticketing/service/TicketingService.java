@@ -40,8 +40,6 @@ public class TicketingService {
 
 		validateSection(section);
 		String sectionKey = RedisKeys.getSectionKey(section);
-		redisTemplate.delete(sectionKey);
-
 		initializeAllSeatsInSection(sectionKey);
 	}
 
@@ -54,11 +52,6 @@ public class TicketingService {
 				redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
 			}
 		}
-	}
-
-	// 구역 목록 조회
-	public List<String> getSections() {
-		return Section.getSections();
 	}
 
 	// 특정 구역의 좌석 상태 조회
@@ -76,12 +69,14 @@ public class TicketingService {
 		return SeatResponseDTO.from(seatDetails);
 	}
 
-	// 좌석 예약
-	// * 1. request 유효성 검증
-	// * 2. 좌석 락 획득
-	// * 3. 좌석 유효성 검증
-	// * 4. 좌석 예매
-	// * 5. 좌석 락 해제
+	/*
+		좌석 예약
+	 	1. request 유효성 검증
+	 	2. 좌석 락 획득
+	 	3. 좌석 유효성 검증
+	 	4. 좌석 예매
+	 	5. 좌석 락 해제
+	*/
 	public void reserveSeat(Long userId, String section, String seat) {
 
 		validateReservationRequest(userId, section, seat);
@@ -109,9 +104,11 @@ public class TicketingService {
 		}
 	}
 
-	// 실제 좌석 예매 처리
-	// * 1. 좌석 상태를 Reserved 로 변경
-	// * 2. 예매 히스토리 저장
+	/*
+	  실제 좌석 예매 처리
+	  1. 좌석 상태를 Reserved 로 변경
+	  2. 예매 히스토리 저장
+	*/
 	private void processSeatReservation(Long userId, String section, String seat, String sectionKey) {
 
 		String historyKey = RedisKeys.getUserHistoryKey(userId);
@@ -134,6 +131,23 @@ public class TicketingService {
 		redisTemplate.opsForHash().put(seatHistoryKey, "reserveTime", now.toString());
 	}
 
+	// 예매 취소
+	public void deleteTicketingResult(Long userId) {
+		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
+		String section = (String) redisTemplate.opsForHash().get(userHistoryKey, "section");
+		String seat = (String) redisTemplate.opsForHash().get(userHistoryKey, "seat");
+		if (section != null && seat != null) {
+			String sectionKey = RedisKeys.getSectionKey(section);
+			redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
+
+			String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
+			redisTemplate.delete(seatHistoryKey);
+		}
+
+		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
+		redisTemplate.opsForHash().delete(userHistoryKey, "section");
+		redisTemplate.opsForHash().delete(userHistoryKey, "seat");
+	}
 
 	// 티켓팅 결과 조회
 	public TicketingResultResponseDTO getTicketingResult(Long userId) {
@@ -151,14 +165,10 @@ public class TicketingService {
 		return TicketingResultResponseDTO.of(concertName, ticketingPlatform, section, seat, reserveTime);
 	}
 
-
 	// 결과 저장
 	public void saveTicketingResult(Long userId) {
-		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
-		if (resultDTO == null) {
-			throw new BaseException(ErrorCode.RECORD_NOT_FOUND);
-		}
 
+		TicketingResultResponseDTO resultDTO = getTicketingResult(userId);
 		User user = userReadService.findUserByIdOrElseThrow(userId);
 		Result result = Result.of(resultDTO, user);
 		resultRepository.save(result);
@@ -178,23 +188,9 @@ public class TicketingService {
 			.toList();
 	}
 
-	public void deleteTicketingResult(Long userId) {
-		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
-		String section = (String) redisTemplate.opsForHash().get(userHistoryKey, "section");
-		String seat = (String) redisTemplate.opsForHash().get(userHistoryKey, "seat");
-		if (section != null && seat != null) {
-			String sectionKey = RedisKeys.getSectionKey(section);
-			redisTemplate.opsForHash().put(sectionKey, seat, Status.AVAILABLE.getValue());
-
-			String seatHistoryKey = RedisKeys.getSeatHistoryKey(section, seat);
-			redisTemplate.delete(seatHistoryKey);
-		}
-
-		// reserveTime만 삭제
-		redisTemplate.opsForHash().delete(userHistoryKey, "reserveTime");
-		redisTemplate.opsForHash().delete(userHistoryKey, "section");
-		redisTemplate.opsForHash().delete(userHistoryKey, "seat");
-	}
+	/*
+		유효성 검사
+	*/
 
 	//  좌석 상태 유효성 검사
 	private void validateSeatAvailability(String sectionKey, String seat) {
@@ -206,9 +202,6 @@ public class TicketingService {
 	}
 
 	// 예약 요청에 대한 전반적인 유효성 검사
-	//  * 1. 구역 유효성 검사
-	//  * 2. 좌석 번호 유효성 검사
-	//  * 3. 중복 예약 검사
 	private void validateReservationRequest(Long userId, String section, String seat) {
 
 		validateSection(section);
@@ -216,6 +209,7 @@ public class TicketingService {
 		validateNoExistingReservation(userId);
 	}
 
+	// 구역 검사
 	public void validateSection(String section) {
 
 		if (!Section.isValidSection(section)) {
@@ -223,6 +217,7 @@ public class TicketingService {
 		}
 	}
 
+	// 좌석 검사
 	public void validateSeat(String seat) {
 
 		try {
@@ -242,6 +237,7 @@ public class TicketingService {
 		}
 	}
 
+	// 중복 예매 검사
 	private void validateNoExistingReservation(Long userId) {
 
 		String userHistoryKey = RedisKeys.getUserHistoryKey(userId);
@@ -253,7 +249,9 @@ public class TicketingService {
 		}
 	}
 
-	// 유틸리티 메서드
+	/*
+		유틸 메서드
+	*/
 	private String formatSeatNumber(int row, int col) {
 		return row + "-" + col;
 	}

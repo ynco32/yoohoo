@@ -34,4 +34,7 @@ public class Seat {
 
 	@Column(name = "column_line", nullable = false)
 	private Long columnLine;
+
+	@Column(name = "floor", nullable = false)
+	private Long floor;
 }

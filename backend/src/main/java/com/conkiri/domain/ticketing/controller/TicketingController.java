@@ -17,6 +17,7 @@ import com.conkiri.domain.ticketing.dto.request.TicketingRequestDTO;
 import com.conkiri.domain.ticketing.dto.response.SeatResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingInfoResponseDTO;
 import com.conkiri.domain.ticketing.dto.response.TicketingResultResponseDTO;
+import com.conkiri.domain.ticketing.entity.Section;
 import com.conkiri.domain.ticketing.service.QueueProcessingService;
 import com.conkiri.domain.ticketing.service.TicketingService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -34,13 +35,13 @@ public class TicketingController {
 	private final TicketingService ticketingService;
 	private final QueueProcessingService queueProcessingService;
 
-	// 활성화 여부
+	// 티켓팅 활성화 여부
 	@GetMapping("/status")
 	public ApiResponse<Boolean> getTicketingStatus() {
 		return ApiResponse.success(queueProcessingService.isTicketingActive());
 	}
 
-	// 서버 시간 제공
+	// 티켓팅 시간 정보 제공
 	@GetMapping("/time-info")
 	public ApiResponse<TicketingInfoResponseDTO> getTimeInfo() {
 		return ApiResponse.success(TicketingInfoResponseDTO.from(redisTemplate));
@@ -60,10 +61,10 @@ public class TicketingController {
 	@GetMapping("/sections")
 	public ApiResponse<List<String>> getSections() {
 
-		return ApiResponse.success(ticketingService.getSections());
+		return ApiResponse.success(Section.getSections());
 	}
 
-	// 특정 구역에 따른 좌석 조회 API
+	// 좌석 조회 API
 	@GetMapping("/sections/seats")
 	public ApiResponse<SeatResponseDTO> getSeatsForSection(
 		@RequestParam String section) {
@@ -71,7 +72,7 @@ public class TicketingController {
 		return ApiResponse.success(ticketingService.getSeatsForSection(section));
 	}
 
-	// 좌석 예약 API, 이미 선택된 좌석인지 처리
+	// 좌석 예약 API
 	@PostMapping("/sections/seats")
 	public ApiResponse<Void> reserveSeat(
 		@Valid @RequestBody TicketingRequestDTO ticketingRequestDTO,
@@ -85,6 +86,16 @@ public class TicketingController {
 		return ApiResponse.ofSuccess();
 	}
 
+	// 좌석 취소 API
+	@DeleteMapping("/sections/seats")
+	public ApiResponse<Void> deleteTicketingResult(
+		@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+		ticketingService.deleteTicketingResult(userPrincipal.getUserId());
+		return ApiResponse.ofSuccess();
+	}
+
+	// 티켓팅 결과 조회
 	@GetMapping("/result")
 	public ApiResponse<TicketingResultResponseDTO> getTicketingResult(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -92,6 +103,7 @@ public class TicketingController {
 		return ApiResponse.success(ticketingService.getTicketingResult(userPrincipal.getUserId()));
 	}
 
+	// 티켓팅 결과 저장
 	@PostMapping("/result")
 	public ApiResponse<Void> saveTicketingResult(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
@@ -108,12 +120,6 @@ public class TicketingController {
 		return ApiResponse.success(ticketingService.getAllTicketingResults(userPrincipal.getUser()));
 	}
 
-	@DeleteMapping("/result")
-	public ApiResponse<Void> deleteTicketingResult(
-		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		ticketingService.deleteTicketingResult(userPrincipal.getUserId());
-		return ApiResponse.ofSuccess();
-	}
 
 }

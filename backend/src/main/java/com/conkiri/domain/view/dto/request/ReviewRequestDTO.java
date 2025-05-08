@@ -1,5 +1,7 @@
 package com.conkiri.domain.view.dto.request;
 
+import java.util.List;
+
 import com.conkiri.domain.view.entity.ArtistGrade;
 import com.conkiri.domain.view.entity.ScreenGrade;
 import com.conkiri.domain.view.entity.StageGrade;
@@ -17,6 +19,7 @@ public record ReviewRequestDTO(
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) ScreenGrade screenGrade,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String content,
 	String cameraBrand,
-	String cameraModel
+	String cameraModel,
+	List<String> existingPhotoUrls
 ) {
 }

@@ -61,6 +61,7 @@ public enum ErrorCode {
 	UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "해당 사용자에게 권한이 없습니다."),
 	SEAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "좌석을 찾을 수 없습니다."),
 	REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "리뷰를 찾을 수 없습니다."),
+	MAX_FILE_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "사진은 최대 3장까지 첨부 가능합니다."),
 
 	// 콘서트
 	DUPLICATE_TICKETING(HttpStatus.CONFLICT, "티켓팅에 참여한 내역이 있어 참여할 수 없습니다."),

@@ -77,4 +77,13 @@ public class ViewController {
 
 		return ApiResponse.success(viewService.getSections(arenaId));
 	}
+
+	// (선택한 구역의) 모든 후기 조회
+	@GetMapping("/arenas/{arenaId}/sections/{section}/reviews")
+	public ApiResponse<ReviewResponseDTO> getReviews(
+		@PathVariable("arenaId") Long arenaId,
+		@PathVariable("section") String section) {
+
+		return ApiResponse.success(viewService.getReviews(arenaId, section));
+	}
 }

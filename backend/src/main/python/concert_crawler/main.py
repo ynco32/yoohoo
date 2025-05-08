@@ -3,10 +3,42 @@ from crawler.crawl_i import ConcertCrawler
 from crawler.notice_image_crawler import DetailCrawler
 from database.concert_db import ConcertDB
 from config import TEMP_IMAGE_DIR
+import requests
 
 def save_concert_to_java_api(concert_data):
     """콘서트 데이터를 Java API로 전송"""
-    api_url = "http://localhost:8080/api/v1/concert"
+    from config import API_CONCERT_ENDPOINT
+    ticketing_platform = concert_data.get('ticketing_platform', 'INTERPARK')
+
+    request_data = {
+        "concertName": concert_data.get('concert_name'),
+        "artistName": concert_data.get('artist'),
+        "venueName": concert_data.get('venue'),
+        "photoUrl": concert_data.get('poster_url'),
+        "advanceReservation": concert_data.get('advance_reservation'),
+        "reservation": concert_data.get('reservation'),
+        "ticketingPlatform": ticketing_platform,
+        "startTimes": concert_data.get('start_times', []),
+        "noticeImageUrl": concert_data.get('notice_image_url'),
+        "noticeText": concert_data.get('ocr_text')
+    }
+
+    try:
+        print(f"\n📡 Java API로 콘서트 데이터 전송: {request_data['concertName']}")
+        response = requests.post(API_CONCERT_ENDPOINT, json=request_data)
+        
+        if response.status_code == 200:
+            result = response.json()
+            concert_id = result.get('data')
+            print(f"✅ 콘서트 저장 성공! ID: {concert_id}")
+            return True
+        else:
+            print(f"❌ API 호출 실패: {response.status_code} - {response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ API 호출 오류: {str(e)}")
+        return False
+    
 
 def main():
     # 임시 이미지 디렉토리 생성
@@ -25,18 +57,17 @@ def main():
         
         if detail_info:
             concert.update(detail_info)
-            print(f"✅ OCR 텍스트 추출 완료 ({len(detail_info.get('ocr_text', ''))} 자)")
+            print(f"✅OCR 텍스트 추출 완료 ({len(detail_info.get('ocr_text', ''))} 자)")
             if detail_info.get('advance_reservation'):
-                print(f"🗓️ 사전 예매일: {detail_info['advance_reservation']}")
+                print(f"사전 예매일: {detail_info['advance_reservation']}")
             if detail_info.get('reservation'):
-                print(f"🗓️ 일반 예매일: {detail_info['reservation']}")
+                print(f"일반 예매일: {detail_info['reservation']}")
             if detail_info.get('start_times'):
-                print(f"🕒 공연 시작 시간: {', '.join(detail_info['start_times'])}")
+                print(f"공연 시작 시간: {', '.join(detail_info['start_times'])}")
         else:
-            print("❌ 공지사항 이미지 추출 실패 또는 없음")
+            print("공지사항 이미지 추출 실패 또는 없음")
         
         # 3단계: 데이터베이스에 저장
-        ConcertDB.save_concert(concert)
         save_concert_to_java_api(concert)
     
     # 임시 이미지 파일 정리

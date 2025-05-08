@@ -1,6 +1,6 @@
 'use client';
 import TextInput from '@/components/common/TextInput/TextInput';
-import ProgressBar from './ProgressBar';
+import ProgressBar from '@/components/common/ProgressBar/ProgressBar';
 import styles from './page.module.scss';
 import { useState } from 'react';
 import Button from '@/components/common/Button/Button';

@@ -27,9 +27,9 @@ class ConcertInfoExtractor:
   "concert_name": "공연 이름 (모를 경우 null)",
   "venue": "공연장 (모를 경우 null)",
   "artist": "아티스트 이름 (모를 경우 null)",
-  "advance_reservation": "사전 예매일 (예: 2025-04-28 12:00:00, 없으면 null)",
-  "reservation": "일반 예매일 (예: 2025-04-29 12:00:00, 없으면 null)",
-  "start_times": ["공연 시작 시간들 (예: 2025-05-24 19:00:00)", "..."]
+  "advance_reservation": "사전 예매일(advance_reservation): "YYYY-MM-DD HH:MM:SS" 형식 (예: "2025-05-01 12:00:00", 없으면 null)",
+  "reservation": "일반 예매일(reservation): "YYYY-MM-DD HH:MM:SS" 형식 (예: "2025-05-02 12:00:00", 없으면 null)",
+  "start_times": 공연 시작 시간(start_times): 배열 내 각 항목이 "YYYY-MM-DD HH:MM:SS" 형식 (예: ["2025-05-15 18:00:00", "2025-05-16 18:00:00"])
 }}
 
 {base_info_text}

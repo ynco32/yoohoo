@@ -5,13 +5,7 @@ import userReducer, { setUser } from '@/store/slices/userSlice';
 import { ReviewCard } from './ReviewCard';
 import { UserInfo } from '@/types/user';
 import { action } from '@storybook/addon-actions';
-import {
-  ArtistGrade,
-  ReviewData,
-  ReviewPhoto,
-  ScreenGrade,
-  StageGrade,
-} from '@/types/review';
+import { ArtistGrade, Review, ScreenGrade, StageGrade } from '@/types/review';
 
 // 테스트용 스토어 생성
 const createTestStore = (userId: number | null = null) => {
@@ -63,32 +57,20 @@ const withReduxProvider = (StoryFn: any, context: any) => {
   );
 };
 
-// 더미 사진 데이터
-const dummyPhotos: ReviewPhoto[] = [
-  {
-    reviewPhotoId: 1,
-    reviewId: 1,
-    photoUrl: '/images/dummy.png',
-  },
-  {
-    reviewPhotoId: 2,
-    reviewId: 1,
-    photoUrl: '/images/dummyArtist.png',
-  },
-  {
-    reviewPhotoId: 3,
-    reviewId: 1,
-    photoUrl: '/images/dummy.png',
-  },
+// 더미 사진 URL
+const dummyPhotoUrls = [
+  '/images/dummy.png',
+  '/images/dummyArtist.png',
+  '/images/dummy.png',
 ];
 
-// 리뷰 목 데이터 생성 함수
+// 리뷰 목 데이터 생성 함수 (새로운 API 응답 형식에 맞게 수정)
 const createMockReview = (
   reviewId: number,
-  userId: number,
-  concertTitle: string,
-  nickName: string,
-  profilePicture: string,
+  nickname: string,
+  concertName: string,
+  arenaName: string,
+  seatId: number,
   section: string,
   rowLine: number,
   columnLine: number,
@@ -96,16 +78,16 @@ const createMockReview = (
   artistGrade: ArtistGrade,
   stageGrade: StageGrade,
   screenGrade: ScreenGrade,
-  photos: ReviewPhoto[] = [],
+  photoUrls: string[] = [],
   cameraBrand?: string,
   cameraModel?: string
-): ReviewData => {
+): Review => {
   return {
     reviewId,
-    userId,
-    concertId: 1,
-    concertTitle,
-    seatId: 1,
+    nickname,
+    concertName,
+    arenaName,
+    seatId,
     section,
     rowLine,
     columnLine,
@@ -114,14 +96,9 @@ const createMockReview = (
     screenGrade,
     content,
     createdAt: '2024-04-01T12:00:00Z',
-    nickName,
-    profilePicture,
-    photos,
+    photoUrls,
     cameraBrand,
     cameraModel,
-    getSeatInfoString: function () {
-      return `${this.section} ${this.rowLine}열 ${this.columnLine}번`;
-    },
   };
 };
 
@@ -148,10 +125,10 @@ export const Default: Story = {
   args: {
     review: createMockReview(
       12345, // reviewId
-      2, // userId (작성자 ID)
-      '2024 아이유 콘서트: 페스티벌', // concertTitle
-      '콘서트러버', // nickName
-      '/images/dummy.png', // profilePicture
+      '콘서트러버', // nickname
+      '2024 아이유 콘서트: 페스티벌', // concertName
+      '고척스카이돔', // arenaName
+      1, // seatId
       'A구역', // section
       12, // rowLine
       23, // columnLine
@@ -159,7 +136,7 @@ export const Default: Story = {
       ArtistGrade.CLOSE,
       StageGrade.CLEAR,
       ScreenGrade.CLEAR,
-      dummyPhotos.slice(0, 2),
+      dummyPhotoUrls.slice(0, 2),
       'iPhone',
       '13 Pro'
     ),
@@ -176,10 +153,10 @@ export const AuthorView: Story = {
   args: {
     review: createMockReview(
       12345, // reviewId
-      1, // userId (작성자와 동일)
-      '2024 아이유 콘서트: 페스티벌', // concertTitle
-      '콘서트러버', // nickName
-      '/images/dummy.png', // profilePicture
+      '테스트 사용자', // nickname (로그인 사용자와 동일)
+      '2024 아이유 콘서트: 페스티벌', // concertName
+      '고척스카이돔', // arenaName
+      1, // seatId
       'A구역', // section
       12, // rowLine
       23, // columnLine
@@ -187,7 +164,7 @@ export const AuthorView: Story = {
       ArtistGrade.CLOSE,
       StageGrade.CLEAR,
       ScreenGrade.CLEAR,
-      dummyPhotos.slice(0, 3)
+      dummyPhotoUrls.slice(0, 3)
     ),
     onEdit: action('edit-clicked'),
     onDelete: action('delete-clicked'),
@@ -202,10 +179,10 @@ export const NoPhotos: Story = {
   args: {
     review: createMockReview(
       12345, // reviewId
-      2, // userId
-      '2024 아이유 콘서트: 페스티벌', // concertTitle
-      '콘서트러버', // nickName
-      '/images/dummy.png', // profilePicture
+      '콘서트러버', // nickname
+      '2024 아이유 콘서트: 페스티벌', // concertName
+      '고척스카이돔', // arenaName
+      1, // seatId
       'A구역', // section
       12, // rowLine
       23, // columnLine
@@ -228,10 +205,10 @@ export const DifferentGrades: Story = {
   args: {
     review: createMockReview(
       12345, // reviewId
-      2, // userId
-      '2024 아이유 콘서트: 페스티벌', // concertTitle
-      '콘서트러버', // nickName
-      'https://via.placeholder.com/40x40/4986e8/ffffff?text=User', // profilePicture
+      '콘서트러버', // nickname
+      '2024 아이유 콘서트: 페스티벌', // concertName
+      '서울월드컵경기장', // arenaName
+      1, // seatId
       'C구역', // section
       30, // rowLine
       45, // columnLine
@@ -239,7 +216,7 @@ export const DifferentGrades: Story = {
       ArtistGrade.FAR,
       StageGrade.SIDE,
       ScreenGrade.SIDE,
-      dummyPhotos.slice(0, 1),
+      dummyPhotoUrls.slice(0, 1),
       'Canon',
       'EOS R5'
     ),

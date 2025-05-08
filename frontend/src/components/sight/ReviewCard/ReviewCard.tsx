@@ -8,6 +8,8 @@ import {
   StageGrade,
   ScreenGrade,
   GradeOption,
+  ReviewData,
+  ReviewPhoto,
 } from '@/types/review';
 import { ReviewHeader } from './ReviewHeader';
 import {
@@ -26,7 +28,7 @@ const findOptionByValue = <T extends string | number>(
   options: GradeOption<T>[],
   value: T | undefined
 ): { label: string; color: string } => {
-  if (!value) return defaultGradeInfo;
+  if (value === undefined || value === null) return defaultGradeInfo;
   const option = options.find((opt) => opt.value === value);
   return option
     ? { label: option.label, color: option.color }
@@ -34,8 +36,15 @@ const findOptionByValue = <T extends string | number>(
 };
 
 export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
+  // API 응답의 photoUrls를 ReviewPhoto 형태로 변환
+  const photos: ReviewPhoto[] = (review.photoUrls || []).map((url, index) => ({
+    reviewPhotoId: index, // 임시 ID 부여
+    reviewId: review.reviewId,
+    photoUrl: url,
+  }));
+
   // 이미지 스크롤 관련 로직 분리
-  const photoCount = review.photos?.length || 0;
+  const photoCount = photos.length;
   const {
     photoScrollerRef,
     activePhotoIndex,
@@ -47,7 +56,7 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   } = useImageScroller(photoCount);
 
   // 텍스트 자르기 관련 로직 분리
-  const MAX_TEXT_LENGTH = 30;
+  const MAX_TEXT_LENGTH = 100;
   const { displayText, isLongContent, toggleContent, showFullContent } =
     useTruncatedText(review.content, MAX_TEXT_LENGTH);
 
@@ -79,35 +88,51 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
     </div>
   );
 
+  // ReviewData 형태로 변환 (ReviewHeader 컴포넌트에 전달하기 위함)
+  const reviewData: ReviewData = {
+    reviewId: review.reviewId,
+    userId: 0, // 임시값, 실제로는 서버에서 제공해야 함
+    concertId: 0, // 임시값, 실제로는 서버에서 제공해야 함
+    concertTitle: review.concertName,
+    seatId: review.seatId,
+    section: review.section,
+    rowLine: review.rowLine,
+    columnLine: review.columnLine,
+    artistGrade: review.artistGrade,
+    stageGrade: review.stageGrade,
+    screenGrade: review.screenGrade,
+    content: review.content,
+    cameraBrand: review.cameraBrand,
+    cameraModel: review.cameraModel,
+    createdAt: review.createdAt,
+    nickName: review.nickname,
+    profilePicture: '', // API에 없는 값, 필요하다면 기본값 설정
+    photos: photos,
+    getSeatInfoString: function () {
+      return `${this.section} ${this.rowLine}열`;
+    },
+  };
+
   return (
     <div className={styles.reviewCard}>
       {/* 리뷰 헤더 */}
-      <ReviewHeader review={review} onEdit={onEdit} />
+      <ReviewHeader review={reviewData} onEdit={onEdit} />
 
       {/* 리뷰 사진 (가로 스크롤) */}
-      {review.photos && review.photos.length > 0 && (
+      {photos.length > 0 && (
         <div className={styles.photoContainer}>
           {/* 이미지 갤러리 힌트 표시 (둘 이상의 이미지가 있을 때만) */}
-          {review.photos.length > 1 && (
+          {photos.length > 1 && (
             <div className={styles.galleryHint}>
               <span className={styles.galleryCount}>
-                {activePhotoIndex + 1}/{review.photos.length}
+                {activePhotoIndex + 1}/{photos.length}
               </span>
             </div>
           )}
 
           {/* 가로 스크롤 컨테이너 */}
-          <div
-            className={`${styles.photoScroller} ${
-              isDragging ? styles.grabbing : styles.grab
-            }`}
-            ref={photoScrollerRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleDragEnd}
-            onMouseLeave={handleDragEnd}
-          >
-            {review.photos.map((photo, index) => (
+          <div className={styles.photoScroller} ref={photoScrollerRef}>
+            {photos.map((photo, index) => (
               <div key={photo.reviewPhotoId} className={styles.photoWrapper}>
                 <Image
                   src={photo.photoUrl}
@@ -118,19 +143,76 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
                   className={styles.reviewPhoto}
                   draggable={false} // 이미지 드래그 방지
                 />
-
-                {/* 다음 이미지 미리보기 표시 (마지막 이미지가 아닐 때) */}
-                {index < review.photos.length - 1 && (
-                  <div className={styles.nextImageHint} />
-                )}
               </div>
             ))}
           </div>
 
+          {/* 좌우 화살표 네비게이션 버튼 (이미지가 둘 이상일 때만) */}
+          {photos.length > 1 && (
+            <>
+              {/* 이전 이미지 버튼 */}
+              <button
+                className={`${styles.navButton} ${styles.prevButton} ${
+                  activePhotoIndex === 0 ? styles.navButtonDisabled : ''
+                }`}
+                onClick={() =>
+                  activePhotoIndex > 0 && scrollToPhoto(activePhotoIndex - 1)
+                }
+                disabled={activePhotoIndex === 0}
+                aria-label='이전 사진'
+              >
+                <svg
+                  className={styles.navIcon}
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M15 18L9 12L15 6'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </button>
+
+              {/* 다음 이미지 버튼 */}
+              <button
+                className={`${styles.navButton} ${styles.nextButton} ${
+                  activePhotoIndex === photos.length - 1
+                    ? styles.navButtonDisabled
+                    : ''
+                }`}
+                onClick={() =>
+                  activePhotoIndex < photos.length - 1 &&
+                  scrollToPhoto(activePhotoIndex + 1)
+                }
+                disabled={activePhotoIndex === photos.length - 1}
+                aria-label='다음 사진'
+              >
+                <svg
+                  className={styles.navIcon}
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M9 6L15 12L9 18'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </button>
+            </>
+          )}
+
           {/* 페이지 인디케이터 (점) */}
-          {review.photos.length > 1 && (
+          {photos.length > 1 && (
             <div className={styles.photoIndicator}>
-              {review.photos.map((_, index) => (
+              {photos.map((_, index) => (
                 <button
                   key={index}
                   className={`${styles.indicatorDot} ${
@@ -148,15 +230,15 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
       {/* 리뷰 내용 */}
       <div className={styles.reviewContent}>
         <p className={styles.contentText}>{displayText}</p>
-        {/* {isLongContent && (
+        {isLongContent && (
           <button
             className={styles.readMoreBtn}
             onClick={toggleContent}
             aria-expanded={showFullContent}
           >
             {showFullContent ? '접기' : '더 보기'}
-          </button> */}
-        {/* )} */}
+          </button>
+        )}
       </div>
 
       {/* 등급 뱃지 */}

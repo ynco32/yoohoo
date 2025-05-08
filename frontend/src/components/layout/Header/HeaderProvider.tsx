@@ -48,7 +48,7 @@ interface HeaderProviderProps {
 }
 
 export const HeaderProvider = ({ children }: HeaderProviderProps) => {
-  const pagesWithoutHeader = ['/', '/login'];
+  const pagesWithoutHeader = ['/', '/login', '/onboarding'];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);
   const [arenaInfo, setArenaInfo] = useState<ArenaInfo | null>(null);

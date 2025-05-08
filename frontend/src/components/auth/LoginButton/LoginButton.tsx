@@ -5,11 +5,12 @@ import Kakao from '@/assets/icons/kakao.svg';
 
 export default function LoginButton({ isLogin }: { isLogin: boolean }) {
   const handleLogin = () => {
-    window.location.href = 'https://conkiri.com/oauth2/authorization/kakao';
+    window.location.href =
+      process.env.NEXT_PUBLIC_API_URL + '/api/v1/oauth2/authorization/kakao';
   };
 
   return (
-    <div>
+    <>
       {isLogin ? (
         <div className={styles.loginButton} onClick={handleLogin}>
           <Kakao className={styles.kakao} />
@@ -18,6 +19,6 @@ export default function LoginButton({ isLogin }: { isLogin: boolean }) {
       ) : (
         <div className={styles.noLogin}>로그인 없이 둘러보기</div>
       )}
-    </div>
+    </>
   );
 }

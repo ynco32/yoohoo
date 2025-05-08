@@ -1,7 +1,6 @@
 package com.conkiri.domain.view.entity;
 
 import com.conkiri.domain.base.entity.Concert;
-import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.global.common.BaseTime;

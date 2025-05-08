@@ -1,4 +1,6 @@
-package com.conkiri.domain.base.entity;
+package com.conkiri.domain.view.entity;
+
+import com.conkiri.domain.base.entity.Arena;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

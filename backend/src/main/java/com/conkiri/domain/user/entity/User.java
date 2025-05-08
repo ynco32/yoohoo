@@ -31,11 +31,18 @@ public class User {
 	@Column(name = "role", length = 20)
 	private String role;
 
+	@Column(name = "fcm_token", length = 300)
+	private String fcmToken;
+
+	@Column(name = "notification_enabled", nullable = false)
+	private boolean notificationEnabled;
+
 	private User(String email, String userName, String nickname) {
 		this.email = email;
 		this.userName = userName;
 		this.nickname = nickname;
 		this.role = "ROLE_USER";
+		this.notificationEnabled = false;
 	}
 
 	public static User of(String email, String userName, String nickname) {
@@ -46,4 +53,11 @@ public class User {
 		this.nickname = nickname;
 	}
 
+	public void updateFcmToken(String fcmToken) {
+		this.fcmToken = fcmToken;
+	}
+
+	public void updateNotificationStatus() {
+		this.notificationEnabled = !this.notificationEnabled;
+	}
 }

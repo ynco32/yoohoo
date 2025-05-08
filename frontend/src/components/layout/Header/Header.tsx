@@ -7,6 +7,7 @@ import { useHeader } from './HeaderProvider';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
 import NotificationIcon from '@/assets/icons/notification.svg'; // 알림 아이콘 추가
 import MenuIcon from '@/assets/icons/menu.svg'; // 햄버거 메뉴 아이콘 추가
+import LogoIcon from '/public/svgs/main/logo.svg';
 
 const Header = () => {
   const {
@@ -83,13 +84,7 @@ const Header = () => {
           <div className={styles.leftSection}>
             {shouldShowLogo ? (
               <Link href='/main' className={styles.logo}>
-                <Image
-                  src='/images/logo.png'
-                  alt='Logo'
-                  width={109}
-                  height={40}
-                  priority
-                />
+                <LogoIcon width={109} height={40} />
               </Link>
             ) : (
               <button

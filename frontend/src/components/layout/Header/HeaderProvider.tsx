@@ -53,8 +53,8 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     '/login',
     '/onboarding',
     '/login/nick',
-    'login/artist',
-    'login/concert',
+    '/login/artist',
+    '/login/concert',
   ];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);

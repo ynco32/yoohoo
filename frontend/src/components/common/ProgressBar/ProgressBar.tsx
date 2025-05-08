@@ -26,9 +26,9 @@ export default function ProgressBar({
             >
               {idx + 1}
             </div>
-            <div className={styles.description}>
-              {current === idx + 1 ? currentDescription : ''}
-            </div>
+            {current === idx + 1 && (
+              <div className={styles.description}>{currentDescription}</div>
+            )}
           </div>
           {idx < total - 1 && (
             <svg

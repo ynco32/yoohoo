@@ -74,17 +74,29 @@ pipeline {  // 파이프라인 정의 시작
                         script {
                             try {
                                 dir('frontend') {
-                                    withCredentials([
+                                    def credentialsList = []
+                                    
+                                    credentialsList.addAll([
                                         string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
                                         string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
                                         string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
-                                        string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL')
-                                    ]) {
+                                    ])
+
+                                    if (env.BRANCH_NAME == 'dev') {
+                                        credentialsList.addAll([
+                                            string(credentialsId: 'DEV_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                                        ])
+                                    } else if (env.BRANCH_NAME == 'master') {
+                                        credentialsList.addAll([
+                                            string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                                        ])
+                                    }
+                                    withCredentials {
                                         sh '''
                                             export NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY
                                             export NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY
                                             export NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
-                                            export NEXT_PUBLIC_FRONTEND_URL=$FRONTEND_URL
+                                            export NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
                                             
                                             yarn install
                                             yarn build
@@ -191,8 +203,10 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                     try {
-                        withCredentials([
-                            string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                        def credentialsList = []
+                        
+                        // 기본 credentials
+                        credentialsList.addAll([
                             string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
                             string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                             string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
@@ -202,17 +216,33 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
                             string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
                             string(credentialsId: 'MYSQL_ROOT_PASSWORD', variable: 'MYSQL_ROOT_PASSWORD'),
-                            string(credentialsId: 'SERVER_DOMAIN', variable: 'SERVER_DOMAIN'),
-                            string(credentialsId: 'FRONTEND_URL', variable: 'FRONTEND_URL'),
                             string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
                             string(credentialsId: 'AWS_ACCESS_KEY', variable: 'AWS_ACCESS_KEY'),
                             string(credentialsId: 'AWS_SECRET_KEY', variable: 'AWS_SECRET_KEY'),
                             string(credentialsId: 'AWS_REGION', variable: 'AWS_REGION'),
                             string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
-                            string(credentialsId: 'REDIS_HOST', variable: 'REDIS_HOST'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
-                            string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL')
-                        ]) {
+                            string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
+                        ])
+                        
+                        // 브랜치별 추가 credentials
+                        if (env.BRANCH_NAME == 'dev') {
+                            credentialsList.addAll([
+                                string(credentialsId: 'DEV_DB_URL', variable: 'DB_URL'),
+                                string(credentialsId: 'DEV_REDIS_HOST', variable: 'REDIS_HOST'),
+                                string(credentialsId: 'DEV_FRONTEND_URL', variable: 'FRONTEND_URL'),
+                                string(credentialsId: 'DEV_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                            ])
+                        } else if (env.BRANCH_NAME == 'master') {
+                            credentialsList.addAll([
+                                string(credentialsId: 'MASTER_DB_URL', variable: 'DB_URL'),
+                                string(credentialsId: 'MASTER_REDIS_HOST', variable: 'REDIS_HOST'),
+                                string(credentialsId: 'MASTER_FRONTEND_URL', variable: 'FRONTEND_URL'),
+                                string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                            ])
+                        }
+                        
+                        withCredentials(credentialsList) {
                             // 현재 실행 중인 컨테이너 이름 저장
                             env.OLD_BACKEND_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.BACKEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
                             env.OLD_FRONTEND_CONTAINER_NAME = sh(script: "docker ps --filter 'name=${env.FRONTEND_CONTAINER_NAME}' --format '{{.Names}}'", returnStdout: true).trim()
@@ -229,7 +259,6 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
                                     --build-arg MYSQL_USER=$MYSQL_USER \
                                     --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
-                                    --build-arg SERVER_DOMAIN=$SERVER_DOMAIN \
                                     --build-arg FRONTEND_URL=$FRONTEND_URL \
                                     --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
                                     --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
@@ -239,7 +268,8 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg S3_BUCKET=$S3_BUCKET \
                                     --build-arg REDIS_HOST=$REDIS_HOST \
                                     --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
-                                    --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
+                                    --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
+                                    --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                                 
                                 # Nginx 설정 초기화

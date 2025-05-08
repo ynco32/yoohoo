@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Seat;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
@@ -18,4 +19,12 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 	);
 
 	Optional<Seat> findSeatBySectionAndRowLineAndColumnLineAndArena_ArenaId(String section, Long row, Long column, Long arenaId);
+
+	@Query("""
+    SELECT DISTINCT new com.conkiri.domain.view.dto.response.SectionResponseDTO(s.section, s.floor)
+    FROM Seat s
+    WHERE s.arena.arenaId = :arenaId
+    ORDER BY s.section, s.floor
+    """)
+	List<SectionResponseDTO> findDistinctSectionsByArenaId(@Param("arenaId") Long arenaId);
 }

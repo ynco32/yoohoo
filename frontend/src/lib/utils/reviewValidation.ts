@@ -1,9 +1,14 @@
 // src/utils/reviewValidations.ts
-import { ReviewRequestDTO } from '@/types/review';
+import { ReviewRequest } from '@/types/review';
 
-export const validateReviewForm = (
-  reviewData: Partial<ReviewRequestDTO>
-): boolean => {
+// 폼 데이터에 추가 필드를 포함하는 확장 타입 정의
+export interface ReviewFormData extends Partial<ReviewRequest> {
+  section?: string;
+  rowLine?: number;
+  columnLine?: number;
+}
+
+export const validateReviewForm = (reviewData: ReviewFormData): boolean => {
   // 필수 필드 검사
   const requiredFields = [
     reviewData.concertId !== undefined,

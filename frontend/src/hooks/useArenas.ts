@@ -22,7 +22,7 @@ export const useArenas = (): UseArenasResult => {
 
     try {
       const response = await arenaApi.getArenas();
-      setArenas(response.data);
+      setArenas(response.data.arenas);
     } catch (err) {
       setError(
         err instanceof Error

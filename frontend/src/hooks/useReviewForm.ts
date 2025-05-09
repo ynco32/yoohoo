@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useReview } from '@/hooks/useReview';
-import { ReviewRequestDTO } from '@/types/review';
+import { ReviewRequest } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로 변경
 import { CAMERA_MODELS } from '@/lib/constants';
 import { validateReviewForm } from '@/lib/utils/reviewValidation';
 
@@ -11,7 +11,8 @@ export const useReviewForm = () => {
   const { createReview, isLoading, error } = useReview();
 
   // 리뷰 데이터 상태 관리
-  const [reviewData, setReviewData] = useState<Partial<ReviewRequestDTO>>({
+  const [reviewData, setReviewData] = useState<Partial<ReviewRequest>>({
+    // ReviewRequestDTO를 ReviewRequest로 변경
     content: '',
   });
 
@@ -33,7 +34,8 @@ export const useReviewForm = () => {
   }, [selectedBrand]);
 
   // 값 변경 핸들러
-  const handleChange = (key: keyof ReviewRequestDTO, value: any) => {
+  const handleChange = (key: keyof ReviewRequest, value: any) => {
+    // ReviewRequestDTO를 ReviewRequest로 변경
     setReviewData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -73,18 +75,21 @@ export const useReviewForm = () => {
     if (!isFormValid()) return;
 
     try {
-      // ReviewRequestDTO 타입에 맞게 데이터 변환
-      const submitData: ReviewRequestDTO = {
+      // ReviewRequest 타입에 맞게 데이터 변환
+      const submitData: ReviewRequest = {
+        // ReviewRequestDTO를 ReviewRequest로 변경
         concertId: reviewData.concertId!,
-        section: reviewData.section!,
-        rowLine: reviewData.rowLine!,
-        columnLine: reviewData.columnLine!,
+        seatId: reviewData.seatId!, // section, rowLine, columnLine 대신 seatId 사용
         artistGrade: reviewData.artistGrade!,
         stageGrade: reviewData.stageGrade!,
         screenGrade: reviewData.screenGrade!,
         content: reviewData.content!,
         cameraBrand: reviewData.cameraBrand,
         cameraModel: reviewData.cameraModel,
+        photos: reviewData.photos,
+        section: '',
+        rowLine: 0,
+        columnLine: 0,
       };
 
       // API 호출

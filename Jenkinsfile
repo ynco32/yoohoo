@@ -175,6 +175,12 @@ pipeline {  // 파이프라인 정의 시작
                             expression { return env.BRANCH_NAME == 'dev' }
                         }
                     }
+                    agent {
+                        docker {
+                        image 'node:20.18'       // Node 20.x 공식 이미지 (npm 내장)
+                        args  '-u root'          // 필요하다면 root 권한으로
+                        }
+                    }
                     steps {
                         script {
                             try {

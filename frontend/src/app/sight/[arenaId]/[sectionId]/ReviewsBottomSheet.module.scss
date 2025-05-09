@@ -23,6 +23,9 @@
   position: relative;
   width: 100%;
   background-image: url('/images/reviewBg.png');
+  background-size: cover; // 이미지를 확대하여 요소를 완전히 덮도록 설정
+  background-repeat: no-repeat; // 이미지 반복 방지
+  background-position: center; // 이미지를 중앙에 배치
   border-top-left-radius: $border-radius-lg;
   border-top-right-radius: $border-radius-lg;
   box-shadow: $shadow-md;
@@ -112,22 +115,22 @@
   // iOS에서 부드러운 스크롤
   -webkit-overflow-scrolling: touch;
   // Firefox를 위한 얇은 스크롤바
-  scrollbar-width: thin;
+  scrollbar-width: none;
 
-  // 스크롤바 스타일링 (WebKit 브라우저)
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
+  // // 스크롤바 스타일링 (WebKit 브라우저)
+  // &::-webkit-scrollbar {
+  //   width: 4px;
+  // }
 
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: $border-radius-md;
-  }
+  // &::-webkit-scrollbar-track {
+  //   background: rgba(0, 0, 0, 0.05);
+  //   border-radius: $border-radius-md;
+  // }
 
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: $border-radius-md;
-  }
+  // &::-webkit-scrollbar-thumb {
+  //   background: rgba(0, 0, 0, 0.2);
+  //   border-radius: $border-radius-md;
+  // }
 }
 
 .reviewsWrapper {
@@ -136,6 +139,7 @@
   border-top-left-radius: $border-radius-lg;
   border-top-right-radius: $border-radius-lg;
   background-color: white;
+  overflow: visible;
 }
 
 .reviewCard {

@@ -4,9 +4,6 @@ import Image from 'next/image';
 import styles from './ReviewCard.module.scss';
 import {
   ReviewCardProps,
-  ArtistGrade,
-  StageGrade,
-  ScreenGrade,
   GradeOption,
   ReviewData,
   ReviewPhoto,
@@ -56,7 +53,7 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   } = useImageScroller(photoCount);
 
   // 텍스트 자르기 관련 로직 분리
-  const MAX_TEXT_LENGTH = 100;
+  const MAX_TEXT_LENGTH = 28;
   const { displayText, isLongContent, toggleContent, showFullContent } =
     useTruncatedText(review.content, MAX_TEXT_LENGTH);
 
@@ -210,7 +207,7 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
           )}
 
           {/* 페이지 인디케이터 (점) */}
-          {photos.length > 1 && (
+          {/* {photos.length > 1 && (
             <div className={styles.photoIndicator}>
               {photos.map((_, index) => (
                 <button
@@ -223,22 +220,13 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
                 />
               ))}
             </div>
-          )}
+          )} */}
         </div>
       )}
 
       {/* 리뷰 내용 */}
       <div className={styles.reviewContent}>
         <p className={styles.contentText}>{displayText}</p>
-        {isLongContent && (
-          <button
-            className={styles.readMoreBtn}
-            onClick={toggleContent}
-            aria-expanded={showFullContent}
-          >
-            {showFullContent ? '접기' : '더 보기'}
-          </button>
-        )}
       </div>
 
       {/* 등급 뱃지 */}

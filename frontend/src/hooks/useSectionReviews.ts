@@ -75,7 +75,7 @@ const dummyReviews: Review[] = [
     content:
       '무대와 거리가 적당하고 시야가 좋았어요! 아이유의 표정까지 잘 보였습니다. 라이브도 CD급으로 너무 좋았어요. 다음에 또 이 자리에서 보고 싶습니다. 강력 추천합니다!',
     createdAt: '2025-04-15T10:30:00Z',
-    photoUrls: ['/images/dummy.png'],
+    photoUrls: ['/images/dummyArtist.jpg'],
   },
   {
     reviewId: 2,

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './Dropdown.module.scss';
 import IconBox from '@/components/common/IconBox/IconBox';

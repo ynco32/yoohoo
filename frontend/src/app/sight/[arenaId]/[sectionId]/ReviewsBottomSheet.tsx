@@ -1,0 +1,167 @@
+'use client';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+import styles from './ReviewsBottomSheet.module.scss';
+import { ReviewCard } from '@/components/sight/ReviewCard/ReviewCard';
+import { useDraggableSheet } from '@/hooks/useDraggableSheet';
+import { useSectionReviews } from '@/hooks/useSectionReviews';
+import { ArtistGrade, ScreenGrade, StageGrade } from '@/types/review';
+// import EmptyState from '@/components/ui/EmptyState';
+
+interface ReviewsBottomSheetProps {
+  arenaId: string;
+  sectionId: string;
+  selectedSeats: string[];
+  position?: 'full' | 'half' | 'closed'; // position을 props로 받도록 추가
+  onClose: () => void;
+}
+
+export default function ReviewsBottomSheet({
+  arenaId,
+  sectionId,
+  selectedSeats,
+  position = 'half', // 기본값은 'half'
+  onClose,
+}: ReviewsBottomSheetProps) {
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  // 구역 전체 리뷰 가져오기
+  const {
+    reviews: allReviews,
+    isLoading,
+    error,
+  } = useSectionReviews(arenaId, sectionId);
+
+  // 필터링된 리뷰 - 선택된 좌석이 없으면 모든 리뷰, 있으면 해당 좌석들의 리뷰만
+  const filteredReviews =
+    selectedSeats.length > 0
+      ? allReviews.filter((review) =>
+          selectedSeats.includes(review.seatId.toString())
+        )
+      : allReviews;
+
+  // 바텀 시트 제스처 제어 - useDraggableSheet 훅 사용
+  const { handlers, style } = useDraggableSheet({
+    position, // props로 받은 position 사용
+    onClose,
+  });
+
+  // ESC 키 눌렀을 때 닫기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // ReviewCard에 필요한 형태로 review 데이터 변환
+  const mapReviewForCard = (review: any) => ({
+    reviewId: review.reviewId || 0,
+    nickname: review.nickname || '익명',
+    concertName: review.concertName || '공연 정보 없음',
+    arenaName: review.arenaName || '공연장 정보 없음',
+    section: review.section || sectionId,
+    seatId: review.seatId || 0,
+    rowLine: review.rowLine || 0,
+    columnLine: review.columnLine || 0,
+    artistGrade: review.artistGrade || ArtistGrade.MODERATE,
+    stageGrade: review.stageGrade || StageGrade.CLEAR,
+    screenGrade: review.screenGrade || ScreenGrade.CLEAR,
+    content: review.content || '',
+    createdAt: review.createdAt || new Date().toISOString(),
+    photoUrls: review.photoUrls || [],
+    cameraBrand: review.cameraBrand,
+    cameraModel: review.cameraModel,
+  });
+
+  // 스크롤 이벤트 처리
+  const handleScroll = useCallback(() => {
+    setIsScrolling(true);
+
+    const timer = setTimeout(() => {
+      setIsScrolling(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className={styles.overlay}>
+      <div className={styles.sheetContentWrapper}>
+        <div
+          ref={sheetRef}
+          className={styles.bottomSheet}
+          style={style}
+          {...handlers}
+        >
+          {/* 드래그 핸들 */}
+          <div className={styles.dragHandle}>
+            <div className={styles.dragIndicator} />
+          </div>
+
+          {/* 헤더 */}
+          <div className={styles.sheetHeader}>
+            <div className={styles.titleContainer}>
+              <h2 className={styles.sheetTitle}>리뷰보기</h2>
+              <span className={styles.sectionName}>{sectionId}구역</span>
+              {selectedSeats.length === 1 && filteredReviews.length > 0 && (
+                <>
+                  <div className={styles.separator} />
+                  <span className={styles.rowText}>
+                    {filteredReviews[0]?.rowLine || ''}열
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* 스크랩 버튼 부분은 생략 (선택적 추가) */}
+          </div>
+
+          {/* 컨텐츠 영역 */}
+          <div
+            className={styles.reviewContent}
+            onTouchStart={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className={styles.reviewList} onScroll={handleScroll}>
+              {isLoading ? (
+                <div className={styles.messageState}>리뷰를 불러오는 중...</div>
+              ) : error ? (
+                <div className={styles.messageState}>
+                  <span className={styles.errorText}>
+                    리뷰를 불러오는데 실패했습니다.
+                  </span>
+                </div>
+              ) : filteredReviews.length === 0 ? (
+                <div className={styles.messageState}>
+                  <p>선택한 좌석에 대한 리뷰가 없습니다.</p>
+                  {/* <EmptyState message='선택한 좌석에 대한 리뷰가 없습니다.' /> */}
+                </div>
+              ) : (
+                <div className={styles.reviewsWrapper}>
+                  {filteredReviews.map((review, index) => (
+                    <div key={review.reviewId} className={styles.reviewCard}>
+                      <ReviewCard
+                        review={mapReviewForCard(review)}
+                        onEdit={() => {}}
+                        onDelete={() => {}}
+                      />
+                      {index < filteredReviews.length - 1 && (
+                        <hr className={styles.reviewDivider} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

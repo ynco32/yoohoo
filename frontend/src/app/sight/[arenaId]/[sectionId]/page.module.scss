@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.buttons {
+  display: flex;
+  gap: $spacing-md;
+  justify-content: center;
+}
+
+.reviewButton {
+  background-color: $con-blue;
+  color: white;
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $border-radius-sm;
+  margin: $spacing-sm 0;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+
+  &:hover {
+    background-color: darken($con-blue, 10%);
+  }
+}

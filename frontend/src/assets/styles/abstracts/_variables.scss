@@ -13,6 +13,13 @@ $ticketing-bg: radial-gradient(
   #fff 100%
 );
 
+$linear-bg: linear-gradient(
+  180deg,
+  #ffffff 0%,
+  #ffffff 60%,
+  #dbeefd 85%,
+  #bae4fd 100%
+);
 // Text Colors
 $text-main: #515151;
 $text-sub: #949494;

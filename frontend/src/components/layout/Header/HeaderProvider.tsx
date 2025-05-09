@@ -48,7 +48,14 @@ interface HeaderProviderProps {
 }
 
 export const HeaderProvider = ({ children }: HeaderProviderProps) => {
-  const pagesWithoutHeader = ['/', '/login'];
+  const pagesWithoutHeader = [
+    '/',
+    '/login',
+    '/onboarding',
+    '/login/nick',
+    '/login/artist',
+    '/login/concert',
+  ];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);
   const [arenaInfo, setArenaInfo] = useState<ArenaInfo | null>(null);
@@ -78,6 +85,9 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
       // 여기서는 예시로 설정하지만 실제로는 API 호출 등으로 데이터를 가져올 수 있음
       // fetchVenueInfo(venueId);
       setSeatDetail('12구역 34열 56번');
+    } else if (path.match(/^\/place\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('현장'); // 현장 페이지
     } else {
       setShouldShowDetail(false);
       setArenaInfo(null);
@@ -117,10 +127,9 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     }
 
     if (pathname.startsWith('/sight')) return '시야 보기';
-    if (pathname.startsWith('/sharing')) return '나눔 지도';
+    if (pathname.startsWith('/place')) return '현장 정보';
     if (pathname.startsWith('/mypage')) return '마이페이지';
     if (pathname.startsWith('/ticketing')) return '티켓팅 연습';
-    if (pathname.startsWith('/congestion')) return '혼잡도 보기';
     return '';
   };
 

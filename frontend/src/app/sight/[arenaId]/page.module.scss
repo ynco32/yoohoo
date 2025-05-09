@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+}
+
+.card {
+  background-color: white;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  margin: $spacing-xl 0;
+  box-shadow: $shadow-con;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.message {
+  color: $text-main;
+  font-size: $font-size-xs;
+}
+// styles.scss에 추가 또는 수정
+.svgContainer {
+  width: 100%;
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+
+.interactiveSvg {
+  width: 100%;
+  height: auto;
+
+  g[id*='kspoSection'] {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    path {
+      pointer-events: auto;
+    }
+  }
+}

@@ -1,24 +1,26 @@
 // app/sight/components/ArenaSection.tsx
 import { serverApiClient } from '@/api/api';
 import ArenaCard from '@/components/common/ArenaCard/ArenaCard';
-import { ArenaInfo } from '@/types/arena';
+import { ArenaInfo, ArenaListApi, ArenaListResponse } from '@/types/arena';
 import styles from '../page.module.scss';
 
 interface ArenaSectionProps {
   searchQuery?: string;
 }
 
-async function getArenas(searchQuery?: string) {
+async function getArenas(searchQuery?: string): Promise<ArenaInfo[]> {
   try {
     const endpoint = searchQuery
       ? `/api/v1/arena/arenas?query=${encodeURIComponent(searchQuery)}`
       : '/api/v1/arena/arenas';
 
-    console.log('Full URL:', serverApiClient.defaults.baseURL + endpoint);
+    // console.log('Full URL:', serverApiClient.defaults.baseURL + endpoint);
 
     // 서버 API 클라이언트 사용
-    const response = await serverApiClient.get<ArenaInfo[]>(endpoint);
-    return response.data;
+    const response = await serverApiClient.get<ArenaListResponse>(endpoint);
+
+    // API 응답 구조에 맞게 수정
+    return response.data.data.arenas;
   } catch (error) {
     console.error('Error fetching arenas:', error);
     return [];
@@ -27,6 +29,8 @@ async function getArenas(searchQuery?: string) {
 
 export default async function ArenaSection({ searchQuery }: ArenaSectionProps) {
   const arenas = await getArenas(searchQuery);
+
+  // console.log(arenas);
 
   if (arenas.length === 0) {
     return (

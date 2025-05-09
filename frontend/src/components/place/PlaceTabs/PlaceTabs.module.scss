@@ -1,0 +1,45 @@
+.placeTabsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.tabMenuWrapper {
+  width: 100%;
+  align-self: center;
+  position: relative;
+
+  // 기존 border-bottom을 숨김 (가상 요소로 대체)
+  :global(.menuList) {
+    border-bottom: transparent;
+  }
+
+  // 활성 탭 인디케이터는 z-index 높게 설정
+  :global(.menuItem--active span::after) {
+    z-index: 2;
+  }
+}
+
+.customTabMenu {
+  width: 100%;
+}
+
+.tabContent {
+  flex: 1;
+  height: 100%;
+}
+
+.scrollable {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.nonScrollable {
+  overflow: hidden;
+}

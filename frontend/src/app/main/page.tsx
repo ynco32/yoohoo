@@ -1,11 +1,24 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.scss';
+import SightIcon from '/public/svgs/main/menuSight.svg';
+import PlaceIcon from '/public/svgs/main/menuPlace.svg';
+import TicketIcon from '/public/svgs/main/menuTicket.svg';
+import UserProfile from '@/components/main/UserProfile';
 
 export default function MainMenu() {
+  // 실제로는 API에서 가져온 사용자 데이터를 사용
+  const userProfile = {
+    nickname: '똘병이',
+    profileImage: '/svgs/main/profile.svg', // 실제 프로필 이미지 경로로 대체
+  };
+
   return (
     <div className={styles.container}>
+      <UserProfile
+        nickname={userProfile.nickname}
+        profileImage={userProfile.profileImage}
+      />
       <div className={styles.mainMenu}>
         {/* 시야보기 메뉴 - 세로로 두 칸 차지 */}
         <div
@@ -18,13 +31,7 @@ export default function MainMenu() {
                 <span className={styles.description}>공연장 별 시야 후기</span>
               </div>
               <div className={styles.iconContainer}>
-                <Image
-                  src='/images/menuSight.png'
-                  alt='시야보기'
-                  width={120}
-                  height={120}
-                  className={styles.icon}
-                />
+                <SightIcon width={220} height={220} />
               </div>
             </div>
           </Link>
@@ -41,13 +48,7 @@ export default function MainMenu() {
                 </span>
               </div>
               <div className={styles.iconContainer}>
-                <Image
-                  src='/images/menuPlace.png'
-                  alt='현장 정보'
-                  width={80}
-                  height={80}
-                  className={styles.icon}
-                />
+                <PlaceIcon width={80} height={80} />
               </div>
             </div>
           </Link>
@@ -64,13 +65,7 @@ export default function MainMenu() {
                 </span>
               </div>
               <div className={styles.iconContainer}>
-                <Image
-                  src='/images/menuTicket.png'
-                  alt='티켓팅 미니게임'
-                  width={80}
-                  height={80}
-                  className={styles.icon}
-                />
+                <TicketIcon width={90} height={90} />
               </div>
             </div>
           </Link>

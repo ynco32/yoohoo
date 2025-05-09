@@ -3,7 +3,7 @@ package com.conkiri.domain.notification.service;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
-import com.conkiri.domain.notification.dto.NotificationMessage;
+import com.conkiri.domain.notification.dto.response.NotificationMessage;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RabbitMQConstants;

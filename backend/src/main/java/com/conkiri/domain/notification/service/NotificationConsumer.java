@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ConcertRepository;
-import com.conkiri.domain.notification.dto.NotificationMessage;
+import com.conkiri.domain.notification.dto.response.NotificationMessage;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.exception.BaseException;

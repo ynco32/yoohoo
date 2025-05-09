@@ -1,4 +1,4 @@
-package com.conkiri.domain.notification.dto;
+package com.conkiri.domain.notification.dto.response;
 
 import java.time.LocalDateTime;
 

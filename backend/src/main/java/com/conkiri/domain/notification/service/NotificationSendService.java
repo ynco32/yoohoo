@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.entity.Concert;
-import com.conkiri.domain.notification.dto.NotificationMessage;
+import com.conkiri.domain.notification.dto.response.NotificationMessage;
 import com.conkiri.domain.notification.entity.NotificationType;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.global.exception.BaseException;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class NotificationSendService {
 
 	private final NotificationProducer notificationProducer;

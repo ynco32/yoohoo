@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.conkiri.domain.notification.entity.Notification;
 import com.conkiri.domain.notification.repository.NotificationRepository;
 import com.conkiri.domain.user.entity.User;
+import com.conkiri.global.exception.BaseException;
+import com.conkiri.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,12 @@ public class NotificationReadService {
 	 */
 	public Notification getNotification(Long notificationId) {
 		return notificationRepository.findById(notificationId)
-			.orElse(null);
+			.orElseThrow(() -> new BaseException(ErrorCode.NOTIFICATION_NOT_FOUND));
+	}
+
+	public void validateMyNotification(Notification notification, Long userId) {
+		if (!notification.getUser().getUserId().equals(userId)) {
+			throw new BaseException(ErrorCode.UNAUTHORIZED_ACCESS);
+		}
 	}
 }

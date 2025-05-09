@@ -11,11 +11,22 @@ import com.conkiri.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class UserService {
 
 	private final UserRepository userRepository;
+
+	public void updateFcmToken(User user, String fcmToken) {
+
+		user.updateFcmToken(fcmToken);
+	}
+
+	public void updateNotificationEnabled(User user) {
+
+		user.updateNotificationStatus();
+	}
+
 
 	public void updateNickname(User user, String nickname) {
 

@@ -79,6 +79,7 @@ public enum ErrorCode {
 	// 알림
 	FAIL_NOTIFICATION(HttpStatus.BAD_REQUEST, "알림 발송 실패"),
 	MESSAGE_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "메시지 큐 처리 중 오류가 발생했습니다."),
+	NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림이 존재하지 않습니다."),
 	;
 	private final HttpStatus httpStatus;
 	private final String message;

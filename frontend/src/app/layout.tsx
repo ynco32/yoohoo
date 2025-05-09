@@ -3,6 +3,7 @@ import '@/assets/styles/globals.scss';
 import styles from '@/app/layout.module.scss';
 import { HeaderProvider } from '@/components/layout/Header/HeaderProvider';
 import SideBar from '@/components/layout/Header/SideBar';
+import { Providers } from './providers';
 
 const APP_NAME = '콘끼리'; // 설치되는 이름
 const APP_DEFAULT_TITLE = '콘끼리 - 콘서트를 더 즐겁게🎵'; // 탭 상단에 뜨는 설명
@@ -30,10 +31,12 @@ export default function RootLayout({
     <html lang='ko'>
       <head></head>
       <body className={styles.body}>
-        <HeaderProvider>
-          <SideBar />
-          <div className={styles.main}>{children}</div>
-        </HeaderProvider>
+        <Providers>
+          <HeaderProvider>
+            <SideBar />
+            <div className={styles.main}>{children}</div>
+          </HeaderProvider>
+        </Providers>
       </body>
     </html>
   );

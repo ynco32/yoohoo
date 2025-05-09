@@ -30,11 +30,11 @@ DB_CONFIG = {
 }
 
 # 크롤링 설정
-I_BASE_URL = "http://www.playdb.co.kr/playdb/playdblist.asp"
+INTERPARK_BASE_URL = "http://www.playdb.co.kr/playdb/playdblist.asp"
 DETAIL_URL_TEMPLATE = "http://www.playdb.co.kr/playdb/playdbdetail.asp?sReqPlayNo={}"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 FILTERED_VENUES = [
-    "엑스코", "고양종합운동장", "인스파이어", "올림픽공원", 
+    "고양종합운동장", "인스파이어", 
     "잠실실내체육관", "올림픽홀", "핸드볼경기장",
     "상암월드컵", "고척", "KSPO",
 ]

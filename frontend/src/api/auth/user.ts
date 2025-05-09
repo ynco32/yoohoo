@@ -1,4 +1,4 @@
-// 마이페이지 임시 API 데이터 타입 및 더미 데이터
+import { ArtistGrade, StageGrade, ScreenGrade, Review } from '@/types/review';
 
 // 사용자 프로필 인터페이스
 export interface UserProfile {
@@ -20,17 +20,6 @@ export interface UserArtist {
   id: string;
   name: string;
   imageUrl?: string;
-}
-
-// 리뷰 인터페이스
-export interface UserReview {
-  id: string;
-  concertTitle: string;
-  venueName: string;
-  seatInfo: string;
-  reviewPreview: string;
-  imageUrl?: string;
-  createdAt: string;
 }
 
 // 더미 데이터 (실제 구현에서는 DB에서 가져옴)
@@ -76,39 +65,98 @@ const DUMMY_ARTISTS: UserArtist[] = [
     id: 'artist3',
     name: '더보이즈',
   },
+  {
+    id: 'artist3',
+    name: '더보이즈',
+  },
+  {
+    id: 'artist3',
+    name: '더보이즈',
+  },
+  {
+    id: 'artist3',
+    name: '더보이즈',
+  },
+  {
+    id: 'artist3',
+    name: '더보이즈',
+  },
 ];
 
-const DUMMY_REVIEWS: UserReview[] = [
+// 기존 리뷰 타입에 맞는 더미 데이터
+const DUMMY_REVIEWS: Review[] = [
   {
-    id: 'review1',
-    concertTitle: 'NCT DREAM TOUR "THE DREAM SHOW 3"',
-    venueName: '고척스카이돔',
-    seatInfo: '1층 R석 12열 5번',
-    reviewPreview:
-      '음향도 좋고 시야도 좋았어요. 다만 거리가 조금 있어서 표정은 잘 안 보였지만 전체적으로 만족스러웠습니다.',
-    imageUrl: '/images/review1.jpg',
-    createdAt: '2025.04.10',
+    reviewId: 1,
+    nickname: '똘병이',
+    concertName: 'NCT DREAM TOUR "THE DREAM SHOW 3"',
+    arenaName: '고척스카이돔',
+    seatId: 101,
+    section: '1',
+    rowLine: 12,
+    columnLine: 5,
+    artistGrade: ArtistGrade.CLOSE,
+    stageGrade: StageGrade.CLEAR,
+    screenGrade: ScreenGrade.CLEAR,
+    content: '음향도 좋고 시야도 좋았어요. 다만 거리가 조금 있어서 표정은 잘 안 보였지만 전체적으로 만족스러웠습니다.',
+    cameraBrand: 'APPLE',
+    cameraModel: 'iPhone 15 Pro',
+    createdAt: '2025-04-10T15:30:00.000Z',
+    photoUrls: ['/images/dummyConcert.jpg', '/images/dummyConcert.jpg']
   },
   {
-    id: 'review2',
-    concertTitle: 'SEVENTEEN TOUR "FOLLOW"',
-    venueName: '서울월드컵경기장',
-    seatInfo: '2층 C석 5열 20번',
-    reviewPreview:
-      '2층이라 멀긴 했지만 시야는 나쁘지 않았어요. 큰 화면으로 잘 볼 수 있었습니다.',
-    imageUrl: '/images/review2.jpg',
-    createdAt: '2025.03.22',
+    reviewId: 2,
+    nickname: '똘병이',
+    concertName: 'SEVENTEEN TOUR "FOLLOW"',
+    arenaName: '서울월드컵경기장',
+    seatId: 202,
+    section: '2',
+    rowLine: 5,
+    columnLine: 20,
+    artistGrade: ArtistGrade.MODERATE,
+    stageGrade: StageGrade.SIDE,
+    screenGrade: ScreenGrade.CLEAR,
+    content: '2층이라 멀긴 했지만 시야는 나쁘지 않았어요. 큰 화면으로 잘 볼 수 있었습니다.',
+    cameraBrand: 'SAMSUNG',
+    cameraModel: 'Galaxy S24',
+    createdAt: '2025-03-22T14:20:00.000Z',
+    photoUrls: ['/images/dummyConcert.jpg']
   },
   {
-    id: 'review3',
-    concertTitle: 'IVE THE 1ST WORLD TOUR "SHOW WHAT I HAVE"',
-    venueName: 'KSPO DOME',
-    seatInfo: '스탠딩 B구역',
-    reviewPreview:
-      '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
-    imageUrl: '/images/review3.jpg',
-    createdAt: '2025.02.15',
+    reviewId: 3,
+    nickname: '똘병이',
+    concertName: 'IVE THE 1ST WORLD TOUR "SHOW WHAT I HAVE"',
+    arenaName: 'KSPO DOME',
+    seatId: 303,
+    section: 'B',
+    rowLine: 0, // 스탠딩은 열 번호가 없으므로 0으로 설정
+    columnLine: 0, // 스탠딩은 좌석 번호가 없으므로 0으로 설정
+    artistGrade: ArtistGrade.VERY_CLOSE,
+    stageGrade: StageGrade.CLEAR,
+    screenGrade: ScreenGrade.SIDE,
+    content: '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
+    cameraBrand: 'SONY',
+    cameraModel: 'Alpha 7 IV',
+    createdAt: '2025-02-15T18:45:00.000Z',
+    photoUrls: ['/images/dummyConcert.jpg', '/images/review3_2.jpg', '/images/review3_3.jpg']
   },
+  {
+    reviewId: 3,
+    nickname: '똘병이',
+    concertName: 'IVE THE 1ST WORLD TOUR "SHOW WHAT I HAVE"',
+    arenaName: 'KSPO DOME',
+    seatId: 303,
+    section: 'B',
+    rowLine: 0, // 스탠딩은 열 번호가 없으므로 0으로 설정
+    columnLine: 0, // 스탠딩은 좌석 번호가 없으므로 0으로 설정
+    artistGrade: ArtistGrade.VERY_CLOSE,
+    stageGrade: StageGrade.CLEAR,
+    screenGrade: ScreenGrade.SIDE,
+    content: '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
+    cameraBrand: 'SONY',
+    cameraModel: 'Alpha 7 IV',
+    createdAt: '2025-02-15T18:45:00.000Z',
+    photoUrls: ['/images/dummyConcert.jpg', '/images/review3_2.jpg', '/images/review3_3.jpg']
+  }
 ];
 
 // 서버 컴포넌트에서 사용할 데이터 가져오기 함수들
@@ -132,7 +180,7 @@ export async function getUserArtists(): Promise<UserArtist[]> {
   return DUMMY_ARTISTS;
 }
 
-export async function getUserReviews(): Promise<UserReview[]> {
+export async function getUserReviews(): Promise<Review[]> {
   // 실제 구현에서는 DB에서 사용자의 리뷰 데이터를 가져옴
   await new Promise((resolve) => setTimeout(resolve, 600)); // 서버 요청 시뮬레이션
   return DUMMY_REVIEWS;

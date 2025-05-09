@@ -2,18 +2,19 @@ import {
   UserProfile,
   UserConcert,
   UserArtist,
-  UserReview,
 } from '@/api/auth/user';
 import styles from './MyPageContent.module.scss';
 import UserSummary from './_components/profile/UserSummary';
 import ConcertSection from './_components/concerts/ConcertSection';
 import ArtistSection from './_components/artists/ArtistSection';
 
+import { Review } from '@/types/review';
+import ReviewSection from './_components/reviews/ReviewSection';
 interface MyPageContentProps {
   user: UserProfile;
   concerts: UserConcert[];
   artists: UserArtist[];
-  reviews: UserReview[];
+  reviews: Review[];
 }
 
 export default function MyPageContent({
@@ -39,6 +40,9 @@ export default function MyPageContent({
 
         {/* 관심 아티스트 섹션 */}
         <ArtistSection artists={artists} />
+
+        {/* 후기 섹션 */}
+        <ReviewSection reviews={reviews} />
       </div>
     </div>
   );

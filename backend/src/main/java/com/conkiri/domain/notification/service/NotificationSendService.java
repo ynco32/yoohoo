@@ -61,12 +61,19 @@ public class NotificationSendService {
 	private String createBody(NotificationType type, Concert concert) {
 
 		return switch (type) {
+			case CONCERT_OPEN -> createConcertOpenBody(concert);
 			case TICKETING_DAY -> createTicketingDayBody(concert);
 			case TICKETING_SOON -> createTicketingSoonBody(concert);
 			case CONCERT_DAY -> createConcertDayBody(concert);
 			case CONCERT_SOON -> createConcertSoonBody(concert);
 			case SYSTEM -> "시스템 알림";
 		};
+	}
+
+	private String createConcertOpenBody(Concert concert) {
+		return String.format("%s의 새로운 공연 [%s]이(가) 오픈되었습니다!",
+			concert.getArtist().getArtistName(),
+			concert.getConcertName());
 	}
 
 	private String createTicketingDayBody(Concert concert) {

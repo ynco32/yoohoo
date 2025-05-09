@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum NotificationType {
+	CONCERT_OPEN("공연 오픈"),
 	TICKETING_DAY("티켓팅 당일"),
 	TICKETING_SOON("티켓팅 임박"),
 	CONCERT_DAY("공연 당일"),

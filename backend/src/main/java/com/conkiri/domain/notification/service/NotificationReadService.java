@@ -1,0 +1,44 @@
+package com.conkiri.domain.notification.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.conkiri.domain.notification.entity.Notification;
+import com.conkiri.domain.notification.repository.NotificationRepository;
+import com.conkiri.domain.user.entity.User;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class NotificationReadService {
+
+	private final NotificationRepository notificationRepository;
+
+	/**
+	 * 사용자의 모든 알림 조회
+	 */
+	public List<Notification> getNotifications(User user) {
+		return notificationRepository.findByUserOrderByCreatedAtDesc(user);
+	}
+
+	/**
+	 * 읽지 않은 알림 존재 여부 확인
+	 */
+	public boolean hasUnreadNotifications(User user) {
+		return notificationRepository.existsByUserAndIsRead(user, false);
+	}
+
+	/**
+	 * 특정 알림 조회
+	 */
+	public Notification getNotification(Long notificationId) {
+		return notificationRepository.findById(notificationId)
+			.orElse(null);
+	}
+}

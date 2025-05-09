@@ -42,6 +42,16 @@ interface ConcertCardProps {
    * 추가 스타일
    */
   style?: CSSProperties;
+
+  /**
+   * 선택된 상태인지 여부
+   */
+  isSelected?: boolean;
+
+  /**
+   * 좌석정보 입력 버튼 클릭 이벤트 핸들러
+   */
+  onSeatInfoClick?: () => void;
 }
 
 /**
@@ -56,6 +66,8 @@ export default function ConcertCard({
   width,
   posterRatio = '3:4',
   style,
+  isSelected,
+  onSeatInfoClick,
 }: ConcertCardProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -109,6 +121,24 @@ export default function ConcertCard({
           sizes='(max-width: 768px) 100vw, 300px'
           onError={() => setImageError(true)}
         />
+        {isSelected && (
+          <div className={styles.overlayButton}>
+            <div className={styles.overlayText}>
+              티케팅에
+              <br />
+              성공하셨나요?
+            </div>
+            <button
+              className={styles.selectButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSeatInfoClick?.();
+              }}
+            >
+              좌석정보 입력
+            </button>
+          </div>
+        )}
       </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{title}</h3>

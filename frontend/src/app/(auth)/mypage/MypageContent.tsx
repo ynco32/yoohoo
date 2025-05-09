@@ -1,8 +1,4 @@
-import {
-  UserProfile,
-  UserConcert,
-  UserArtist,
-} from '@/api/auth/user';
+import { UserProfile, UserConcert, UserArtist } from '@/api/auth/user';
 import styles from './MyPageContent.module.scss';
 import UserSummary from './_components/profile/UserSummary';
 import ConcertSection from './_components/concerts/ConcertSection';
@@ -37,9 +33,11 @@ export default function MyPageContent({
       <div className={styles.content}>
         {/* 예정된 콘서트 섹션 */}
         <ConcertSection concerts={concerts} />
+        <hr className={styles.divider} />
 
         {/* 관심 아티스트 섹션 */}
         <ArtistSection artists={artists} />
+        <hr className={styles.divider} />
 
         {/* 후기 섹션 */}
         <ReviewSection reviews={reviews} />

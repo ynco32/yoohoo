@@ -66,19 +66,19 @@ const DUMMY_ARTISTS: UserArtist[] = [
     name: '더보이즈',
   },
   {
-    id: 'artist3',
+    id: 'artist4',
     name: '더보이즈',
   },
   {
-    id: 'artist3',
+    id: 'artist5',
     name: '더보이즈',
   },
   {
-    id: 'artist3',
+    id: 'artist6',
     name: '더보이즈',
   },
   {
-    id: 'artist3',
+    id: 'artist7',
     name: '더보이즈',
   },
 ];
@@ -140,7 +140,7 @@ const DUMMY_REVIEWS: Review[] = [
     photoUrls: ['/images/dummyConcert.jpg', '/images/review3_2.jpg', '/images/review3_3.jpg']
   },
   {
-    reviewId: 3,
+    reviewId: 4,
     nickname: '똘병이',
     concertName: 'IVE THE 1ST WORLD TOUR "SHOW WHAT I HAVE"',
     arenaName: 'KSPO DOME',

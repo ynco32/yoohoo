@@ -43,8 +43,17 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
           className={styles.customTabMenu}
         />
       </div>
-      <div className={styles.tabContent}>
-        {activeTab === 0 && <PlaceMap arenaId={arenaIdNum} />}
+      <div
+        className={`${styles.tabContent} ${
+          activeTab === 1 ? styles.scrollable : styles.nonScrollable
+        }`}
+      >
+        {activeTab === 0 && (
+          <PlaceMap
+            latitude={dummyArenaInfo.latitude}
+            longitude={dummyArenaInfo.longitude}
+          />
+        )}
         {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}
       </div>
     </div>

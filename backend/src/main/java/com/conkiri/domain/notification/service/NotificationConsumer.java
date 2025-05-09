@@ -16,7 +16,9 @@ import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RabbitMQConstants;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,22 +32,28 @@ public class NotificationConsumer {
 	@RabbitListener(queues = RabbitMQConstants.NOTIFICATION_QUEUE)
 	public void processNotification(NotificationMessage message) {
 
-		User user = userService.findUserByIdOrElseThrow(message.userId());
-		Concert concert = concertRepository.findById(message.concertId())
-			.orElseThrow(() -> new BaseException(ErrorCode.CONCERT_NOT_FOUND));
+		try {
+			User user = userService.findUserByIdOrElseThrow(message.userId());
+			Concert concert = concertRepository.findById(message.concertId())
+				.orElseThrow(() -> new BaseException(ErrorCode.CONCERT_NOT_FOUND));
 
-		boolean success = fcmService.sendPushNotification(
-			user.isNotificationEnabled(),
-			user.getFcmToken(),
-			message.title(),
-			message.body(),
-			Map.of("url", "/ticketing/real")
-		);
-
-		if (success) {
-			notificationWriteService.saveNotification(
-				user, concert, message.title(), message.body(), message.type()
+			boolean success = fcmService.sendPushNotification(
+				user.isNotificationEnabled(),
+				user.getFcmToken(),
+				message.title(),
+				message.body(),
+				Map.of("url", "/ticketing/real")
 			);
+
+			if (success)
+				notificationWriteService.saveNotification(user, concert, message.title(), message.body(), message.type());
+			else
+				log.warn("FCM 전송 실패: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), message.type());
+
+
+		} catch (Exception e) {
+			log.error("알림 처리 실패: message={}", message, e);
+			throw e;
 		}
 	}
 }

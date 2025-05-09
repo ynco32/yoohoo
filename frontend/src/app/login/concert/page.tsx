@@ -4,6 +4,9 @@ import styles from './page.module.scss';
 import { useState } from 'react';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import ConcertCard from '@/components/common/ConcertCard/ConcertCard';
+import BottomSheet from '@/components/common/BottonSheet/BottomSheet';
+import ConcertSeatForm from '@/app/login/concert/ConcertSeatForm';
+import Button from '@/components/common/Button/Button';
 
 export default function NicknamePage() {
   const artists = [
@@ -23,11 +26,43 @@ export default function NicknamePage() {
   ];
 
   const [selected, setSelected] = useState<number[]>([]);
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [selectedConcert, setSelectedConcert] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
   const handleSelect = (id: number) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  const handleComplete = () => {
+    // 선택 완료 버튼의 동작 제거
+  };
+
+  const handleSeatInfoClick = (id: number) => {
+    const concert = artists.find((a) => a.id === id);
+    if (concert) {
+      setSelectedConcert(concert);
+      setBottomSheetOpen(true);
+    }
+  };
+
+  const handleCancel = () => {
+    setBottomSheetOpen(false);
+    setSelectedConcert(null);
+  };
+
+  const handleSave = (data: { section: string; row: string; seat: string }) => {
+    // 저장 로직 (예: 서버 전송 또는 상태 저장)
+    console.log('저장된 값:', {
+      concert: selectedConcert?.name,
+      ...data,
+    });
+    setBottomSheetOpen(false);
+    setSelectedConcert(null);
   };
 
   return (
@@ -50,15 +85,38 @@ export default function NicknamePage() {
           {artists.map((artist) => (
             <ConcertCard
               key={artist.id}
-              className={styles.concertCard}
+              className={`${styles.concertCard} ${selected.includes(artist.id) ? styles.selected : ''}`}
               title={artist.name}
               dateRange={'2025.05.08'}
               posterUrl={artist.image}
               onClick={() => handleSelect(artist.id)}
+              isSelected={selected.includes(artist.id)}
+              onSeatInfoClick={() => handleSeatInfoClick(artist.id)}
             />
           ))}
         </div>
       </div>
+      {!bottomSheetOpen && (
+        <div
+          className={`${styles.buttonContainer} ${selected.length > 0 ? styles.visible : ''}`}
+        >
+          <Button
+            children={'선택완료'}
+            className={styles.submitBtn}
+            onClick={handleComplete}
+            disabled={selected.length === 0}
+          />
+        </div>
+      )}
+      <BottomSheet isOpen={bottomSheetOpen} onClose={handleCancel}>
+        {selectedConcert && (
+          <ConcertSeatForm
+            concertName={selectedConcert.name}
+            onCancel={handleCancel}
+            onSave={handleSave}
+          />
+        )}
+      </BottomSheet>
     </div>
   );
 }

@@ -1,0 +1,47 @@
+// app/arena/components/KspoMap.tsx
+'use client';
+
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import KspoSvg from '@/assets/svgs/kspo.svg';
+import styles from '@/app/sight/[arenaId]/page.module.scss';
+
+interface KspoMapProps {
+  arenaId: string;
+}
+
+export default function KspoMap({ arenaId }: KspoMapProps) {
+  const router = useRouter();
+
+  // 구역 클릭 핸들러
+  const handleSectionClick = (sectionId: string) => {
+    const routingUrl = arenaId + sectionId;
+    console.log(`라우팅: /sight/${arenaId}/${routingUrl}`);
+    router.push(`/sight/${arenaId}/${routingUrl}`);
+  };
+
+  const handleSvgClick = (e: React.MouseEvent) => {
+    // 이벤트 버블링 활용
+    const target = e.target as SVGElement;
+
+    // 가장 가까운 g 요소 찾기
+    const section = target.closest('g[id]');
+
+    if (section) {
+      const sectionId = section.id;
+      console.log('클릭된 섹션 ID:', sectionId);
+
+      // kspo_svg__kspoSection 접두사 처리
+      if (sectionId.includes('kspoSection')) {
+        const cleanSectionId = sectionId.replace(/^.*kspoSection/, '');
+        handleSectionClick(cleanSectionId);
+      }
+    }
+  };
+
+  return (
+    <div className={styles.svgContainer}>
+      <KspoSvg onClick={handleSvgClick} className={styles.interactiveSvg} />
+    </div>
+  );
+}

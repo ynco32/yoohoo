@@ -23,3 +23,27 @@
   color: $text-main;
   font-size: $font-size-xs;
 }
+// styles.scss에 추가 또는 수정
+.svgContainer {
+  width: 100%;
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+
+.interactiveSvg {
+  width: 100%;
+  height: auto;
+
+  g[id*='kspoSection'] {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    path {
+      pointer-events: auto;
+    }
+  }
+}

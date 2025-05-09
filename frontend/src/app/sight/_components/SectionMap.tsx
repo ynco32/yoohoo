@@ -2,6 +2,7 @@
 import { use } from 'react';
 // import { fetchSectionMap } from '../api';
 import styles from '../[arenaId]/page.module.scss';
+import KsopMap from '@/components/sight/Arenas/KspoMap';
 
 export default function SectionMap() {
   //   const sectionMap = use(fetchSectionMap());
@@ -11,7 +12,8 @@ export default function SectionMap() {
   return (
     <div className={styles.sectionMap}>
       {/* 구역표 표시 로직 */}
-      {sectionMap && <div>구역표가 여기에 표시됩니다</div>}
+      {/* {sectionMap && <div>구역표가 여기에 표시됩니다</div>} */}
+      <KsopMap arenaId='1' />
       <div className={styles.card}>
         {/* Todo: 텍스트  */}
         <p className={styles.message}>

@@ -8,7 +8,7 @@ export default function WriteButton() {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push('reviews/write');
+    router.push('/sight/reviews/write');
   };
 
   return (

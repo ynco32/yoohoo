@@ -94,6 +94,9 @@ export interface ReviewCardProps {
 export interface ReviewRequest {
   concertId: number;
   seatId: number;
+  section: string;
+  rowLine: number;
+  columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
   screenGrade: ScreenGrade;

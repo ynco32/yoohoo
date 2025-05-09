@@ -1,11 +1,11 @@
 // src/hooks/useReview.ts
 import { useState } from 'react';
 import { reviewApi } from '@/api/sight/review';
-import { ReviewRequestDTO, ReviewResponse } from '@/types/review';
+import { ReviewRequest, Review } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로, ReviewResponse를 Review로 변경
 
 interface UseReviewReturn {
   createReview: (
-    data: ReviewRequestDTO,
+    data: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
     files: File[]
   ) => Promise<number | undefined>;
   isLoading: boolean;
@@ -17,7 +17,7 @@ export const useReview = (): UseReviewReturn => {
   const [error, setError] = useState<string | null>(null);
 
   const createReview = async (
-    data: ReviewRequestDTO,
+    data: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
     files: File[]
   ): Promise<number | undefined> => {
     try {

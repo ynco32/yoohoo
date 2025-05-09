@@ -45,25 +45,21 @@ const DUMMY_CONCERTS: UserConcert[] = [
     id: 'concert1',
     title: '2025 POKEMON 1st CONCERT<PIKA PIKA>',
     dateRange: '2025. 3. 1(월) - 2025. 3. 5(금)',
-    posterUrl: '/images/concert1.jpg',
   },
   {
     id: 'concert2',
     title: 'KATION IN SEOUL',
     dateRange: '2025. 3. 1(월) - 2025. 3. 5(금)',
-    posterUrl: '/images/concert2.jpg',
   },
   {
     id: 'concert3',
     title: 'SHINee WORLD VIII ESSAY',
     dateRange: '2025. 3. 1(월) - 2025. 3. 5(금)',
-    posterUrl: '/images/concert3.jpg',
   },
   {
     id: 'concert4',
     title: 'COLDPLAY MUSIC OF THE SPHERES',
     dateRange: '2025. 5. 10(토) - 2025. 5. 15(목)',
-    posterUrl: '/images/concert4.jpg',
   },
 ];
 
@@ -71,17 +67,14 @@ const DUMMY_ARTISTS: UserArtist[] = [
   {
     id: 'artist1',
     name: 'NCT',
-    imageUrl: '/images/artist1.jpg',
   },
   {
     id: 'artist2',
     name: 'BTS',
-    imageUrl: '/images/artist2.jpg',
   },
   {
     id: 'artist3',
     name: '더보이즈',
-    imageUrl: '/images/artist3.jpg',
   },
 ];
 

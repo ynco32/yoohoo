@@ -7,6 +7,7 @@ import {
 import styles from './MyPageContent.module.scss';
 import UserSummary from './_components/profile/UserSummary';
 import ConcertSection from './_components/concerts/ConcertSection';
+import ArtistSection from './_components/artists/ArtistSection';
 
 interface MyPageContentProps {
   user: UserProfile;
@@ -35,6 +36,9 @@ export default function MyPageContent({
       <div className={styles.content}>
         {/* 예정된 콘서트 섹션 */}
         <ConcertSection concerts={concerts} />
+
+        {/* 관심 아티스트 섹션 */}
+        <ArtistSection artists={artists} />
       </div>
     </div>
   );

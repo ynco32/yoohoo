@@ -27,7 +27,11 @@ export interface ArenaInfo {
   photoUrl: string;
 }
 
+export interface ArenaListApi {
+  arenas: ArenaInfo[];
+}
+
 /**
  * 경기장 목록을 위한 API 응답 타입
  */
-export type ArenaListResponse = ApiResponse<ArenaInfo[]>;
+export type ArenaListResponse = ApiResponse<ArenaListApi>;

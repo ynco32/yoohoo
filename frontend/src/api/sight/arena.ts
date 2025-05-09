@@ -1,10 +1,10 @@
 // src/api/sight/arena.api.ts
 import { apiClient } from '../api';
-import { ArenaInfo } from '@/types/arena';
+import { ArenaListApi } from '@/types/arena';
 
 export const arenaApi = {
   /**
    * 경기장 목록 조회
    */
-  getArenas: () => apiClient.get<ArenaInfo[]>('/api/v1/arena/arenas'),
+  getArenas: () => apiClient.get<ArenaListApi>('/api/v1/arena/arenas'),
 };

@@ -219,7 +219,6 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                             string(credentialsId: 'KAKAO_CLIENT_ID', variable: 'KAKAO_CLIENT_ID'),
                             string(credentialsId: 'KAKAO_CLIENT_SECRET', variable: 'KAKAO_CLIENT_SECRET'),
-                            string(credentialsId: 'KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URL'),
                             string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
                             string(credentialsId: 'MYSQL_USER', variable: 'MYSQL_USER'),
                             string(credentialsId: 'MYSQL_PASSWORD', variable: 'MYSQL_PASSWORD'),
@@ -239,14 +238,16 @@ pipeline {  // 파이프라인 정의 시작
                                 string(credentialsId: 'DEV_DB_URL', variable: 'DB_URL'),
                                 string(credentialsId: 'DEV_REDIS_HOST', variable: 'REDIS_HOST'),
                                 string(credentialsId: 'DEV_FRONTEND_URL', variable: 'FRONTEND_URL'),
-                                string(credentialsId: 'DEV_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                                string(credentialsId: 'DEV_API_URL', variable: 'NEXT_PUBLIC_API_URL'),
+                                string(credentialsId: 'DEV_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI')
                             ])
                         } else if (env.BRANCH_NAME == 'master') {
                             credentialsList.addAll([
                                 string(credentialsId: 'MASTER_DB_URL', variable: 'DB_URL'),
                                 string(credentialsId: 'MASTER_REDIS_HOST', variable: 'REDIS_HOST'),
                                 string(credentialsId: 'MASTER_FRONTEND_URL', variable: 'FRONTEND_URL'),
-                                string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL')
+                                string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL'),
+                                string(credentialsId: 'MASTER_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI')
                             ])
                         }
                         
@@ -268,7 +269,7 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg MYSQL_USER=$MYSQL_USER \
                                     --build-arg MYSQL_PASSWORD=$MYSQL_PASSWORD \
                                     --build-arg FRONTEND_URL=$FRONTEND_URL \
-                                    --build-arg KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL \
+                                    --build-arg KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI \
                                     --build-arg NEXT_PUBLIC_KAKAO_MAP_API_KEY=$NEXT_PUBLIC_KAKAO_MAP_API_KEY \
                                     --build-arg AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
                                     --build-arg AWS_SECRET_KEY=$AWS_SECRET_KEY \

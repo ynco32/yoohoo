@@ -193,7 +193,8 @@ pipeline {  // 파이프라인 정의 시작
                                         -Dsonar.sources=src \\
                                         -Dsonar.sourceEncoding=UTF-8 \\
                                         -Dsonar.typescript.tsconfigPath=sonar-tsconfig.json \\
-                                        -Dsonar.exclusions=node_modules/**
+                                        -Dsonar.exclusions=node_modules/** \\
+                                        -Dsonar.issues.assign.issuesCreator=true
                                         """
                                     }
                                 }

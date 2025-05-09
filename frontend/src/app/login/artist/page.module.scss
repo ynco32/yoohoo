@@ -15,7 +15,7 @@
 
 .content {
   width: 100%;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,10 +124,16 @@
   width: 100%;
   max-width: 400px;
   padding: 0 24px 24px 24px;
-  background: #fff;
+  background: transparent;
   z-index: 100;
   transform: translateX(-50%);
   left: 50%;
+  transition: transform 0.3s ease-in-out;
+  transform: translate(-50%, 100%);
+
+  &.visible {
+    transform: translate(-50%, 0);
+  }
 }
 
 .submitBtn {

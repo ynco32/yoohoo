@@ -79,7 +79,9 @@ export default function NicknamePage() {
           ))}
         </div>
       </div>
-      <div className={styles.buttonContainer}>
+      <div
+        className={`${styles.buttonContainer} ${selected.length > 0 ? styles.visible : ''}`}
+      >
         <Button
           children={'선택완료'}
           className={styles.submitBtn}

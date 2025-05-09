@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,7 +40,8 @@ public class Notification extends BaseTime {
 	@Column(nullable = false)
 	private String title;
 
-	@Column(nullable = false, columnDefinition = "TEXT")
+	@Lob
+	@Column(nullable = false)
 	private String body;
 
 	@Enumerated(EnumType.STRING)

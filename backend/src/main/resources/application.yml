@@ -9,11 +9,13 @@ spring:
         - cloud
         - redis
         - rabbitmq-local
+        - fcm
       dev:
         - oauth
         - db-dev
         - cloud
         - redis
         - rabbitmq-dev
-    include: oauth, db, cloud, redis, rabbitmq
+        - fcm
+    include: oauth, db, cloud, redis, rabbitmq, fcm
   

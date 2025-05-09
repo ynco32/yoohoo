@@ -1,4 +1,4 @@
-package com.conkiri.global.config.rabbitmq;
+package com.conkiri.global.config.notification;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

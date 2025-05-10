@@ -35,3 +35,19 @@ export interface ArenaListApi {
  * 경기장 목록을 위한 API 응답 타입
  */
 export type ArenaListResponse = ApiResponse<ArenaListApi>;
+
+/**
+ * 경기장 구역 정보 타입 정의
+ */
+export interface ArenaSection {
+  /** 구역 이름 */
+  section: string;
+
+  /** 층 정보 */
+  floor: number;
+}
+
+/**
+ * 경기장 구역 목록을 위한 API 응답 타입
+ */
+export type ArenaSectionsResponse = ApiResponse<ArenaSection[]>;

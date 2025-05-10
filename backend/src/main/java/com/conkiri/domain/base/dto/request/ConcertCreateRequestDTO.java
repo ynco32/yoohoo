@@ -5,7 +5,7 @@ import java.util.List;
 
 public record ConcertCreateRequestDTO(
     String concertName,
-    List<String> artistNames,
+    List<String> artists,
     String venueName,
     String photoUrl,
     LocalDateTime advanceReservation,

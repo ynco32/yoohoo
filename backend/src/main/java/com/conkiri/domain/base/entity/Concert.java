@@ -27,10 +27,6 @@ public class Concert {
 	private Long concertId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "artist_id", nullable = false)
-	private Artist artist;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;
 
@@ -54,12 +50,12 @@ public class Concert {
 	@Builder
 	public Concert(Artist artist, Arena arena, String concertName, LocalDateTime advancedReservation,
     LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
-    	this.artist = artist;
    		this.arena = arena;
     	this.concertName = concertName;
     	this.advancedReservation = advancedReservation;
     	this.reservation = reservation;
     	this.ticketingPlatform = ticketingPlatform;
     	this.photoUrl = photoUrl;
-}
+	}
+
 }

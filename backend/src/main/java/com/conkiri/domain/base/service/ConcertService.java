@@ -4,21 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.conkiri.domain.base.dto.request.ConcertCreateRequestDTO;
+import com.conkiri.domain.base.entity.*;
+import com.conkiri.domain.base.repository.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
-import com.conkiri.domain.base.repository.ConcertRepository;
 
-import com.conkiri.domain.base.entity.Arena;
-import com.conkiri.domain.base.entity.Artist;
-import com.conkiri.domain.base.entity.Concert;
-import com.conkiri.domain.base.entity.ConcertDetail;
-import com.conkiri.domain.base.entity.Platform;
-import com.conkiri.domain.base.repository.ArenaRepository;
-import com.conkiri.domain.base.repository.ArtistRepository;
-import com.conkiri.domain.base.repository.ConcertDetailRepository;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 
@@ -34,6 +27,7 @@ public class ConcertService {
 	private final ConcertDetailRepository concertDetailRepository;
 	private final ArtistRepository artistRepository;
 	private final ArenaRepository arenaRepository;
+	private final CastRepository castRepository;
 
 	@Transactional(readOnly = true)
 	public ConcertResponseDTO getConcertList(String concertSearch, Long lastConcertId) {
@@ -50,8 +44,6 @@ public class ConcertService {
 	public Long createConcert(ConcertCreateRequestDTO dto) {
 		log.info("콘서트 생성 요청: {}", dto.concertName());
 
-		Artist artist = findOrCreateArtist(dto.artistName());
-
 		Arena arena = findMatchingArena(dto.venueName());
 
 		Platform platform = null;
@@ -63,10 +55,8 @@ public class ConcertService {
                 platform = Platform.INTERPARK; // 기본값: 인터파크
             }
         }
-
 		Concert concert = Concert.builder()
-            .concertName(dto.concertName())   
-            .artist(artist)                   
+            .concertName(dto.concertName())
             .arena(arena)                     
             .photoUrl(dto.photoUrl())         
             .advancedReservation(dto.advanceReservation()) 
@@ -76,6 +66,20 @@ public class ConcertService {
 
 		Concert savedConcert = concertRepository.save(concert);
         log.info("콘서트 기본 정보 저장 완료: ID = {}", savedConcert.getConcertId());
+
+		if (dto.artists() != null && !dto.artists().isEmpty()) {
+			for (String artistName : dto.artists()) {
+				if (artistName != null && !artistName.trim().isEmpty()) {
+					Artist artist = findOrCreateArtist(artistName);
+					Cast cast = Cast.builder()
+							.concert(savedConcert)
+							.artist(artist)
+							.build();
+					castRepository.save(cast);
+					log.info("출연진 정보 저장: {}", artist.getArtistName());
+				}
+			}
+		}
 
 		saveConcertStartTimes(savedConcert, dto.startTimes());
 		return savedConcert.getConcertId();

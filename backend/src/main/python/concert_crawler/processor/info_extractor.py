@@ -43,6 +43,7 @@ class ConcertInfoExtractor:
 5. 중복된 키는 절대 사용하지 마세요.
 6. 공연 정보가 없거나 추론이 불가능하면 해당 필드는 null 또는 빈 배열
 7. 반드시 유효한 JSON만 반환 (설명 없이)
+8. 만약 예약 관련 날짜가 하나밖에 없다면 명시적으로 선예매라고 써 있지 않는 이상 reservation 필드에 넣어주세요.
 
 {base_info_text}
 

@@ -1,14 +1,20 @@
 package com.conkiri.domain.view.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.base.repository.ArenaRepository;
+import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
+import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Seat;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.view.repository.SeatRepository;
@@ -33,6 +39,7 @@ public class ViewService {
 	private final SeatRepository seatRepository;
 	private final ReviewRepository reviewRepository;
 	private final ReviewPhotoRepository reviewPhotoRepository;
+	private final ArenaRepository arenaRepository;
 
 	// 후기 작성
 	public Long createReview(ReviewRequestDTO dto, List<MultipartFile> files, User user) {
@@ -89,6 +96,33 @@ public class ViewService {
 		reviewRepository.delete(review);
 
 		return null;
+	}
+
+	// (선택한 공연장의) 구역 정보 조회
+	public List<SectionResponseDTO> getSections(Long arenaId) {
+		if (!arenaRepository.existsById(arenaId))
+			throw new BaseException(ErrorCode.ARENA_NOT_FOUND);
+
+		return seatRepository.findDistinctSectionsByArenaId(arenaId);
+	}
+
+	// (선택한 구역의) 모든 후기 조회
+	public ReviewResponseDTO getReviews(Long arenaId, String section) {
+		List<Review> reviews = reviewRepository.findAllByArenaIdAndSection(arenaId, section);
+
+		List<Long> reviewIds = reviews.stream()
+			.map(Review::getReviewId)
+			.toList();
+
+		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReviewIdIn(reviewIds);
+
+		Map<Long, List<String>> reviewPhotoMap = reviewPhotos.stream()
+			.collect(Collectors.groupingBy(
+				rp -> rp.getReview().getReviewId(),
+				Collectors.mapping(ReviewPhoto::getPhotoUrl, Collectors.toList())
+			));
+
+		return ReviewResponseDTO.of(reviews, reviewPhotoMap);
 	}
 
 	// ========== 이하 공통 메서드 ==========

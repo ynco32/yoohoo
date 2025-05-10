@@ -105,3 +105,8 @@ export interface ReviewRequest {
   cameraModel?: string;
   photos?: string[];
 }
+
+
+export interface ReviewListApi{
+  reviewList: Review[];
+}

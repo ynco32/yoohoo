@@ -17,6 +17,7 @@ export default function SectionPage() {
 
   const arenaId = params.arenaId as string;
   const sectionId = params.sectionId as string;
+  const section = sectionId.replace(new RegExp(`^${arenaId}`), '');
 
   // URL 쿼리 파라미터에서 선택된 좌석 정보 가져오기
   const seatsParam = searchParams.get('seats');
@@ -121,7 +122,7 @@ export default function SectionPage() {
       {/* 리뷰 바텀시트 - 항상 렌더링하고 position으로 제어 */}
       <ReviewsBottomSheet
         arenaId={arenaId}
-        sectionId={sectionId}
+        sectionId={section}
         selectedSeats={selectedSeats}
         position={sheetPosition}
         onClose={handleCloseReviews}

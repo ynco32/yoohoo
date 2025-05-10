@@ -65,7 +65,7 @@ export default function MiniMap({ arenaId, currentSectionId }: MiniMapProps) {
 
   const handleMiniMapClick = () => {
     // 구역 선택 페이지로 이동
-    router.push(`/arena/${arenaId}`);
+    router.push(`/sight/${arenaId}`);
   };
 
   return (

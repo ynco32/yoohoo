@@ -60,7 +60,7 @@ export default function SectionPage() {
 
   return (
     <div className={styles.container}>
-      <MiniMap arenaId={arenaId} currentSectionId='1' />
+      <MiniMap arenaId={arenaId} currentSectionId={section} />
       <h1>공연장 좌석 정보</h1>
       <p>선택된 구역: {sectionId}구역</p>
       <p>바텀시트 표시 상태: {sheetPosition}</p> {/* 디버깅 */}

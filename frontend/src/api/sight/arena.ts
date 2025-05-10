@@ -1,6 +1,10 @@
 // src/api/sight/arena.api.ts
 import { apiClient } from '../api';
-import { ArenaListApi, ArenaSectionsResponse } from '@/types/arena';
+import {
+  ArenaListApi,
+  ArenaSectionsResponse,
+  SectionSeatsResponse,
+} from '@/types/arena';
 
 export const arenaApi = {
   /**
@@ -14,5 +18,13 @@ export const arenaApi = {
   getArenaSections: (arenaId: string) =>
     apiClient.get<ArenaSectionsResponse>(
       `/api/v1/view/arenas/${arenaId}/sections`
+    ),
+
+  /**
+   * 구역 별 좌석 정보 조회
+   */
+  getSectionSeats: (arenaId: string, section: string) =>
+    apiClient.get<SectionSeatsResponse>(
+      `/api/v1/view/arenas/${arenaId}/sections/${section}`
     ),
 };

@@ -51,3 +51,29 @@ export interface ArenaSection {
  * 경기장 구역 목록을 위한 API 응답 타입
  */
 export type ArenaSectionsResponse = ApiResponse<ArenaSection[]>;
+
+/**
+ * 단일 좌석 정보 타입 정의
+ */
+export interface Seat {
+  seat: number;
+  seatId: number;
+  isReviewed: boolean;
+}
+
+/**
+ * 줄 별 좌석 정보 타입 정의
+ */
+export interface SeatRow {
+  row: string;
+  activeSeats: Seat[];
+}
+
+/**
+ * 경기장 구역 목록을 위한 API 응답 타입
+ */
+export interface SectionSeatsApi {
+  section: string;
+  seatMap: SeatRow[];
+}
+export type SectionSeatsResponse = ApiResponse<SectionSeatsApi>;

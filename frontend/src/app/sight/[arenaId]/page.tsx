@@ -9,7 +9,9 @@ interface ArenaPageProps {
   };
 }
 
-export default function ArenaPage({ params }: ArenaPageProps) {
+export default async function ArenaPage({ params }: ArenaPageProps) {
+  const arenaId = params.arenaId;
+
   return (
     <div className={styles.container}>
       <div className={styles.sections}>

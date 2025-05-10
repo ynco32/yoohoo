@@ -120,7 +120,7 @@ class InterparkCrawler(ConcertCrawlerInterface):
         
         print(f"\n전체 {len(all_concerts)}개의 공연 정보를 추출했습니다.")
         return all_concerts
-        
+
     def get_concert_detail(self, show_id, base_info=None):
         # 인터파크 상세 페이지 크롤링 (notice_image_crawler.py 중 인터파크 부분)
         # 이미지 URL만 추출하여 반환
@@ -163,95 +163,123 @@ class InterparkCrawler(ConcertCrawlerInterface):
                 'ticketing_platform': ticketing_platform
             }
             
-            # 2. 예매 페이지로 이동하여 공지사항 이미지 및 정보 수집
-            try:
-                driver.get(reservation_link)
-                time.sleep(random.uniform(4, 6)) 
-                
-                # 모든 이미지 목록 출력
-                images = driver.find_elements(By.TAG_NAME, "img")
-                print(f"🔍 티켓 이미지 후보 {len(images)}개 발견")
-                
-                ticket_images = []
-                for idx, img in enumerate(images):
-                    src = img.get_attribute('src')
-                    if src and ('ticketimage.interpark.com' in src or '/Play/image/' in src):
-                        print(f"  이미지 {idx+1}: {src}")
-                        ticket_images.append((img, src))
-                
-                # 본문 텍스트 추출 시도
-                content_text = ''
-                try:
-                    content_div = driver.find_element(By.CSS_SELECTOR, 'div.prdContents.detail')
-                    content_text = content_div.text
-                    print(f"✅ 본문 텍스트 추출 성공 ({len(content_text)} 자)")
-                except:
-                    print("❌ 본문 텍스트를 찾을 수 없습니다.")
-                
-                # 공지 이미지 추출
-                if ticket_images:
-                    # 이미지 선택 (가장 큰 것 또는 첫 번째 이미지)
-                    selected_img_src = ticket_images[0][1]  # 기본값
-                    
-                        # !!! 추가: 날짜 폴더 패턴 확인 (예: 250058692025/04/18/)
-                    date_pattern_images = [src for _, src in ticket_images if re.search(r'\d+/\d+/\d+/', src)]
-                    if date_pattern_images:
-                        print(f"📅 날짜 형식 폴더의 이미지 발견: {date_pattern_images[0]}")
-                        selected_img_src = date_pattern_images[0]
-                    # 이전 로직: etc 폴더 확인
-                    elif any('etc' in src for _, src in ticket_images):
-                        etc_images = [src for _, src in ticket_images if 'etc' in src]
-                        print(f"📁 etc 폴더의 이미지 발견: {etc_images[0]}")
-                        selected_img_src = etc_images[0]
-                    # !!! 추가: jpg 이미지 우선
-                    elif any('.jpg' in src.lower() for _, src in ticket_images):
-                        jpg_images = [src for _, src in ticket_images if '.jpg' in src.lower()]
-                        print(f"🖼️ JPG 이미지 발견: {jpg_images[0]}")
-                        selected_img_src = jpg_images[0]
-                    # !!! 추가: p.gif가 아닌 이미지 선택
-                    elif any('_p.gif' not in src for _, src in ticket_images):
-                        non_poster_images = [src for _, src in ticket_images if '_p.gif' not in src]
-                        print(f"🖼️ 일반 이미지 발견: {non_poster_images[0]}")
-                        selected_img_src = non_poster_images[0]
 
-                        #예전 공지 이미지 찾기 로직
-                    # # 가능하면 이미지 크기 비교하여 가장 큰 이미지
-                    # for _, src in ticket_images:
-                    #     if 'etc' in src:  # etc 폴더 내 이미지
-                    #         selected_img_src = src
-                    #         break
-                    
-                    print(f"🖼️ 공지사항 이미지 발견: {selected_img_src}")
-                    
-                    # 이미지 URL 정규화
-                    if selected_img_src:
-                        if selected_img_src.startswith('//'):
-                            img_url = f"https:{selected_img_src}"
-                        elif not selected_img_src.startswith('http'):
-                            img_url = f"https://ticketimage.interpark.com{selected_img_src}"
-                        else:
-                            img_url = selected_img_src
-                        
-                        if img_url:
-                            detail_info['notice_image_url'] = img_url
-                
-                        return detail_info
-                
-                    # 최종 반환값: 
-                    # detail_info = {
-                    # 'reservation_link': reservation_link,
-                    # 'ticketing_platform': ticketing_platform
-                    # 'notice_image_url': img_url,
-                    # }
-                
+            # 2. 예매 페이지로 이동하여 공지사항 이미지 및 정보 수집
+            driver.get(reservation_link)
+            time.sleep(random.uniform(4, 6)) 
+            
+            # 1. 전체 콘텐츠 영역에서 텍스트 추출 (간소화)
+            try:
+                # 콘텐츠 영역 전체 선택 (prdContents 클래스)
+                content_div = driver.find_element(By.CSS_SELECTOR, 'div.prdContents.detail')
+                if content_div:
+                    full_text = content_div.text
+                    # 전체 텍스트 저장 (GPT가 알아서 분석할 수 있도록)
+                    detail_info['content_text'] = full_text
+                    print(f"✅ 콘텐츠 텍스트 추출 성공 ({len(full_text)} 자)")
             except Exception as e:
-                print(f"❌ 예매 페이지 처리 오류: {str(e)}")
-                # 예매 페이지 처리 실패해도 예매 링크와 티켓팅 플랫폼은 반환
-                return detail_info
+                print(f"❌ 콘텐츠 텍스트 추출 실패: {str(e)}")
+            
+            # 2. 공지사항 이미지 후보 추출 - 개선된 방식
+            notice_image_candidates = []
+            
+            # 2.1 공연상세/출연진정보 섹션에서 이미지 찾기 (주요 공지 이미지가 있는 곳)
+            try:
+                # 공연상세/출연진정보 제목 찾기
+                description_title = driver.find_element(By.XPATH, "//h3[contains(text(), '공연상세') or contains(text(), '출연진정보')]")
+                if description_title:
+                    # 해당 제목 아래의 div에서 이미지 찾기
+                    description_section = description_title.find_element(By.XPATH, "./following-sibling::div[1]")
+                    
+                    if description_section:
+                        images = description_section.find_elements(By.TAG_NAME, "img")
+                        for idx, img in enumerate(images):
+                            src = img.get_attribute('src')
+                            if src:
+                                # 첫 번째 이미지에 가장 높은 우선순위 부여
+                                priority = 1 if idx == 0 else 2
+                                notice_image_candidates.append({
+                                    'src': src,
+                                    'priority': priority,
+                                    'width': img.get_attribute('width') or img.get_attribute('style') or '0',
+                                    'element': img
+                                })
+                                print(f"공연상세 섹션에서 이미지 발견: {src} (우선순위: {priority})")
+            except Exception as e:
+                print(f"공연상세 섹션 검색 중 오류: {str(e)}")
+            
+            # 2.2 기본 이미지 검색 (모든 티켓 이미지)
+            all_images = driver.find_elements(By.TAG_NAME, "img")
+            for img in all_images:
+                src = img.get_attribute('src')
+                if not src:
+                    continue
+                    
+                # 이미 후보에 포함된 이미지는 건너뛰기
+                if any(candidate['src'] == src for candidate in notice_image_candidates):
+                    continue
+                    
+                # ticketimage.interpark.com 도메인의 이미지를 찾음
+                if 'ticketimage.interpark.com' in src:
+                    # 패턴 분석: URL 구조로 우선순위 결정
+                    priority = 5  # 기본 우선순위
+                    
+                    # 패턴 1: /Play/image/etc/ 경로 (공지사항 이미지에 자주 사용)
+                    if '/Play/image/etc/' in src:
+                        priority = 3
+                    
+                    # 패턴 2: 연도/월/일/ 형식 (예: 2025/04/18/)
+                    elif re.search(r'/\d+/\d+/\d+/', src) or re.search(r'\d{8,}', src):
+                        priority = 3
+                        
+                    # 스타일 및 크기 확인 (넓은 이미지 우선)
+                    width_value = 0
+                    style = img.get_attribute('style') or ''
+                    width_attr = img.get_attribute('width') or '0'
+                    
+                    # width="100%" 또는 style="width: 100%" 확인
+                    if width_attr == '100%' or 'width: 100%' in style:
+                        width_value = 100
+                        priority -= 1  # 더 높은 우선순위 부여
+                    
+                    notice_image_candidates.append({
+                        'src': src,
+                        'priority': priority,
+                        'width': width_value,
+                        'element': img
+                    })
+                    print(f"이미지 후보: {src} (우선순위: {priority})")
+            
+            # 3. 이미지 후보 중에서 최적의 이미지 선택
+            if notice_image_candidates:
+                # 우선순위 > 크기 > 상세 페이지에 먼저 나타나는 순서
+                notice_image_candidates.sort(key=lambda x: (
+                    x['priority'],  # 우선순위 낮은 숫자가 높은 우선순위
+                    -int(x['width']) if isinstance(x['width'], int) else 0,  # 너비 큰 순
+                    0  # 기본 순서 유지
+                ))
+                
+                # 최적의 이미지 선택
+                selected_img_src = notice_image_candidates[0]['src']
+                print(f"🖼️ 최적의 공지사항 이미지 선택됨: {selected_img_src}")
+                
+                # 이미지 URL 정규화
+                if selected_img_src.startswith('//'):
+                    img_url = f"https:{selected_img_src}"
+                elif not selected_img_src.startswith('http'):
+                    img_url = f"https://ticketimage.interpark.com{selected_img_src}"
+                else:
+                    img_url = selected_img_src
+                
+                detail_info['notice_image_url'] = img_url
+            else:
+                print("❌ 적합한 공지사항 이미지를 찾을 수 없습니다.")
+            
+            return detail_info
             
         except Exception as e:
             print(f"❌ 상세 정보 추출 오류: {str(e)}")
-            return {}
+            return detail_info
         
         finally:
             if driver:

@@ -43,4 +43,4 @@ FILTERED_VENUES = [
 TEMP_IMAGE_DIR = "temp_images"
 
 # API 엔드포인트 설정 (Java API)
-API_CONCERT_ENDPOINT = os.getenv("API_CONCERT_ENDPOINT")
+API_BASE_URL = os.getenv("API_BASE_URL")

@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { seatMockData } from '@/mocks/data/seatData';
+
 interface SelectedSeat {
   row: string;
   seat: number;
 }
 
-const SeatMap: React.FC = () => {
+interface SeatMapProps {
+  arenaId: string;
+  sectionId: string;
+}
+
+const SeatMap: React.FC<SeatMapProps> = ({ arenaId, sectionId }) => {
   const { section, seatMap } = seatMockData;
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
 
@@ -38,49 +44,39 @@ const SeatMap: React.FC = () => {
     );
   };
 
-  // 첫 번째 열에 표시할 행 계산
-  const firstColumnRows = seatMap.filter((row) => row.row !== '').slice(0, 10);
-  // 두 번째 열에 표시할 행 계산
-  const secondColumnRows = seatMap.filter((row) => row.row !== '').slice(10);
+  // 빈 행 여부 확인 함수
+  const isEmptyRow = (row: any) => row.row === '';
 
   return (
     <div className={styles.container}>
       <div className={styles.seatMapContainer}>
-        {/* 첫 번째 열 */}
-        <div className={styles.column}>
-          {firstColumnRows.map((row) => (
-            <div key={`row-${row.row}`} className={styles.seatRow}>
-              {row.activeSeats.map((seat, seatIndex) => (
-                <Seat
-                  key={`seat-${row.row}-${seatIndex}`}
-                  seatNumber={seat.seat}
-                  isReviewed={seat.isReviewed}
-                  isSelected={isSeatSelected(row.row, seat.seat)}
-                  onClick={() =>
-                    seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
-                  }
-                />
-              ))}
+        {seatMap.map((row, rowIndex) => {
+          if (isEmptyRow(row)) {
+            // 빈 행인 경우 공백으로 처리
+            return (
+              <div key={`empty-${rowIndex}`} className={styles.emptyRow}></div>
+            );
+          }
+
+          return (
+            <div key={`row-${row.row}`} className={styles.rowContainer}>
+              <div className={styles.rowNumber}>{row.row}</div>
+              <div className={styles.seatRow}>
+                {row.activeSeats.map((seat, seatIndex) => (
+                  <Seat
+                    key={`seat-${row.row}-${seatIndex}`}
+                    seatNumber={seat.seat}
+                    isReviewed={seat.isReviewed}
+                    isSelected={isSeatSelected(row.row, seat.seat)}
+                    onClick={() =>
+                      seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
+                    }
+                  />
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-        <div className={styles.column}>
-          {secondColumnRows.map((row) => (
-            <div key={`row-${row.row}`} className={styles.seatRow}>
-              {row.activeSeats.map((seat, seatIndex) => (
-                <Seat
-                  key={`seat-${row.row}-${seatIndex}`}
-                  seatNumber={seat.seat}
-                  isReviewed={seat.isReviewed}
-                  isSelected={isSeatSelected(row.row, seat.seat)}
-                  onClick={() =>
-                    seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
-                  }
-                />
-              ))}
-            </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );

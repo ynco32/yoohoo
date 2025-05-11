@@ -1,36 +1,41 @@
 package com.conkiri.domain.base.entity;
 
-import com.conkiri.domain.base.entity.Artist;
-import com.conkiri.domain.base.entity.Concert;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "CAST")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cast {
-    @Id
-    @Column(name = "cast_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long castId;
+	@Id
+	@Column(name = "cast_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long castId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_id", nullable = false)
-    private Concert concert;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artist_id", nullable = false)
-    private Artist artist;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "artist_id", nullable = false)
+	private Artist artist;
 
-    @Builder
-    public Cast(Concert concert, Artist artist) {
-        this.concert = concert;
-        this.artist = artist;
-    }
+	private Cast(Concert concert, Artist artist) {
+		this.concert = concert;
+		this.artist = artist;
+	}
 
+	public static Cast of(Concert concert, Artist artist) {
+		return new Cast(concert, artist);
+	}
 }
 

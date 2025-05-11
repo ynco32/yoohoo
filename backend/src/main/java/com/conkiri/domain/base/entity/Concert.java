@@ -30,10 +30,6 @@ public class Concert {
 	private Long concertId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "artist_id", nullable = false)
-	private Artist artist;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "arena_id", nullable = false)
 	private Arena arena;
 
@@ -52,4 +48,5 @@ public class Concert {
 
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
+
 }

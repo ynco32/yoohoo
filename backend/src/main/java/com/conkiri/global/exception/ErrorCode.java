@@ -78,8 +78,12 @@ public enum ErrorCode {
 	INVALID_TICKETING_TIME(HttpStatus.BAD_REQUEST, "종료 시간은 시작 시간보다 이전일 수 없습니다"),
 
 	// 현장
-	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
+	INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다."),
 
+	// 알림
+	FAIL_NOTIFICATION(HttpStatus.BAD_REQUEST, "알림 발송 실패"),
+	MESSAGE_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "메시지 큐 처리 중 오류가 발생했습니다."),
+	NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림이 존재하지 않습니다."),
 	;
 	private final HttpStatus httpStatus;
 	private final String message;

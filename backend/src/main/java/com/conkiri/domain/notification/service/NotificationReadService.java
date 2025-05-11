@@ -26,7 +26,7 @@ public class NotificationReadService {
 	 * 사용자의 모든 알림 조회
 	 */
 	public List<Notification> getNotifications(User user) {
-		return notificationRepository.findByUserOrderByCreatedAtDesc(user);
+		return notificationRepository.findByUserWithConcertAndUser(user);
 	}
 
 	/**

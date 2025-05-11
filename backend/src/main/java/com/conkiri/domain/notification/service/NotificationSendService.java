@@ -2,11 +2,16 @@ package com.conkiri.domain.notification.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.conkiri.domain.base.entity.Cast;
 import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.base.entity.ConcertDetail;
+import com.conkiri.domain.base.repository.CastRepository;
 import com.conkiri.domain.notification.dto.response.NotificationMessage;
 import com.conkiri.domain.notification.entity.NotificationType;
 import com.conkiri.domain.user.entity.User;
@@ -22,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class NotificationSendService {
 
+	private final CastRepository castRepository;
 	private final NotificationProducer notificationProducer;
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -30,19 +36,44 @@ public class NotificationSendService {
 	 */
 	public void sendTicketingNotification(User user, Concert concert, NotificationType type) {
 		try {
-			NotificationMessage message = createNotificationMessage(user, concert, type);
+			NotificationMessage message = createTicketingMessage(user, concert, type);
 			notificationProducer.sendNotification(message);
 
-			log.info("알림 발송 완료: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type);
+			log.info("티켓팅 알림 발송 완료: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type);
 		} catch (Exception e) {
-			log.error("알림 발송 실패: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type, e);
+			log.error("티켓팅 알림 발송 실패: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type, e);
 			throw new BaseException(ErrorCode.FAIL_NOTIFICATION);
 		}
 	}
 
-	private NotificationMessage createNotificationMessage(User user, Concert concert, NotificationType type) {
+	public void sendEntranceNotification(User user, Concert concert, ConcertDetail concertDetail, NotificationType type) {
+		try {
+			NotificationMessage message = createEntranceMessage(user, concert, concertDetail, type);
+			notificationProducer.sendNotification(message);
+			log.info("입장 알림 발송 완료: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type);
+		} catch (Exception e) {
+			log.error("입장 알림 발송 실패: userId={}, concertId={}, type={}", user.getUserId(), concert.getConcertId(), type, e);
+			throw new BaseException(ErrorCode.FAIL_NOTIFICATION);
+		}
+	}
+
+	private NotificationMessage createTicketingMessage(User user, Concert concert, NotificationType type) {
 		String title = createTitle(type);
-		String body = createBody(type, concert);
+		String body = createTicketingBody(type, concert);
+
+		return new NotificationMessage(
+			user.getUserId(),
+			concert.getConcertId(),
+			title,
+			body,
+			type,
+			LocalDateTime.now()
+		);
+	}
+
+	private NotificationMessage createEntranceMessage(User user, Concert concert, ConcertDetail concertDetail, NotificationType type) {
+		String title = createTitle(type);
+		String body = createEntranceBody(type, concert, concertDetail);
 
 		return new NotificationMessage(
 			user.getUserId(),
@@ -58,22 +89,32 @@ public class NotificationSendService {
 		return type.getTitle();
 	}
 
-	private String createBody(NotificationType type, Concert concert) {
+	private String createTicketingBody(NotificationType type, Concert concert) {
 
 		return switch (type) {
 			case CONCERT_OPEN -> createConcertOpenBody(concert);
 			case TICKETING_DAY -> createTicketingDayBody(concert);
 			case TICKETING_SOON -> createTicketingSoonBody(concert);
+			default -> "알림";
+		};
+	}
+
+	private String createEntranceBody(NotificationType type, Concert concert, ConcertDetail concertDetail) {
+		return switch (type) {
 			case CONCERT_DAY -> createConcertDayBody(concert);
-			case CONCERT_SOON -> createConcertSoonBody(concert);
-			case SYSTEM -> "시스템 알림";
+			case CONCERT_SOON -> createConcertSoonBody(concert, concertDetail);
+			default -> "알림";
 		};
 	}
 
 	private String createConcertOpenBody(Concert concert) {
-		return String.format("%s의 새로운 공연 [%s]이(가) 오픈되었습니다!",
-			concert.getArtist().getArtistName(),
-			concert.getConcertName());
+		List<Cast> casts = castRepository.findByConcertWithArtist(concert);
+		String artistNames = casts.stream()
+			.map(cast -> cast.getArtist().getArtistName())
+			.collect(Collectors.joining(", "));
+
+		return String.format("%s의 새로운 공연 '%s'이(가) 오픈되었습니다!",
+			artistNames, concert.getConcertName());
 	}
 
 	private String createTicketingDayBody(Concert concert) {
@@ -86,7 +127,9 @@ public class NotificationSendService {
 
 	private String createTicketingSoonBody(Concert concert) {
 
-		return String.format("1시간 10분 후 %s 티켓팅이 시작됩니다.",
+		LocalDateTime ticketingTime = getTicketingTime(concert);
+		return String.format("잠시 후 %s에 %s 티켓팅이 시작됩니다.",
+			ticketingTime.format(TIME_FORMATTER),
 			concert.getConcertName());
 	}
 
@@ -96,9 +139,10 @@ public class NotificationSendService {
 			concert.getConcertName());
 	}
 
-	private String createConcertSoonBody(Concert concert) {
+	private String createConcertSoonBody(Concert concert, ConcertDetail concertDetail) {
 
-		return String.format("1시간 후 %s이 시작됩니다.",
+		return String.format("잠시 후 %s에 %s이(가) 시작됩니다.",
+			concertDetail.getStartTime().format(TIME_FORMATTER),
 			concert.getConcertName());
 	}
 

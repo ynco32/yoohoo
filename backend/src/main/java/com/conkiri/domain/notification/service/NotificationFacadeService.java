@@ -1,10 +1,16 @@
 package com.conkiri.domain.notification.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.conkiri.domain.base.entity.Cast;
+import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.base.repository.CastRepository;
 import com.conkiri.domain.notification.dto.response.NotificationResponseDTO;
 import com.conkiri.domain.notification.entity.Notification;
 import com.conkiri.domain.user.entity.User;
@@ -23,6 +29,7 @@ public class NotificationFacadeService {
 	private final NotificationWriteService writeService;
 	private final UserReadService userReadService;
 	private final UserService userService;
+	private final CastRepository castRepository;
 
 	/**
 	 * 사용자의 모든 알림 조회
@@ -31,7 +38,25 @@ public class NotificationFacadeService {
 	public List<NotificationResponseDTO> getNotifications(User user) {
 
 		List<Notification> notifications = readService.getNotifications(user);
-		return NotificationResponseDTO.from(notifications);
+
+		List<Concert> concerts = notifications.stream()
+			.map(Notification::getConcert)
+			.filter(Objects::nonNull)
+			.distinct()
+			.toList();
+
+		List<Cast> allCasts = castRepository.findByConcertInWithArtist(concerts);
+		Map<Long, List<Cast>> castMap = allCasts.stream()
+			.collect(Collectors.groupingBy(cast -> cast.getConcert().getConcertId()));
+
+		return notifications.stream()
+			.map(notification -> {
+				List<Cast> casts = notification.getConcert() != null ?
+					castMap.getOrDefault(notification.getConcert().getConcertId(), List.of()) :
+					List.of();
+				return NotificationResponseDTO.of(notification, casts);
+			})
+			.toList();
 	}
 
 	/**

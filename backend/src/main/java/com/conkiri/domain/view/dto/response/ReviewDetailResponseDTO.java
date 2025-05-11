@@ -15,7 +15,7 @@ public record ReviewDetailResponseDTO(
 	String arenaName,
 	Long seatId,
 	String section,
-	Long rowLine,
+	String rowLine,
 	Long columnLine,
 	ArtistGrade artistGrade,
 	StageGrade stageGrade,

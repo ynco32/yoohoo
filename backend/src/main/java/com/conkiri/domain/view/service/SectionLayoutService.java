@@ -1,11 +1,9 @@
 package com.conkiri.domain.view.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,9 +15,9 @@ import com.conkiri.domain.view.dto.response.SeatDTO;
 import com.conkiri.domain.view.dto.response.SectionSeatsResponseDTO;
 import com.conkiri.domain.view.entity.Seat;
 import com.conkiri.domain.view.entity.SectionLayout;
+import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.domain.view.repository.SeatRepository;
 import com.conkiri.domain.view.repository.SectionLayoutRepository;
-import com.conkiri.domain.view.repository.ReviewRepository;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -125,12 +123,7 @@ public class SectionLayoutService {
 
 	// 4-1
 	private String getSeatKey(Seat seat) {
-		return convertNumberToRowName(seat.getRowLine()) + "-" + seat.getColumnLine();
-	}
-
-	// 4-2
-	private String convertNumberToRowName(Long rowNumber) {
-		return String.valueOf((char) ('A' + rowNumber - 1));
+		return seat.getRowLine() + "-" + seat.getColumnLine();
 	}
 }
 

@@ -4,9 +4,8 @@
   justify-content: flex-start;
   min-height: 100vh;
   background: radial-gradient(circle, #dbeefd 0%, #ffffff 80%);
-  padding: 0 24px;
+  padding: 24px 24px 0;
   overflow: hidden;
-  padding-top: 32px;
 }
 
 .progressBar {
@@ -62,6 +61,7 @@
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -80,17 +80,15 @@
 
 .buttonContainer {
   position: fixed;
-  left: 0;
+  left: 50%;
   bottom: 0;
   width: 100%;
   max-width: 400px;
-  padding: 0 24px 24px 24px;
+  padding: 0 24px 24px;
   background: transparent;
   z-index: 100;
-  transform: translateX(-50%);
-  left: 50%;
-  transition: transform 0.3s ease-in-out;
   transform: translate(-50%, 100%);
+  transition: transform 0.3s ease-in-out;
 
   &.visible {
     transform: translate(-50%, 0);
@@ -108,10 +106,10 @@
   padding: 14px 0;
   cursor: pointer;
   transition: background 0.2s;
-}
 
-.submitBtn:disabled {
-  background: #e6f0fa;
-  color: #b0b8c1;
-  cursor: not-allowed;
+  &:disabled {
+    background: #e6f0fa;
+    color: #b0b8c1;
+    cursor: not-allowed;
+  }
 }

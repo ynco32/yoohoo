@@ -65,13 +65,8 @@ const SideBar = () => {
               </Link>
             </li>
             <li>
-              <Link href='/sharing' onClick={() => setIsMenuOpen(false)}>
-                나눔 지도
-              </Link>
-            </li>
-            <li>
-              <Link href='/congestion' onClick={() => setIsMenuOpen(false)}>
-                혼잡도 보기
+              <Link href='/place' onClick={() => setIsMenuOpen(false)}>
+                현장 정보
               </Link>
             </li>
             <li>

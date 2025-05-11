@@ -5,8 +5,8 @@ import {
   getUserArtists,
   getUserReviews,
 } from '@/api/auth/user';
-import MyPageContent from './MypageContent';
-import MyPageSkeleton from './MypageSkeleton';
+import MyPageContent from './MyPageContent';
+import MyPageSkeleton from './MyPageSkeleton';
 
 // 서버 컴포넌트로 데이터를 가져오는 페이지
 export default async function MyPageRoute() {

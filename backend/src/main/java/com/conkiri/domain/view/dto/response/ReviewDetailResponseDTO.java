@@ -3,7 +3,6 @@ package com.conkiri.domain.view.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.conkiri.domain.base.entity.Seat;
 import com.conkiri.domain.view.entity.ArtistGrade;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ScreenGrade;

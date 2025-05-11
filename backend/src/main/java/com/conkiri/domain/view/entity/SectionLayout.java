@@ -1,6 +1,6 @@
-package com.conkiri.domain.base.entity;
+package com.conkiri.domain.view.entity;
 
-import java.time.LocalDateTime;
+import com.conkiri.domain.base.entity.Arena;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,31 +11,27 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ConcertDetail {
+public class SectionLayout {
 
 	@Id
+	@Column(name = "layout_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long concertDetailId;
+	private Long layoutId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "concert_id", nullable = false)
-	private Concert concert;
+	@JoinColumn(name = "arena_id", nullable = false)
+	private Arena arena;
 
-	@Column(name = "start_time", nullable = false)
-	private LocalDateTime startTime;
+	@Column(name = "section", length = 10, nullable = false)
+	private String section;
 
-	private ConcertDetail(Concert concert, LocalDateTime startTime) {
-		this.concert = concert;
-		this.startTime = startTime;
-	}
-
-	public static ConcertDetail of(Concert concert, LocalDateTime startTime) {
-		return new ConcertDetail(concert, startTime);
-	}
+	@Column(name = "layout_data", columnDefinition = "TEXT", nullable = false)
+	private String layoutData;  // JSON 형태의 좌석 배치 데이터
 }

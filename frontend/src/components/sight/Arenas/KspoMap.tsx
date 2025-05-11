@@ -6,13 +6,10 @@ import { useRouter } from 'next/navigation';
 import KspoSvg from '@/assets/svgs/kspo.svg';
 import styles from '@/app/sight/[arenaId]/page.module.scss';
 
-interface KspoMapProps {
-  arenaId: string;
-}
-
-export default function KspoMap({ arenaId }: KspoMapProps) {
+export default function KspoMap() {
   const router = useRouter();
 
+  const arenaId = 5;
   // 구역 클릭 핸들러
   const handleSectionClick = (sectionId: string) => {
     const routingUrl = arenaId + sectionId;

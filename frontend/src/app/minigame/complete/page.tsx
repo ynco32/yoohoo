@@ -8,30 +8,7 @@ import styles from './page.module.scss';
 const ResultPage = () => {
   const router = useRouter();
   const { reactionTime, gameMode } = useTicketing();
-
-  // gameMode가 null인 경우 에러 페이지 표시
-  if (!gameMode) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.wrapper}>
-          <div className={styles.header}>
-            <h1 className={styles.title}>오류 발생</h1>
-            <p className={styles.subtitle}>게임 모드가 설정되지 않았습니다.</p>
-          </div>
-          <div className={styles.buttonContainer}>
-            <button
-              onClick={() => router.push('/')}
-              className={styles.homeButton}
-            >
-              홈으로
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const { calculateSuccessRate } = useSuccessRate(gameMode);
+  const { calculateSuccessRate } = useSuccessRate(gameMode || 'GRAPE'); // gameMode가 없을 경우 기본값 사용
 
   const handleRetry = () => {
     router.push('./');
@@ -58,6 +35,28 @@ const ResultPage = () => {
   };
 
   const getSuccessRateColor = () => styles.greenBlueGradient;
+
+  // gameMode가 null인 경우 에러 페이지 표시
+  if (!gameMode) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.wrapper}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>오류 발생</h1>
+            <p className={styles.subtitle}>게임 모드가 설정되지 않았습니다.</p>
+          </div>
+          <div className={styles.buttonContainer}>
+            <button
+              onClick={() => router.push('/')}
+              className={styles.homeButton}
+            >
+              홈으로
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const successRate = calculateSuccessRate(reactionTime);
 

@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.seatMapContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rowContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  width: 100%;
+  justify-content: center;
+}
+
+.rowNumber {
+  font-size: 10px;
+  color: #949494;
+  width: 16px;
+  text-align: center;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.seatRow {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.emptyRow {
+  height: 12px; /* 좌석 높이와 동일 */
+  width: 100%;
+  margin: 6px 0; /* 위아래 여백 추가 */
+}

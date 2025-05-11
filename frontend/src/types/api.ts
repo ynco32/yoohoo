@@ -4,11 +4,11 @@ export interface ApiResponse<T> {
   meta: Metadata;
 }
 
-interface ExceptionResponse {
+export interface ExceptionResponse {
   code: string;
   message: string;
 }
 
-interface Metadata {
+export interface Metadata {
   timestamp: string;
 }

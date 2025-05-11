@@ -205,22 +205,6 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
               </button>
             </>
           )}
-
-          {/* 페이지 인디케이터 (점) */}
-          {/* {photos.length > 1 && (
-            <div className={styles.photoIndicator}>
-              {photos.map((_, index) => (
-                <button
-                  key={index}
-                  className={`${styles.indicatorDot} ${
-                    index === activePhotoIndex ? styles.activeDot : ''
-                  }`}
-                  onClick={() => scrollToPhoto(index)}
-                  aria-label={`사진 ${index + 1}번 보기`}
-                />
-              ))}
-            </div>
-          )} */}
         </div>
       )}
 

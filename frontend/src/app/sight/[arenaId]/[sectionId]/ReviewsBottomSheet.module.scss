@@ -13,15 +13,16 @@
 }
 
 .sheetContentWrapper {
-  margin: 0 auto;
+  margin: 0;
+  width: 100%;
   height: 100%;
   max-width: 430px;
 }
 
 .bottomSheet {
   max-width: 430px;
+  width: 100vw;
   position: relative;
-  width: 100%;
   background-image: url('/images/reviewBg.png');
   background-size: cover; // 이미지를 확대하여 요소를 완전히 덮도록 설정
   background-repeat: no-repeat; // 이미지 반복 방지
@@ -36,7 +37,8 @@
   margin: 0 auto;
   pointer-events: auto;
   height: 100%;
-  transform: translateZ(0); // 하드웨어 가속 활성화
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .dragHandle {

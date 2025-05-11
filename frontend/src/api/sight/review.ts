@@ -1,9 +1,23 @@
 // src/api/sight/review.ts
 import { apiClient } from '../api';
-import { ReviewRequest, Review } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로, ReviewResponse를 Review로 변경
+import { ReviewRequest, Review, ReviewListApi } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로, ReviewResponse를 Review로 변경
 import { ApiResponse } from '@/types/api';
 
 export const reviewApi = {
+  /**
+   * 리뷰 조회
+   */
+  getReviews: (arenaId: string, section: string) =>
+    apiClient.get<ReviewListApi>(
+      `/api/v1/view/arenas/${arenaId}/sections/${section}/reviews`
+    ),
+
+  /**
+   *
+   * @param reviewData
+   * @param files
+   * @returns
+   */
   async createReview(
     reviewData: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
     files: File[]

@@ -1,8 +1,15 @@
+'use client';
 import React, { CSSProperties } from 'react';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import styles from './ArenaCard.module.scss';
 
 interface ArenaCardProps {
+  /**
+   * 경기장 ID
+   */
+  arenaId: string | number;
+
   /**
    * 경기장 이름
    */
@@ -53,6 +60,7 @@ interface ArenaCardProps {
  * 경기장 정보를 표시하는 카드 컴포넌트
  */
 export default function ArenaCard({
+  arenaId,
   name,
   englishName,
   address,
@@ -63,6 +71,9 @@ export default function ArenaCard({
   imageSize,
   style,
 }: ArenaCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   // 더미 이미지 URL
   const dummyImageUrl = '/images/dummyArena.jpg';
 
@@ -80,12 +91,22 @@ export default function ArenaCard({
       : imageSize
     : '80px'; // 기본값
 
+  const handleClick = () => {
+    if (onClick) {
+      // onClick prop이 제공된 경우 해당 함수 실행
+      onClick();
+    } else {
+      // onClick prop이 없는 경우에만 라우팅 실행
+      router.push(`${pathname}/${arenaId}`);
+    }
+  };
+
   return (
     <div
       className={`${styles.card} ${className}`}
-      onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      onClick={handleClick}
+      role='button'
+      tabIndex={0}
       style={{
         ...style,
         width: cardWidth,

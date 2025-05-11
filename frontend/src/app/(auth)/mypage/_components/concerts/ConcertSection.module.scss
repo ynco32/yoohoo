@@ -1,0 +1,87 @@
+.section {
+  margin-bottom: 32px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 0 8px;
+  color: $text-main;
+}
+
+.viewAll {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+
+.scrollContainer {
+  overflow-x: auto;
+  padding-bottom: 8px;
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.concertList {
+  display: flex;
+  padding: 0 16px;
+}
+
+.concertCard {
+  flex-shrink: 0;
+  margin-right: 16px;
+  width: 140px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px 16px;
+  margin: 0 16px;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: 16px;
+  color: #888;
+  margin: 0 0 16px;
+}
+
+.addButton {
+  display: inline-block;
+  background-color: $con-blue;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}

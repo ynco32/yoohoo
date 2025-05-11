@@ -11,10 +11,8 @@ interface ArenaSectionProps {
 async function getArenas(searchQuery?: string): Promise<ArenaInfo[]> {
   try {
     const endpoint = searchQuery
-      ? `/api/v1/arena/arenas?query=${encodeURIComponent(searchQuery)}`
+      ? `/api/v1/arena/arenas?searchWord=${encodeURIComponent(searchQuery)}`
       : '/api/v1/arena/arenas';
-
-    // console.log('Full URL:', serverApiClient.defaults.baseURL + endpoint);
 
     // 서버 API 클라이언트 사용
     const response = await serverApiClient.get<ArenaListResponse>(endpoint);
@@ -29,8 +27,6 @@ async function getArenas(searchQuery?: string): Promise<ArenaInfo[]> {
 
 export default async function ArenaSection({ searchQuery }: ArenaSectionProps) {
   const arenas = await getArenas(searchQuery);
-
-  // console.log(arenas);
 
   if (arenas.length === 0) {
     return (
@@ -53,6 +49,7 @@ export default async function ArenaSection({ searchQuery }: ArenaSectionProps) {
       {arenas.map((arena) => (
         <ArenaCard
           key={arena.arenaId}
+          arenaId={arena.arenaId}
           address={arena.address}
           englishName={arena.arenaEngName}
           name={arena.arenaName}

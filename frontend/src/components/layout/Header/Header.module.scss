@@ -1,16 +1,21 @@
 // Header.module.scss
 
-.container {
+.co.container {
   position: sticky;
   left: 0;
   top: 0;
   padding: 0 1rem;
   z-index: 100;
   color: $text-main;
+  background-color: transparent; /* 명시적으로 배경을 투명하게 설정 */
+  -webkit-backdrop-filter: none; /* Safari 자동 백드롭 필터 방지 */
+  backdrop-filter: none;
 }
 
 .header {
   height: 4rem;
+  background-color: transparent; /* 명시적으로 배경을 투명하게 설정 */
+  -webkit-background-color: transparent; /* Safari 전용 속성 */
 }
 
 .headerContent {
@@ -18,6 +23,7 @@
   height: 100%;
   align-items: center;
   justify-content: space-between;
+  background-color: transparent; /* 명시적으로 배경을 투명하게 설정 */
 }
 
 .leftSection {
@@ -76,7 +82,7 @@
 .detailContainer {
   position: relative;
   width: 100%;
-  height: 4rem; 
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;

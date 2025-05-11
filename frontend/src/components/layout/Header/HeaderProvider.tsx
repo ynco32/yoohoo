@@ -103,16 +103,29 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
       setShouldShowDetail(false);
       // 목록 페이지로 돌아갈 때 경기장 정보 유지 (새로고침 대비)
     }
-    // 경로에 따라 shouldShowDetail 설정
-    // 예: /sight/[venueid] 형태의 경로에서 상세 정보 표시
+    // /sight/[arenaId] - 구역 선택 페이지
     else if (path.match(/^\/sight\/[^\/]+$/)) {
       setShouldShowDetail(true);
-      // 여기서는 예시로 설정하지만 실제로는 API 호출 등으로 데이터를 가져올 수 있음
-      // fetchVenueInfo(venueId);
-      setSeatDetail('12구역 34열 56번');
-    } else if (path.match(/^\/place\/[^\/]+$/)) {
+      setSeatDetail('구역 선택');
+    }
+    // /sight/[arenaId]/[sectionId] - 좌석 선택 페이지
+    else if (path.match(/^\/sight\/[^\/]+\/[^\/]+$/)) {
       setShouldShowDetail(true);
-      setSeatDetail('현장'); // 현장 페이지
+      // 경로에서 구역 정보 추출
+      const sectionId = path.split('/')[3];
+      const cleanSectionId = sectionId ? sectionId.substring(1) : '';
+      setSeatDetail(cleanSectionId ? `${cleanSectionId} 구역` : '좌석 선택');
+    }
+    // /sight/[arenaId]/[stageType]/[sectionId]/[seatId] - 좌석 상세
+    else if (path.match(/^\/sight\/[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      // 실제로는 API나 params에서 가져와야 하지만, 임시로 설정
+      setSeatDetail('12구역 34열 56번');
+    }
+    // /place/[arenaId] - 현장 페이지
+    else if (path.match(/^\/place\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('현장');
     } else {
       setShouldShowDetail(false);
 

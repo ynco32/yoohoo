@@ -80,10 +80,6 @@ function handleTicketingBack(pathSegments: string[]): NavigationAction {
  * sight 경로에서의 뒤로가기 동작 처리
  */
 function handleSightBack(pathSegments: string[]): NavigationAction {
-  // /sight/[arenaid]/[stageType] 경로에서는 바로 /sight로 이동
-  if (pathSegments.length === 3) {
-    return { type: 'push', path: '/sight' };
-  }
 
   // 기본적으로는 한 단계 위로 이동
   if (pathSegments.length > 1) {

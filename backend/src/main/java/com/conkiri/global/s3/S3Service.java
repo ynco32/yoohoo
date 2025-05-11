@@ -35,10 +35,10 @@ public class S3Service {
 
 		if (file.getSize() == 0) { throw new BaseException(ErrorCode.FILE_NOT_EMPTY); }
 
-		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH");
+		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/HH/");
 		String subDir = sdf.format(new Date());
 
-		String fileName = dirName + subDir + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+		String fileName = dirName + subDir + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
 		try {
 			PutObjectRequest putObjectRequest = PutObjectRequest.builder()

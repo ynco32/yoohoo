@@ -1,12 +1,12 @@
 package com.conkiri.domain.chatbot.repository;
 
-import com.conkiri.domain.base.entity.Concert;
-import com.conkiri.domain.chatbot.entity.ConcertNotice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.conkiri.domain.chatbot.entity.ConcertNotice;
 
 public interface ConcertNoticeRepository extends JpaRepository<ConcertNotice, Long> {
-    List<ConcertNotice> findByConcert(Concert concert);
-    List<ConcertNotice> findByConcertConcertId(Long concertId);
+	// List<ConcertNotice> findByConcert(Concert concert);
+
+	// 추후 쓸 예정
+	// List<ConcertNotice> findConcertByConcertId(Long concertId);
 }

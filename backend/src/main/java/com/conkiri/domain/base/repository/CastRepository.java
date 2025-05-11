@@ -1,10 +1,9 @@
 package com.conkiri.domain.base.repository;
 
-import com.conkiri.domain.base.entity.Cast;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.conkiri.domain.base.entity.Cast;
 
 public interface CastRepository extends JpaRepository<Cast, Long> {
-    List<Cast> findByConcertConcertId(Long concertId);
+	// List<Cast> findConcertByConcertId(Long concertId);
 }

@@ -116,12 +116,6 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
       const cleanSectionId = sectionId ? sectionId.substring(1) : '';
       setSeatDetail(cleanSectionId ? `${cleanSectionId} 구역` : '좌석 선택');
     }
-    // /sight/[arenaId]/[stageType]/[sectionId]/[seatId] - 좌석 상세
-    else if (path.match(/^\/sight\/[^\/]+\/[^\/]+\/[^\/]+\/[^\/]+$/)) {
-      setShouldShowDetail(true);
-      // 실제로는 API나 params에서 가져와야 하지만, 임시로 설정
-      setSeatDetail('12구역 34열 56번');
-    }
     // /place/[arenaId] - 현장 페이지
     else if (path.match(/^\/place\/[^\/]+$/)) {
       setShouldShowDetail(true);

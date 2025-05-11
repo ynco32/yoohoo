@@ -123,17 +123,6 @@
 
 // 미디어 쿼리 추가 - 모바일 뷰
 @media (max-width: $breakpoint-sm) {
-  .container {
-    padding: $spacing-sm;
-  }
-
-  .mainMenu {
-    gap: $spacing-sm;
-  }
-
-  .menuItem {
-    padding: $spacing-sm;
-  }
 
   .label {
     font-size: $font-size-lg;

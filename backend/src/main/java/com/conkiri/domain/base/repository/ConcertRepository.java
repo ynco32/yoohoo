@@ -20,4 +20,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Long>, Concert
 		+ "WHERE DATE(c.advancedReservation) = CURRENT_DATE OR DATE(c.reservation) = CURRENT_DATE "
 		+ "ORDER BY c.arena.arenaId ASC")
 	List<Concert> findConcertsWithTicketingToday();
+
+	boolean existsByConcertName(String concertName);
 }

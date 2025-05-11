@@ -1,6 +1,31 @@
 import requests
 from config import API_BASE_URL
 
+def check_concert_exists(concert_name):
+    """
+    Java API를 호출하여 콘서트명으로 중복 확인
+    
+    Args:
+        concert_name: 확인할 콘서트 이름
+        
+    Returns:
+        bool: 이미 존재하면 True, 아니면 False
+    """
+    api_url = API_BASE_URL + "/api/v1/concert/checkExists" 
+    
+    try:
+        params = {"concertName": concert_name}
+        response = requests.get(api_url, params=params)
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("data", False)
+        else:
+            print(f"❌ API 호출 실패: {response.status_code} - {response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ API 호출 오류: {str(e)}")
+        return False
+
 def save_concert_to_java_api(concert_data):
     """콘서트 데이터를 Java API로 전송"""
     api_url = API_BASE_URL + "/api/v1/concert"  # API 엔드포인트

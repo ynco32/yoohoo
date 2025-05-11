@@ -169,5 +169,9 @@ public class ConcertService {
         	.orElseThrow(() -> new BaseException(ErrorCode.RESOURCE_NOT_FOUND));
 	}
 
+	public boolean checkConcertExists(String concertName) {
+    return concertRepository.existsByConcertName(concertName);
+	}
+
 
 }

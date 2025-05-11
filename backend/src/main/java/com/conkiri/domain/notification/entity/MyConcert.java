@@ -1,6 +1,7 @@
 package com.conkiri.domain.notification.entity;
 
 import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.base.entity.ConcertDetail;
 import com.conkiri.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -36,13 +37,26 @@ public class MyConcert {
 	@Column(name = "attended", nullable = false)
 	private boolean attended;
 
-	private MyConcert(Concert concert, User user) {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_detail_id")
+	private ConcertDetail concertDetail;
+
+	@Column(name = "ticketing_notification_enabled")
+	private boolean ticketingNotificationEnabled;
+
+	@Column(name = "entrance_notification_enabled")
+	private boolean entranceNotificationEnabled;
+
+	private MyConcert(Concert concert, User user, ConcertDetail concertDetail, boolean ticketingNotificationEnabled, boolean entranceNotificationEnabled) {
 		this.concert = concert;
 		this.user = user;
+		this.concertDetail = concertDetail;
 		this.attended = false;
+		this.ticketingNotificationEnabled = ticketingNotificationEnabled;
+		this.entranceNotificationEnabled = entranceNotificationEnabled;
 	}
 
-	public static MyConcert of(Concert concert, User user) {
-		return new MyConcert(concert, user);
+	public static MyConcert of(Concert concert, User user, ConcertDetail concertDetail, boolean ticketingNotificationEnabled, boolean entranceNotificationEnabled) {
+		return new MyConcert(concert, user, concertDetail, ticketingNotificationEnabled, entranceNotificationEnabled);
 	}
 }

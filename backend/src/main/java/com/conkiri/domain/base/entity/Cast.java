@@ -1,7 +1,4 @@
-package com.conkiri.domain.notification.entity;
-
-import com.conkiri.domain.base.entity.Artist;
-import com.conkiri.domain.user.entity.User;
+package com.conkiri.domain.base.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,27 +15,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MyArtist {
+public class Cast {
 
 	@Id
+	@Column(name = "cast_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "my_artist_id")
-	private Long myArtistId;
+	private Long castId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "artist_id", nullable = false)
 	private Artist artist;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-
-	private MyArtist(Artist artist, User user) {
-		this.artist = artist;
-		this.user = user;
-	}
-
-	public static MyArtist of(Artist artist, User user) {
-		return new MyArtist(artist, user);
-	}
 }

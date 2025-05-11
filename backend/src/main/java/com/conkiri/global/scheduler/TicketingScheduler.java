@@ -22,9 +22,9 @@ import com.conkiri.global.util.RedisKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class TicketingScheduler {
 
 	private static final int TICKETING_DURATION_HOURS = 10;

@@ -9,27 +9,16 @@ import styles from './PlaceTabs.module.scss';
 
 const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보기' }];
 
-const dummyArenaInfo = {
-  arenaId: 1,
-  arenaName: '올림픽 체조 경기장',
-  arenaEngName: 'Olympic Gymnastics Arena',
-  address: '서울 송파구 올림픽로 424',
-  latitude: 37.5194,
-  longitude: 127.1261,
-  photoUrl: '/images/dummyArena.jpg', // 실제 이미지 경로로 교체
-};
-
 export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
   const [activeTab, setActiveTab] = useState(0);
-  const { setArenaInfo } = useHeader();
+  const { arenaInfo } = useHeader();
   const arenaIdNum =
     typeof arenaId === 'string' ? parseInt(arenaId, 10) : arenaId;
 
-  useEffect(() => {
-    // 실제로는 arenaId로 API 호출해서 정보 받아와야 함
-    setArenaInfo(dummyArenaInfo);
-    return () => setArenaInfo(null); // 언마운트 시 초기화
-  }, [arenaId, setArenaInfo]);
+  // 경기장 정보가 없는 경우 (직접 URL로 접근한 경우)
+  if (!arenaInfo) {
+    return <div>잘못된 접근입니다.</div>;
+  }
 
   return (
     <div className={styles.placeTabsContainer}>
@@ -50,8 +39,8 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
       >
         {activeTab === 0 && (
           <PlaceMap
-            latitude={dummyArenaInfo.latitude}
-            longitude={dummyArenaInfo.longitude}
+            latitude={arenaInfo.latitude}
+            longitude={arenaInfo.longitude}
           />
         )}
         {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}

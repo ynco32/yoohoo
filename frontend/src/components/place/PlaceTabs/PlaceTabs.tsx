@@ -1,23 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useHeader } from '@/components/layout/Header/HeaderProvider';
+import { useState } from 'react';
 import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 import PlaceMap from '../PlaceMap/PlaceMap';
 import PlaceChat from '../PlaceChat/PlaceChat';
 import styles from './PlaceTabs.module.scss';
+import { RootState } from '@/store';
+import { useSelector } from 'react-redux';
 
 const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보기' }];
 
 export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
   const [activeTab, setActiveTab] = useState(0);
-  const { arenaInfo } = useHeader();
+
+  // Redux에서 경기장 정보 가져오기
+  const arenaInfo = useSelector((state: RootState) => state.arena.currentArena);
+  const mapSettings = useSelector(
+    (state: RootState) => state.arena.mapSettings
+  );
+
   const arenaIdNum =
     typeof arenaId === 'string' ? parseInt(arenaId, 10) : arenaId;
 
-  // 경기장 정보가 없는 경우 (직접 URL로 접근한 경우)
+  // 경기장 정보가 없을 때
   if (!arenaInfo) {
-    return <div>잘못된 접근입니다.</div>;
+    return <div>경기장 정보를 찾을 수 없습니다.</div>;
   }
 
   return (
@@ -39,8 +46,9 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
       >
         {activeTab === 0 && (
           <PlaceMap
-            latitude={arenaInfo.latitude}
-            longitude={arenaInfo.longitude}
+            latitude={mapSettings?.latitude || arenaInfo.latitude}
+            longitude={mapSettings?.longitude || arenaInfo.longitude}
+            zoom={mapSettings?.zoom}
           />
         )}
         {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}

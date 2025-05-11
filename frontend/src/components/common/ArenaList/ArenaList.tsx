@@ -1,10 +1,12 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useHeader } from '@/components/layout/Header/HeaderProvider';
 import ArenaCard from '@/components/common/ArenaCard/ArenaCard';
 import { ArenaInfo } from '@/types/arena';
 import styles from './ArenaList.module.scss';
+import { AppDispatch } from '@/store';
+import { setCurrentArena } from '@/store/slices/arenaSlice';
+import { useDispatch } from 'react-redux';
 
 interface ArenaListProps {
   arenas: ArenaInfo[];
@@ -14,7 +16,7 @@ interface ArenaListProps {
 export default function ArenaList({ arenas, targetPage }: ArenaListProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { setArenaInfo } = useHeader();
+  const dispatch = useDispatch<AppDispatch>();
 
   // targetPage가 명시되지 않았으면 현재 경로로 판단
   const getTargetPage = () => {
@@ -26,8 +28,8 @@ export default function ArenaList({ arenas, targetPage }: ArenaListProps) {
 
   // 경기장 클릭 핸들러
   const handleArenaClick = (arena: ArenaInfo) => {
-    // 헤더에 경기장 정보 설정
-    setArenaInfo(arena);
+    // Redux 스토어에 경기장 정보 저장
+    dispatch(setCurrentArena(arena));
 
     const page = getTargetPage();
     router.push(`/${page}/${arena.arenaId}`);

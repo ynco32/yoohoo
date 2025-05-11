@@ -18,7 +18,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 		@Param("section") String section
 	);
 
-	Optional<Seat> findSeatBySectionAndRowLineAndColumnLineAndArena_ArenaId(String section, Long row, Long column, Long arenaId);
+	Optional<Seat> findSeatBySectionAndRowLineAndColumnLineAndArena_ArenaId(String section, String row, Long column, Long arenaId);
 
 	@Query("""
     SELECT DISTINCT new com.conkiri.domain.view.dto.response.SectionResponseDTO(s.section, s.floor)

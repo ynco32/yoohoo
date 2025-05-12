@@ -1,10 +1,26 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 import { useTicketingTimer } from '@/hooks/useTicketingTimer';
-import QueuePopup from '@/components/ticketing/QueuePopup/QueuePopup';
 import ScheduleSelection from '@/components/ticketing/ScheduleSelection/ScheduleSelection';
 import styles from './page.module.scss';
+
+// WebSocket을 사용하는 컴포넌트만 dynamic으로 로드
+const DynamicWebSocketProvider = dynamic(
+  () => import('@/components/ticketing/WebSocketProvider/WebSocketProvider'),
+  { ssr: false }
+);
+const DynamicQueuePopup = dynamic(
+  () => import('@/components/ticketing/QueuePopup/QueuePopup'),
+  { ssr: false }
+);
+const DynamicErrorPopup = dynamic(
+  () => import('@/components/ticketing/ErrorPopup/ErrorPopup'),
+  { ssr: false }
+);
 
 export default function QueuePage() {
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
@@ -12,19 +28,11 @@ export default function QueuePage() {
   const [hasError, setHasError] = useState(false);
   const { buttonDisabled, buttonMessage } = useTicketingTimer();
 
-  const { queueNumber, waitingTime, peopleBehind } = useQueueStore();
-  const { enterQueue } = useWebSocketQueue();
-  //   const { error, clearError } = useErrorStore();
+  const error = useSelector((state: RootState) => state.error.message);
 
   const handleScheduleSelect = () => {
     setSchedulePopupOpen(false);
     setQueuePopupOpen(true);
-
-    // 티켓팅 진행 상태 저장
-    // document.cookie = 'ticketing-progress=1; path=/';
-    // console.log('쿠키 설정:', document.cookie);
-
-    enterQueue();
   };
 
   return (
@@ -50,6 +58,8 @@ export default function QueuePage() {
           </div>
         </div>
       </div>
+
+      {/* 나머지 UI 요소들 */}
       <div>
         <div className={styles.performanceInfo}>
           <div className={styles.infoRow}>
@@ -69,6 +79,7 @@ export default function QueuePage() {
             <div className={styles.infoValue}>무이자</div>
           </div>
         </div>
+
         <div className={styles.tabs}>
           <span className={styles.tabActive}>상세정보</span>
           <span className={styles.tabInactive}>공연장정보</span>
@@ -116,26 +127,24 @@ export default function QueuePage() {
           {buttonMessage}
         </button>
       </div>
+
       <ScheduleSelection
         isOpen={isSchedulePopupOpen}
         onClose={() => setSchedulePopupOpen(false)}
         onScheduleSelect={handleScheduleSelect}
       />
 
-      <QueuePopup
-        title='ASIA TOUR LOG in SEOUL'
-        queueNumber={queueNumber}
-        behindMe={peopleBehind}
-        expectedTime={waitingTime}
-        onClose={() => setQueuePopupOpen(false)}
-        isOpen={isQueuePopupOpen && !hasError} // 에러가 있으면 오픈되지 않음.
-      />
+      {isQueuePopupOpen && !hasError && (
+        <DynamicWebSocketProvider onEnterQueue={true}>
+          <DynamicQueuePopup
+            title='ASIA TOUR LOG in SEOUL'
+            onClose={() => setQueuePopupOpen(false)}
+            isOpen={true}
+          />
+        </DynamicWebSocketProvider>
+      )}
 
-      {/* {error && (
-        <ErrorPopup isOpen={!!error} onClick={clearError}>
-          {error.message}
-        </ErrorPopup>
-      )} */}
+      {error && <DynamicErrorPopup isOpen={!!error}>{error}</DynamicErrorPopup>}
     </div>
   );
 }

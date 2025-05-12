@@ -1,7 +1,6 @@
 package com.conkiri.domain.base.service;
 
 import com.conkiri.domain.base.dto.request.ConcertRequestDTO;
-import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.Artist;
 import com.conkiri.domain.base.entity.Cast;
@@ -14,6 +13,8 @@ import com.conkiri.domain.base.repository.ArtistRepository;
 import com.conkiri.domain.base.repository.CastRepository;
 import com.conkiri.domain.base.repository.ConcertDetailRepository;
 import com.conkiri.domain.base.repository.ConcertRepository;
+import com.conkiri.domain.chatbot.entity.ConcertNotice;
+import com.conkiri.domain.chatbot.repository.ConcertNoticeRepository;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +37,8 @@ public class ConcertService {
     private final ArtistRepository artistRepository;
     private final ArenaRepository arenaRepository;
     private final CastRepository castRepository;
+    private final ConcertNoticeRepository concertNoticeRepository;
 
-    /**
-     * 크롤링한 콘서트 정보를 저장하는 메서드
-     *
-     * @param dto 콘서트 생성 요청 DTO
-     * @return 저장된 콘서트 ID
-     */
     public Long createConcert(ConcertRequestDTO dto) {
         log.info("콘서트 생성 요청: {}", dto.concertName());
 
@@ -55,12 +51,28 @@ public class ConcertService {
 
         saveConcertStartTimes(concert, dto.startTimes());
 
+        saveConcertNotice(concert, dto);
+
         return concert.getConcertId();
     }
 
-    /**
-     * 티켓팅 플랫폼 결정
-     */
+    private void saveConcertNotice(Concert concert, ConcertRequestDTO dto) {
+        if ((dto.noticeImageUrl() != null && !dto.noticeImageUrl().isEmpty()) ||
+                (dto.noticeText() != null && !dto.noticeText().isEmpty())) {
+
+            ConcertNotice concertNotice = ConcertNotice.of(
+                    concert,
+                    dto.originalUrl(),
+                    dto.noticeText(),
+                    dto.noticeImageUrl()
+            );
+
+            concertNoticeRepository.save(concertNotice);
+        } else {
+            log.info("콘서트 공지사항 정보 없음: 콘서트 ID {}", concert.getConcertId());
+        }
+    }
+
     private Platform determineTicketingPlatform(String platformName) {
         if (platformName == null || platformName.isEmpty()) {
             return Platform.INTERPARK; // 기본값
@@ -74,9 +86,7 @@ public class ConcertService {
         }
     }
 
-    /**
-     * 콘서트 생성 및 저장
-     */
+
     private Concert createAndSaveConcert(ConcertRequestDTO dto, Arena arena, Platform platform) {
         Concert concert = Concert.of(
                 arena,
@@ -90,9 +100,6 @@ public class ConcertService {
         return concertRepository.save(concert);
     }
 
-    /**
-     * 콘서트에 출연 아티스트 정보 저장
-     */
     private void saveArtistsForConcert(Concert concert, List<String> artistNames) {
         if (artistNames == null || artistNames.isEmpty()) {
             return;
@@ -107,12 +114,6 @@ public class ConcertService {
                 });
     }
 
-    /**
-     * 콘서트 시작 시간 저장
-     *
-     * @param concert    저장된 콘서트 엔티티 (부모)
-     * @param startTimes 시작 시간 목록 (여러 공연 회차)
-     */
     private void saveConcertStartTimes(Concert concert, List<LocalDateTime> startTimes) {
         if (startTimes == null || startTimes.isEmpty()) {
             log.info("시작 시간 정보 없음");
@@ -125,12 +126,6 @@ public class ConcertService {
         }
     }
 
-    /**
-     * 아티스트 이름으로 검색하여 존재하면 반환, 없으면 새로 생성
-     *
-     * @param artistName 아티스트 이름
-     * @return 기존 또는 새로 생성된 Artist 엔티티
-     */
     private Artist findOrCreateArtist(String artistName) {
         String finalArtistName = (artistName == null || artistName.isEmpty())
                 ? "없음"

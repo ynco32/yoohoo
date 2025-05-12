@@ -346,16 +346,40 @@ pipeline {  // 파이프라인 정의 시작
                                         # 기존 컨테이너 server 라인 주석 처리
                                         sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/^\\(\\s*server.*\\)/#\\1/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
                                         # 새 컨테이너 weight=100으로 변경
-                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=100/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        # 먼저 server 라인이 있는지 확인
+                                        if grep -q "server.*${BACKEND_NEW_CONTAINER_NAME}" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf; then
+                                            sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=100/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        else
+                                            # server 라인이 없으면 추가
+                                            sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/a\\    server ${BACKEND_NEW_CONTAINER_NAME}:8085 weight=100;" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        fi
                                     else
-                                        # 기존 upstream 블록의 weight 수정 (0이 되지 않도록 최소 1)
-                                        old_weight=\$((100-${percentage}))
+                                        # POSIX 호환 방식으로 계산
+                                        old_weight=`expr 100 - ${percentage}`
                                         new_weight=${percentage}
                                         if [ \$old_weight -le 0 ]; then old_weight=1; fi
                                         if [ \$new_weight -le 0 ]; then new_weight=1; fi
-                                        sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${old_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
-                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${new_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        
+                                        # 기존 컨테이너 weight 수정, server 라인이 없으면 추가
+                                        if grep -q "server.*${BACKEND_CONTAINER_NAME}" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf; then
+                                            sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${old_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        else
+                                            sed -i "/upstream ${BACKEND_CONTAINER_NAME}/a\\    server ${BACKEND_CONTAINER_NAME}:8085 weight=\${old_weight};" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        fi
+                                        
+                                        # 새 컨테이너 weight 수정, server 라인이 없으면 추가
+                                        if grep -q "server.*${BACKEND_NEW_CONTAINER_NAME}" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf; then
+                                            sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${new_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        else
+                                            sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/a\\    server ${BACKEND_NEW_CONTAINER_NAME}:8085 weight=\${new_weight};" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        fi
                                     fi
+                                    
+                                    # 설정 확인
+                                    echo "Nginx 설정 변경 후:"
+                                    grep -A 3 "upstream" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                    
+                                    # Nginx 설정 테스트 및 재시작
                                     docker exec nginx nginx -t
                                     docker exec nginx nginx -s reload
                                 """

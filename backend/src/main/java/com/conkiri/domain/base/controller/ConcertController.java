@@ -2,6 +2,7 @@ package com.conkiri.domain.base.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.base.dto.request.ConcertListRequestDTO;
+import com.conkiri.domain.base.dto.request.ConcertRequestDTO;
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.service.ConcertService;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -23,7 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/concerts")
 public class ConcertController {
 
-    private final ConcertService concertService;
+	private final ConcertService concertService;
+
 	// 공연 목록 조회
 	@GetMapping
 	public ApiResponse<ConcertResponseDTO> getConcerts(
@@ -61,3 +64,4 @@ public class ConcertController {
 	public ApiResponse<Boolean> checkConcertExists(@RequestParam String concertName) {
 		return ApiResponse.success(concertService.checkConcertExists(concertName));
 	}
+}

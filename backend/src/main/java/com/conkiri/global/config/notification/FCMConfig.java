@@ -66,7 +66,8 @@ public class FCMConfig {
 
 	private String createCredentialsJson() throws JsonProcessingException {
 
-		String formattedPrivateKey = privateKey.replace("\\n", "\n");
+		String newPrivateKey = "-----BEGIN PRIVATE KEY-----\\n" + privateKey + "\\n-----END PRIVATE KEY-----\\n";
+		String formattedPrivateKey = newPrivateKey.replace("\\n", "\n");
 
 		Map<String, Object> credentialsMap = new HashMap<>();
 		credentialsMap.put("type", "service_account");

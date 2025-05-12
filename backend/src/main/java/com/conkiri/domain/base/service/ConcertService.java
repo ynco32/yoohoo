@@ -1,5 +1,6 @@
 package com.conkiri.domain.base.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,14 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.base.dto.request.ConcertListRequestDTO;
+import com.conkiri.domain.base.dto.request.ConcertRequestDTO;
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.Artist;
+import com.conkiri.domain.base.entity.Cast;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.ConcertDetail;
+import com.conkiri.domain.base.entity.Platform;
 import com.conkiri.domain.base.entity.VenueKeyword;
+import com.conkiri.domain.base.repository.ArenaRepository;
+import com.conkiri.domain.base.repository.ArtistRepository;
+import com.conkiri.domain.base.repository.CastRepository;
 import com.conkiri.domain.base.repository.ConcertDetailRepository;
 import com.conkiri.domain.base.repository.ConcertRepository;
+import com.conkiri.domain.chatbot.entity.ConcertNotice;
+import com.conkiri.domain.chatbot.repository.ConcertNoticeRepository;
 import com.conkiri.domain.notification.entity.MyConcert;
 import com.conkiri.domain.notification.repository.MyConcertRepository;
 import com.conkiri.domain.user.entity.User;

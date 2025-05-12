@@ -310,11 +310,11 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
                                     --build-arg FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID \
                                     --build-arg FIREBASE_CLIENT_EMAIL=$FIREBASE_CLIENT_EMAIL \
-                                    --build-arg FIREBASE_PRIVATE_KEY=$FIREBASE_PRIVATE_KEY \
+                                    --build-arg FIREBASE_SECRET_KEY=$FIREBASE_SECRET_KEY \
                                     --build-arg RABBITMQ_USERNAME=$RABBITMQ_USERNAME \
                                     --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
                                     --build-arg FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID \
-                                    --build-arg FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID
+                                    --build-arg FIREBASE_SECRET_KEY_ID=$FIREBASE_SECRET_KEY_ID
 
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''

@@ -22,7 +22,7 @@ const DynamicErrorPopup = dynamic(
   { ssr: false }
 );
 
-export default function QueuePage() {
+export default function MTicketPage() {
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
   const [hasError, setHasError] = useState(false);

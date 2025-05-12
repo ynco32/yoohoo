@@ -1,6 +1,15 @@
 package com.conkiri.domain.base.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,8 +50,7 @@ public class Concert {
     private String photoUrl;
 
     //생성자
-    private Concert(Arena arena, String concertName, LocalDateTime advancedReservation,
-                    LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
+    private Concert(Arena arena, String concertName, LocalDateTime advancedReservation, LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
         this.arena = arena;
         this.concertName = concertName;
         this.advancedReservation = advancedReservation;
@@ -51,8 +59,7 @@ public class Concert {
         this.photoUrl = photoUrl;
     }
 
-    public static Concert of(Arena arena, String concertName, LocalDateTime advancedReservation,
-                             LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
+    public static Concert of(Arena arena, String concertName, LocalDateTime advancedReservation, LocalDateTime reservation, Platform ticketingPlatform, String photoUrl) {
         return new Concert(arena, concertName, advancedReservation, reservation, ticketingPlatform, photoUrl);
     }
 

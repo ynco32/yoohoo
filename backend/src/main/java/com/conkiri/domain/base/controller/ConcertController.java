@@ -5,7 +5,13 @@ import com.conkiri.domain.base.service.ConcertService;
 import com.conkiri.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -30,13 +36,11 @@ public class ConcertController {
     // }
     @PostMapping
     public ApiResponse<Long> createConcert(@Valid @RequestBody ConcertRequestDTO request) {
-        Long concertId = concertService.createConcert(request);
-        return ApiResponse.success(concertId);
+        return ApiResponse.success(concertService.createConcert(request));
     }
 
     @GetMapping("/checkExists")
     public ApiResponse<Boolean> checkConcertExists(@RequestParam String concertName) {
-        boolean exists = concertService.checkConcertExists(concertName);
-        return ApiResponse.success(exists);
+        return ApiResponse.success(concertService.checkConcertExists(concertName));
     }
 }

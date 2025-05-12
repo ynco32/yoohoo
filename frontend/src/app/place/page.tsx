@@ -6,22 +6,21 @@ import ArenaLoadingFallback from '@/app/sight/_components/ArenaLoadingFallback';
 
 interface PlacePageProps {
   searchParams: Promise<{
-    query?: string;
+    searchWord?: string;
   }>;
 }
 
 export default async function PlacePage({ searchParams }: PlacePageProps) {
-  // searchParams를 await로 처리
   const params = await searchParams;
 
   return (
     <div className={styles.container}>
       <Suspense fallback={null}>
-        <SearchSection defaultQuery={params.query} />
+        <SearchSection defaultQuery={params.searchWord} />
       </Suspense>
 
       <Suspense fallback={<ArenaLoadingFallback />}>
-        <ArenaSection searchQuery={params.query} />
+        <ArenaSection searchQuery={params.searchWord} />
       </Suspense>
     </div>
   );

@@ -11,6 +11,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { determineBackNavigation } from '@/lib/utils/navigation';
 import { ArenaInfo } from '@/types/arena';
 import Header from './Header';
+import { RootState, AppDispatch } from '@/store';
+import {
+  clearCurrentArena,
+  resetToDefaultMapView,
+} from '@/store/slices/arenaSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 // 헤더 컨텍스트 타입 정의
 interface HeaderContextType {
@@ -22,8 +28,8 @@ interface HeaderContextType {
   handleBack: () => void;
   isMenuOpen: boolean;
   setIsMenuOpen: (isOpen: boolean) => void;
-  setArenaInfo: (info: ArenaInfo | null) => void; // 경기장 정보 설정 함수
   setSeatDetail: (detail: string | null) => void; // 좌석 정보 설정 함수
+  handleArenaInfoClick: () => void; // 공연장 정보 클릭 핸들러 추가
 }
 
 // 기본값으로 컨텍스트 생성
@@ -36,8 +42,8 @@ export const HeaderContext = createContext<HeaderContextType>({
   handleBack: () => {},
   isMenuOpen: false,
   setIsMenuOpen: () => {},
-  setArenaInfo: () => {},
   setSeatDetail: () => {},
+  handleArenaInfoClick: () => {},
 });
 
 // 컨텍스트 사용을 위한 훅
@@ -58,11 +64,26 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
   ];
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);
-  const [arenaInfo, setArenaInfo] = useState<ArenaInfo | null>(null);
   const [seatDetail, setSeatDetail] = useState<string | null>(null);
+
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Redux에서 경기장 정보 가져오기
+  const arenaInfo = useSelector((state: RootState) => state.arena.currentArena);
+
   const hasHeader = !pagesWithoutHeader.includes(pathname);
+
+  // 경기장 정보 클릭 핸들러 - 현장 페이지만
+  const handleArenaInfoClick = () => {
+    // 시야 페이지에서는 동작하지 않도록
+    if (!pathname.startsWith('/place')) return;
+
+    // 지도 중심을 공연장 기본 위치로 리셋
+    dispatch(resetToDefaultMapView());
+  };
+
   // 경로 변경 추적
   useEffect(() => {
     // 이전 경로를 저장
@@ -78,19 +99,35 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
 
   // 경로에 따른 상세 정보 표시 여부 결정
   const updateDetailState = (path: string) => {
-    // 경로에 따라 shouldShowDetail 설정
-    // 예: /sight/[venueid] 형태의 경로에서 상세 정보 표시
-    if (path.match(/^\/sight\/[^\/]+$/)) {
+    if (path === '/place' || path === '/sight') {
+      setShouldShowDetail(false);
+      // 목록 페이지로 돌아갈 때 경기장 정보 유지 (새로고침 대비)
+    }
+    // /sight/[arenaId] - 구역 선택 페이지
+    else if (path.match(/^\/sight\/[^\/]+$/)) {
       setShouldShowDetail(true);
-      // 여기서는 예시로 설정하지만 실제로는 API 호출 등으로 데이터를 가져올 수 있음
-      // fetchVenueInfo(venueId);
-      setSeatDetail('12구역 34열 56번');
-    } else if (path.match(/^\/place\/[^\/]+$/)) {
+      setSeatDetail('시야 보기');
+    }
+    // /sight/[arenaId]/[sectionId] - 좌석 선택 페이지
+    else if (path.match(/^\/sight\/[^\/]+\/[^\/]+$/)) {
       setShouldShowDetail(true);
-      setSeatDetail('현장'); // 현장 페이지
+      // 경로에서 구역 정보 추출
+      const sectionId = path.split('/')[3];
+      const cleanSectionId = sectionId ? sectionId.substring(1) : '';
+      setSeatDetail(cleanSectionId ? `${cleanSectionId} 구역` : '좌석 선택');
+    }
+    // /place/[arenaId] - 현장 페이지
+    else if (path.match(/^\/place\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('현장');
     } else {
       setShouldShowDetail(false);
-      setArenaInfo(null);
+
+      // 완전히 다른 섹션으로 이동할 때만 초기화
+      const prevPath = sessionStorage.getItem('currentPath') || '';
+      if (!prevPath.startsWith('/place') && !prevPath.startsWith('/sight')) {
+        dispatch(clearCurrentArena());
+      }
     }
   };
 
@@ -164,8 +201,8 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     handleBack,
     isMenuOpen,
     setIsMenuOpen,
-    setArenaInfo,
     setSeatDetail,
+    handleArenaInfoClick,
   };
 
   return (

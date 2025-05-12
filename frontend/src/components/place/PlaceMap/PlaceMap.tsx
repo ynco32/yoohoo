@@ -5,10 +5,14 @@ import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './PlaceMap.module.scss';
 import useKakaoMap from '@/hooks/useKakaoMap';
 import IconButton from '@/components/common/IconButton/IconButton';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { updateMapSettings } from '@/store/slices/arenaSlice';
 
 interface PlaceMapProps {
   latitude: number;
   longitude: number;
+  zoom?: number;
 }
 
 const categoryItems = [
@@ -32,17 +36,64 @@ const dummyMarkers: Record<
   '공연 관련 시설': [{ name: '무대 입구', lat: 37.5193, lng: 127.1259 }],
 };
 
-export default function PlaceMap({ latitude, longitude }: PlaceMapProps) {
+export default function PlaceMap({
+  latitude,
+  longitude,
+  zoom = 3,
+}: PlaceMapProps) {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('화장실');
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null); // ✅ 현재 오버레이 저장
+  const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const userMarkerRef = useRef<kakao.maps.Marker | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+
   const { map } = useKakaoMap(mapRef, {
     center: { lat: latitude, lng: longitude },
-    level: 3,
+    level: zoom,
     maxLevel: 5,
     minLevel: 1,
   });
+
+  // 지도 이동 시 Redux 상태 업데이트 (사용자가 직접 움직일 때)
+  useEffect(() => {
+    if (!map) return;
+
+    const handleMapMove = () => {
+      const center = map.getCenter();
+      const level = map.getLevel();
+
+      dispatch(
+        updateMapSettings({
+          latitude: center.getLat(),
+          longitude: center.getLng(),
+          zoom: level,
+        })
+      );
+    };
+
+    // 지도 이동/줌 이벤트 리스너 등록
+    window.kakao.maps.event.addListener(map, 'dragend', handleMapMove);
+    window.kakao.maps.event.addListener(map, 'zoom_changed', handleMapMove);
+
+    return () => {
+      // 이벤트 리스너 제거
+      window.kakao.maps.event.removeListener(map, 'dragend', handleMapMove);
+      window.kakao.maps.event.removeListener(
+        map,
+        'zoom_changed',
+        handleMapMove
+      );
+    };
+  }, [map, dispatch]);
+
+  // Redux 상태가 변경될 때 지도 이동 (헤더 클릭 등)
+  useEffect(() => {
+    if (!map) return;
+
+    const center = new window.kakao.maps.LatLng(latitude, longitude);
+    map.setCenter(center);
+    map.setLevel(zoom);
+  }, [map, latitude, longitude, zoom]);
 
   // 내 위치 이동 함수
   const moveToMyLocation = () => {

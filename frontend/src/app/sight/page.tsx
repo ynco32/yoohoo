@@ -5,27 +5,23 @@ import SearchSection from './_components/SearchSection';
 import ArenaSection from './_components/ArenaSection';
 import ArenaLoadingFallback from './_components/ArenaLoadingFallback';
 
-type Params = Promise<{
-  searchParams: {
+interface SightPageProps {
+  searchParams: Promise<{
     searchWord?: string;
-  };
-}>;
+  }>;
+}
 
-export default async function SightPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ searchWord?: string }>;
-}) {
-  const { searchWord } = await searchParams;
+export default async function SightPage({ searchParams }: SightPageProps) {
+  const params = await searchParams;
 
   return (
     <div className={styles.container}>
       <Suspense fallback={null}>
-        <SearchSection defaultQuery={searchWord} />
+        <SearchSection defaultQuery={params.searchWord} />
       </Suspense>
 
       <Suspense fallback={<ArenaLoadingFallback />}>
-        <ArenaSection searchQuery={searchWord} />
+        <ArenaSection searchQuery={params.searchWord} />
       </Suspense>
     </div>
   );

@@ -2,7 +2,7 @@
   padding: 0 $spacing-md $spacing-lg;
   max-width: 430px;
   margin: 0 auto;
-  height: calc(100vh - 64px);
+  height: calc(100dvh - 64px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -123,17 +123,6 @@
 
 // 미디어 쿼리 추가 - 모바일 뷰
 @media (max-width: $breakpoint-sm) {
-  .container {
-    padding: $spacing-sm;
-  }
-
-  .mainMenu {
-    gap: $spacing-sm;
-  }
-
-  .menuItem {
-    padding: $spacing-sm;
-  }
 
   .label {
     font-size: $font-size-lg;

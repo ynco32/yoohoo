@@ -1,6 +1,6 @@
 .inputContainer {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .inputWrapper {
@@ -54,11 +54,38 @@
   }
 }
 
+.messageContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  padding: 0 4px;
+  min-height: 20px;
+}
+
+.messageWrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.message {
+  font-size: $font-size-xs;
+  margin: 0;
+}
+
 .errorMessage {
   color: #ff7171;
+}
+
+.successMessage {
+  color: #1dbf00;
+}
+
+.lengthIndicator {
   font-size: $font-size-xs;
-  margin: 4px 0 0 0;
-  padding-left: 4px;
+  color: #888;
+  margin-left: auto;
+  padding-left: 8px;
 }
 
 .disabled {

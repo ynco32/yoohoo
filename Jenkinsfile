@@ -342,7 +342,7 @@ pipeline {  // 파이프라인 정의 시작
                                 // 트래픽 조정
                                 sh """
                                     # 기존 upstream 블록의 weight 수정
-                                    sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=$((100-${percentage}))/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\$((100-${percentage}))/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     # 새로운 upstream 블록의 weight 수정
                                     sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=${percentage}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                     docker exec nginx nginx -t

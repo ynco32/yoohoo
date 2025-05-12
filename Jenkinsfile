@@ -322,8 +322,11 @@ pipeline {  // 파이프라인 정의 시작
                                 cp ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                 
                                 # 트래픽 설정 적용
-                                sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "/upstream ${BACKEND_CONTAINER_NAME} {/,/}/ s/weight=[0-9]\+/weight=90/" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME} {/,/}/ s/weight=[0-9]\+/weight=10/" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+
+                                sed -i '/upstream backend-dev {/,/}/ s/weight=[0-9]\+/weight=90/' dev.conf
+                                sed -i '/upstream backend-dev-new {/,/}/ s/weight=[0-9]\+/weight=10/' dev.conf
                                 
                                 # Nginx 설정 테스트
                                 docker exec nginx nginx -t
@@ -339,16 +342,14 @@ pipeline {  // 파이프라인 정의 시작
                             for (percentage in trafficPercentages) {
                                 echo "트래픽 ${percentage}%로 증가 중..."
                                 
-                                // 트래픽 조정
-                                sh """
-                                    sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                    docker exec nginx nginx -t
-                                    docker exec nginx nginx -s reload
-                                """
+                                # 트래픽 조정
+                                sed -i "/upstream ${BACKEND_CONTAINER_NAME} {/,/}/ s/weight=[0-9]\+/weight=${100-percentage}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME} {/,/}/ s/weight=[0-9]\+/weight=${percentage}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                docker exec nginx nginx -t
+                                docker exec nginx nginx -s reload
                                 
-                                // 15초 대기
-                                sleep 15
+                                // 10초 대기
+                                sleep 10
 
                                 // 백엔드 메트릭 체크
                                 def backendMetrics = checkBackendMetrics()
@@ -492,6 +493,11 @@ def rollbackDeployment() {
         # 새 버전 컨테이너 중지 및 삭제
         docker stop ${env.BACKEND_NEW_CONTAINER_NAME} ${env.FRONTEND_NEW_CONTAINER_NAME} || true
         docker rm ${env.BACKEND_NEW_CONTAINER_NAME} ${env.FRONTEND_NEW_CONTAINER_NAME} || true
+        
+        # 백업된 nginx 설정 파일 삭제
+        if [ -f "${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup" ]; then
+            rm "${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup"
+        fi
     """
 }
 
@@ -499,13 +505,13 @@ def rollbackDeployment() {
 def cleanupOldVersions() {
     sh """
         # 이전 버전 컨테이너 중지 및 삭제
-        if [ ! -z "${env.OLD_BACKEND_CONTAINER_NAME}" ]; then
-            docker stop ${env.OLD_BACKEND_CONTAINER_NAME} || true
-            docker rm ${env.OLD_BACKEND_CONTAINER_NAME} || true
+        if [ ! -z "${env.BACKEND_CONTAINER_NAME}" ]; then
+            docker stop ${env.BACKEND_CONTAINER_NAME} || true
+            docker rm ${env.BACKEND_CONTAINER_NAME} || true
         fi
-        if [ ! -z "${env.OLD_FRONTEND_CONTAINER_NAME}" ]; then
-            docker stop ${env.OLD_FRONTEND_CONTAINER_NAME} || true
-            docker rm ${env.OLD_FRONTEND_CONTAINER_NAME} || true
+        if [ ! -z "${env.FRONTEND_CONTAINER_NAME}" ]; then
+            docker stop ${env.FRONTEND_CONTAINER_NAME} || true
+            docker rm ${env.FRONTEND_CONTAINER_NAME} || true
         fi
         
         # 새 버전 컨테이너 이름 변경
@@ -525,6 +531,11 @@ def cleanupOldVersions() {
             -p 3002:3000 \
             --network app-network \
             ${env.FRONTEND_CONTAINER_NAME}
+            
+        # 백업된 nginx 설정 파일 삭제
+        if [ -f "${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup" ]; then
+            rm "${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup"
+        fi
     """
 }
 

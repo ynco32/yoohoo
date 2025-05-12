@@ -20,6 +20,7 @@ class ConcertInfoExtractor:
 - 공연장: {base_info.get('place', '정보 없음')}
 - 공연 기간: {base_info.get('date', '정보 없음')}
 - 아티스트: {base_info.get('artist', '정보 없음')}
+- 기타 정보: {base_info.get('content_text', '정보 없음')}
 """
 
         prompt = f"""

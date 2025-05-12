@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.conkiri.domain.notification.entity.MyConcert;
+import com.conkiri.domain.user.entity.User;
 
 public interface MyConcertRepository extends JpaRepository<MyConcert, Long> {
 
@@ -29,4 +30,6 @@ public interface MyConcertRepository extends JpaRepository<MyConcert, Long> {
 	List<MyConcert> findForEntranceNotification(
 		@Param("startTime") LocalDateTime startTime,
 		@Param("endTime") LocalDateTime endTime);
+
+	List<MyConcert> findByUser(User user);
 }

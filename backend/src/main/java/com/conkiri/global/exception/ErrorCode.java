@@ -88,7 +88,11 @@ public enum ErrorCode {
 	// 가수
 	ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "가수를 찾을 수 없습니다."),
 	ALREADY_EXIST_MY_ARTIST(HttpStatus.CONFLICT, "이미 등록한 가수입니다."),
-	MY_ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 가수를 찾을 수 없습니다.")
+	MY_ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 가수를 찾을 수 없습니다."),
+
+
+	//공연
+	CONCERT_DETAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "회차 정보를 찾을 수 없습니다");
 
 	;
 	private final HttpStatus httpStatus;

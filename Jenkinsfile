@@ -454,12 +454,12 @@ def checkBackendMetrics() {
     
     try {
         // 에러율 체크
-        def response = sh(script: "curl -s -w '%{http_code}' http://localhost:8081/api/actuator/health", returnStdout: true).trim()
+        def response = sh(script: "curl -s -w '%{http_code}' http://localhost:8085/api/actuator/health", returnStdout: true).trim()
         def statusCode = response.tokenize('\n').last()
         metrics.errorRate = (statusCode == '200') ? 0 : 1
         
         // 응답시간 체크
-        def responseTime = sh(script: "curl -s -w '%{time_total}' -o /dev/null http://localhost:8081/api/actuator/health", returnStdout: true).trim()
+        def responseTime = sh(script: "curl -s -w '%{time_total}' -o /dev/null http://localhost:8085/api/actuator/health", returnStdout: true).trim()
         metrics.responseTime = responseTime.toFloat()
         
         // 지표 검증

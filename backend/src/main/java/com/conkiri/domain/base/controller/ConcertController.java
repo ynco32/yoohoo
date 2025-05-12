@@ -17,13 +17,13 @@ import com.conkiri.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/concerts")
 public class ConcertController {
 
-	private final ConcertService concertService;
-
+    private final ConcertService concertService;
 	// 공연 목록 조회
 	@GetMapping
 	public ApiResponse<ConcertResponseDTO> getConcerts(
@@ -51,4 +51,13 @@ public class ConcertController {
 		concertService.setMyConcerts(request, user.getUser());
 		return ApiResponse.ofSuccess();
 	}
-}
+
+	@PostMapping
+	public ApiResponse<Long> createConcert(@Valid @RequestBody ConcertRequestDTO request) {
+		return ApiResponse.success(concertService.createConcert(request));
+	}
+
+	@GetMapping("/checkExists")
+	public ApiResponse<Boolean> checkConcertExists(@RequestParam String concertName) {
+		return ApiResponse.success(concertService.checkConcertExists(concertName));
+	}

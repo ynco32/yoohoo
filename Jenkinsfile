@@ -319,8 +319,8 @@ pipeline {  // 파이프라인 정의 시작
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''
                                 
-                            # 초기 트래픽 설정 (90:10)
                             sh """
+                                # 초기 트래픽 설정 (90:10)
                                 # Nginx 설정 파일 백업
                                 cp ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                 

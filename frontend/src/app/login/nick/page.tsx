@@ -2,30 +2,20 @@
 import TextInput from '@/components/common/TextInput/TextInput';
 import ProgressBar from '@/components/common/ProgressBar/ProgressBar';
 import styles from './page.module.scss';
-import { useState } from 'react';
 import Button from '@/components/common/Button/Button';
+import { useNickname } from '@/hooks/useNickname';
 
 export default function NicknamePage() {
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState('');
-  const maxLength = 50;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNickname(value);
-    if (value === '눈사람') {
-      setError('이미 있는 닉네임은 사용할 수 없어요.');
-    } else {
-      setError('');
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nickname || error) return;
-    // 전달하기 동작 구현
-    alert('닉네임 전달: ' + nickname);
-  };
+  const {
+    nickname,
+    error,
+    isChecked,
+    isAvailable,
+    isLoading,
+    handleChange,
+    handleCheck,
+    handleSubmit,
+  } = useNickname();
 
   return (
     <div className={styles.container}>
@@ -38,16 +28,33 @@ export default function NicknamePage() {
         <div className={styles.form}>
           <TextInput
             value={nickname}
-            onChange={(value) => setNickname(value)}
-            maxLength={maxLength}
+            onChange={handleChange}
+            maxLength={11}
             placeholder='닉네임을 입력해주세요'
             className={styles.input}
+            errorMessage={!isAvailable ? error : ''}
+            successMessage={
+              isAvailable && isChecked ? '사용가능한 닉네임이에요!' : ''
+            }
+            disabled={isLoading}
           />
-          <Button
-            children={'전달하기'}
-            className={styles.submitBtn}
-            onClick={handleSubmit}
-          />
+          {!isAvailable || !isChecked ? (
+            <Button
+              children={isLoading ? '확인 중...' : '중복확인'}
+              variant='outline'
+              className={styles.button}
+              onClick={handleCheck}
+              disabled={nickname.length < 2 || !!error || isLoading}
+            />
+          ) : (
+            <Button
+              children={isLoading ? '처리 중...' : '확인'}
+              variant='primary'
+              className={styles.button}
+              onClick={handleSubmit}
+              disabled={isLoading}
+            />
+          )}
         </div>
       </div>
     </div>

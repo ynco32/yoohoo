@@ -4,9 +4,9 @@ import styles from './page.module.scss';
 import { useState } from 'react';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import ConcertCard from '@/components/common/ConcertCard/ConcertCard';
-import BottomSheet from '@/components/common/BottonSheet/BottomSheet';
-import ConcertSeatForm from '@/app/login/concert/ConcertSeatForm';
 import Button from '@/components/common/Button/Button';
+import { ConfirmModal } from '@/components/common/ConfirmModal/ConfirmModal';
+import { DateSelectionModal } from '@/components/auth/DateSelectionModal/DateSelectionModal';
 
 export default function NicknamePage() {
   const artists = [
@@ -26,43 +26,94 @@ export default function NicknamePage() {
   ];
 
   const [selected, setSelected] = useState<number[]>([]);
-  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
-  const [selectedConcert, setSelectedConcert] = useState<{
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [selectedConcertForDate, setSelectedConcertForDate] = useState<{
     id: number;
     name: string;
   } | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [notifiedConcerts, setNotifiedConcerts] = useState<number[]>([]);
+  const [selectedDatesMap, setSelectedDatesMap] = useState<
+    Record<number, string[]>
+  >({});
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [concertToDeselect, setConcertToDeselect] = useState<number | null>(
+    null
+  );
 
   const handleSelect = (id: number) => {
+    if (selected.includes(id) && selectedDatesMap[id]?.length > 0) {
+      setConcertToDeselect(id);
+      setIsConfirmModalOpen(true);
+      return;
+    }
+
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
-  const handleComplete = () => {
-    // 선택 완료 버튼의 동작 제거
-  };
-
   const handleSeatInfoClick = (id: number) => {
     const concert = artists.find((a) => a.id === id);
     if (concert) {
-      setSelectedConcert(concert);
-      setBottomSheetOpen(true);
+      setSelectedConcertForDate(concert);
+      setIsDateModalOpen(true);
     }
   };
 
-  const handleCancel = () => {
-    setBottomSheetOpen(false);
-    setSelectedConcert(null);
+  const handleCloseModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsDateModalOpen(false);
+      setIsClosing(false);
+      setSelectedConcertForDate(null);
+    }, 300);
   };
 
-  const handleSave = (data: { section: string; row: string; seat: string }) => {
-    // 저장 로직 (예: 서버 전송 또는 상태 저장)
-    console.log('저장된 값:', {
-      concert: selectedConcert?.name,
-      ...data,
-    });
-    setBottomSheetOpen(false);
-    setSelectedConcert(null);
+  const handleDateConfirm = (selectedDates: string[]) => {
+    if (selectedConcertForDate) {
+      setNotifiedConcerts((prev) => {
+        if (!prev.includes(selectedConcertForDate.id)) {
+          return [...prev, selectedConcertForDate.id];
+        }
+        return prev;
+      });
+      setSelectedDatesMap((prev) => ({
+        ...prev,
+        [selectedConcertForDate.id]: selectedDates,
+      }));
+    }
+    handleCloseModal();
+  };
+
+  const handleReselect = (id: number) => {
+    setNotifiedConcerts((prev) => prev.filter((concertId) => concertId !== id));
+    setSelectedConcertForDate(
+      artists.find((artist) => artist.id === id) || null
+    );
+    setIsDateModalOpen(true);
+  };
+
+  const handleConfirmDeselect = () => {
+    if (concertToDeselect !== null) {
+      setSelected((prev) => prev.filter((item) => item !== concertToDeselect));
+      setSelectedDatesMap((prev) => {
+        const newMap = { ...prev };
+        delete newMap[concertToDeselect];
+        return newMap;
+      });
+      setConcertToDeselect(null);
+    }
+    setIsConfirmModalOpen(false);
+  };
+
+  const handleCancelDeselect = () => {
+    setConcertToDeselect(null);
+    setIsConfirmModalOpen(false);
+  };
+
+  const handleComplete = () => {
+    // 선택 완료 버튼의 동작 제거
   };
 
   return (
@@ -76,7 +127,7 @@ export default function NicknamePage() {
       <div className={styles.content}>
         <div className={styles.titleContainer}>
           <h2 className={styles.title}>콘서트에 갈 예정이 있나요?</h2>
-          <p className={styles.desc}>콘서트 현장정보를 안내받을 수 있어요</p>
+          <p className={styles.desc}>티케팅 일정 알림을 보내드려요!</p>
         </div>
         <div className={styles.form}>
           <SearchBar />
@@ -92,31 +143,43 @@ export default function NicknamePage() {
               onClick={() => handleSelect(artist.id)}
               isSelected={selected.includes(artist.id)}
               onSeatInfoClick={() => handleSeatInfoClick(artist.id)}
+              isNotified={selectedDatesMap[artist.id]?.length > 0}
+              onReselect={() => handleReselect(artist.id)}
             />
           ))}
         </div>
       </div>
-      {!bottomSheetOpen && (
+      {isDateModalOpen && (
+        <DateSelectionModal
+          isClosing={isClosing}
+          selectedConcert={selectedConcertForDate}
+          initialSelectedDates={
+            selectedConcertForDate
+              ? selectedDatesMap[selectedConcertForDate.id] || []
+              : []
+          }
+          onClose={handleCloseModal}
+          onConfirm={handleDateConfirm}
+        />
+      )}
+      {!isDateModalOpen && (
         <div
           className={`${styles.buttonContainer} ${selected.length > 0 ? styles.visible : ''}`}
         >
           <Button
-            children={'선택완료'}
+            children={'티켓팅 알림받기'}
             className={styles.submitBtn}
             onClick={handleComplete}
             disabled={selected.length === 0}
           />
         </div>
       )}
-      <BottomSheet isOpen={bottomSheetOpen} onClose={handleCancel}>
-        {selectedConcert && (
-          <ConcertSeatForm
-            concertName={selectedConcert.name}
-            onCancel={handleCancel}
-            onSave={handleSave}
-          />
-        )}
-      </BottomSheet>
+      {isConfirmModalOpen && (
+        <ConfirmModal
+          onConfirm={handleConfirmDeselect}
+          onCancel={handleCancelDeselect}
+        />
+      )}
     </div>
   );
 }

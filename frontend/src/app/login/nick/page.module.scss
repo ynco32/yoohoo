@@ -42,25 +42,8 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
 }
 
-.submitBtn {
-  width: 100%;
-  background: #1976ed;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 0;
-  margin-top: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.submitBtn:disabled {
-  background: #e6f0fa;
-  color: #b0b8c1;
-  cursor: not-allowed;
+.button {
+  margin-top: 16px;
 }

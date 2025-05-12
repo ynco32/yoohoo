@@ -252,13 +252,8 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
-                            string(credentialsId: 'FIREBASE_PROJECT_ID', variable: 'FIREBASE_PROJECT_ID'),
-                            string(credentialsId: 'FIREBASE_CLIENT_EMAIL', variable: 'FIREBASE_CLIENT_EMAIL'),
-                            string(credentialsId: 'FIREBASE_SECRET_KEY', variable: 'FIREBASE_SECRET_KEY'),
                             string(credentialsId: 'RABBITMQ_USERNAME', variable: 'RABBITMQ_USERNAME'),
-                            string(credentialsId: 'RABBITMQ_PASSWORD', variable: 'RABBITMQ_PASSWORD'),
-                            string(credentialsId: 'FIREBASE_CLIENT_ID', variable: 'FIREBASE_CLIENT_ID'),
-                            string(credentialsId: 'FIREBASE_SECRET_KEY_ID', variable: 'FIREBASE_SECRET_KEY_ID'),
+                            string(credentialsId: 'RABBITMQ_PASSWORD', variable: 'RABBITMQ_PASSWORD')
                         ])
                         
                         // 브랜치별 추가 credentials
@@ -308,13 +303,8 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
                                     --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
-                                    --build-arg FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID \
-                                    --build-arg FIREBASE_CLIENT_EMAIL=$FIREBASE_CLIENT_EMAIL \
-                                    --build-arg FIREBASE_SECRET_KEY=$FIREBASE_SECRET_KEY \
                                     --build-arg RABBITMQ_USERNAME=$RABBITMQ_USERNAME \
-                                    --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
-                                    --build-arg FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID \
-                                    --build-arg FIREBASE_SECRET_KEY_ID=$FIREBASE_SECRET_KEY_ID
+                                    --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD
 
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''

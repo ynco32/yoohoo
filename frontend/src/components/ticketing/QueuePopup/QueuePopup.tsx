@@ -1,24 +1,27 @@
+'use client';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 import styles from './QueuePopup.module.scss';
 import CloseIcon from '@/assets/icons/close.svg';
 
+// Props에서 Redux로 가져올 속성들은 제거
 interface QueuePopupProps {
   isOpen: boolean;
   title: string;
   onClose: () => void;
-  queueNumber: string | number;
-  behindMe: number | string;
-  expectedTime: number; //4시간 58분 29초
 }
 
 export default function QueuePopup({
   title,
   onClose,
-  queueNumber,
-  behindMe,
-  expectedTime,
   isOpen,
 }: QueuePopupProps) {
-  if (!isOpen) return null; // isOpen 이 거짓이면 아무것도 리턴 안 함.
+  // Redux에서 상태 가져오기
+  const { queueNumber, waitingTime, peopleBehind } = useSelector(
+    (state: RootState) => state.queue
+  );
+
+  if (!isOpen) return null;
 
   const timeFormat = (expectedSeconds: number): string => {
     const hours = Math.floor(expectedSeconds / 3600);
@@ -34,7 +37,7 @@ export default function QueuePopup({
     }
   };
 
-  const expectedTimeInForm = timeFormat(expectedTime);
+  const expectedTimeInForm = timeFormat(waitingTime); // Redux에서 가져온 waitingTime 사용
 
   return (
     // 검은 배경
@@ -55,7 +58,7 @@ export default function QueuePopup({
           <p>좌석 선택 진입 중</p>
           <p className={styles.queueNumber}>내 대기 순서 {queueNumber}번째</p>
           <p>
-            뒤에 {behindMe}명 / {expectedTimeInForm} 소요 예상
+            뒤에 {peopleBehind}명 / {expectedTimeInForm} 소요 예상
           </p>
         </div>
         <div className={styles.footer}>

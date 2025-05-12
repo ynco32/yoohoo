@@ -29,4 +29,13 @@ public class ConcertDetail {
 
 	@Column(name = "start_time", nullable = false)
 	private LocalDateTime startTime;
+
+	private ConcertDetail(Concert concert, LocalDateTime startTime) {
+		this.concert = concert;
+		this.startTime = startTime;
+	}
+
+	public static ConcertDetail of(Concert concert, LocalDateTime startTime) {
+		return new ConcertDetail(concert, startTime);
+	}
 }

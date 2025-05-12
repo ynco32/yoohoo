@@ -25,4 +25,12 @@ public class Artist {
 	@Column(name = "photo_url", length = 200)
 	private String photoUrl;
 
+	private Artist(String artistName, String photoUrl) {
+		this.artistName = artistName;
+		this.photoUrl = photoUrl;
+	}
+
+	public static Artist of(String artistName, String photoUrl) {
+		return new Artist(artistName, photoUrl);
+	}
 }

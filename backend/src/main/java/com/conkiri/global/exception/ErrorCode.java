@@ -85,6 +85,9 @@ public enum ErrorCode {
 	MESSAGE_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "메시지 큐 처리 중 오류가 발생했습니다."),
 	NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림이 존재하지 않습니다."),
 
+	// 콘서트 정보 저장
+	RESOURCE_NOT_FOUND(HttpStatus.BAD_REQUEST, "공연장 정보가 없습니다.")
+
 	// 가수
 	ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "가수를 찾을 수 없습니다."),
 	ALREADY_EXIST_MY_ARTIST(HttpStatus.CONFLICT, "이미 등록한 가수입니다."),

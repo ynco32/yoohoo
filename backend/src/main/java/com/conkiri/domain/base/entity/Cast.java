@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cast {
-
 	@Id
 	@Column(name = "cast_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +28,14 @@ public class Cast {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "artist_id", nullable = false)
 	private Artist artist;
+
+	private Cast(Concert concert, Artist artist) {
+		this.concert = concert;
+		this.artist = artist;
+	}
+
+	public static Cast of(Concert concert, Artist artist) {
+		return new Cast(concert, artist);
+	}
 }
+

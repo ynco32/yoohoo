@@ -1,30 +1,54 @@
 package com.conkiri.domain.base.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.conkiri.domain.base.dto.request.ConcertListRequestDTO;
+import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.service.ConcertService;
+import com.conkiri.global.auth.token.UserPrincipal;
+import com.conkiri.global.common.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/concert")
+@RequestMapping("/api/v1/concerts")
 public class ConcertController {
 
 	private final ConcertService concertService;
 
-	/**
-	 * 콘서트 목록 조회
-	 * @param concertSearch
-	 * @param lastConcertId
-	 * @return
-	 */
-	// @GetMapping
-	// public ApiResponse<ConcertResponseDTO> getConcertList(
-	// 	@RequestParam(value = "value", required = false) String concertSearch,
-	// 	@RequestParam(value = "last", required = false) Long lastConcertId) {
-	//
-	// 	return ApiResponse.success(concertService.getConcertList(concertSearch, lastConcertId));
-	// }
+	// 공연 목록 조회
+	@GetMapping
+	public ApiResponse<ConcertResponseDTO> getConcerts(
+		@RequestParam(value = "last", required = false) Long lastConcertDetailId,
+		@RequestParam(value = "search", required = false) String searchWord,
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		return ApiResponse.success(concertService.getConcerts(lastConcertDetailId, searchWord, user.getUser()));
+	}
+
+	// 내 공연 목록 조회
+	@GetMapping("/my")
+	public ApiResponse<ConcertResponseDTO> getMyConcerts(
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		return ApiResponse.success(concertService.getMyConcerts(user.getUser()));
+	}
+
+	// 내 공연 설정
+	@PutMapping("/my")
+	public ApiResponse<Void> setMyConcerts(
+		@Valid @RequestBody ConcertListRequestDTO request,
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		concertService.setMyConcerts(request, user.getUser());
+		return ApiResponse.ofSuccess();
+	}
 }

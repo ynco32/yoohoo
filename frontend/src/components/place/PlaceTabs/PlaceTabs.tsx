@@ -49,6 +49,7 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
             latitude={mapSettings?.latitude || arenaInfo.latitude}
             longitude={mapSettings?.longitude || arenaInfo.longitude}
             zoom={mapSettings?.zoom}
+            arenaId={arenaIdNum}
           />
         )}
         {activeTab === 1 && <PlaceChat arenaId={arenaIdNum} />}

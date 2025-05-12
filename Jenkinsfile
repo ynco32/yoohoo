@@ -341,6 +341,7 @@ pipeline {  // 파이프라인 정의 시작
                                 
                                 // 트래픽 조정
                                 sh """
+                                    #!/bin/bash
                                     if [ ${percentage} -eq 100 ]; then
                                         # 기존 컨테이너 server 라인 주석 처리
                                         sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/^\\(\\s*server.*\\)/#\\1/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf

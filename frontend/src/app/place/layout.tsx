@@ -1,5 +1,5 @@
 import styles from './layout.module.scss';
-export default function SightLayout({
+export default function PlaceLayout({
   children,
 }: {
   children: React.ReactNode;

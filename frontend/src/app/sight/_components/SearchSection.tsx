@@ -1,6 +1,6 @@
 // app/sight/components/SearchSection.tsx
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import styles from '../page.module.scss';
 
@@ -13,6 +13,7 @@ export default function SearchSection({
 }: SearchSectionProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const handleSearch = (query: string) => {
     // API 호출을 위해 URL 파라미터 업데이트
@@ -22,7 +23,7 @@ export default function SearchSection({
     } else {
       params.delete('searchWord');
     }
-    router.push(`/sight?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (

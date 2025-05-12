@@ -32,9 +32,9 @@ export function determineBackNavigation(
     return handleSightBack(pathSegments);
   }
 
-  // sharing 경로 처리
-  if (pathSegments[0] === 'sharing') {
-    return handleSharingBack(pathSegments, previousPath);
+  // place 경로 처리
+  if (pathSegments[0] === 'place') {
+    return handlePlaceBack(pathSegments, previousPath);
   }
 
   // 루트 레벨 페이지 처리
@@ -80,10 +80,6 @@ function handleTicketingBack(pathSegments: string[]): NavigationAction {
  * sight 경로에서의 뒤로가기 동작 처리
  */
 function handleSightBack(pathSegments: string[]): NavigationAction {
-  // /sight/[arenaid]/[stageType] 경로에서는 바로 /sight로 이동
-  if (pathSegments.length === 3) {
-    return { type: 'push', path: '/sight' };
-  }
 
   // 기본적으로는 한 단계 위로 이동
   if (pathSegments.length > 1) {
@@ -96,23 +92,18 @@ function handleSightBack(pathSegments: string[]): NavigationAction {
 }
 
 /**
- * sharing 경로에서의 뒤로가기 동작 처리
+ * place 경로에서의 뒤로가기 동작 처리
  */
-function handleSharingBack(
+function handlePlaceBack(
   pathSegments: string[],
   previousPath: string
 ): NavigationAction {
-  // sharing 상세페이지에서의 뒤로가기 처리
-  if (pathSegments.length >= 3) {
-    // 이전 경로가 mypage였다면 mypage로 이동
-    if (previousPath.startsWith('/mypage')) {
-      return { type: 'push', path: '/mypage/sharing' };
-    }
-    // 그 외에는 나눔 지도로 이동
-    const concertId = pathSegments[1];
-    return { type: 'push', path: `/sharing/${concertId}` };
+  // place 상세페이지에서의 뒤로가기 처리
+  if (pathSegments.length >= 2) {
+    // 상세페이지에서 공연장 목록 페이지로 이동
+    return { type: 'push', path: `/place` };
   }
 
-  // sharing 루트 경로에서는 메인으로
+  // 루트 경로에서는 메인으로
   return { type: 'push', path: '/main' };
 }

@@ -339,7 +339,7 @@ pipeline {  // 파이프라인 정의 시작
                             for (percentage in trafficPercentages) {
                                 echo "트래픽 ${percentage}%로 증가 중..."
                                 
-                                # 트래픽 조정
+                                // 트래픽 조정
                                 sed -i "/upstream ${BACKEND_CONTAINER_NAME} {/,/}/ s/weight=[0-9]*/weight=${100-percentage}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                 sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME} {/,/}/ s/weight=[0-9]*/weight=${percentage}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
                                 docker exec nginx nginx -t

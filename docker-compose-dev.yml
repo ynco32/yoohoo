@@ -6,7 +6,7 @@ services:
     # container_name: backend-dev
     build: ./backend
     ports:
-      - "8085:8080"
+      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - TZ=Asia/Seoul

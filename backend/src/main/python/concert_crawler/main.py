@@ -8,7 +8,7 @@ from crawler.crawler_factory import CrawlerFactory
 
 def main():
     # 크롤링할 사이트 목록
-    sites = ["interpark"] #, "melon", "yes24", "coupang" 나중에 추가
+    sites = ["interpark", "melon"] # "interpark", "melon", "yes24", "coupang" 나중에 추가
     
     for site in sites:
         try:

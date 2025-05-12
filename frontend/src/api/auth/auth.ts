@@ -10,8 +10,12 @@ export const checkNickname = async (nickname: string) => {
     return response.data.data;
   } catch (error: any) {
     const errorResponse = error.response?.data as ApiResponse<null>;
+    const statusCode = error.response?.status;
     if (errorResponse?.error) {
-      throw errorResponse.error;
+      throw {
+        ...errorResponse.error,
+        statusCode,
+      };
     }
   }
 };
@@ -25,8 +29,12 @@ export const postNickname = async (nickname: string) => {
     return response.data;
   } catch (error: any) {
     const errorResponse = error.response?.data as ApiResponse<null>;
+    const statusCode = error.response?.status;
     if (errorResponse?.error) {
-      throw errorResponse.error;
+      throw {
+        ...errorResponse.error,
+        statusCode,
+      };
     }
   }
 };
@@ -39,8 +47,12 @@ export const checkLogin = async () => {
     return response.data;
   } catch (error: any) {
     const errorResponse = error.response?.data as ApiResponse<null>;
+    const statusCode = error.response?.status;
     if (errorResponse?.error) {
-      throw errorResponse.error;
+      throw {
+        ...errorResponse.error,
+        statusCode,
+      };
     }
   }
 };

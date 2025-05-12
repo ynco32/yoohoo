@@ -63,7 +63,13 @@ export const useNickname = (): UseNicknameReturn => {
         setIsChecked(true);
       }
     } catch (error) {
-      const apiError = error as ExceptionResponse;
+      const apiError = error as ExceptionResponse & { statusCode?: number };
+      if (apiError.statusCode === 401) {
+        alert('로그인이 필요합니다.');
+        router.replace('/login');
+        return;
+      }
+
       if (apiError.code === 'ERROR_NICKNAME_LENGTH') {
         alert(apiError.message);
         setError(apiError.message);
@@ -73,6 +79,9 @@ export const useNickname = (): UseNicknameReturn => {
       } else if (apiError.code === 'DUPLICATE_NICKNAME') {
         alert(apiError.message);
         setError(apiError.message);
+      } else if (apiError.statusCode === 500) {
+        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       } else {
         alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
         setError('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
@@ -93,7 +102,13 @@ export const useNickname = (): UseNicknameReturn => {
       await postNickname(nickname);
       router.replace('/login/artist');
     } catch (error) {
-      const apiError = error as ExceptionResponse;
+      const apiError = error as ExceptionResponse & { statusCode?: number };
+      if (apiError.statusCode === 401) {
+        alert('로그인이 필요합니다.');
+        router.replace('/login');
+        return;
+      }
+
       if (apiError.code === 'ERROR_NICKNAME_LENGTH') {
         alert(apiError.message);
         setError(apiError.message);
@@ -103,6 +118,9 @@ export const useNickname = (): UseNicknameReturn => {
       } else if (apiError.code === 'DUPLICATE_NICKNAME') {
         alert(apiError.message);
         setError(apiError.message);
+      } else if (apiError.statusCode === 500) {
+        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       } else {
         alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
         setError('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');

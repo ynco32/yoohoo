@@ -343,17 +343,17 @@ pipeline {  // 파이프라인 정의 시작
                                 sh """
                                     if [ ${percentage} -eq 100 ]; then
                                         # 기존 컨테이너 server 라인 주석 처리
-                                        sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/^\\(\\s*server.*\\)/#\\1/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                        sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/^\\(\\s*server.*\\)/#\\1/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
                                         # 새 컨테이너 weight=100으로 변경
-                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=100/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=100/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
                                     else
                                         # 기존 upstream 블록의 weight 수정 (0이 되지 않도록 최소 1)
-                                        old_weight=$((100-${percentage}))
+                                        old_weight=\$((100-${percentage}))
                                         new_weight=${percentage}
-                                        if [ $old_weight -le 0 ]; then old_weight=1; fi
-                                        if [ $new_weight -le 0 ]; then new_weight=1; fi
-                                        sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=${old_weight}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=${new_weight}/" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                        if [ \$old_weight -le 0 ]; then old_weight=1; fi
+                                        if [ \$new_weight -le 0 ]; then new_weight=1; fi
+                                        sed -i "/upstream ${BACKEND_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${old_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
+                                        sed -i "/upstream ${BACKEND_NEW_CONTAINER_NAME}/,/}/ s/weight=[0-9]*/weight=\${new_weight}/" \${env.NGINX_CONF_PATH}/\${BRANCH_NAME}.conf
                                     fi
                                     docker exec nginx nginx -t
                                     docker exec nginx nginx -s reload

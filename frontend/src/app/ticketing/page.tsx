@@ -1,5 +1,6 @@
 import styles from './page.module.scss';
 import CardButton from '@/components/common/CardButton/CardButton';
+import RealModeButton from '@/components/ticketing/RealModeButton/RealModeButton';
 
 export default function TicketingPage() {
   return (
@@ -35,27 +36,15 @@ export default function TicketingPage() {
           />
         </div>
         <div className={styles.eventWrapper}>
-          <div className={styles.eventCard}>
-            <div className={styles.eventImageContainer}>
-              <CardButton
-                imgSrc='/images/event_banner.png'
-                imgAlt='이벤트'
-                href='/event/uaena-day'
-                size='small'
-                className={styles.eventIcon}
-              />
-            </div>
-            <div className={styles.eventInfo}>
-              <span className={styles.eventLabel}>
-                아이유: 더 워너 UAENA DAY
-              </span>
-              <div className={styles.eventDetails}>
-                <span className={styles.eventDate}>4/26 토요일</span>
-                <span className={styles.eventTime}>20:00</span>
-              </div>
-              <span className={styles.eventStatus}>실전 연습 오픈!</span>
-            </div>
-          </div>
+          <RealModeButton
+            imgSrc='/images/event_banner.png'
+            imgAlt='이벤트'
+            href='/ticketing/real'
+            title='아이유: 더 워너 UAENA DAY'
+            date='4/26 토요일'
+            time='20:00'
+            status='실전 연습 오픈!'
+          />
         </div>
       </div>
     </div>

@@ -47,9 +47,3 @@ export const TICKETING_ERRORS = {
     message: '좌석 정보를 불러오는데 실패했습니다.',
   },
 } as const;
-
-// 루트 스테이트 타입 (스토어 구성에 따라 확장 가능)
-export interface RootState {
-  ticketingSeats: TicketingSeatState;
-  // 다른 상태들...
-}

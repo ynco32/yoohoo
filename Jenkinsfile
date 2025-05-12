@@ -42,20 +42,41 @@ pipeline {  // 파이프라인 정의 시작
             }
         }
 
-        // stage('Check Changes') {
-        //     steps {
-        //         script {
-        //             // 변경된 파일 목록 가져오기
-        //             def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD || echo "initial commit"', returnStdout: true).trim()
-
-        //             env.FRONTEND_CHANGES = changedFiles.contains('frontend/') ? 'true' : 'false'
-        //             env.BACKEND_CHANGES = changedFiles.contains('backend/') ? 'true' : 'false'
-
-        //             echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
-        //             echo "Backend 변경 여부: ${BACKEND_CHANGES}"
-        //         }
-        //     }
-        // }
+        stage('Check Changes') {
+            steps {
+                script {
+                    try {
+                        // 초기 커밋인지 확인
+                        def isInitialCommit = sh(script: 'git rev-parse --verify HEAD^ 2>/dev/null || echo "initial"', returnStdout: true).trim() == 'initial'
+                        
+                        if (isInitialCommit) {
+                            // 초기 커밋의 경우 모든 파일을 변경된 것으로 간주
+                            env.FRONTEND_CHANGES = 'true'
+                            env.BACKEND_CHANGES = 'true'
+                        } else {
+                            // 변경된 파일 목록 가져오기
+                            def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD', returnStdout: true).trim().split('\n')
+                            
+                            // 정확한 경로 매칭을 위한 정규식 패턴
+                            def frontendPattern = ~/^frontend\//
+                            def backendPattern = ~/^backend\//
+                            
+                            // 변경 여부 확인
+                            env.FRONTEND_CHANGES = changedFiles.any { it =~ frontendPattern } ? 'true' : 'false'
+                            env.BACKEND_CHANGES = changedFiles.any { it =~ backendPattern } ? 'true' : 'false'
+                        }
+                        
+                        echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
+                        echo "Backend 변경 여부: ${BACKEND_CHANGES}"
+                    } catch (Exception e) {
+                        echo "변경 사항 확인 중 오류 발생: ${e.getMessage()}"
+                        // 오류 발생 시 안전하게 모든 변경사항이 있다고 가정
+                        env.FRONTEND_CHANGES = 'true'
+                        env.BACKEND_CHANGES = 'true'
+                    }
+                }
+            }
+        }
         
         stage('Build') {  // 빌드 단계
             failFast true  // 하나라도 실패하면 전체 중단

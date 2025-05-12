@@ -27,7 +27,7 @@ export const useWebSocketQueue = () => {
       return;
     }
     const client = new Client({
-      brokerURL: 'wss://i12b207.p.ssafy.io/ticketing-melon',
+      brokerURL: 'wss://conkiri.shop/ticketing-melon',
       connectHeaders: {
         Authorization: `Bearer ${getAccessToken()}`,
       },

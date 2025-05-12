@@ -1,13 +1,6 @@
 pipeline {  // 파이프라인 정의 시작
 
     agent any
-
-/*
-1. BRANCH_NAME 변수 설정
-2. DEPLOY_ENV 변수 설정
-3. ddukdoc 으로 되어있는 부분 확인해서 고치기
-4. 컨테이너 이름 정해놓기
-*/
     
     environment {  // 파이프라인에서 사용할 환경 변수 정의
         BRANCH_NAME = "${env.BRANCH_NAME ?: "dev"}"
@@ -29,6 +22,8 @@ pipeline {  // 파이프라인 정의 시작
                 sh 'id'
                 script {
                     echo "Current Branch: ${BRANCH_NAME}"
+                    // Git 저장소 권한 설정
+                    sh 'git config --global --add safe.directory /var/jenkins_home/workspace/dev'
                 }
             }
         }
@@ -42,28 +37,55 @@ pipeline {  // 파이프라인 정의 시작
             }
         }
 
-        // stage('Check Changes') {
-        //     steps {
-        //         script {
-        //             // 변경된 파일 목록 가져오기
-        //             def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD || echo "initial commit"', returnStdout: true).trim()
-
-        //             env.FRONTEND_CHANGES = changedFiles.contains('frontend/') ? 'true' : 'false'
-        //             env.BACKEND_CHANGES = changedFiles.contains('backend/') ? 'true' : 'false'
-
-        //             echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
-        //             echo "Backend 변경 여부: ${BACKEND_CHANGES}"
-        //         }
-        //     }
-        // }
+        stage('Check Changes') {
+            steps {
+                script {
+                    try {
+                        // Git 저장소 초기화 확인
+                        sh 'git config --global --add safe.directory /var/jenkins_home/workspace/dev'
+                        
+                        // 현재 커밋 해시 가져오기
+                        def currentCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                        
+                        // 이전 커밋이 있는지 확인
+                        def hasPreviousCommit = sh(script: 'git rev-parse HEAD^ 2>/dev/null || echo "no_previous"', returnStdout: true).trim()
+                        
+                        if (hasPreviousCommit == 'no_previous') {
+                            // 초기 커밋인 경우
+                            env.FRONTEND_CHANGES = 'true'
+                            env.BACKEND_CHANGES = 'true'
+                        } else {
+                            // 변경된 파일 목록 가져오기
+                            def changedFiles = sh(script: 'git diff --name-only HEAD^ HEAD', returnStdout: true).trim().split('\n')
+                            
+                            // 정확한 경로 매칭을 위한 정규식 패턴
+                            def frontendPattern = ~/^frontend\//
+                            def backendPattern = ~/^backend\//
+                            
+                            // 변경 여부 확인
+                            env.FRONTEND_CHANGES = changedFiles.any { it =~ frontendPattern } ? 'true' : 'false'
+                            env.BACKEND_CHANGES = changedFiles.any { it =~ backendPattern } ? 'true' : 'false'
+                        }
+                        
+                        echo "Frontend 변경 여부: ${FRONTEND_CHANGES}"
+                        echo "Backend 변경 여부: ${BACKEND_CHANGES}"
+                    } catch (Exception e) {
+                        echo "변경 사항 확인 중 오류 발생: ${e.getMessage()}"
+                        // 오류 발생 시 안전하게 모든 변경사항이 있다고 가정
+                        env.FRONTEND_CHANGES = 'true'
+                        env.BACKEND_CHANGES = 'true'
+                    }
+                }
+            }
+        }
         
         stage('Build') {  // 빌드 단계
             failFast true  // 하나라도 실패하면 전체 중단
             parallel {
                 stage('Frontend Build') {
-                    // when {
-                    //     expression { env.FRONTEND_CHANGES == 'true' }
-                    // }
+                    when {
+                        expression { env.FRONTEND_CHANGES == 'true' }
+                    }
                     agent {
                         docker {
                         image 'node:20.18'       // Node 20.x 공식 이미지 (npm 내장)
@@ -114,9 +136,9 @@ pipeline {  // 파이프라인 정의 시작
                 }
 
                 stage('Backend Build') {
-                    // when {
-                    //     expression { env.BACKEND_CHANGES == 'true' }
-                    // }
+                    when {
+                        expression { env.BACKEND_CHANGES == 'true' }
+                    }
                     steps {
                         script {
                             try {
@@ -142,7 +164,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('SonarQube Analysis - Backend') {
                     when {
                         allOf {
-                            // expression { return env.BACKEND_CHANGES == 'true' }
+                            expression { return env.BACKEND_CHANGES == 'true' }
                             expression { return env.BRANCH_NAME == 'dev' }
                         }
                     }
@@ -171,7 +193,7 @@ pipeline {  // 파이프라인 정의 시작
                 stage('SonarQube Analysis - Frontend') {
                     when {
                         allOf {
-                            // expression { return env.FRONTEND_CHANGES == 'true' }
+                            expression { return env.FRONTEND_CHANGES == 'true' }
                             expression { return env.BRANCH_NAME == 'dev' }
                         }
                     }
@@ -230,6 +252,13 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'S3_BUCKET', variable: 'S3_BUCKET'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
+                            string(credentialsId: 'FIREBASE_PROJECT_ID', variable: 'FIREBASE_PROJECT_ID'),
+                            string(credentialsId: 'FIREBASE_CLIENT_EMAIL', variable: 'FIREBASE_CLIENT_EMAIL'),
+                            string(credentialsId: 'FIREBASE_PRIVATE_KEY', variable: 'FIREBASE_PRIVATE_KEY'),
+                            string(credentialsId: 'RABBITMQ_USERNAME', variable: 'RABBITMQ_USERNAME'),
+                            string(credentialsId: 'RABBITMQ_PASSWORD', variable: 'RABBITMQ_PASSWORD'),
+                            string(credentialsId: 'FIREBASE_CLIENT_ID', variable: 'FIREBASE_CLIENT_ID'),
+                            string(credentialsId: 'FIREBASE_PRIVATE_KEY_ID', variable: 'FIREBASE_PRIVATE_KEY_ID')
                         ])
                         
                         // 브랜치별 추가 credentials
@@ -278,55 +307,72 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg REDIS_HOST=$REDIS_HOST \
                                     --build-arg NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY \
                                     --build-arg NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL \
-                                    --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+                                    --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+                                    --build-arg FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID \
+                                    --build-arg FIREBASE_CLIENT_EMAIL=$FIREBASE_CLIENT_EMAIL \
+                                    --build-arg FIREBASE_PRIVATE_KEY=$FIREBASE_PRIVATE_KEY \
+                                    --build-arg RABBITMQ_USERNAME=$RABBITMQ_USERNAME \
+                                    --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
+                                    --build-arg FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID \
+                                    --build-arg FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID
+
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
+                            '''
                                 
-                                # Nginx 설정 초기화
+                            # 초기 트래픽 설정 (90:10)
+                            sh """
+                                # Nginx 설정 파일 백업
                                 cp ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf.backup
                                 
-                            '''
-                                // # 초기 트래픽 설정 (90:10)
-                                // sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                // sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                                // docker exec nginx nginx -s reload
+                                # 트래픽 설정 적용
+                                sed -i "s/weight=[0-9]*/weight=90/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                sed -i "s/weight=[0-9]*/weight=10/g" ${NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                
+                                # Nginx 설정 테스트
+                                docker exec nginx nginx -t
+                                
+                                # Nginx 재시작
+                                docker exec nginx nginx -s reload
+                            """
                         }
 
                         // 타임아웃 설정과 함께 카나리 배포 수행
-                        // timeout(time: 1, unit: 'HOURS') {
-                        //     def trafficPercentages = [10, 30, 50, 80, 100]
-                        //     for (percentage in trafficPercentages) {
-                        //         echo "트래픽 ${percentage}%로 증가 중..."
+                        timeout(time: 1, unit: 'HOURS') {
+                            def trafficPercentages = [10, 30, 50, 80, 100]
+                            for (percentage in trafficPercentages) {
+                                echo "트래픽 ${percentage}%로 증가 중..."
                                 
-                        //         // 트래픽 조정
-                        //         sh """
-                        //             sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                        //             sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
-                        //             docker exec nginx nginx -s reload
-                        //         """
+                                // 트래픽 조정
+                                sh """
+                                    sed -i "s/weight=[0-9]*/weight=${100-percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    sed -i "s/weight=[0-9]*/weight=${percentage}/g" ${env.NGINX_CONF_PATH}/${BRANCH_NAME}.conf
+                                    docker exec nginx nginx -t
+                                    docker exec nginx nginx -s reload
+                                """
                                 
-                        //         // 15초 대기
-                        //         sleep 15
+                                // 15초 대기
+                                sleep 15
 
-                        //         // 백엔드 메트릭 체크
-                        //         def backendMetrics = checkBackendMetrics()
-                        //         echo "현재 백엔드 메트릭 - 에러율: ${backendMetrics.errorRate}, 응답시간: ${backendMetrics.responseTime}"
+                                // 백엔드 메트릭 체크
+                                def backendMetrics = checkBackendMetrics()
+                                echo "현재 백엔드 메트릭 - 에러율: ${backendMetrics.errorRate}, 응답시간: ${backendMetrics.responseTime}"
                                 
-                        //         // 프론트엔드 메트릭 체크
-                        //         def frontendMetrics = checkFrontendMetrics()
-                        //         echo "현재 프론트엔드 메트릭 - 에러율: ${frontendMetrics.errorRate}, 응답시간: ${frontendMetrics.responseTime}"
+                                // 프론트엔드 메트릭 체크
+                                def frontendMetrics = checkFrontendMetrics()
+                                echo "현재 프론트엔드 메트릭 - 에러율: ${frontendMetrics.errorRate}, 응답시간: ${frontendMetrics.responseTime}"
                                 
-                        //         if (!backendMetrics.isHealthy || !frontendMetrics.isHealthy) {
-                        //             echo "메트릭 이상 감지. 롤백을 시작합니다."
-                        //             rollbackDeployment()
-                        //             error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
-                        //         }
+                                if (!backendMetrics.isHealthy || !frontendMetrics.isHealthy) {
+                                    echo "메트릭 이상 감지. 롤백을 시작합니다."
+                                    rollbackDeployment()
+                                    error "트래픽 전환 과정 중 문제 발생. 롤백 수행"
+                                }
 
-                        //         // 100% 전환 완료 시 이전 버전 정리
-                        //         if (percentage == 100) {
-                        //             cleanupOldVersions()
-                        //         }
-                        //     }
-                        // }
+                                // 100% 전환 완료 시 이전 버전 정리
+                                if (percentage == 100) {
+                                    cleanupOldVersions()
+                                }
+                            }
+                        }
                     } catch (Exception e) {
                         env.FAILURE_STAGE = "Docker 빌드 및 배포"
                         env.FAILURE_MESSAGE = e.getMessage()
@@ -368,7 +414,7 @@ pipeline {  // 파이프라인 정의 시작
                                 "🔄 변경사항: ${changes}\n" +
                                 "🌐 환경: ${env.DEPLOY_ENV}\n" +
                                 "🔍 <${env.BUILD_URL}|상세 정보 보기>",
-                        endpoint: 'https://meeting.ssafy.com/hooks/yg5p1dezhiybjj96hkenybd9ca',
+                        endpoint: 'https://meeting.ssafy.com/hooks/x3y97jyiepfujyib9gh8fukgcw',
                         channel: '9fujkh75xfy57joc3tsof6eryc'
                 )
             }
@@ -395,7 +441,7 @@ pipeline {  // 파이프라인 정의 시작
                                 "📝 실패 내용: ${failMessage}\n" +
                                 "🌐 환경: ${env.DEPLOY_ENV}\n" +
                                 "🔍 <${env.BUILD_URL}|상세 정보 보기>",
-                        endpoint: 'https://meeting.ssafy.com/hooks/yg5p1dezhiybjj96hkenybd9ca',
+                        endpoint: 'https://meeting.ssafy.com/hooks/x3y97jyiepfujyib9gh8fukgcw',
                         channel: '9fujkh75xfy57joc3tsof6eryc'
                 )
             }

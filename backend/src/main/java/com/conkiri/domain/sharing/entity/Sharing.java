@@ -84,7 +84,7 @@ public class Sharing extends BaseTime {
 		this.user = user;
 	}
 
-	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, Concert concert, String photoUrl) {
+	public void update(SharingUpdateRequestDTO sharingUpdateRequestDTO, /*Concert concert,*/ String photoUrl) {
 		this.title = sharingUpdateRequestDTO.title() != null ? sharingUpdateRequestDTO.title() : this.title;
 		this.content = sharingUpdateRequestDTO.content() != null ? sharingUpdateRequestDTO.content() : this.content;
 		this.photoUrl = photoUrl != null ? photoUrl : this.photoUrl;

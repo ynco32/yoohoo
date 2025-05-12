@@ -13,11 +13,11 @@ import jakarta.persistence.EntityManager;
 @Repository
 public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 
-	private final JPAQueryFactory jpaQueryFactory;
-
-	public ConcertRepositoryCustomImpl(EntityManager entityManager) {
-		this.jpaQueryFactory = new JPAQueryFactory(entityManager);
-	}
+	// private final JPAQueryFactory jpaQueryFactory;
+	//
+	// public ConcertRepositoryCustomImpl(EntityManager entityManager) {
+	// 	this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+	// }
 
 	@Override
 	public ConcertResponseDTO findConcerts(LocalDateTime now, String concertSearch, Long lastConcertId,

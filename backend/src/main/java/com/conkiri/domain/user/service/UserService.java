@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final UserReadService userReadService;
 
 	public void updateFcmToken(User user, String fcmToken) {
 
@@ -28,8 +29,9 @@ public class UserService {
 	}
 
 
-	public void updateNickname(User user, String nickname) {
+	public void updateNickname(Long userId, String nickname) {
 
+		User user = userReadService.findUserByIdOrElseThrow(userId);
 		validateNicknameDuplicate(nickname);
 		user.updateNickname(nickname);
 	}

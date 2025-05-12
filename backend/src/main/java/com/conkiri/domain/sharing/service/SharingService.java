@@ -84,7 +84,7 @@ public class SharingService {
 
 		s3Service.deleteImage(sharing.getPhotoUrl());
 		String photoUrl = s3Service.uploadImage(file, "sharing");
-		sharing.update(sharingUpdateRequestDTO, concert, photoUrl);
+		sharing.update(sharingUpdateRequestDTO, /*concert,*/ photoUrl);
 	}
 
 	/**

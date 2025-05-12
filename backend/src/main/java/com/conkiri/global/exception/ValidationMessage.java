@@ -12,4 +12,5 @@ public final class ValidationMessage {
 	public static final String NICKNAME_NOT_EMPTY = "닉네임은 필수값 입니다.";
 	public static final String ERROR_NICKNAME_LENGTH = "닉네임은 2자 이상 10자 이하여야 합니다.";
 	public static final String ERROR_NICKNAME_FORMAT = "닉네임은 공백 없이 한글, 영문, 숫자만 가능합니다.";
+
 }

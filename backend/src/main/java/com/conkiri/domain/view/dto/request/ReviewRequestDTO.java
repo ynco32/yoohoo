@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 public record ReviewRequestDTO(
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) Long concertId,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String section,
-	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) Long rowLine,
+	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) String rowLine,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) Long columnLine,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) ArtistGrade artistGrade,
 	@NotNull(message = ValidationMessage.NULL_IS_NOT_ALLOWED) StageGrade stageGrade,

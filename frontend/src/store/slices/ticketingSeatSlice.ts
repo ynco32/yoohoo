@@ -1,13 +1,12 @@
-// redux/slices/ticketingSeatSlice.ts
+// store/slices/ticketingSeatSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { 
-  TicketingSeatProps, 
-  TicketingError, 
-  TicketingSeatState, 
+import {
+  TicketingSeatProps,
+  TicketingError,
+  TicketingSeatState,
   TICKETING_ERRORS,
-  RootState
-} from '@/types/ticketingSeats';
-
+} from '@/types/ticketingSeat';
+import { RootState } from '@/store/index';
 // 초기 상태
 const initialState: TicketingSeatState = {
   seats: [],
@@ -27,7 +26,7 @@ export const fetchSeatsByArea = createAsyncThunk<
   async (area: string, { rejectWithValue }) => {
     try {
       console.log('📦 좌석 정보 요청 시작:', area);
-      
+
       const response = await fetch(
         `/api/v1/ticketing/sections/seats?section=${area}`
       );
@@ -61,20 +60,20 @@ export const fetchSeatsByArea = createAsyncThunk<
 export const tryReserveSeat = createAsyncThunk<
   { seat: string },
   { section: string; seat: string },
-  { 
-    state: { ticketingSeats: TicketingSeatState };
+  {
+    state: RootState;
     rejectValue: TicketingError;
   }
 >(
-  'ticketingSeats/tryReserveSeat',
+  'ticketingSeat/tryReserveSeat',
   async (
     { section, seat }: { section: string; seat: string },
     { getState, dispatch, rejectWithValue }
   ) => {
     const state = getState();
-    
+
     // 좌석 사용 가능한지 확인
-    const seatItem = state.ticketingSeats.seats.find(
+    const seatItem = state.ticketingSeat.seats.find(
       (s) => s.seatNumber === seat
     );
     if (!seatItem || seatItem.status !== 'AVAILABLE') {
@@ -119,7 +118,7 @@ export const tryReserveSeat = createAsyncThunk<
 
 // ticketingSeat 슬라이스 생성
 const ticketingSeatSlice = createSlice({
-  name: 'ticketingSeats',
+  name: 'ticketingSeat',
   initialState,
   reducers: {
     selectSeat: (state, action: PayloadAction<string>) => {
@@ -152,7 +151,7 @@ const ticketingSeatSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as TicketingError;
       })
-      
+
       // tryReserveSeat 액션 처리
       .addCase(tryReserveSeat.pending, (state) => {
         state.isLoading = true;
@@ -178,21 +177,22 @@ const ticketingSeatSlice = createSlice({
 export const { selectSeat, clearError, reset } = ticketingSeatSlice.actions;
 
 // 셀렉터 함수들
-export const selectSeats = (state: RootState): TicketingSeatProps[] => 
-  state.ticketingSeats.seats;
-export const selectIsLoading = (state: RootState): boolean => 
-  state.ticketingSeats.isLoading;
-export const selectError = (state: RootState): TicketingError | null => 
-  state.ticketingSeats.error;
-export const selectSelectedSeatNumber = (state: RootState): string | null => 
-  state.ticketingSeats.selectedSeatNumber;
-export const selectCurrentSectionId = (state: RootState): string | null => 
-  state.ticketingSeats.currentSectionId;
+export const selectSeats = (state: RootState): TicketingSeatProps[] =>
+  state.ticketingSeat.seats;
+export const selectIsLoading = (state: RootState): boolean =>
+  state.ticketingSeat.isLoading;
+export const selectError = (state: RootState): TicketingError | null =>
+  state.ticketingSeat.error;
+export const selectSelectedSeatNumber = (state: RootState): string | null =>
+  state.ticketingSeat.selectedSeatNumber;
+export const selectCurrentSectionId = (state: RootState): string | null =>
+  state.ticketingSeat.currentSectionId;
 
 // isSeatAvailable 셀렉터
-export const isSeatAvailable = (seatNumber: string) => 
+export const isSeatAvailable =
+  (seatNumber: string) =>
   (state: RootState): boolean => {
-    const seat = state.ticketingSeats.seats.find(
+    const seat = state.ticketingSeat.seats.find(
       (seat) => seat.seatNumber === seatNumber
     );
     return seat?.status === 'AVAILABLE';

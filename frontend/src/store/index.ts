@@ -2,16 +2,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
 import queueReducer from './slices/queueSlice';
 import errorReducer from './slices/errorSlice';
-import ticketingSeatSlice from './slices/ticketingSeatSlice';
-import captchaSlice from './slices/captchaSlice';
+import ticketingSeatReducer from './slices/ticketingSeatSlice';
+import captchaReducer from './slices/captchaSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     queue: queueReducer,
     error: errorReducer,
-    ticketingSeat: ticketingSeatSlice,
-    captcha: captchaSlice,
+    ticketingSeat: ticketingSeatReducer,
+    captcha: captchaReducer,
     // 다른 리듀서들 추가
   },
   // RTK 2.x에서는 미들웨어 설정이 약간 변경됨

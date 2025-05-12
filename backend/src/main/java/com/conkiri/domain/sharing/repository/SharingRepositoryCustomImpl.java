@@ -53,7 +53,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.selectFrom(sharing)
 			.where(conditions)
 			.orderBy(sharing.sharingId.desc())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		return createSharingResponseDTO(pageable, results);
@@ -82,7 +82,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.selectFrom(sharing)
 			.where(conditions)
 			.orderBy(sharing.sharingId.desc())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		return createSharingResponseDTO(pageable, results);
@@ -113,7 +113,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.join(scrapSharing).on(scrapSharing.sharing.sharingId.eq(sharing.sharingId))
 			.where(conditions)
 			.orderBy(sharing.sharingId.desc())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		return createSharingResponseDTO(pageable, results);
@@ -139,7 +139,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.selectFrom(sharing)
 			.where(conditions)
 			.orderBy(sharing.sharingId.desc())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		return createSharingResponseDTO(pageable, results);
@@ -167,7 +167,7 @@ public class SharingRepositoryCustomImpl implements SharingRepositoryCustom {
 			.join(scrapSharing).on(scrapSharing.sharing.sharingId.eq(sharing.sharingId))
 			.where(conditions)
 			.orderBy(sharing.sharingId.desc())
-			.limit(pageable.getPageSize() + 1)
+			.limit(pageable.getPageSize() + 1L)
 			.fetch();
 
 		return createSharingResponseDTO(pageable, results);

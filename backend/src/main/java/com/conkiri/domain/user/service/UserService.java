@@ -11,14 +11,27 @@ import com.conkiri.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final UserReadService userReadService;
 
-	public void updateNickname(User user, String nickname) {
+	public void updateFcmToken(User user, String fcmToken) {
 
+		user.updateFcmToken(fcmToken);
+	}
+
+	public void updateNotificationEnabled(User user) {
+
+		user.updateNotificationStatus();
+	}
+
+
+	public void updateNickname(Long userId, String nickname) {
+
+		User user = userReadService.findUserByIdOrElseThrow(userId);
 		validateNicknameDuplicate(nickname);
 		user.updateNickname(nickname);
 	}

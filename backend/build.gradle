@@ -62,6 +62,12 @@ dependencies {
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// RabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// Firebase Admin SDK (FCM)
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

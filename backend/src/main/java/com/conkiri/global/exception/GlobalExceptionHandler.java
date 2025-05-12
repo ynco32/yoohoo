@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 			.map(FieldError::getDefaultMessage)
 			.orElse("요청 데이터가 유효하지 않습니다.");
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 			.map(FieldError::getDefaultMessage)
 			.orElse("요청 데이터가 유효하지 않습니다.");
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, defaultMessage);
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), BAD_REQUEST, defaultMessage);
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ApiResponse<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
 		log.warn("요청 파라미터 타입 불일치. 파라미터명: {}, 오류: {}", e.getName(), e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST, "요청 파라미터 타입이 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), BAD_REQUEST, "요청 파라미터 타입이 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ApiResponse<Void> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
 		log.warn("지원하지 않는 HTTP 메서드 호출: {}. 오류: {}", e.getMethod(), e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse("METHOD_NOT_ALLOWED", "지원하지 않는 HTTP 메서드입니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED.value(), "METHOD_NOT_ALLOWED", "지원하지 않는 HTTP 메서드입니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ApiResponse<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 		log.warn("HTTP 메시지를 읽는 도중 오류 발생: {}", e.getMessage());
-		ExceptionResponse exceptionResponse = new ExceptionResponse(BAD_REQUEST,  "요청 바디가 올바르지 않습니다.");
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), BAD_REQUEST,  "요청 바디가 올바르지 않습니다.");
 		return ApiResponse.fail(exceptionResponse);
 	}
 
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
 			response.setStatus(errorCode.getHttpStatus().value());
 		}
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode.name(), errorCode.getMessage());
+		ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode.getHttpStatus().value(), errorCode.name(), errorCode.getMessage());
 		return ApiResponse.fail(exceptionResponse);
 	}
 }

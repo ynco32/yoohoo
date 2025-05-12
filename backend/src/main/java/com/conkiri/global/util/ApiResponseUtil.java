@@ -25,7 +25,7 @@ public class ApiResponseUtil {
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 
-			ExceptionResponse error = new ExceptionResponse( code, message);
+			ExceptionResponse error = new ExceptionResponse(status, code, message);
 			ApiResponse<Void> apiResponse = ApiResponse.fail(error);
 
 			String body = objectMapper.writeValueAsString(apiResponse);

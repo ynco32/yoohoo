@@ -37,13 +37,6 @@ public class ConcertService {
     private final ArenaRepository arenaRepository;
     private final CastRepository castRepository;
 
-    @Transactional(readOnly = true)
-    public ConcertResponseDTO getConcertList(String concertSearch, Long lastConcertId) {
-
-        Pageable pageable = Pageable.ofSize(10);
-        return concertRepository.findConcerts(LocalDateTime.now().toLocalDate().atStartOfDay(), concertSearch, lastConcertId, pageable);
-    }
-
     /**
      * 크롤링한 콘서트 정보를 저장하는 메서드
      *

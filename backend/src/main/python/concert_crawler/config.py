@@ -31,6 +31,7 @@ DB_CONFIG = {
 
 # 크롤링 설정
 INTERPARK_BASE_URL = "http://www.playdb.co.kr/playdb/playdblist.asp"
+MELON_BASE_URL = "https://ticket.melon.com/concert/index.htm?genreType=GENRE_CON"
 DETAIL_URL_TEMPLATE = "http://www.playdb.co.kr/playdb/playdbdetail.asp?sReqPlayNo={}"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 FILTERED_VENUES = [

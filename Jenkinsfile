@@ -254,11 +254,11 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
                             string(credentialsId: 'FIREBASE_PROJECT_ID', variable: 'FIREBASE_PROJECT_ID'),
                             string(credentialsId: 'FIREBASE_CLIENT_EMAIL', variable: 'FIREBASE_CLIENT_EMAIL'),
-                            string(credentialsId: 'FIREBASE_PRIVATE_KEY', variable: 'FIREBASE_PRIVATE_KEY'),
+                            string(credentialsId: 'FIREBASE_SECRET_KEY', variable: 'FIREBASE_SECRET_KEY'),
                             string(credentialsId: 'RABBITMQ_USERNAME', variable: 'RABBITMQ_USERNAME'),
                             string(credentialsId: 'RABBITMQ_PASSWORD', variable: 'RABBITMQ_PASSWORD'),
                             string(credentialsId: 'FIREBASE_CLIENT_ID', variable: 'FIREBASE_CLIENT_ID'),
-                            string(credentialsId: 'FIREBASE_PRIVATE_KEY_ID', variable: 'FIREBASE_PRIVATE_KEY_ID'),
+                            string(credentialsId: 'FIREBASE_SECRET_KEY_ID', variable: 'FIREBASE_SECRET_KEY_ID'),
                         ])
                         
                         // 브랜치별 추가 credentials

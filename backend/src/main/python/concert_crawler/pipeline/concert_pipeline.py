@@ -27,18 +27,22 @@ class ConcertPipeline:
         
         # 2. 이미지 처리 (공통 로직)
         if 'notice_image_url' in detail_info:
+            original_image_url = detail_info['notice_image_url']
             s3_url, ocr_text = ImageProcessor.process_notice_image(
-                detail_info['notice_image_url'], 
+                original_image_url, 
                 concert['show_id']
             )
+            print(f"🤚🤚 S3 URL: {s3_url}")
+            print(f"🤚🤚 OCR Text: {ocr_text}")
             
             # 3. 텍스트 분석 (공통 로직)
             ticketing_platform = detail_info.get('ticketing_platform', 'INTERPARK')
             if ocr_text and ticketing_platform != 'MELON':
                 extracted_info = ConcertInfoExtractor.extract_info_via_gpt(ocr_text, detail_info)
                 detail_info.update(extracted_info)
-                detail_info['ocr_text'] = ocr_text
-                detail_info['notice_image_url'] = s3_url
+                
+            detail_info['ocr_text'] = ocr_text
+            detail_info['s3_url'] = s3_url
         
         # 4. 기본 정보에 상세 정보 병합
         concert.update(detail_info)

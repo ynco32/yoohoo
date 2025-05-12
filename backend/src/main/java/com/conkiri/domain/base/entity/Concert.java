@@ -30,7 +30,7 @@ public class Concert {
     private Long concertId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "arena_id", nullable = false)
+    @JoinColumn(name = "arena_id")
     private Arena arena;
 
     @Column(name = "concert_name", length = 100)
@@ -43,7 +43,7 @@ public class Concert {
     private LocalDateTime reservation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ticketing_platform", nullable = false)
+    @Column(name = "ticketing_platform")
     private Platform ticketingPlatform;
 
     @Column(name = "photo_url", length = 200)

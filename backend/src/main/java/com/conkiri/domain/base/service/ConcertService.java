@@ -75,14 +75,14 @@ public class ConcertService {
 
     private Platform determineTicketingPlatform(String platformName) {
         if (platformName == null || platformName.isEmpty()) {
-            return Platform.INTERPARK; // 기본값
+            return null;
         }
 
         try {
             return Platform.valueOf(platformName.toUpperCase());
         } catch (IllegalArgumentException e) {
             log.warn("유효하지 않은 티켓팅 플랫폼: {}", platformName);
-            return Platform.INTERPARK; // 기본값
+            return null;
         }
     }
 
@@ -127,33 +127,25 @@ public class ConcertService {
     }
 
     private Artist findOrCreateArtist(String artistName) {
-        String finalArtistName = (artistName == null || artistName.isEmpty())
-                ? "없음"
-                : artistName;
-
-        return artistRepository.findByArtistName(finalArtistName)
-                .orElseGet(() -> artistRepository.save(Artist.of(finalArtistName, null)));
+        return artistRepository.findByArtistName(artistName)
+                .orElseGet(() -> artistRepository.save(Artist.of(artistName, null)));
     }
 
     private Arena findMatchingArena(String arenaName) {
-        // 기본값
-        Long arenaId = 1L;  // 기본 공연장 ID
-
-        // null 또는 빈 문자열 처리
         if (arenaName == null || arenaName.isEmpty()) {
-            log.warn("공연장 이름이 비어있음. 기본 공연장(ID: 1) 사용");
-        } else {
-            VenueKeyword venue = VenueKeyword.findByVenueName(arenaName);
-
-            if (venue != null) {
-                arenaId = venue.getArenaId();
-            } else {
-                log.warn("일치하는 공연장 없음. 기본 공연장(ID: 1) 사용: {}", arenaName);
-            }
+            log.warn("공연장 이름이 비어있음");
+            return null;
         }
 
-        return arenaRepository.findById(arenaId)
-                .orElseThrow(() -> new BaseException(ErrorCode.ARENA_NOT_FOUND));
+        VenueKeyword venue = VenueKeyword.findByVenueName(arenaName);
+
+        if (venue != null) {
+            return arenaRepository.findById(venue.getArenaId())
+                    .orElseThrow(() -> new BaseException(ErrorCode.ARENA_NOT_FOUND));
+        } else {
+            log.warn("일치하는 공연장 없음: {}", arenaName);
+            return null;
+        }
     }
 
     public boolean checkConcertExists(String concertName) {

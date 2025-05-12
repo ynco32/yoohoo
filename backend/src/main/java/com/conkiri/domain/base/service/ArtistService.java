@@ -32,9 +32,9 @@ public class ArtistService {
 		return artistRepository.findArtists(lastArtistId, searchWord, user);
 	}
 
-	public ArtistResponseDTO getMyArtists(Long lastArtistId, User user) {
+	public ArtistResponseDTO getMyArtists(User user) {
 
-		return artistRepository.findMyArtists(lastArtistId, user);
+		return artistRepository.findMyArtists(user);
 	}
 
 

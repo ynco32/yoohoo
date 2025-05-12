@@ -49,17 +49,15 @@ public class ArtistRepositoryCustomImpl implements ArtistRepositoryCustom {
 	}
 
 	@Override
-	public ArtistResponseDTO findMyArtists(Long lastArtistId, User user) {
+	public ArtistResponseDTO findMyArtists(User user) {
 		List<Artist> artists = queryFactory
 			.select(artist)
 			.from(myArtist)
 			.join(myArtist.artist, artist)
 			.where(
-				myArtist.user.eq(user),
-				gtArtistId(lastArtistId)
+				myArtist.user.eq(user)
 			)
 			.orderBy(artist.artistId.asc())
-			.limit(PAGE_SIZE + 1)
 			.fetch();
 
 		return createArtistResponseDTO(artists, Set.of(artists.stream().map(Artist::getArtistId).toArray(Long[]::new)));

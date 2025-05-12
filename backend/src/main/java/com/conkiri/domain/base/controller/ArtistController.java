@@ -35,10 +35,9 @@ public class ArtistController {
 
 	@GetMapping("/my")
 	public ApiResponse<ArtistResponseDTO> getMyArtists(
-		@RequestParam(value = "last", required = false) Long lastArtistId,
 		@AuthenticationPrincipal UserPrincipal user) {
 
-		return ApiResponse.success(artistService.getMyArtists(lastArtistId, user.getUser()));
+		return ApiResponse.success(artistService.getMyArtists(user.getUser()));
 	}
 
 	@PutMapping("/my")

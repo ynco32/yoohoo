@@ -7,7 +7,9 @@ export default function PlaceLayout({
   return (
     <>
       <div className={styles.bgWrapper} />
-      <div className={styles.container}>{children}</div>;
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>{children}</div>
+      </div>
     </>
   );
 }

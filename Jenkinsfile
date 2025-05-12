@@ -504,6 +504,20 @@ def cleanupOldVersions() {
         # 새 버전 컨테이너 이름 변경
         docker rename ${env.BACKEND_NEW_CONTAINER_NAME} ${env.BACKEND_CONTAINER_NAME}
         docker rename ${env.FRONTEND_NEW_CONTAINER_NAME} ${env.FRONTEND_CONTAINER_NAME}
+        
+        # 컨테이너 중지
+        docker stop ${env.BACKEND_CONTAINER_NAME} ${env.FRONTEND_CONTAINER_NAME}
+        
+        # 새로운 포트 매핑으로 컨테이너 재시작
+        docker run -d --name ${env.BACKEND_CONTAINER_NAME} \
+            -p 8085:8085 \
+            --network app-network \
+            ${env.BACKEND_CONTAINER_NAME}
+            
+        docker run -d --name ${env.FRONTEND_CONTAINER_NAME} \
+            -p 3002:3000 \
+            --network app-network \
+            ${env.FRONTEND_CONTAINER_NAME}
     """
 }
 

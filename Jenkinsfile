@@ -29,6 +29,8 @@ pipeline {  // 파이프라인 정의 시작
                 sh 'id'
                 script {
                     echo "Current Branch: ${BRANCH_NAME}"
+                    // Git 저장소 권한 설정
+                    sh 'git config --global --add safe.directory /var/jenkins_home/workspace/dev'
                 }
             }
         }
@@ -46,11 +48,17 @@ pipeline {  // 파이프라인 정의 시작
             steps {
                 script {
                     try {
-                        // 초기 커밋인지 확인
-                        def isInitialCommit = sh(script: 'git rev-parse --verify HEAD^ 2>/dev/null || echo "initial"', returnStdout: true).trim() == 'initial'
+                        // Git 저장소 초기화 확인
+                        sh 'git config --global --add safe.directory /var/jenkins_home/workspace/dev'
                         
-                        if (isInitialCommit) {
-                            // 초기 커밋의 경우 모든 파일을 변경된 것으로 간주
+                        // 현재 커밋 해시 가져오기
+                        def currentCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                        
+                        // 이전 커밋이 있는지 확인
+                        def hasPreviousCommit = sh(script: 'git rev-parse HEAD^ 2>/dev/null || echo "no_previous"', returnStdout: true).trim()
+                        
+                        if (hasPreviousCommit == 'no_previous') {
+                            // 초기 커밋인 경우
                             env.FRONTEND_CHANGES = 'true'
                             env.BACKEND_CHANGES = 'true'
                         } else {

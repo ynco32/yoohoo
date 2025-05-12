@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@/assets/icons/close.svg';
 import { createPortal } from 'react-dom';
-import styles from './SchedulePopup.module.scss';
+import styles from './ScheduleSelection.module.scss';
 
 interface ScheduleSelectionProps {
   isOpen: boolean;

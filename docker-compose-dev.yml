@@ -54,7 +54,7 @@ services:
       - NEXT_PUBLIC_SKT_API_KEY=${NEXT_PUBLIC_SKT_API_KEY}
       - NEXT_PUBLIC_SKT_API_URL=${NEXT_PUBLIC_SKT_API_URL}
     depends_on:
-      - backend
+      - backend-dev
     networks:
       - app-network
 

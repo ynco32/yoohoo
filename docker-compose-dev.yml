@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   backend-dev:
-    # container_name: backend-dev-new
-    container_name: backend-dev
+    container_name: backend-dev-new
+    # container_name: backend-dev
     build: ./backend
     ports:
       - "8085:8085"
@@ -37,12 +37,13 @@ services:
     networks:
       app-network:
         aliases:
-          - backend-dev
-          # - backend-dev-new
+          # - backend-dev
+          - backend-dev-new
+        # - backend-dev-new
 
   frontend-dev:
-    # container_name: frontend-dev-new
-    container_name: frontend-dev
+    container_name: frontend-dev-new
+    # container_name: frontend-dev
     build:
       context: ./frontend
       args:
@@ -63,8 +64,9 @@ services:
     networks:
       app-network:
         aliases:
-          - frontend-dev
-          # - frontend-dev-new
+          # - frontend-dev
+          - frontend-dev-new
+        # - frontend-dev-new
 
   mysql:
     container_name: mysql-dev

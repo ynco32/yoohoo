@@ -33,14 +33,16 @@ class ConcertPipeline:
             )
             
             # 3. 텍스트 분석 (공통 로직)
-            if ocr_text:
-                extracted_info = ConcertInfoExtractor.extract_info_via_gpt(ocr_text, concert)
+            ticketing_platform = detail_info.get('ticketing_platform', 'INTERPARK')
+            if ocr_text and ticketing_platform != 'MELON':
+                extracted_info = ConcertInfoExtractor.extract_info_via_gpt(ocr_text, detail_info)
                 detail_info.update(extracted_info)
                 detail_info['ocr_text'] = ocr_text
                 detail_info['notice_image_url'] = s3_url
         
         # 4. 기본 정보에 상세 정보 병합
         concert.update(detail_info)
+        print(f"pipline 에서 이제 보내는거: {concert}")
         
         # 5. API 저장
         from api.concert_api import save_concert_to_java_api

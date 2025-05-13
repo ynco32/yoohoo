@@ -52,6 +52,13 @@ public class ArtistService {
 		addMyArtists(toAddIds, user);
 	}
 
+	@Transactional
+	public void deleteMyArtist(Long artistId, User user) {
+
+		MyArtist artist = findMyArtistById(user, artistId);
+		myArtistRepository.delete(artist);
+	}
+
 	/**
 	 * 사용자의 현재 관심 가수 목록 조회
 	 */
@@ -125,6 +132,12 @@ public class ArtistService {
 				.toList();
 			myArtistRepository.saveAll(myArtistsToAdd);
 		}
+	}
+
+	private MyArtist findMyArtistById(User user, Long artistId) {
+
+		return myArtistRepository.findByUserAndArtistId(user, artistId)
+			.orElseThrow(() -> new BaseException(ErrorCode.ARTIST_NOT_FOUND));
 	}
 
 }

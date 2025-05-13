@@ -50,6 +50,7 @@ public class ConcertService {
 	private final ArenaRepository arenaRepository;
 	private final CastRepository castRepository;
 	private final ConcertNoticeRepository concertNoticeRepository;
+	private final ConcertReadService concertReadService;
 
 	public ConcertResponseDTO getConcerts(Long lastConcertDetailId, String searchWord, User user) {
 
@@ -78,6 +79,21 @@ public class ConcertService {
 		List<MyConcert> toDelete = determineMyConcertsToDelete(currentMyConcerts, newDetailIds, newConcertIds);
 		List<MyConcert> toSave = buildUpdatedMyConcerts(details, newConcertIds, request, currentByDetailId, currentByConcertId, user);
 		persistChanges(toDelete, toSave);
+	}
+
+
+	@Transactional
+	public void deleteMyConcert(Long concertId, User user) {
+
+		List<MyConcert> myConcerts = findMyConcertsOrElseThrow(concertId, user);
+		myConcertRepository.deleteAll(myConcerts);
+	}
+
+	private List<MyConcert> findMyConcertsOrElseThrow(Long concertId, User user) {
+
+		List<MyConcert> myConcerts = myConcertRepository.findByUserAndConcertId(user, concertId);
+		if (myConcerts.isEmpty()) throw new BaseException(ErrorCode.MY_CONCERT_NOT_FOUND);
+		return myConcerts;
 	}
 
 	private Map<Long, MyConcert> mapByConcertDetail(List<MyConcert> list) {

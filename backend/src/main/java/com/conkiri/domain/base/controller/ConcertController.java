@@ -1,7 +1,9 @@
 package com.conkiri.domain.base.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +29,6 @@ public class ConcertController {
 
 	private final ConcertService concertService;
 
-	// 공연 목록 조회
 	@GetMapping
 	public ApiResponse<ConcertResponseDTO> getConcerts(
 		@RequestParam(value = "last", required = false) Long lastConcertDetailId,
@@ -37,7 +38,6 @@ public class ConcertController {
 		return ApiResponse.success(concertService.getConcerts(lastConcertDetailId, searchWord, user.getUser()));
 	}
 
-	// 내 공연 목록 조회
 	@GetMapping("/my")
 	public ApiResponse<ConcertResponseDTO> getMyConcerts(
 		@AuthenticationPrincipal UserPrincipal user) {
@@ -45,13 +45,21 @@ public class ConcertController {
 		return ApiResponse.success(concertService.getMyConcerts(user.getUser()));
 	}
 
-	// 내 공연 설정
 	@PutMapping("/my")
 	public ApiResponse<Void> setMyConcerts(
 		@Valid @RequestBody ConcertListRequestDTO request,
 		@AuthenticationPrincipal UserPrincipal user) {
 
 		concertService.setMyConcerts(request, user.getUser());
+		return ApiResponse.ofSuccess();
+	}
+
+	@DeleteMapping("/my/{concertId}")
+	public ApiResponse<Void> deleteMyConcert(
+		@PathVariable Long concertId,
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		concertService.deleteMyConcert(concertId, user.getUser());
 		return ApiResponse.ofSuccess();
 	}
 

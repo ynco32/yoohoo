@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ConcertSelectForm.module.scss';
 import Button from '@/components/common/Button/Button';
+import { ConcertInfo } from '@/types/mypage';
 
 interface ConcertSelectFormProps {
-  onConfirm: (selectedDates: string[]) => void;
-  initialSelectedDates?: string[];
+  onConfirm: (
+    selectedDates: { date: string; concertDetailId: number }[]
+  ) => void;
+  initialSelectedDates?: { date: string; concertDetailId: number }[];
+  concert: ConcertInfo;
 }
 
 const ConcertSelectForm: React.FC<ConcertSelectFormProps> = ({
   onConfirm,
   initialSelectedDates = [],
+  concert,
 }) => {
   const [selectedDates, setSelectedDates] =
-    useState<string[]>(initialSelectedDates);
-
-  // 예시 날짜 데이터
-  const dates = [
-    '2024-03-20',
-    '2024-03-21',
-    '2024-03-22',
-    '2024-03-23',
-    '2024-03-24',
-  ];
+    useState<{ date: string; concertDetailId: number }[]>(initialSelectedDates);
 
   // initialSelectedDates가 변경될 때 selectedDates 업데이트
   useEffect(() => {
     setSelectedDates(initialSelectedDates);
   }, [initialSelectedDates]);
 
-  const handleDateChange = (date: string) => {
-    setSelectedDates((prev) =>
-      prev.includes(date) ? prev.filter((d) => d !== date) : [...prev, date]
-    );
+  const handleDateChange = (session: ConcertInfo['sessions'][0]) => {
+    const date = session.startTime.split('T')[0];
+    setSelectedDates((prev) => {
+      const isSelected = prev.some((item) => item.date === date);
+      if (isSelected) {
+        return prev.filter((item) => item.date !== date);
+      } else {
+        return [...prev, { date, concertDetailId: session.concertDetailId }];
+      }
+    });
   };
 
   const handleConfirm = () => {
@@ -45,18 +47,21 @@ const ConcertSelectForm: React.FC<ConcertSelectFormProps> = ({
       <h2 className={styles.title}>공연 날짜 선택</h2>
       <p className={styles.subtitle}>선택한 날짜의 현장 알림을 보내드려요!</p>
       <div className={styles.dateList}>
-        {dates.map((date) => (
-          <label key={date} className={styles.dateItem}>
-            <input
-              type='checkbox'
-              name='concertDate'
-              value={date}
-              checked={selectedDates.includes(date)}
-              onChange={() => handleDateChange(date)}
-            />
-            <span>{date}</span>
-          </label>
-        ))}
+        {concert.sessions.map((session) => {
+          const date = session.startTime.split('T')[0];
+          return (
+            <label key={date} className={styles.dateItem}>
+              <input
+                type='checkbox'
+                name='concertDate'
+                value={date}
+                checked={selectedDates.some((item) => item.date === date)}
+                onChange={() => handleDateChange(session)}
+              />
+              <span>{date}</span>
+            </label>
+          );
+        })}
       </div>
       <Button
         children={'확인'}

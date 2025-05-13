@@ -63,28 +63,16 @@ export const useNickname = (): UseNicknameReturn => {
         setIsChecked(true);
       }
     } catch (error) {
-      const apiError = error as ExceptionResponse & { statusCode?: number };
+      const apiError = error as ExceptionResponse;
       if (apiError.statusCode === 401) {
         alert('로그인이 필요합니다.');
-        router.replace('/login');
+        router.replace('/onboarding');
         return;
       }
 
-      if (apiError.code === 'ERROR_NICKNAME_LENGTH') {
-        alert(apiError.message);
+      if (apiError.statusCode === 400) {
+        alert('잘못된 요청입니다.');
         setError(apiError.message);
-      } else if (apiError.code === 'ERROR_NICKNAME_FORMAT') {
-        alert(apiError.message);
-        setError(apiError.message);
-      } else if (apiError.code === 'DUPLICATE_NICKNAME') {
-        alert(apiError.message);
-        setError(apiError.message);
-      } else if (apiError.statusCode === 500) {
-        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      } else {
-        alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
-        setError('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
       }
       setIsAvailable(false);
       setIsChecked(true);
@@ -102,29 +90,19 @@ export const useNickname = (): UseNicknameReturn => {
       await postNickname(nickname);
       router.replace('/login/artist');
     } catch (error) {
-      const apiError = error as ExceptionResponse & { statusCode?: number };
+      const apiError = error as ExceptionResponse;
       if (apiError.statusCode === 401) {
         alert('로그인이 필요합니다.');
-        router.replace('/login');
+        router.replace('/onboarding');
         return;
       }
 
-      if (apiError.code === 'ERROR_NICKNAME_LENGTH') {
-        alert(apiError.message);
+      if (apiError.statusCode === 400) {
+        alert('잘못된 요청입니다.');
         setError(apiError.message);
-      } else if (apiError.code === 'ERROR_NICKNAME_FORMAT') {
-        alert(apiError.message);
-        setError(apiError.message);
-      } else if (apiError.code === 'DUPLICATE_NICKNAME') {
-        alert(apiError.message);
-        setError(apiError.message);
-      } else if (apiError.statusCode === 500) {
-        alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      } else {
-        alert('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
-        setError('알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요');
       }
+      setIsAvailable(false);
+      setIsChecked(true);
     } finally {
       setIsLoading(false);
     }

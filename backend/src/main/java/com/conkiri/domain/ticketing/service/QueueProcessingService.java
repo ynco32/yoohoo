@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.ticketing.dto.response.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
-import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
@@ -61,7 +60,7 @@ public class QueueProcessingService {
 	}
 
 	// 사용자를 대기열에 추가
-	public void addToQueue(Long userId, String sessionId) {
+	public String addToQueue(Long userId, String sessionId) {
 
 		validateQueueRequest();
 
@@ -71,20 +70,20 @@ public class QueueProcessingService {
 		redisTemplate.opsForHash().put(RedisKeys.SESSION_MAP, sessionId, String.valueOf(userId));
 
 		WaitingTimeResponseDTO waitingTimeResponseDTO = getEstimatedWaitingTime(sessionId);
-		notifyWaitingTime(userId, sessionId, waitingTimeResponseDTO);
+		return notifyWaitingTime(userId, sessionId, waitingTimeResponseDTO);
 	}
 
 	// 실시간 대기번호 예상시간 알림
-	private void notifyWaitingTime(Long userId, String sessionId, WaitingTimeResponseDTO waitingTime) {
+	private String notifyWaitingTime(Long userId, String sessionId, WaitingTimeResponseDTO waitingTime) {
 
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());
-		User user = userReadService.findUserByIdOrElseThrow(userId);
 		messagingTemplate.convertAndSendToUser(
-			user.getEmail() + ":" + sessionId,
+			userId + ":" + sessionId,
 			WebSocketConstants.WAITING_TIME_DESTINATION,
 			waitingTime
 		);
+		return userId + ":" + sessionId;
 	}
 
 	// 서버 부하에 따라 대기열을 주기적으로 처리합니다.
@@ -133,10 +132,9 @@ public class QueueProcessingService {
 				String[] parts = queueKey.split(":");
 				Long userId = Long.parseLong(parts[0]);
 				String sessionId = parts[1];
-				User user = userReadService.findUserByIdOrElseThrow(userId);
 				log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
 				messagingTemplate.convertAndSendToUser(
-					user.getEmail() + ":" + sessionId,
+					userId + ":" + sessionId,
 					WebSocketConstants.NOTIFICATION_DESTINATION,
 					true
 				);

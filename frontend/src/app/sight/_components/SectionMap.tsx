@@ -3,6 +3,7 @@ import { use } from 'react';
 // import { fetchSectionMap } from '../api';
 import styles from '../[arenaId]/page.module.scss';
 import KspoMap from '@/components/sight/Arenas/KspoMap';
+import InspireMap from '@/components/sight/Arenas/InspireMap';
 
 interface SectionMapProps {
   arenaId: string;
@@ -14,6 +15,8 @@ export default function SectionMap({ arenaId }: SectionMapProps) {
   const sectionMap = null;
   const renderArenaMap = () => {
     switch (arenaId) {
+      case '4':
+        return <InspireMap />;
       case '5':
         return <KspoMap />;
       // 지원하지 않는 경기장이거나 아이디가 잘못된 경우 기본 UI 표시

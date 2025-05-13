@@ -6445,6 +6445,7 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-redux: "npm:^9.2.0"
     redux-logger: "npm:^3.0.6"
+    redux-persist: "npm:^6.0.0"
     sass: "npm:^1.87.0"
     storybook: "npm:8.6.12"
     swiper: "npm:^11.2.6"
@@ -9099,6 +9100,15 @@ __metadata:
   dependencies:
     deep-diff: "npm:^0.3.5"
   checksum: 10c0/65eb71a1c72d9636368672a684bde62c746e64c19c8b92e3f00bdf5cf240ea1695eccb95a0fa3d5044f6a86cbf11fd35dc5150fd3351fa53c72721c336e9098f
+  languageName: node
+  linkType: hard
+
+"redux-persist@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "redux-persist@npm:6.0.0"
+  peerDependencies:
+    redux: ">4.0.0"
+  checksum: 10c0/8242d265ab8d28bbc95cf2dc2a05b869eb67aa309b1ed08163c926f3af56dd8eb1ea62118286083461b8ef2024d3b349fd264e5a62a70eb2e74d068c832d5bf2
   languageName: node
   linkType: hard
 

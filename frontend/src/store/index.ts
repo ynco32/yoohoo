@@ -1,9 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import userReducer from './slices/userSlice';
 import queueReducer from './slices/queueSlice';
 import errorReducer from './slices/errorSlice';
 import ticketingSeatReducer from './slices/ticketingSeatSlice';
 import captchaReducer from './slices/captchaSlice';
+import arenaReducer from './slices/arenaSlice';
+import sectionReducer from './slices/sectionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,18 +25,44 @@ export const store = configureStore({
     error: errorReducer,
     ticketingSeat: ticketingSeatReducer,
     captcha: captchaReducer,
+
+// persist 설정
+const arenaPersistConfig = {
+  key: 'arena',
+  storage,
+  whitelist: ['currentArena'], // 경기장 정보만 지속
+};
+
+// 다른 persist 설정이 필요한 경우
+const userPersistConfig = {
+  key: 'user',
+  storage,
+  // 필요에 따라 whitelist 설정
+};
+
+// persist 적용
+const persistedArenaReducer = persistReducer(arenaPersistConfig, arenaReducer);
+// 필요한 경우 user reducer에도 persist 적용
+// const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer, // 또는 persistedUserReducer
+    arena: persistedArenaReducer,
+    section: sectionReducer,
     // 다른 리듀서들 추가
   },
-  // RTK 2.x에서는 미들웨어 설정이 약간 변경됨
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // 필요한 경우 직렬화 검사 예외 추가
-        ignoredActions: [],
+        // redux-persist 액션들을 제외
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         ignoredPaths: [],
       },
     }),
 });
+
+export const persistor = persistStore(store);
 
 // TypeScript 타입 정의
 export type RootState = ReturnType<typeof store.getState>;

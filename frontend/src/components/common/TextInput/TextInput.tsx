@@ -29,6 +29,11 @@ interface TextInputProps {
   errorMessage?: string;
 
   /**
+   * 성공 메시지
+   */
+  successMessage?: string;
+
+  /**
    * 추가 클래스명
    */
   className?: string;
@@ -78,6 +83,7 @@ export default function TextInput({
   placeholder = '',
   label = '',
   errorMessage = '',
+  successMessage = '',
   className = '',
   required = false,
   disabled = false,
@@ -112,6 +118,7 @@ export default function TextInput({
   const hasValue = value !== '';
   const showClearButton = clearable && hasValue && !disabled;
   const hasError = errorMessage !== '';
+  const hasSuccess = successMessage !== '';
 
   return (
     <div
@@ -155,11 +162,22 @@ export default function TextInput({
         )}
       </div>
 
-      {hasError && (
-        <p className={styles.errorMessage} id={`${name}-error`}>
-          {errorMessage}
-        </p>
-      )}
+      <div className={styles.messageContainer}>
+        <div className={styles.messageWrapper}>
+          {(hasError || hasSuccess) && (
+            <p
+              className={`${styles.message} ${hasError ? styles.errorMessage : styles.successMessage}`}
+            >
+              {hasError ? errorMessage : successMessage}
+            </p>
+          )}
+        </div>
+        {maxLength && (
+          <span className={styles.lengthIndicator}>
+            {value.length} / {maxLength}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

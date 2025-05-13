@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.scss';
 import { useHeader } from './HeaderProvider';
+import { usePathname } from 'next/navigation';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
 import NotificationIcon from '@/assets/icons/notification.svg'; // 알림 아이콘 추가
 import MenuIcon from '@/assets/icons/menu.svg'; // 햄버거 메뉴 아이콘 추가
@@ -18,7 +19,11 @@ const Header = () => {
     seatDetail,
     handleBack,
     setIsMenuOpen,
+    handleArenaInfoClick,
   } = useHeader();
+
+  const pathname = usePathname();
+  const isPlacePage = pathname.startsWith('/place'); // 현장 페이지 확인
 
   // 알림 클릭 핸들러
   const handleNotificationClick = () => {
@@ -42,7 +47,14 @@ const Header = () => {
         >
           <ChevronLeftIcon className={styles.backIcon} />
         </button>
-        <div className={styles.detailImageContainer}>
+        <div
+          className={styles.detailImageContainer}
+          // 현장 페이지에서만 클릭 기능 활성화
+          onClick={isPlacePage ? handleArenaInfoClick : undefined}
+          style={{
+            cursor: isPlacePage ? 'pointer' : 'default',
+          }}
+        >
           <Image
             src={arenaInfo.photoUrl || '/images/dummy.png'}
             alt={arenaInfo.arenaName}

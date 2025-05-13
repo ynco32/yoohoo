@@ -28,9 +28,9 @@ export default function KspoMap() {
       const sectionId = section.id;
       console.log('클릭된 섹션 ID:', sectionId);
 
-      // kspo_svg__kspoSection 접두사 처리
-      if (sectionId.includes('kspoSection')) {
-        const cleanSectionId = sectionId.replace(/^.*kspoSection/, '');
+      // kspo_svg__section 접두사 처리
+      if (sectionId.includes('section')) {
+        const cleanSectionId = sectionId.replace(/^.*section/, '');
         handleSectionClick(cleanSectionId);
       }
     }

@@ -4,5 +4,12 @@ export default function SightLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className={styles.container}>{children}</div>;
+  return (
+    <>
+      <div className={styles.bgWrapper} />
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>{children}</div>
+      </div>
+    </>
+  );
 }

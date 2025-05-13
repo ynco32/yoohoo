@@ -52,6 +52,16 @@ interface ConcertCardProps {
    * 좌석정보 입력 버튼 클릭 이벤트 핸들러
    */
   onSeatInfoClick?: () => void;
+
+  /**
+   * 알림 상태인지 여부
+   */
+  isNotified?: boolean;
+
+  /**
+   * 재선택 이벤트 핸들러
+   */
+  onReselect?: () => void;
 }
 
 /**
@@ -68,6 +78,8 @@ export default function ConcertCard({
   style,
   isSelected,
   onSeatInfoClick,
+  isNotified,
+  onReselect,
 }: ConcertCardProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -121,12 +133,12 @@ export default function ConcertCard({
           sizes='(max-width: 768px) 100vw, 300px'
           onError={() => setImageError(true)}
         />
-        {isSelected && (
+        {isSelected && !isNotified && (
           <div className={styles.overlayButton}>
             <div className={styles.overlayText}>
-              티케팅에
+              현장알림도
               <br />
-              성공하셨나요?
+              받으실래요?
             </div>
             <button
               className={styles.selectButton}
@@ -135,7 +147,21 @@ export default function ConcertCard({
                 onSeatInfoClick?.();
               }}
             >
-              좌석정보 입력
+              현장알림 받기
+            </button>
+          </div>
+        )}
+        {isNotified && (
+          <div className={styles.overlayButton}>
+            <div className={styles.overlayText}>알림 설정 완료!</div>
+            <button
+              className={`${styles.selectButton} ${styles.notifiedButton}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onReselect?.();
+              }}
+            >
+              다시 선택하기
             </button>
           </div>
         )}

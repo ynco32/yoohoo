@@ -33,45 +33,44 @@ export default function SeatPage() {
 
   const dispatch = useAppDispatch();
 
-  // 선택자 함수 사용
-  const error = useAppSelector(selectError);
-  const selectedSeatNumber = useAppSelector(selectSelectedSeatNumber);
+  // // 선택자 함수 사용
+  // const error = useAppSelector(selectError);
+  // const selectedSeatNumber = useAppSelector(selectSelectedSeatNumber);
   // const userId = useAppSelector((state: RootState) => state.user.data?.id);
-  const userId = '1';
-  const onSuccess = useAppSelector(
-    (state: RootState) => state.captcha.onSuccess
-  );
+  // const onSuccess = useAppSelector(
+  //   (state: RootState) => state.captcha.onSuccess
+  // );
 
-  useEffect(() => {
-    setIsActive(!!selectedSeatNumber);
-  }, [selectedSeatNumber]);
+  // useEffect(() => {
+  //   setIsActive(!!selectedSeatNumber);
+  // }, [selectedSeatNumber]);
 
-  const handleReservationClick = async () => {
-    if (!selectedSeatNumber || !userId) return;
+  // const handleReservationClick = async () => {
+  //   if (!selectedSeatNumber || !userId) return;
 
-    if (!onSuccess) {
-      setisSecurityMessageOpen(true);
-      return;
-    }
+  //   if (!onSuccess) {
+  //     setisSecurityMessageOpen(true);
+  //     return;
+  //   }
 
-    try {
-      // dispatch 후 fulfilled 상태 확인
-      const resultAction = await dispatch(
-        tryReserveSeat({ section: areaId, seat: selectedSeatNumber })
-      );
+  //   try {
+  //     // dispatch 후 fulfilled 상태 확인
+  //     const resultAction = await dispatch(
+  //       tryReserveSeat({ section: areaId, seat: selectedSeatNumber })
+  //     );
 
-      // 성공 시에만 페이지 이동
-      if (tryReserveSeat.fulfilled.match(resultAction)) {
-        router.push('payment1');
-      }
-    } catch (_error) {
-      // 에러는 store에서 처리됨
-    }
-  };
+  //     // 성공 시에만 페이지 이동
+  //     if (tryReserveSeat.fulfilled.match(resultAction)) {
+  //       router.push('payment1');
+  //     }
+  //   } catch (_error) {
+  //     // 에러는 store에서 처리됨
+  //   }
+  // };
 
   return (
     <div className={styles.container}>
-      {/* <TicketingSeatList areaId={areaId} /> */}
+      {/* <TicketingSeatList areaId={areaId} />
       <TicketingBottomButton
         onClick={handleReservationClick}
         isActive={isActive}
@@ -89,7 +88,7 @@ export default function SeatPage() {
           setisSecurityMessageOpen(false);
           dispatch(setCaptchaState(true));
         }}
-      />
+      /> */}
     </div>
   );
 }

@@ -1,0 +1,70 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup {
+  position: relative;
+  width: 20rem; // 80px * 4 = 320px (w-80)
+  border-radius: $border-radius-lg;
+  background-color: white;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  padding: $spacing-md $spacing-md;
+  text-align: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+}
+
+.closeButton {
+  border-radius: $border-radius-full;
+  padding: 0.25rem; // p-1
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f3f4f6; // bg-gray-100
+  }
+}
+
+.icon {
+  height: 1.25rem; // h-5
+  width: 1.25rem; // w-5
+}
+
+.content {
+  padding-bottom: 1.25rem; // pb-5
+
+  p {
+    margin-bottom: $spacing-xs;
+  }
+}
+
+.queueNumber {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: #00c73c;
+}
+
+.footer {
+  text-align: left;
+  font-size: $font-size-xs;
+}
+
+.warning {
+  color: #6b7280; // text-gray-500
+  margin-bottom: $spacing-xs;
+}

@@ -3,7 +3,8 @@ export const mockConcerts = {
     {
       concertId: 3,
       concertName: 'BTS 팬미팅 2025',
-      photoUrl: 'https://example.com/bts-fanmeeting.jpg',
+      photoUrl:
+        'https://conkiri-bucket.s3.ap-northeast-2.amazonaws.com/arena/arenaId_6.jpg',
       arenaName: '잠실실내체육관',
       ticketingNotificationEnabled: true,
       artists: [
@@ -32,7 +33,8 @@ export const mockConcerts = {
     {
       concertId: 2,
       concertName: '블랙핑크 월드투어 2025',
-      photoUrl: 'https://example.com/blackpink-tour.jpg',
+      photoUrl:
+        'https://conkiri-bucket.s3.ap-northeast-2.amazonaws.com/arena/arenaId_6.jpg',
       arenaName: '고척스카이돔',
       ticketingNotificationEnabled: true,
       artists: [
@@ -61,7 +63,8 @@ export const mockConcerts = {
     {
       concertId: 1,
       concertName: '아이유 콘서트 2025',
-      photoUrl: 'https://example.com/iu-concert.jpg',
+      photoUrl:
+        'https://conkiri-bucket.s3.ap-northeast-2.amazonaws.com/arena/arenaId_6.jpg',
       arenaName: '올림픽홀',
       ticketingNotificationEnabled: true,
       artists: [

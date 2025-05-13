@@ -12,6 +12,7 @@ export const useArtist = () => {
   const [isLoading, setIsLoading] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchArtists = async (query: string = '', lastId?: number) => {
     if (isLoading) return;
@@ -61,8 +62,26 @@ export const useArtist = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    fetchArtists(query);
+
+    // 기존 타이머가 있다면 제거
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    // 1초 후에 검색 실행하는 타이머 설정
+    searchTimerRef.current = setTimeout(() => {
+      fetchArtists(query);
+    }, 1000);
   };
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {

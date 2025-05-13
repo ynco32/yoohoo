@@ -1,108 +1,35 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import ConcertCard from '@/components/common/ConcertCard/ConcertCard';
 import Button from '@/components/common/Button/Button';
 import { ConfirmModal } from '@/components/common/ConfirmModal/ConfirmModal';
 import { DateSelectionModal } from '@/components/auth/DateSelectionModal/DateSelectionModal';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import styles from './ConcertContainer.module.scss';
-import { ConcertInfo } from '@/types/mypage';
 import { useConcert } from '@/hooks/useConcert';
+import { ConcertInfo } from '@/types/mypage';
 
 export default function ConcertContainer() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const search = searchParams.get('search') || '';
-
   const {
     concerts,
     selected,
-    isLastPage,
     isLoading,
+    search,
     loadMoreRef,
     selectedDatesMap,
-    handleSearch,
-    handleSelect,
+    isDateModalOpen,
+    selectedConcertForDate,
+    isClosing,
+    isConfirmModalOpen,
+    handleSearchChange,
+    handleConcertSelect,
+    handleSeatInfoClick,
+    handleCloseModal,
+    handleDateConfirm,
+    handleReselect,
+    handleConfirmDeselect,
+    handleCancelDeselect,
     handleSubmit,
-    updateSelectedDates,
-  } = useConcert(search);
-
-  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
-  const [selectedConcertForDate, setSelectedConcertForDate] =
-    useState<ConcertInfo | null>(null);
-  const [isClosing, setIsClosing] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [concertToDeselect, setConcertToDeselect] = useState<number | null>(
-    null
-  );
-
-  const handleSearchChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set('search', value);
-    } else {
-      params.delete('search');
-    }
-    router.push(`?${params.toString()}`);
-  };
-
-  const handleConcertSelect = (id: number) => {
-    if (selected.includes(id) && selectedDatesMap[id]?.length > 0) {
-      setConcertToDeselect(id);
-      setIsConfirmModalOpen(true);
-      return;
-    }
-
-    handleSelect(id);
-  };
-
-  const handleSeatInfoClick = (id: number) => {
-    const concert = concerts.find((c) => c.concertId === id);
-    if (concert) {
-      setSelectedConcertForDate(concert);
-      setIsDateModalOpen(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsDateModalOpen(false);
-      setIsClosing(false);
-      setSelectedConcertForDate(null);
-    }, 300);
-  };
-
-  const handleDateConfirm = (
-    selectedDates: { date: string; concertDetailId: number }[]
-  ) => {
-    if (selectedConcertForDate) {
-      updateSelectedDates(selectedConcertForDate.concertId, selectedDates);
-    }
-    handleCloseModal();
-  };
-
-  const handleReselect = (id: number) => {
-    const concert = concerts.find((c) => c.concertId === id);
-    if (concert) {
-      setSelectedConcertForDate(concert);
-      setIsDateModalOpen(true);
-    }
-  };
-
-  const handleConfirmDeselect = () => {
-    if (concertToDeselect !== null) {
-      updateSelectedDates(concertToDeselect, []);
-      setConcertToDeselect(null);
-    }
-    setIsConfirmModalOpen(false);
-  };
-
-  const handleCancelDeselect = () => {
-    setConcertToDeselect(null);
-    setIsConfirmModalOpen(false);
-  };
+  } = useConcert();
 
   return (
     <>
@@ -110,11 +37,11 @@ export default function ConcertContainer() {
         <SearchBar
           initialValue={search}
           onSearch={handleSearchChange}
-          placeholder='공연을 검색해보세요'
+          placeholder='공연, 아티스트로 검색'
         />
       </div>
       <div className={styles.concertContainer}>
-        {concerts.map((concert) => (
+        {concerts.map((concert: ConcertInfo) => (
           <ConcertCard
             key={concert.concertId}
             className={`${styles.concertCard} ${selected.includes(concert.concertId) ? styles.selected : ''}`}

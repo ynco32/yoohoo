@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import TicketingSeatList from '@/components/features/ticketing/TicketingSeatList';
+// import TicketingSeatList from '@/components/features/ticketing/TicketingSeatList';
 import TicketingBottomButton from '@/components/ticketing/TicketingBottomButton/TicketingBottomButton';
 import ErrorPopup from '@/components/ticketing/ErrorPopup/ErrorPopup';
 import Captcha from '@/components/ticketing/Captcha/Captcha';
@@ -36,7 +36,8 @@ export default function SeatPage() {
   // 선택자 함수 사용
   const error = useAppSelector(selectError);
   const selectedSeatNumber = useAppSelector(selectSelectedSeatNumber);
-  const userId = useAppSelector((state: RootState) => state.user.data?.id);
+  // const userId = useAppSelector((state: RootState) => state.user.data?.id);
+  const userId = '1';
   const onSuccess = useAppSelector(
     (state: RootState) => state.captcha.onSuccess
   );
@@ -70,7 +71,7 @@ export default function SeatPage() {
 
   return (
     <div className={styles.container}>
-      <TicketingSeatList areaId={areaId} />
+      {/* <TicketingSeatList areaId={areaId} /> */}
       <TicketingBottomButton
         onClick={handleReservationClick}
         isActive={isActive}

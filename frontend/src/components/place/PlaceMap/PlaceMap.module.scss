@@ -8,10 +8,13 @@
   position: absolute;
   top: 0;
   left: 0;
+  right: 0; /* 오른쪽 끝까지 확장 */
   z-index: 10;
   display: flex;
   padding: 8px;
   gap: 8px;
+  width: 100%; /* 너비를 100%로 설정 */
+  justify-content: space-evenly; /* 버튼들 사이의 공간을 균등하게 분배 */
 }
 
 .kakaoMap {

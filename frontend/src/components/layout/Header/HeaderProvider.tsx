@@ -99,7 +99,15 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
 
   // 경로에 따른 상세 정보 표시 여부 결정
   const updateDetailState = (path: string) => {
-    if (path === '/place' || path === '/sight') {
+    if (path.startsWith('/sight/reviews/write')) {
+      setShouldShowDetail(true);
+      setSeatDetail('리뷰 쓰기');
+    }
+    // 리뷰 수정 페이지
+    else if (path.match(/^\/sight\/reviews\/[^\/]+\/edit$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('리뷰 수정');
+    } else if (path === '/place' || path === '/sight') {
       setShouldShowDetail(false);
       // 목록 페이지로 돌아갈 때 경기장 정보 유지 (새로고침 대비)
     }

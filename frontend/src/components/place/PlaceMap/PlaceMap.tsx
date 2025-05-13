@@ -8,44 +8,36 @@ import IconButton from '@/components/common/IconButton/IconButton';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { updateMapSettings } from '@/store/slices/arenaSlice';
+import useMarkers from '@/hooks/useMarkers';
 
 interface PlaceMapProps {
   latitude: number;
   longitude: number;
   zoom?: number;
+  arenaId: string | number;
 }
-
-const categoryItems = [
-  '화장실',
-  '물품 보관소',
-  '편의시설',
-  '공연 관련 시설',
-] as const;
-type CategoryType = (typeof categoryItems)[number];
-
-const dummyMarkers: Record<
-  CategoryType,
-  { name: string; lat: number; lng: number }[]
-> = {
-  화장실: [
-    { name: '남자 화장실', lat: 37.5196, lng: 127.1263 },
-    { name: '여자 화장실', lat: 37.5192, lng: 127.1258 },
-  ],
-  '물품 보관소': [{ name: 'A 게이트 보관소', lat: 37.5195, lng: 127.126 }],
-  편의시설: [{ name: '편의점', lat: 37.5197, lng: 127.1264 }],
-  '공연 관련 시설': [{ name: '무대 입구', lat: 37.5193, lng: 127.1259 }],
-};
 
 export default function PlaceMap({
   latitude,
   longitude,
   zoom = 3,
+  arenaId,
 }: PlaceMapProps) {
-  const [activeCategory, setActiveCategory] = useState<CategoryType>('화장실');
   const mapRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const userMarkerRef = useRef<kakao.maps.Marker | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+
+  // 마커 데이터 가져오기
+  const {
+    markers,
+    loading,
+    error,
+    categories,
+    categoryLabels,
+    activeCategory,
+    setActiveCategory,
+  } = useMarkers(arenaId);
 
   const { map } = useKakaoMap(mapRef, {
     center: { lat: latitude, lng: longitude },
@@ -149,9 +141,8 @@ export default function PlaceMap({
 
   // 마커 + 오버레이 렌더링
   useEffect(() => {
-    if (!map) return;
+    if (!map || loading) return; // 기존 오버레이 닫기
 
-    // 기존 오버레이 닫기
     if (overlayRef.current) {
       overlayRef.current.setMap(null);
       overlayRef.current = null;
@@ -159,18 +150,23 @@ export default function PlaceMap({
 
     const markerList: kakao.maps.Marker[] = [];
 
-    dummyMarkers[activeCategory].forEach(({ name, lat, lng }) => {
-      const position = new window.kakao.maps.LatLng(lat, lng);
+    markers.forEach((markerData) => {
+      const position = new window.kakao.maps.LatLng(
+        markerData.latitude,
+        markerData.longitude
+      );
 
       const marker = new window.kakao.maps.Marker({
         map,
         position,
-        title: name,
+        title: getMarkerTitle(markerData),
       });
 
       const overlayContent = document.createElement('div');
       overlayContent.className = styles.overlay;
-      overlayContent.innerHTML = `<div class="${styles.overlayBox}">${name}</div>`;
+      overlayContent.innerHTML = `<div class="${
+        styles.overlayBox
+      }">${getMarkerTitle(markerData)}</div>`;
 
       const overlay = new window.kakao.maps.CustomOverlay({
         position,
@@ -194,18 +190,40 @@ export default function PlaceMap({
     return () => {
       markerList.forEach((m) => m.setMap(null));
     };
-  }, [map, activeCategory]);
+  }, [map, markers, loading]);
+
+  // 마커 타이틀 생성 함수
+  const getMarkerTitle = (marker: (typeof markers)[0]) => {
+    switch (marker.category) {
+      case 'TOILET':
+        return (marker.detail as any).name || '화장실';
+      case 'CONVENIENCE':
+        return `${(marker.detail as any).category || '편의시설'}`;
+      case 'STORAGE':
+        return (marker.detail as any).name || '물품 보관소';
+      case 'TICKET':
+        return (marker.detail as any).name || '티켓 부스';
+      default:
+        return '시설';
+    }
+  };
+
+  if (error) {
+    return (
+      <div className={styles.error}>마커 정보를 가져오는데 실패했습니다.</div>
+    );
+  }
 
   return (
     <div className={styles.mapWrapper}>
       <div className={styles.categoryBar}>
-        {categoryItems.map((name) => (
+        {categories.map((category) => (
           <TagButton
-            key={name}
-            onClick={() => setActiveCategory(name)}
-            type={activeCategory === name ? 'active' : 'default'}
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            type={activeCategory === category ? 'active' : 'default'}
           >
-            {name}
+            {categoryLabels[category]}
           </TagButton>
         ))}
       </div>

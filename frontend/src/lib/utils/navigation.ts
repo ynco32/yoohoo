@@ -29,7 +29,7 @@ export function determineBackNavigation(
 
   // sight 경로 처리
   if (pathSegments[0] === 'sight') {
-    return handleSightBack(pathSegments);
+    return handleSightBack(pathSegments, previousPath);
   }
 
   // place 경로 처리
@@ -79,7 +79,24 @@ function handleTicketingBack(pathSegments: string[]): NavigationAction {
 /**
  * sight 경로에서의 뒤로가기 동작 처리
  */
-function handleSightBack(pathSegments: string[]): NavigationAction {
+function handleSightBack(
+  pathSegments: string[],
+  previousPath: string
+): NavigationAction {
+  // 리뷰 작성 페이지 처리
+  if (pathSegments[1] === 'reviews' && pathSegments[2] === 'write') {
+    // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
+    if (
+      previousPath.startsWith('/sight/') &&
+      !previousPath.includes('/reviews/')
+    ) {
+      // 이전 경로가 시야 페이지였다면 그 경로로 이동
+      return { type: 'push', path: previousPath };
+    }
+
+    // 경기장 목록 페이지로 리디렉션
+    return { type: 'push', path: '/sight' };
+  }
 
   // 기본적으로는 한 단계 위로 이동
   if (pathSegments.length > 1) {

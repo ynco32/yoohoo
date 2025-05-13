@@ -7,7 +7,9 @@ export default function SightLayout({
   return (
     <>
       <div className={styles.bgWrapper} />
-      <div className={styles.container}>{children}</div>;
+      <div className={styles.container}>
+        <div className={styles.contentWrapper}>{children}</div>
+      </div>
     </>
   );
 }

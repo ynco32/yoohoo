@@ -27,7 +27,7 @@ export const getMarkersByCategory = async (
     );
 
     // 에러 확인
-    if (response.data.error && response.data.error.code) {
+    if (response.data.error && response.data.error.name) {
       console.error('API 에러:', response.data.error.message);
       return [];
     }
@@ -56,7 +56,7 @@ export const getAllMarkers = async (
     );
 
     // 에러 확인
-    if (response.data.error && response.data.error.code) {
+    if (response.data.error && response.data.error.name) {
       console.error('API 에러:', response.data.error.message);
       return {
         TOILET: [],

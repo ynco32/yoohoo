@@ -44,6 +44,15 @@ export default function SearchBar({
     inputRef.current?.focus();
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    // 입력값이 변경될 때마다 onSearch 콜백 호출
+    if (onSearch) {
+      onSearch(newValue);
+    }
+  };
+
   return (
     <div className={`${styles.searchBarWrapper} ${className}`}>
       <form
@@ -60,7 +69,7 @@ export default function SearchBar({
           className={styles.input}
           placeholder={placeholder}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleChange}
           aria-label='검색'
         />
 

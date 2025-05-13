@@ -5,7 +5,8 @@ export interface ApiResponse<T> {
 }
 
 export interface ExceptionResponse {
-  code: string;
+  statusCode: number;
+  name: string;
   message: string;
 }
 

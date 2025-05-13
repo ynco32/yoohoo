@@ -3,10 +3,10 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import KspoSvg from '@/assets/svgs/kspo.svg';
+import InspireSvg from '@/assets/svgs/inspire.svg';
 import styles from '@/app/sight/[arenaId]/page.module.scss';
 
-export default function KspoMap() {
+export default function InspireMap() {
   const router = useRouter();
 
   const arenaId = 5;
@@ -38,7 +38,14 @@ export default function KspoMap() {
 
   return (
     <div className={styles.svgContainer}>
-      <KspoSvg onClick={handleSvgClick} className={styles.interactiveSvg} />
+      {typeof InspireSvg === 'function' ? (
+        <InspireSvg
+          onClick={handleSvgClick}
+          className={styles.interactiveSvg}
+        />
+      ) : (
+        <div className={styles.fallbackSvg}>SVG를 불러올 수 없습니다.</div>
+      )}
     </div>
   );
 }

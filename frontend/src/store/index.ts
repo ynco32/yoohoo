@@ -12,6 +12,7 @@ import {
 import storage from 'redux-persist/lib/storage';
 import userReducer from './slices/userSlice';
 import arenaReducer from './slices/arenaSlice';
+import sectionReducer from './slices/sectionSlice';
 
 // persist 설정
 const arenaPersistConfig = {
@@ -36,6 +37,8 @@ export const store = configureStore({
   reducer: {
     user: userReducer, // 또는 persistedUserReducer
     arena: persistedArenaReducer,
+    section: sectionReducer,
+
     // 다른 리듀서들 추가
   },
   middleware: (getDefaultMiddleware) =>

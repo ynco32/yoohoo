@@ -3,16 +3,29 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
 import SmallDropdown from '@/components/common/Dropdown/SmallDropdown';
 import styles from '../[arenaId]/layout.module.scss';
 import { arenaApi } from '@/api/sight/arena';
 import { ArenaSection } from '@/types/arena';
+import {
+  setCurrentFloor,
+  setCurrentSection,
+} from '@/store/slices/sectionSlice';
+import { RootState } from '@/store';
 
 export default function SelectorContainer() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const arenaId = params.arenaId as string;
+  const sectionId = params.sectionId as string;
+
+  const dispatch = useDispatch();
+
+  // Redux에서 현재 층과 구역 가져오기
+  const { currentFloor: reduxFloor, currentSection: reduxSection } =
+    useSelector((state: RootState) => state.section);
 
   const [allSections, setAllSections] = useState<ArenaSection[]>([]);
   const [floors, setFloors] = useState<{ label: string; value: string }[]>([]);
@@ -21,8 +34,23 @@ export default function SelectorContainer() {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentFloor = searchParams.get('floor') || '';
-  const currentSection = searchParams.get('section') || '';
+  // sectionId에서 실제 섹션명 추출
+  const extractedSectionName = sectionId ? sectionId.replace(arenaId, '') : '';
+
+  // URL 파라미터에서 값을 가져오되, 없으면 Redux 값을 사용
+  const currentFloor = searchParams.get('floor') || reduxFloor || '';
+  const currentSection = extractedSectionName || reduxSection || '';
+
+  // 컴포넌트 마운트 시 Redux 상태 업데이트
+  useEffect(() => {
+    if (searchParams.get('floor')) {
+      dispatch(setCurrentFloor(searchParams.get('floor') || ''));
+    }
+
+    if (extractedSectionName) {
+      dispatch(setCurrentSection(extractedSectionName));
+    }
+  }, [dispatch, searchParams, extractedSectionName]);
 
   // 모든 구역 데이터 가져오기
   useEffect(() => {
@@ -86,6 +114,15 @@ export default function SelectorContainer() {
 
   // 층 변경 핸들러
   const handleFloorChange = (floor: string) => {
+    dispatch(setCurrentFloor(floor));
+
+    // 현재 [sectionId] 페이지에 있는 경우 라우팅 하지 않음
+    if (sectionId) {
+      // 층에 맞는 구역 필터링만 진행, URL은 변경하지 않음
+      return;
+    }
+
+    // [sectionId] 페이지가 아닌 경우 기존 라우팅 로직 실행
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set('floor', floor);
     current.delete('section');
@@ -95,10 +132,12 @@ export default function SelectorContainer() {
     router.push(`/sight/${arenaId}${query}`);
   };
 
-  
   // 구역 변경 핸들러
   const handleSectionChange = (section: string) => {
-    router.push(`/sight/${arenaId}/section/${section}?floor=${currentFloor}`);
+    dispatch(setCurrentSection(section));
+
+    const sectionName = arenaId + section;
+    router.push(`/sight/${arenaId}/${sectionName}`);
   };
 
   return (
@@ -109,7 +148,7 @@ export default function SelectorContainer() {
       ) : (
         <SmallDropdown
           options={floors}
-          placeholder='층'
+          placeholder={currentFloor ? `${currentFloor}층` : '층'}
           value={currentFloor}
           onChange={handleFloorChange}
         />
@@ -127,7 +166,7 @@ export default function SelectorContainer() {
       ) : (
         <SmallDropdown
           options={sections}
-          placeholder='구역'
+          placeholder={currentSection || '구역'}
           value={currentSection}
           onChange={handleSectionChange}
           disabled={sections.length === 0}

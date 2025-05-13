@@ -41,7 +41,7 @@ public class ArtistRepositoryCustomImpl implements ArtistRepositoryCustom {
 				searchCondition(searchWord)
 			)
 			.orderBy(artist.artistId.asc())
-			.limit(PAGE_SIZE + 1)
+			.limit(PAGE_SIZE + 1L)
 			.fetch();
 
 		Set<Long> followingArtistIds = getFollowingArtistIds(currentUser);

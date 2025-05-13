@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 					sessionMap.getOrDefault(concertId, List.of())
 				);
 			})
-			.filter(dto -> dto != null)
+			.filter(Objects::nonNull)
 			.toList();
 
 		return ConcertResponseDTO.of(responseDTOs, !hasNext);
@@ -116,8 +117,8 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 					sessionMap.getOrDefault(concertId, List.of())
 				);
 			})
-			.filter(dto -> dto != null)
-			.collect(Collectors.toList());
+			.filter(Objects::nonNull)
+			.toList();
 
 		return ConcertResponseDTO.of(responseDTOs, true);
 	}
@@ -142,7 +143,7 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 					.exists()
 			)
 			.orderBy(concert.concertId.desc())
-			.limit(PAGE_SIZE + 1)
+			.limit(PAGE_SIZE + 1L)
 			.fetch();
 	}
 

@@ -50,7 +50,6 @@ public class ConcertService {
 	private final ArenaRepository arenaRepository;
 	private final CastRepository castRepository;
 	private final ConcertNoticeRepository concertNoticeRepository;
-	private final ConcertReadService concertReadService;
 
 	public ConcertResponseDTO getConcerts(Long lastConcertDetailId, String searchWord, User user) {
 
@@ -77,7 +76,7 @@ public class ConcertService {
 		newConcertIds.removeAll(concertIdsCoveredByDetails);
 
 		List<MyConcert> toDelete = determineMyConcertsToDelete(currentMyConcerts, newDetailIds, newConcertIds);
-		List<MyConcert> toSave = buildUpdatedMyConcerts(details, newConcertIds, request, currentByDetailId, currentByConcertId, user);
+		List<MyConcert> toSave = buildUpdatedMyConcerts(details, newConcertIds, currentByDetailId, currentByConcertId, user);
 		persistChanges(toDelete, toSave);
 	}
 
@@ -144,21 +143,14 @@ public class ConcertService {
 			.toList();
 	}
 
-	private List<MyConcert> buildUpdatedMyConcerts(List<ConcertDetail> details, Set<Long> newConcertIds, ConcertListRequestDTO request, Map<Long, MyConcert> currentByDetailId, Map<Long, MyConcert> currentByConcertId, User user) {
+	private List<MyConcert> buildUpdatedMyConcerts(List<ConcertDetail> details, Set<Long> newConcertIds, Map<Long, MyConcert> currentByDetailId, Map<Long, MyConcert> currentByConcertId, User user) {
 
 		List<MyConcert> result = new ArrayList<>();
+
 		for (ConcertDetail detail : details) {
 			Long detailId = detail.getConcertDetailId();
-			boolean entranceEnabled = request.isEntranceNotificationEnabled(detailId);
-
-			if (currentByDetailId.containsKey(detailId)) {
-				MyConcert existing = currentByDetailId.get(detailId);
-				if (existing.isEntranceNotificationEnabled() != entranceEnabled) {
-					existing.updateEntranceNotification(entranceEnabled);
-					result.add(existing);
-				}
-			} else {
-				result.add(MyConcert.of(detail.getConcert(), user, detail, true, entranceEnabled));
+			if (!currentByDetailId.containsKey(detailId)) {
+				result.add(MyConcert.of(detail.getConcert(), user, detail, true, true));
 			}
 		}
 
@@ -169,6 +161,7 @@ public class ConcertService {
 				result.add(MyConcert.of(concert, user, true, false));
 			}
 		}
+
 		return result;
 	}
 

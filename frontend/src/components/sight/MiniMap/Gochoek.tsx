@@ -37,6 +37,21 @@ export default function GocheokMinimap({
     );
     console.log('Stage 요소 IDs:', stageIds);
 
+    // 모든 섹션 요소 저장 (나중에 원래 색상 복원을 위해)
+    const sectionElements: { [key: string]: Element[] } = {};
+    const sectionTextElements: { [key: string]: Element[] } = {};
+
+    // 각 섹션 요소 수집
+    svg.querySelectorAll('g[id^="section"]').forEach((sectionGroup) => {
+      const sectionId = sectionGroup.id;
+      sectionElements[sectionId] = Array.from(
+        sectionGroup.querySelectorAll('path, rect, circle, polygon, ellipse')
+      );
+      sectionTextElements[sectionId] = Array.from(
+        sectionGroup.querySelectorAll('text, tspan')
+      );
+    });
+
     // Stage 요소가 아닌 섹션 요소만 회색으로 변경
     allElements.forEach((element) => {
       // 요소의 부모 중에 stage 요소가 있는지 확인
@@ -169,16 +184,18 @@ export default function GocheokMinimap({
       // 선택된 섹션이 있으면 해당 섹션만 강조
       if (selectedSection) {
         console.log('선택된 섹션:', selectedSection.getAttribute('id'));
+        const sectionId = selectedSection.getAttribute('id') || '';
 
-        // 선택된 구역의 배경 요소 강조 (path, rect 등)
+        // 선택된 구역의 배경 요소 원래 색상으로 복원
         const selectedBgElements = selectedSection.querySelectorAll(
           'path, rect, circle, polygon, ellipse'
         );
         selectedBgElements.forEach((element) => {
-          element.setAttribute('style', 'fill: #a7deff; opacity: 1;');
+          // 원래 opacity 복원
+          element.setAttribute('style', 'opacity: 1;');
         });
 
-        // 선택된 구역의 텍스트 요소 강조
+        // 선택된 구역의 텍스트 요소 복원
         const selectedTextElements =
           selectedSection.querySelectorAll('text, tspan');
         selectedTextElements.forEach((element) => {

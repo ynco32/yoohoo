@@ -19,31 +19,25 @@ export default function InspireMinimap({
 
     const svg = svgRef.current;
 
-    // Stage 요소 찾기
-    const stageGroup = svg.getElementById('inspire_svg__stage');
-
-    // 모든 그룹과 요소 초기화 (stage 제외)
+    // 모든 그룹과 요소 초기화 (회색으로 변경)
     const allGroups = svg.querySelectorAll('g[id]');
     allGroups.forEach((group) => {
-      // stage는 제외하고 나머지만 회색으로 변경
-      if (group.id !== 'inspire_svg__stage') {
-        group.querySelectorAll('*').forEach((el) => {
-          const className = el.getAttribute('class') || '';
+      group.querySelectorAll('*').forEach((el) => {
+        const className = el.getAttribute('class') || '';
 
-          if (className.includes('cls-1')) {
-            // 텍스트 요소
-            el.setAttribute('style', 'fill: #cccccc; opacity: 0.5;');
-          } else if (className.includes('cls-')) {
-            // 배경 요소 (모든 cls- 클래스)
-            el.setAttribute('style', 'fill: #e6e6e6; opacity: 0.5;');
-          }
-        });
-      }
+        if (className.includes('cls-1')) {
+          // 텍스트 요소
+          el.setAttribute('style', 'fill: #cccccc; opacity: 0.5;');
+        } else if (className.includes('cls-')) {
+          // 배경 요소
+          el.setAttribute('style', 'fill: #e6e6e6; opacity: 0.5;');
+        }
+      });
     });
 
-    // 선택된 섹션이 있는 경우 해당 섹션만 강조
+    // 선택된 섹션이 있는 경우 해당 섹션만 원래 색상으로 복원
     if (currentSectionId) {
-      // ID로 섹션 선택 (정확한 ID 패턴 사용)
+      // ID로 섹션 선택
       let sectionId;
 
       if (currentSectionId.startsWith('F')) {
@@ -55,27 +49,15 @@ export default function InspireMinimap({
       const selectedSection = svg.getElementById(sectionId);
 
       if (selectedSection) {
-        // 선택된 섹션의 모든 요소 원래 색상으로 복원
+        // 선택된 섹션의 모든 요소 원래 색상으로 복원 (스타일 제거)
         selectedSection.querySelectorAll('*').forEach((el) => {
           const className = el.getAttribute('class') || '';
 
-          // 요소 유형에 따라 스타일 적용
-          if (className.includes('cls-1')) {
-            // 텍스트 요소
-            el.setAttribute('style', 'fill: #4986e8; opacity: 1;');
-          } else if (
-            className.includes('cls-3') ||
-            className.includes('cls-5')
-          ) {
-            // 브랜드 색상을 사용하는 배경 요소
-            el.setAttribute('style', 'fill: #a7deff; opacity: 1;');
-          } else if (className.includes('cls-4')) {
-            // 초록색 배경 요소
-            el.setAttribute('style', 'fill: #b1fcb1; opacity: 1;');
-          } else if (className.includes('cls-2')) {
-            // 기타 배경 요소
-            el.setAttribute('style', 'opacity: 1;');
-          }
+          // 스타일 속성을 완전히 제거하여 원래 클래스 스타일이 적용되도록 함
+          el.removeAttribute('style');
+
+          // 불투명도만 명시적으로 설정
+          el.setAttribute('style', 'opacity: 1;');
         });
       }
     }

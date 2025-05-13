@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 // import { useRouter } from 'next/navigation'; // 라우터 import 주석 처리
 import styles from './ReviewHeader.module.scss';
-import { useAppSelector } from '@/hooks/reduxHooks';
+import { useAppSelector } from '@/store/reduxHooks';
 // import { Modal } from '@/components/common/Modal';
 import Dot from '@/assets/icons/dots.svg';
 import { ReviewHeaderProps } from '@/types/review';

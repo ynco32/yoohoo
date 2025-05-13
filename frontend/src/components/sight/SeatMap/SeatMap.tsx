@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
-import { seatMockData } from '@/mocks/data/seatData';
+import { useSeatMap } from '@/hooks/useSeatMap';
 
 interface SelectedSeat {
   row: string;
@@ -14,25 +14,22 @@ interface SeatMapProps {
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({ arenaId, sectionId }) => {
-  const { section, seatMap } = seatMockData;
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
+  const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
 
   // 좌석 선택 처리 함수
   const handleSeatClick = (row: string, seatNumber: number) => {
-    // 이미 선택된 좌석인지 확인
     const isAlreadySelected = selectedSeats.some(
       (selected) => selected.row === row && selected.seat === seatNumber
     );
 
     if (isAlreadySelected) {
-      // 이미 선택된 좌석이면 선택 해제
       setSelectedSeats(
         selectedSeats.filter(
           (selected) => !(selected.row === row && selected.seat === seatNumber)
         )
       );
     } else {
-      // 새로운 좌석 선택
       setSelectedSeats([...selectedSeats, { row, seat: seatNumber }]);
     }
   };
@@ -47,12 +44,23 @@ const SeatMap: React.FC<SeatMapProps> = ({ arenaId, sectionId }) => {
   // 빈 행 여부 확인 함수
   const isEmptyRow = (row: any) => row.row === '';
 
+  if (isLoading) {
+    return <div className={styles.container}>로딩 중...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.container}>{error}</div>;
+  }
+
+  if (!seatData) {
+    return <div className={styles.container}>좌석 정보가 없습니다.</div>;
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.seatMapContainer}>
-        {seatMap.map((row, rowIndex) => {
+        {seatData.seatMap.map((row, rowIndex) => {
           if (isEmptyRow(row)) {
-            // 빈 행인 경우 공백으로 처리
             return (
               <div key={`empty-${rowIndex}`} className={styles.emptyRow}></div>
             );

@@ -58,19 +58,12 @@ export const fetchSeatsByArea = createAsyncThunk<
       });
     }
 
-    console.log('📦 좌석 정보 요청 시작:', areaId);
-
     // apiClient 사용하여 요청
     const response = await apiClient.get(
       `/api/v1/ticketing/sections/seats?section=${areaId}`
     );
-    console.log('📦 API 응답 상태:', response.status);
 
     const responseData: ApiResponse<any> = response.data;
-    console.log('📦 받은 좌석 데이터:', responseData);
-
-    // API 응답 구조 자세히 로깅
-    console.log('📦 데이터 구조 확인:', JSON.stringify(responseData.data));
 
     // 좌석 데이터 추출 - data.seats로 수정
     const apiSeats: ApiSeatResponse[] =
@@ -78,11 +71,8 @@ export const fetchSeatsByArea = createAsyncThunk<
         ? responseData.data.seats
         : [];
 
-    console.log('📦 추출된 좌석 데이터:', apiSeats);
-
     // API 응답을 TicketingSeatProps로 변환
     const processedSeats = processApiSeats(apiSeats);
-    console.log('📦 처리된 좌석 데이터:', processedSeats);
 
     return processedSeats;
   } catch (error) {

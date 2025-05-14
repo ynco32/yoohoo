@@ -7,5 +7,5 @@ public interface ArtistRepositoryCustom {
 
 	ArtistResponseDTO findArtists(Long lastArtistId, String searchWord, User user);
 
-	ArtistResponseDTO findMyArtists(Long lastArtistId, User user);
+	ArtistResponseDTO findMyArtists(User user);
 }

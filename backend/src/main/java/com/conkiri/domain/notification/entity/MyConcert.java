@@ -3,6 +3,7 @@ package com.conkiri.domain.notification.entity;
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.entity.ConcertDetail;
 import com.conkiri.domain.user.entity.User;
+import com.conkiri.global.common.BaseTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MyConcert {
+public class MyConcert extends BaseTime {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,5 +59,13 @@ public class MyConcert {
 
 	public static MyConcert of(Concert concert, User user, ConcertDetail concertDetail, boolean ticketingNotificationEnabled, boolean entranceNotificationEnabled) {
 		return new MyConcert(concert, user, concertDetail, ticketingNotificationEnabled, entranceNotificationEnabled);
+	}
+
+	public static MyConcert of(Concert concert, User user, boolean ticketingNotificationEnabled, boolean entranceNotificationEnabled) {
+		return new MyConcert(concert, user, null, ticketingNotificationEnabled, entranceNotificationEnabled);
+	}
+
+	public void updateEntranceNotification(boolean entranceNotificationEnabled) {
+		this.entranceNotificationEnabled = entranceNotificationEnabled;
 	}
 }

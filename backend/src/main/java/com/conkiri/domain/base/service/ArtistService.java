@@ -32,9 +32,9 @@ public class ArtistService {
 		return artistRepository.findArtists(lastArtistId, searchWord, user);
 	}
 
-	public ArtistResponseDTO getMyArtists(Long lastArtistId, User user) {
+	public ArtistResponseDTO getMyArtists(User user) {
 
-		return artistRepository.findMyArtists(lastArtistId, user);
+		return artistRepository.findMyArtists(user);
 	}
 
 
@@ -50,6 +50,13 @@ public class ArtistService {
 
 		deleteMyArtists(toDelete);
 		addMyArtists(toAddIds, user);
+	}
+
+	@Transactional
+	public void deleteMyArtist(Long artistId, User user) {
+
+		MyArtist artist = findMyArtistById(user, artistId);
+		myArtistRepository.delete(artist);
 	}
 
 	/**
@@ -125,6 +132,12 @@ public class ArtistService {
 				.toList();
 			myArtistRepository.saveAll(myArtistsToAdd);
 		}
+	}
+
+	private MyArtist findMyArtistById(User user, Long artistId) {
+
+		return myArtistRepository.findByUserAndArtistId(user, artistId)
+			.orElseThrow(() -> new BaseException(ErrorCode.ARTIST_NOT_FOUND));
 	}
 
 }

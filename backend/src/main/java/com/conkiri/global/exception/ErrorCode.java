@@ -85,13 +85,21 @@ public enum ErrorCode {
     MESSAGE_QUEUE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "메시지 큐 처리 중 오류가 발생했습니다."),
     NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림이 존재하지 않습니다."),
 
+	// 가수
+	ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "가수를 찾을 수 없습니다."),
+	ALREADY_EXIST_MY_ARTIST(HttpStatus.CONFLICT, "이미 등록한 가수입니다."),
+	MY_ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 가수를 찾을 수 없습니다."),
+
+	// 공연
+	CONCERT_DETAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "회차 정보를 찾을 수 없습니다"),
+
     // 콘서트 정보 저장
     RESOURCE_NOT_FOUND(HttpStatus.BAD_REQUEST, "공연장 정보가 없습니다."),
 
-    // 가수
-    ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "가수를 찾을 수 없습니다."),
-    ALREADY_EXIST_MY_ARTIST(HttpStatus.CONFLICT, "이미 등록한 가수입니다."),
-    MY_ARTIST_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 가수를 찾을 수 없습니다.");
+    // 나의 공연
+    MY_CONCERT_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 나의 공연이 없습니다."),
+
+	;
     private final HttpStatus httpStatus;
     private final String message;
 }

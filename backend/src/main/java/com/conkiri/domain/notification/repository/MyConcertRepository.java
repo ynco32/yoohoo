@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.conkiri.domain.notification.entity.MyConcert;
+import com.conkiri.domain.user.entity.User;
 
 public interface MyConcertRepository extends JpaRepository<MyConcert, Long> {
 
@@ -29,4 +30,13 @@ public interface MyConcertRepository extends JpaRepository<MyConcert, Long> {
 	List<MyConcert> findForEntranceNotification(
 		@Param("startTime") LocalDateTime startTime,
 		@Param("endTime") LocalDateTime endTime);
+
+	List<MyConcert> findByUser(User user);
+
+	@Query("SELECT mc FROM MyConcert mc " +
+		"JOIN FETCH mc.user u " +
+		"JOIN FETCH mc.concert c " +
+		"WHERE u = :user AND c.concertId = :concertId")
+	List<MyConcert> findByUserAndConcertId(@Param("user") User user, @Param("concertId") Long concertId);
+
 }

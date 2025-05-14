@@ -8,14 +8,11 @@ import { setError } from '@/store/slices/errorSlice';
 import { apiClient } from '@/api/api';
 import { AxiosError } from 'axios';
 import { ApiResponse } from '@/types/api';
-import { WaitingTimeResponse } from '@/types/websocket';
-
-// NotificationResponse 인터페이스 수정 (ApiResponse와 유사한 형태)
-interface NotificationResponse {
-  data: boolean;
-  error: { code: string; message: string } | null;
-  meta: { timestamp: string };
-}
+import {
+  WaitingTimeData,
+  WaitingTimeApiResponse,
+  NotificationApiResponse,
+} from '@/types/websocket';
 
 // 전역 변수로 상태 관리 (컴포넌트 리렌더링에 영향받지 않음)
 let globalStompClient: Client | null = null;
@@ -47,49 +44,80 @@ export const useWebSocketQueue = () => {
       const notificationTopic = `/user/${sid}/book/notification`;
 
       console.log(`🤝 구독 시작: ${waitingTimeTopic}`);
-      client.subscribe(waitingTimeTopic, (message: IMessage) => {
-        console.log(`🤝 waiting-time 구독 메시지 수신`);
-        console.log('🤝 waiting-time 수신된 메세지:', message.body);
-        try {
-          const response: WaitingTimeResponse = JSON.parse(message.body);
-          dispatch(
-            setQueueInfo({
-              queueNumber: response.position,
-              waitingTime: response.estimatedWaitingSeconds,
-              peopleBehind: response.usersAfter,
-            })
+      const waitingTimeSub = client.subscribe(
+        waitingTimeTopic,
+        (message: IMessage) => {
+          console.log(`🤝 waiting-time 구독 메시지 수신`);
+          console.log('🤝 waiting-time 수신된 메세지:', message.body);
+          console.log(
+            '🤝 waiting-time 메시지 헤더:',
+            JSON.stringify(message.headers)
           );
-        } catch (error) {
-          console.error('🤝 waiting-time 메시지 파싱 오류:', error);
+
+          try {
+            // 중첩된 데이터 구조에 맞게 파싱 수정
+            const response: WaitingTimeApiResponse = JSON.parse(message.body);
+            console.log('🤝 waiting-time 전체 응답:', JSON.stringify(response));
+
+            // 중첩된 data 객체에서 필요한 정보 추출
+            if (response && response.data) {
+              const waitingData = response.data;
+              console.log(
+                '🤝 waiting-time 파싱된 데이터:',
+                JSON.stringify(waitingData)
+              );
+
+              dispatch(
+                setQueueInfo({
+                  queueNumber: waitingData.position,
+                  waitingTime: waitingData.estimatedWaitingSeconds,
+                  peopleBehind: waitingData.usersAfter,
+                })
+              );
+            } else {
+              console.error(
+                '🤝 waiting-time 응답에 data 필드가 없음:',
+                response
+              );
+            }
+          } catch (error) {
+            console.error('🤝 waiting-time 메시지 파싱 오류:', error);
+            console.error('🤝 원본 메시지:', message.body);
+          }
         }
-      });
+      );
+      console.log('🤝 waiting-time 구독 ID:', waitingTimeSub.id);
 
       console.log(`🤝 구독 시작: ${notificationTopic}`);
-      client.subscribe(notificationTopic, (message: IMessage) => {
-        console.log(`🤝 notification 구독 메시지 수신`);
-        console.log('🤝 notification 수신된 메세지:', message.body);
+      const notificationSub = client.subscribe(
+        notificationTopic,
+        (message: IMessage) => {
+          console.log(`🤝 notification 구독 메시지 수신`);
+          console.log('🤝 notification 수신된 메세지:', message.body);
+          console.log(
+            '🤝 notification 메시지 헤더:',
+            JSON.stringify(message.headers)
+          );
 
-        try {
-          console.log('🤝 원시 메시지:', message.body);
-          const response: NotificationResponse = JSON.parse(message.body);
-          console.log('🤝 파싱된 알림 응답:', response);
-
-          if (response.data === true) {
-            console.log('🤝 입장 가능 상태, 페이지 이동 시작');
-            router.push('./real/areaSelect');
-          } else {
-            console.log('🤝 아직 입장 불가능 상태');
-          }
-        } catch (error) {
-          console.error('🤝 notification 메시지 파싱 오류:', error);
-          console.error('🤝 오류 상세:', JSON.stringify(error));
           try {
-            console.log('🤝 원본 메시지(문자열):', message.body);
-          } catch (e) {
-            console.error('🤝 원본 메시지 접근 오류:', e);
+            // 수정된 API 응답 형식에 맞게 파싱
+            const response: NotificationApiResponse = JSON.parse(message.body);
+            console.log('🤝 notification 전체 응답:', JSON.stringify(response));
+
+            if (response && response.data === true) {
+              console.log('🤝 입장 가능 상태, 페이지 이동 시작');
+              router.push('./real/areaSelect');
+            } else {
+              console.log('🤝 아직 입장 불가능 상태');
+            }
+          } catch (error) {
+            console.error('🤝 notification 메시지 파싱 오류:', error);
+            console.error('🤝 오류 상세:', JSON.stringify(error));
+            console.error('🤝 원본 메시지:', message.body);
           }
         }
-      });
+      );
+      console.log('🤝 notification 구독 ID:', notificationSub.id);
 
       hasSubscribed = true;
       setIsSubscribed(true);
@@ -136,12 +164,16 @@ export const useWebSocketQueue = () => {
         headers: StompHeaders;
         body: string;
       }) => {
-        console.error('🤝 STOMP 에러:', frame);
+        console.error('🤝 STOMP 에러:', frame.headers, frame.body);
         isConnecting = false;
       };
 
       client.onWebSocketError = (event) => {
         console.error('🤝 웹소켓 에러 발생:', event);
+        console.error('🤝 웹소켓 에러 타입:', event.type);
+        if (event instanceof ErrorEvent) {
+          console.error('🤝 웹소켓 에러 메시지:', event.message);
+        }
         isConnecting = false;
       };
 
@@ -152,14 +184,19 @@ export const useWebSocketQueue = () => {
           '이유:',
           event.reason || '이유 없음'
         );
+        console.log('🤝 연결 종료 시 상태:', {
+          세션ID: globalSessionId,
+          구독상태: hasSubscribed,
+        });
 
         hasSubscribed = false;
         setIsSubscribed(false);
         isConnecting = false;
       };
 
-      client.onConnect = () => {
+      client.onConnect = (frame) => {
         console.log('🤝 웹소켓 연결 성공');
+        console.log('🤝 연결 프레임 헤더:', JSON.stringify(frame.headers));
         isConnecting = false;
         globalStompClient = client;
 
@@ -194,9 +231,21 @@ export const useWebSocketQueue = () => {
       subscribeToTopics(globalStompClient, globalSessionId);
     }
 
+    // 주기적으로 연결 상태 로깅
+    const connectionCheckInterval = setInterval(() => {
+      if (globalStompClient) {
+        console.log('🤝 웹소켓 상태 점검:', {
+          연결됨: globalStompClient.connected,
+          구독됨: hasSubscribed,
+          세션ID: globalSessionId,
+        });
+      }
+    }, 30000); // 30초마다 확인
+
     // 컴포넌트 언마운트 시 전역 상태는 유지
     return () => {
       console.log('🤝 useWebSocketQueue 훅 클린업');
+      clearInterval(connectionCheckInterval);
       // 연결 유지 (페이지 이동 시에도 연결 상태 보존)
     };
   }, []);
@@ -227,6 +276,7 @@ export const useWebSocketQueue = () => {
       const response = await apiClient.post<ApiResponse<string>>(
         `/api/v1/ticketing/queue`
       );
+      console.log('🤝 대기열 진입 API 응답:', JSON.stringify(response.data));
       const receivedSessionId = response.data.data;
       console.log(`🤝 대기열 진입 성공: sessionId = ${receivedSessionId}`);
 
@@ -250,6 +300,15 @@ export const useWebSocketQueue = () => {
     } catch (error: unknown) {
       console.error('🤝 대기열 진입 API 오류:', error);
       if (error instanceof AxiosError) {
+        console.error(
+          '🤝 API 에러 상세:',
+          JSON.stringify({
+            상태: error.response?.status,
+            데이터: error.response?.data,
+            메시지: error.message,
+          })
+        );
+
         if (error.response?.status === 400) {
           dispatch(setError('이미 티켓팅에 참여하셨습니다.'));
         } else {

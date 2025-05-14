@@ -11,7 +11,7 @@ def check_concert_exists(concert_name):
     Returns:
         bool: 이미 존재하면 True, 아니면 False
     """
-    api_url = API_BASE_URL + "/api/v1/concert/checkExists" 
+    api_url = API_BASE_URL + "/api/v1/concerts/checkExists" 
     
     try:
         params = {"concertName": concert_name}
@@ -28,7 +28,7 @@ def check_concert_exists(concert_name):
 
 def save_concert_to_java_api(concert_data):
     """콘서트 데이터를 Java API로 전송"""
-    api_url = API_BASE_URL + "/api/v1/concert"  # API 엔드포인트
+    api_url = API_BASE_URL + "/api/v1/concerts/create"  # API 엔드포인트
 
     concert_name = concert_data.get('title') or concert_data.get('concert_name')
     venue_name = concert_data.get('place') or concert_data.get('venue')

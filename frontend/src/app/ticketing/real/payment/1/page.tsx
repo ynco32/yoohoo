@@ -101,7 +101,7 @@ export default function TicketingPage() {
         hasVisitedPayment,
         timestamp: new Date().toISOString(),
       });
-      router.push('payment1/payment2');
+      router.push('2');
     }, 100);
   };
 

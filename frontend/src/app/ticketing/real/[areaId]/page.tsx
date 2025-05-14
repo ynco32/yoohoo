@@ -28,11 +28,9 @@ export default function SeatPage() {
 
   // params 디버깅
   const params = useParams();
-  console.log('URL 파라미터:', params);
 
   // URL 파라미터에서 areaId 가져오기 (params.areaId로 접근)
   const areaId = (params?.areaId as string) || '';
-  console.log('사용할 areaId:', areaId);
 
   const dispatch = useAppDispatch();
 
@@ -44,6 +42,7 @@ export default function SeatPage() {
   const error = ticketingState?.error;
 
   const userId = useAppSelector((state: RootState) => state.user?.data?.userId);
+
   const onSuccess = useAppSelector(
     (state: RootState) => state.captcha?.onSuccess
   );
@@ -51,7 +50,6 @@ export default function SeatPage() {
   // 컴포넌트 마운트 시 해당 구역의 좌석 정보 로드
   useEffect(() => {
     if (areaId) {
-      console.log('좌석 정보 로드 요청:', areaId);
       dispatch(fetchSeatsByArea(areaId));
     } else {
       console.error('areaId가 없어 좌석 정보를 로드할 수 없습니다');
@@ -64,7 +62,8 @@ export default function SeatPage() {
 
   const handleReservationClick = async () => {
     if (!selectedSeatNumber || !userId) {
-      console.log("선택된 좌석이 없거나 유저 아이디가 없음")
+      console.log('선택된 좌석이 없거나 유저 아이디가 없음');
+      console.log(userId);
       return;
     }
 

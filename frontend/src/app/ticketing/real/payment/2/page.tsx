@@ -2,11 +2,10 @@
 
 import React, { useState } from 'react';
 import { StepIndicator } from '@/components/ticketing/StepIndicator/StepIndicator';
-// import { Modal } from '@/components/common/Modal';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux'; // Redux 디스패치 추가
-// import { reset } from '@/store/captchaSlice'; // captchaSlice의 reset 액션 가져오기
-import styles from './PaymentPage.module.scss';
+import { reset } from '@/store/slices/captchaSlice'; // captchaSlice의 reset 액션 가져오기
+import styles from './page.module.scss';
 
 import type {
   PaymentMethod,
@@ -15,6 +14,17 @@ import type {
   AgreementKey,
   Agreements,
 } from '@/types/payments';
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm?: () => void;
+  type?: 'alert' | 'confirm';
+  variant?: 'primary' | 'danger';
+}
 
 interface ModalState {
   isOpen: boolean;
@@ -273,6 +283,63 @@ export default function PaymentPage() {
     );
   };
 
+  // Modal 컴포넌트 통합
+  const renderModal = () => {
+    const {
+      isOpen,
+      onClose,
+      title,
+      confirmText = '확인',
+      cancelText = '취소',
+      onConfirm,
+      type = 'alert',
+      variant = 'primary',
+    } = {
+      isOpen: modal.isOpen,
+      onClose: closeModal,
+      title: modal.title,
+      confirmText: modal.confirmText,
+      cancelText: modal.cancelText,
+      onConfirm: modal.onConfirm,
+      type: modal.type,
+      variant: modal.variant,
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className={styles.modalOverlay}>
+        <div
+          className={styles.modalBackdrop}
+          onClick={type === 'alert' ? onClose : undefined}
+        />
+        <div className={styles.modalContent}>
+          <p className={styles.modalTitle}>{title}</p>
+
+          <div
+            className={type === 'confirm' ? styles.modalButtonContainer : ''}
+          >
+            {type === 'confirm' && (
+              <button onClick={onClose} className={styles.modalCancelButton}>
+                {cancelText}
+              </button>
+            )}
+            <button
+              onClick={type === 'alert' ? onClose : onConfirm}
+              className={
+                variant === 'primary'
+                  ? styles.modalConfirmButton
+                  : styles.modalDangerButton
+              }
+            >
+              {confirmText}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.headerContainer}>
@@ -370,17 +437,8 @@ export default function PaymentPage() {
         </button>
       </div>
 
-      {/* 모달 */}
-      {/* <Modal
-        isOpen={modal.isOpen}
-        onClose={closeModal}
-        title={modal.title}
-        type={modal.type}
-        variant={modal.variant}
-        onConfirm={modal.onConfirm}
-        confirmText={modal.confirmText}
-        cancelText={modal.cancelText}
-      /> */}
+      {/* 모달 - 직접 포함 */}
+      {renderModal()}
     </div>
   );
 }

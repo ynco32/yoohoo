@@ -1,5 +1,3 @@
-@import '@/assets/styles/base/_abstracts';
-
 .pageContainer {
   display: flex;
   height: calc(100vh - 56px);
@@ -249,4 +247,64 @@
 .termLabel {
   font-size: $font-size-sm;
   cursor: pointer;
+}
+/* Modal 스타일 추가 */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.modalBackdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.modalContent {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  max-width: 430px;
+  transform: translate(-50%, -50%);
+  border-radius: $border-radius-lg;
+  background-color: white;
+  padding: $spacing-xl;
+  text-align: center;
+}
+
+.modalTitle {
+  margin-bottom: $spacing-lg;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+}
+
+.modalButtonContainer {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.modalButton {
+  width: 100%;
+  flex: 1;
+  border-radius: $border-radius-lg;
+  padding-top: $spacing-md;
+  padding-bottom: $spacing-md;
+}
+
+.modalCancelButton {
+  @extend .modalButton;
+  border: 1px solid $con-gray;
+}
+
+.modalConfirmButton {
+  @extend .modalButton;
+  background-color: $con-blue;
+  color: white;
+}
+
+.modalDangerButton {
+  @extend .modalConfirmButton;
+  // 배경색 변경이 필요하다면 여기서 추가
 }

@@ -14,6 +14,7 @@ import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.ticketing.dto.response.ServerMetricsDTO;
 import com.conkiri.domain.ticketing.dto.response.WaitingTimeResponseDTO;
 import com.conkiri.domain.user.service.UserReadService;
+import com.conkiri.global.common.ApiResponse;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
 import com.conkiri.global.util.RedisKeys;
@@ -78,10 +79,11 @@ public class QueueProcessingService {
 
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());
+		
 		messagingTemplate.convertAndSendToUser(
 			userId + "_" + sessionId,
 			WebSocketConstants.WAITING_TIME_DESTINATION,
-			waitingTime
+			ApiResponse.success(waitingTime)
 		);
 		return userId + "_" + sessionId;
 	}

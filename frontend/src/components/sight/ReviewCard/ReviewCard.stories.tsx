@@ -72,7 +72,7 @@ const createMockReview = (
   arenaName: string,
   seatId: number,
   section: string,
-  rowLine: number,
+  rowLine: string,
   columnLine: number,
   content: string,
   artistGrade: ArtistGrade,
@@ -130,7 +130,7 @@ export const Default: Story = {
       '고척스카이돔', // arenaName
       1, // seatId
       'A구역', // section
-      12, // rowLine
+      '12', // rowLine
       23, // columnLine
       '정말 좋은 좌석이었어요! 아이유가 너무 가깝게 보여서 감동이었습니다. 무대 세트와 조명도 훌륭했어요. 다음에도 이 좌석에서 보고 싶네요.',
       ArtistGrade.CLOSE,
@@ -158,7 +158,7 @@ export const AuthorView: Story = {
       '고척스카이돔', // arenaName
       1, // seatId
       'A구역', // section
-      12, // rowLine
+      '12', // rowLine
       23, // columnLine
       '정말 좋은 좌석이었어요! 아이유가 너무 가깝게 보여서 감동이었습니다. 무대 세트와 조명도 훌륭했어요.',
       ArtistGrade.CLOSE,
@@ -184,7 +184,7 @@ export const NoPhotos: Story = {
       '고척스카이돔', // arenaName
       1, // seatId
       'A구역', // section
-      12, // rowLine
+      '12', // rowLine
       23, // columnLine
       '사진은 없지만 정말 좋은 좌석이었어요! 아이유가 너무 가깝게 보여서 감동이었습니다.',
       ArtistGrade.CLOSE,
@@ -210,7 +210,7 @@ export const DifferentGrades: Story = {
       '서울월드컵경기장', // arenaName
       1, // seatId
       'C구역', // section
-      30, // rowLine
+      '30', // rowLine
       45, // columnLine
       '멀리서 봤지만 그래도 분위기는 좋았어요. 스크린이 측면에서 보여서 조금 아쉬웠습니다.',
       ArtistGrade.FAR,

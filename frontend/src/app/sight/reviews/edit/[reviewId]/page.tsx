@@ -3,7 +3,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import styles from '@/styles/ReviewEdit.module.scss';
+import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
 import NumberInput from '@/components/common/NumberInput/NumberInput';

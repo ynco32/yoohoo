@@ -88,7 +88,7 @@ export const useReviewForm = () => {
         cameraModel: reviewData.cameraModel,
         photos: reviewData.photos,
         section: '',
-        rowLine: 0,
+        rowLine: '',
         columnLine: 0,
       };
 

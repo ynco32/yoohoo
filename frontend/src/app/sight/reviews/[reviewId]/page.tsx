@@ -1,6 +1,8 @@
 // src/pages/sight/reviews/[reviewId].tsx
+'use client';
+
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useReview } from '@/hooks/useReview';
@@ -10,7 +12,7 @@ import {
   SCREEN_GRADE_OPTIONS,
   STAGE_GRADE_OPTIONS,
 } from '@/lib/constants/review';
-import styles from '@/styles/ReviewDetail.module.scss';
+import styles from './page.module.scss';
 
 // 각 등급에 맞는 옵션 찾기 헬퍼 함수
 const getGradeOption = (
@@ -22,7 +24,8 @@ const getGradeOption = (
 
 export default function ReviewDetailPage() {
   const router = useRouter();
-  const { reviewId } = router.query;
+  const params = useParams();
+  const reviewId = params.reviewId as string;
   const { review, isLoading, error, deleteReview } = useReview(
     reviewId as string
   );

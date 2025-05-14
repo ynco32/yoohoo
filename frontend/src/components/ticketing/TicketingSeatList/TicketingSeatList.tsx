@@ -25,26 +25,29 @@ const TicketingSeatList = ({ areaId }: { areaId: string }) => {
     seatHeight: number = SEAT_HEIGHT,
     seatMargin: number = SEAT_MARGIN
   ) => {
-    // 실제 데이터가 배열인지 확인
-    if (!Array.isArray(seats)) {
-      console.log('📦 좌석 정보가 없음... ');
+    // 실제 데이터가 배열인지 확인하고 빈 배열인지 확인
+    if (!Array.isArray(seats) || seats.length === 0) {
       return {
         grid: [],
-        dimensions: { width: 0, height: 0 },
+        dimensions: { width: 100, height: 100 }, // 기본 SVG 크기 제공
       };
     }
 
     // 행/열 범위 계산 (이미 티켓 타입에 row, col이 포함되어 있음)
     const rows = seats.map((seat) => seat.row);
     const cols = seats.map((seat) => seat.col);
-    const minRow = Math.min(...rows);
-    const maxRow = Math.max(...rows);
-    const minCol = Math.min(...cols);
-    const maxCol = Math.max(...cols);
 
-    // 그리드 차원 계산
-    const gridWidth = (maxCol - minCol + 1) * (seatWidth + seatMargin);
-    const gridHeight = (maxRow - minRow + 1) * (seatHeight + seatMargin);
+    // 빈 배열인 경우 오류 방지를 위한 기본값 설정
+    const minRow = rows.length > 0 ? Math.min(...rows) : 0;
+    const maxRow = rows.length > 0 ? Math.max(...rows) : 0;
+    const minCol = cols.length > 0 ? Math.min(...cols) : 0;
+    const maxCol = cols.length > 0 ? Math.max(...cols) : 0;
+
+    // 그리드 차원 계산 (최소 1로 설정하여 0 나누기 오류 방지)
+    const gridWidth =
+      Math.max(1, maxCol - minCol + 1) * (seatWidth + seatMargin);
+    const gridHeight =
+      Math.max(1, maxRow - minRow + 1) * (seatHeight + seatMargin);
 
     // 좌석 맵 생성
     const seatMap = new Map<string, TicketingSeatProps>();
@@ -82,13 +85,37 @@ const TicketingSeatList = ({ areaId }: { areaId: string }) => {
   const { grid, dimensions } = generateGrid(seats);
 
   useEffect(() => {
+    // areaId가 존재하는지 확인
+    if (!areaId) {
+      console.error('areaId가 정의되지 않았습니다');
+      return; // areaId가 없으면 API 호출 중단
+    }
+
     dispatch(fetchSeatsByArea(areaId));
   }, [areaId, dispatch]);
+
+  // areaId가 없으면 에러 메시지 표시
+  if (!areaId) {
+    return (
+      <div className={styles.errorContainer}>
+        <p>구역 ID가 필요합니다</p>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
         <p>좌석 정보를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  // 좌석 데이터가 없는 경우
+  if (!seats || seats.length === 0) {
+    return (
+      <div className={styles.emptyContainer}>
+        <p>이 구역에는 좌석 정보가 없습니다.</p>
       </div>
     );
   }

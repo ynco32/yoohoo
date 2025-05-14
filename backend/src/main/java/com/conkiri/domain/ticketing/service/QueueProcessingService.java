@@ -79,11 +79,11 @@ public class QueueProcessingService {
 
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());
-		ApiResponse<WaitingTimeResponseDTO> response = ApiResponse.success(waitingTime);
+		
 		messagingTemplate.convertAndSendToUser(
 			userId + "_" + sessionId,
 			WebSocketConstants.WAITING_TIME_DESTINATION,
-			response
+			ApiResponse.success(waitingTime)
 		);
 		return userId + "_" + sessionId;
 	}

@@ -7,9 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.global.config.place.WebSocketHandshakeInterceptor;
-import com.conkiri.global.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +22,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Value("${frontend.url}")
 	private String frontendUrl;
-
-	private final JwtUtil jwtUtil;
-	private final UserRepository userRepository;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -47,7 +42,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// 채팅용 WebSocket 엔드포인트
 		registry.addEndpoint("/place-ws")
 			.addInterceptors(handshakeInterceptor)
-			.setAllowedOriginPatterns("*")
+			.setAllowedOrigins(frontendUrl)
 			.withSockJS();
 	}
 }

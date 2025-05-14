@@ -49,12 +49,11 @@ public class TicketingController {
 
 	// 대기열 진입 API
 	@PostMapping("/queue")
-	public ApiResponse<Void> joinQueue(
+	public ApiResponse<String> joinQueue(
 		@AuthenticationPrincipal UserPrincipal userPrincipal){
 
 		String sessionId = UUID.randomUUID().toString();
-		queueProcessingService.addToQueue(userPrincipal.getUserId(), sessionId);
-		return ApiResponse.ofSuccess();
+		return ApiResponse.success(queueProcessingService.addToQueue(userPrincipal.getUserId(), sessionId));
 	}
 
 	// 구역 조회 API

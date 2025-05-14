@@ -65,7 +65,7 @@ public class QueueProcessingService {
 		validateQueueRequest();
 
 		double score = System.nanoTime();
-		String queueKey = userId + ":" + sessionId;
+		String queueKey = userId + "_" + sessionId;
 		redisTemplate.opsForZSet().add(RedisKeys.QUEUE, queueKey, score);
 		redisTemplate.opsForHash().put(RedisKeys.SESSION_MAP, sessionId, String.valueOf(userId));
 
@@ -79,11 +79,11 @@ public class QueueProcessingService {
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());
 		messagingTemplate.convertAndSendToUser(
-			userId + ":" + sessionId,
+			userId + "_" + sessionId,
 			WebSocketConstants.WAITING_TIME_DESTINATION,
 			waitingTime
 		);
-		return userId + ":" + sessionId;
+		return userId + "_" + sessionId;
 	}
 
 	// 서버 부하에 따라 대기열을 주기적으로 처리합니다.
@@ -129,12 +129,12 @@ public class QueueProcessingService {
 
 		queueKeys.forEach(queueKey -> {
 			if (!queueKey.equals("dummy_user")) {  // 더미 유저 체크 필요
-				String[] parts = queueKey.split(":");
+				String[] parts = queueKey.split("_");
 				Long userId = Long.parseLong(parts[0]);
 				String sessionId = parts[1];
 				log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
 				messagingTemplate.convertAndSendToUser(
-					userId + ":" + sessionId,
+					userId + "_" + sessionId,
 					WebSocketConstants.NOTIFICATION_DESTINATION,
 					true
 				);
@@ -166,7 +166,7 @@ public class QueueProcessingService {
 	// 개별 사용자의 대기 시간을 업데이트합니다.
 	private void updateUserWaitingTime(String queueKey) {
 
-		String[] parts = queueKey.split(":");
+		String[] parts = queueKey.split("_");
 		if (parts.length != 2) return;
 		Long userId = Long.parseLong(parts[0]);
 		String sessionId = parts[1];
@@ -184,7 +184,7 @@ public class QueueProcessingService {
 			return WaitingTimeResponseDTO.of(0L, 0L, 0L);
 		}
 
-		String queueKey = userId + ":" + sessionId;
+		String queueKey = userId + "_" + sessionId;
 		Long position = redisTemplate.opsForZSet().rank(RedisKeys.QUEUE, queueKey);
 		if (position == null) {
 			return WaitingTimeResponseDTO.of(0L, 0L, 0L);

@@ -32,21 +32,21 @@ const arenaPersistConfig = {
   whitelist: ['currentArena'], // 경기장 정보만 지속
 };
 
-// 다른 persist 설정이 필요한 경우
+// 사용자 정보 persist 설정
 const userPersistConfig = {
   key: 'user',
   storage,
-  // 필요에 따라 whitelist 설정
+  whitelist: ['data', 'isLoggedIn'], // 사용자 데이터와 로그인 상태만 유지
 };
 
 // persist 적용
 const persistedArenaReducer = persistReducer(arenaPersistConfig, arenaReducer);
-// 필요한 경우 user reducer에도 persist 적용
-// const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
+// 사용자 정보에도 persist 적용
+const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 
 export const store = configureStore({
   reducer: {
-    user: userReducer, // 또는 persistedUserReducer
+    user: persistedUserReducer, // persistedUserReducer 사용
     queue: queueReducer,
     error: errorReducer,
     ticketing: ticketingSeatReducer, // 키 이름 확인 필요
@@ -66,9 +66,10 @@ export const store = configureStore({
     }),
 });
 
+// persistor 생성
 export const persistor = persistStore(store);
 
-// TypeScript 타입 정의
+// RootState 타입 정의
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

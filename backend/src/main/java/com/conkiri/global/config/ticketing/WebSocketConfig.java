@@ -35,7 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		config.setApplicationDestinationPrefixes("/ws", "/app");
 
 		// 서버가 클라이언트에게 브로드캐스트할 때 사용할 prefix들
-		config.enableSimpleBroker("/book", "/topic");
+		config.enableSimpleBroker("/book", "/topic", "/user");
 	}
 
 	@Override

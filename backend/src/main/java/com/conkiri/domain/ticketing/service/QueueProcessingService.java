@@ -79,7 +79,10 @@ public class QueueProcessingService {
 
 		log.info("Sending waiting time to user {}, {}, {}, {}", userId, waitingTime.estimatedWaitingSeconds(),
 			waitingTime.usersAfter(), waitingTime.position());
-		
+
+		log.info(ApiResponse.success(waitingTime).toString());
+
+
 		messagingTemplate.convertAndSendToUser(
 			userId + "_" + sessionId,
 			WebSocketConstants.WAITING_TIME_DESTINATION,
@@ -135,10 +138,11 @@ public class QueueProcessingService {
 				Long userId = Long.parseLong(parts[0]);
 				String sessionId = parts[1];
 				log.info("Sending entrance notification to user: {}", userId);  // 로그 추가
+				log.info(ApiResponse.success(true).toString());
 				messagingTemplate.convertAndSendToUser(
 					userId + "_" + sessionId,
 					WebSocketConstants.NOTIFICATION_DESTINATION,
-					true
+					ApiResponse.success(true)
 				);
 			}
 		});

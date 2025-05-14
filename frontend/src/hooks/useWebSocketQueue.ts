@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Client, IMessage, StompHeaders } from '@stomp/stompjs';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
@@ -14,6 +14,7 @@ export const useWebSocketQueue = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const stompClient = useRef<Client | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_DISABLE_WEBSOCKET === 'true') {
@@ -87,35 +88,10 @@ export const useWebSocketQueue = () => {
       client.onConnect = () => {
         console.log('🤝 웹소켓 연결 성공');
 
-        client.subscribe(`/user/book/waiting-time`, (message: IMessage) => {
-          console.log('🤝waiting-time 구독~!!');
-          console.log('🤝waiting-time 수신된 메세지:', message.body);
-          try {
-            const response: WaitingTimeResponse = JSON.parse(message.body);
-            dispatch(
-              setQueueInfo({
-                queueNumber: response.position,
-                waitingTime: response.estimatedWaitingSeconds,
-                peopleBehind: response.usersAfter,
-              })
-            );
-          } catch (error) {
-            console.error('🤝 메시지 파싱 오류:', error);
-          }
-        });
-
-        client.subscribe(`/user/book/notification`, (message: IMessage) => {
-          console.log('🤝notification 구독~!!');
-          console.log('🤝notification 수신된 메세지:', message.body);
-          try {
-            const response: NotificationResponse = JSON.parse(message.body);
-            if (response.success === true) {
-              router.push('./real/areaSelect');
-            }
-          } catch (error) {
-            console.error('🤝 메시지 파싱 오류:', error);
-          }
-        });
+        // sessionId가 있을 때만 구독 설정
+        if (sessionId) {
+          subscribeToTopics(client, sessionId);
+        }
       };
 
       client.activate();
@@ -129,19 +105,58 @@ export const useWebSocketQueue = () => {
         stompClient.current.deactivate();
       }
     };
-  }, [dispatch, router]);
+  }, [dispatch, router, sessionId]); // sessionId 의존성 추가
+
+  // 세션 ID로 토픽 구독 함수
+  const subscribeToTopics = (client: Client, sid: string) => {
+    client.subscribe(`/user/${sid}/book/waiting-time`, (message: IMessage) => {
+      console.log(`🤝 ${sid}/book/waiting-time 구독~!!`);
+      console.log('🤝waiting-time 수신된 메세지:', message.body);
+      try {
+        const response: WaitingTimeResponse = JSON.parse(message.body);
+        dispatch(
+          setQueueInfo({
+            queueNumber: response.position,
+            waitingTime: response.estimatedWaitingSeconds,
+            peopleBehind: response.usersAfter,
+          })
+        );
+      } catch (error) {
+        console.error('🤝 메시지 파싱 오류:', error);
+      }
+    });
+
+    client.subscribe(`/user/${sid}/book/notification`, (message: IMessage) => {
+      console.log(`🤝 ${sid}/book/notification 구독~!!`);
+      console.log('🤝notification 수신된 메세지:', message.body);
+      try {
+        const response: NotificationResponse = JSON.parse(message.body);
+        if (response.success === true) {
+          router.push('./real/areaSelect');
+        }
+      } catch (error) {
+        console.error('🤝 메시지 파싱 오류:', error);
+      }
+    });
+  };
 
   const enterQueue = async () => {
     try {
-      const response = await apiClient.post<ApiResponse<number>>(
+      const response = await apiClient.post<ApiResponse<string>>(
         `/api/v1/ticketing/queue`
       );
-      console.log(`🤝 ${response.data.data} 번째로 대기열 진입 성공`);
+      const receivedSessionId = response.data.data;
+      console.log(`🤝 대기열 진입 성공: sessionId = ${receivedSessionId}`);
+
+      // sessionId 상태 업데이트
+      setSessionId(receivedSessionId);
 
       // 웹소켓 연결 확인 및 재연결
       if (stompClient.current) {
         if (stompClient.current.connected) {
           console.log('🤝 웹소켓이 이미 연결되어 있습니다.');
+          // 연결이 이미 되어 있다면 바로 구독 시작
+          subscribeToTopics(stompClient.current, receivedSessionId);
         } else {
           console.log('🤝 웹소켓 재연결 시도...');
           stompClient.current.activate();
@@ -163,5 +178,6 @@ export const useWebSocketQueue = () => {
 
   return {
     enterQueue,
+    sessionId,
   };
 };

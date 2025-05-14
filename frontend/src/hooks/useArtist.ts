@@ -1,10 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { ArtistInfo } from '@/types/mypage';
 import { editArtist, getArtists } from '@/api/mypage/mypage';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { ExceptionResponse } from '@/types/api';
 
 export const useArtist = () => {
+  const router = useRouter();
+
   const [artists, setArtists] = useState<ArtistInfo[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

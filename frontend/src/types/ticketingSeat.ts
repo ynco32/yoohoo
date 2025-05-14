@@ -1,8 +1,8 @@
 // types/ticketingSeat.ts
 export interface ApiSeatResponse {
-  seatNumber: string; // "1-1" 형식
+  seat: string; // "1-1" 형식 (API 응답에서는 "seat"라는 키로 제공됨)
   status: 'AVAILABLE' | 'RESERVED';
-  userId: number | null;
+  userId?: number | null; // API 응답에 없는 필드일 수 있으므로 옵셔널로 변경
 }
 
 export interface TicketingSeatProps {
@@ -10,7 +10,7 @@ export interface TicketingSeatProps {
   row: number; // 파싱된 row 값
   col: number; // 파싱된 col 값
   status: 'AVAILABLE' | 'RESERVED';
-  userId: number | null;
+  userId?: number | null; // API 응답에 없는 필드일 수 있으므로 옵셔널로 변경
   isSelected: boolean; // UI 상태
 }
 

@@ -1,3 +1,4 @@
+// src/redux/index.ts 또는 src/redux/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import {
   persistStore,
@@ -17,6 +18,11 @@ import ticketingSeatReducer from './slices/ticketingSeatSlice';
 import captchaReducer from './slices/captchaSlice';
 import arenaReducer from './slices/arenaSlice';
 import sectionReducer from './slices/sectionSlice';
+import {
+  TypedUseSelectorHook,
+  useDispatch as useReduxDispatch,
+  useSelector as useReduxSelector,
+} from 'react-redux';
 
 // persist 설정
 const arenaPersistConfig = {
@@ -42,7 +48,7 @@ export const store = configureStore({
     user: userReducer, // 또는 persistedUserReducer
     queue: queueReducer,
     error: errorReducer,
-    ticketingSeat: ticketingSeatReducer,
+    ticketing: ticketingSeatReducer, // 키 이름 확인 필요
     captcha: captchaReducer,
     arena: persistedArenaReducer,
     section: sectionReducer,
@@ -63,3 +69,7 @@ export const persistor = persistStore(store);
 // TypeScript 타입 정의
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+// 타입이 지정된 useDispatch와 useSelector 훅
+export const useDispatch = () => useReduxDispatch<AppDispatch>();
+export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;

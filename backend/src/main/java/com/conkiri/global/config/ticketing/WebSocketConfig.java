@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 
-		config.enableSimpleBroker("/book"); // 서버가 구독한 클라이언트에게로는 book 로 시작
+		config.enableSimpleBroker("/user", "/book"); // 서버가 구독한 클라이언트에게로는 book 로 시작
 		config.setApplicationDestinationPrefixes("/ws"); // 클라이언트가 서버로 보낼 때 는 ws로 시작
 	}
 

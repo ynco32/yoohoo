@@ -31,11 +31,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 
+<<<<<<< backend/src/main/java/com/conkiri/global/config/ticketing/WebSocketConfig.java
 		// 클라이언트가 서버로 보낼 때 사용할 prefix들
 		config.setApplicationDestinationPrefixes("/ws", "/app");
 
 		// 서버가 클라이언트에게 브로드캐스트할 때 사용할 prefix들
-		config.enableSimpleBroker("/book", "/topic");
+		config.enableSimpleBroker("/book", "/topic", "/user");
+=======
+		config.enableSimpleBroker("/user", "/book"); // 서버가 구독한 클라이언트에게로는 book 로 시작
+		config.setApplicationDestinationPrefixes("/ws"); // 클라이언트가 서버로 보낼 때 는 ws로 시작
+>>>>>>> backend/src/main/java/com/conkiri/global/config/ticketing/WebSocketConfig.java
 	}
 
 	@Override

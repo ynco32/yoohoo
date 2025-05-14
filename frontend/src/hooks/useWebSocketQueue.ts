@@ -15,6 +15,7 @@ export const useWebSocketQueue = () => {
   const dispatch = useDispatch();
   const stompClient = useRef<Client | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_DISABLE_WEBSOCKET === 'true') {
@@ -83,14 +84,18 @@ export const useWebSocketQueue = () => {
         } else if (event.code === 1015) {
           console.log('🤝 TLS 핸드셰이크 실패');
         }
+
+        // 연결이 닫히면 구독 상태 리셋
+        setIsSubscribed(false);
       };
 
       client.onConnect = () => {
         console.log('🤝 웹소켓 연결 성공');
 
-        // sessionId가 있을 때만 구독 설정
-        if (sessionId) {
+        // sessionId가 있고 아직 구독하지 않은 경우에만 구독
+        if (sessionId && !isSubscribed) {
           subscribeToTopics(client, sessionId);
+          setIsSubscribed(true);
         }
       };
 
@@ -105,43 +110,61 @@ export const useWebSocketQueue = () => {
         stompClient.current.deactivate();
       }
     };
-  }, [dispatch, router, sessionId]); // sessionId 의존성 추가
+  }, [dispatch, router, sessionId, isSubscribed]); // isSubscribed 의존성 추가
 
   // 세션 ID로 토픽 구독 함수
   const subscribeToTopics = (client: Client, sid: string) => {
-    client.subscribe(`/user/${sid}/book/waiting-time`, (message: IMessage) => {
-      console.log(`🤝 ${sid}/book/waiting-time 구독~!!`);
-      console.log('🤝waiting-time 수신된 메세지:', message.body);
-      try {
-        const response: WaitingTimeResponse = JSON.parse(message.body);
-        dispatch(
-          setQueueInfo({
-            queueNumber: response.position,
-            waitingTime: response.estimatedWaitingSeconds,
-            peopleBehind: response.usersAfter,
-          })
-        );
-      } catch (error) {
-        console.error('🤝 메시지 파싱 오류:', error);
-      }
-    });
+    try {
+      // 구독 경로에 세션 ID 포함 (전체 문자열 사용)
+      // 콜론(:)이 그대로 유지되도록 수정
+      const waitingTimeTopic = `/user/${sid}/book/waiting-time`;
+      const notificationTopic = `/user/${sid}/book/notification`;
 
-    client.subscribe(`/user/${sid}/book/notification`, (message: IMessage) => {
-      console.log(`🤝 ${sid}/book/notification 구독~!!`);
-      console.log('🤝notification 수신된 메세지:', message.body);
-      try {
-        const response: NotificationResponse = JSON.parse(message.body);
-        if (response.success === true) {
-          router.push('./real/areaSelect');
+      console.log(`🤝 구독 시작: ${waitingTimeTopic}`);
+      client.subscribe(waitingTimeTopic, (message: IMessage) => {
+        console.log(`🤝 ${sid}/book/waiting-time 구독 메시지 수신`);
+        console.log('🤝 waiting-time 수신된 메세지:', message.body);
+        try {
+          const response: WaitingTimeResponse = JSON.parse(message.body);
+          dispatch(
+            setQueueInfo({
+              queueNumber: response.position,
+              waitingTime: response.estimatedWaitingSeconds,
+              peopleBehind: response.usersAfter,
+            })
+          );
+        } catch (error) {
+          console.error('🤝 메시지 파싱 오류:', error);
         }
-      } catch (error) {
-        console.error('🤝 메시지 파싱 오류:', error);
-      }
-    });
+      });
+
+      console.log(`🤝 구독 시작: ${notificationTopic}`);
+      client.subscribe(notificationTopic, (message: IMessage) => {
+        console.log(`🤝 ${sid}/book/notification 구독 메시지 수신`);
+        console.log('🤝 notification 수신된 메세지:', message.body);
+        try {
+          const response: NotificationResponse = JSON.parse(message.body);
+          if (response.success === true) {
+            router.push('./real/areaSelect');
+          }
+        } catch (error) {
+          console.error('🤝 메시지 파싱 오류:', error);
+        }
+      });
+    } catch (error) {
+      console.error('🤝 구독 중 오류 발생:', error);
+      setIsSubscribed(false);
+    }
   };
 
   const enterQueue = async () => {
     try {
+      // 이미 세션 ID가 있고 구독 중이면 중복 요청 방지
+      if (sessionId && isSubscribed) {
+        console.log('🤝 이미 대기열에 진입한 상태입니다:', sessionId);
+        return;
+      }
+
       const response = await apiClient.post<ApiResponse<string>>(
         `/api/v1/ticketing/queue`
       );
@@ -151,15 +174,16 @@ export const useWebSocketQueue = () => {
       // sessionId 상태 업데이트
       setSessionId(receivedSessionId);
 
-      // 웹소켓 연결 확인 및 재연결
+      // 웹소켓 연결 확인 및 구독
       if (stompClient.current) {
-        if (stompClient.current.connected) {
-          console.log('🤝 웹소켓이 이미 연결되어 있습니다.');
-          // 연결이 이미 되어 있다면 바로 구독 시작
+        if (stompClient.current.connected && !isSubscribed) {
+          console.log('🤝 웹소켓이 이미 연결되어 있습니다. 구독을 시작합니다.');
           subscribeToTopics(stompClient.current, receivedSessionId);
-        } else {
-          console.log('🤝 웹소켓 재연결 시도...');
-          stompClient.current.activate();
+          setIsSubscribed(true);
+        } else if (!stompClient.current.connected) {
+          console.log('🤝 웹소켓 연결이 필요합니다.');
+          // 연결이 되지 않은 경우 onConnect에서 구독 처리
+          // isSubscribed와 sessionId 상태 변경으로 useEffect 트리거
         }
       }
     } catch (error: unknown) {
@@ -179,5 +203,6 @@ export const useWebSocketQueue = () => {
   return {
     enterQueue,
     sessionId,
+    isSubscribed,
   };
 };

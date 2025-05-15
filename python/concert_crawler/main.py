@@ -22,8 +22,14 @@ def main():
             
             # 3. 각 콘서트 처리 (공통 파이프라인)
             for concert in concerts:
-                print(f"\n🔍 '{concert['title']}' 처리 중...")
-                ConcertPipeline.process_concert(crawler, concert)
+                try:
+                    print(f"\n🔍 '{concert['title']}' 처리 중...")
+                    ConcertPipeline.process_concert(crawler, concert)
+                except ConnectionError as e:
+                    print(f"⛔ API 연결 오류로 크롤링을 중단합니다: {str(e)}")
+                    return
+                except Exception as e:
+                    print(f"❌ '{concert['title']}' 처리 중 오류 발생: {str(e)}")
                 
         except Exception as e:
             print(f"❌ {site} 크롤링 중 오류 발생: {str(e)}")

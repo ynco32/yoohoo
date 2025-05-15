@@ -45,7 +45,7 @@ class ImageProcessor:
             full_text = ""
             
             # 이미지가 큰 경우 분할 처리
-            max_height = 4000
+            max_height = 5000
             overlap = 200
             
             if height <= max_height:

@@ -63,7 +63,7 @@ public class ConcertController {
 		return ApiResponse.ofSuccess();
 	}
 
-	@PostMapping
+	@PostMapping("/create")
 	public ApiResponse<Long> createConcert(@Valid @RequestBody ConcertRequestDTO request) {
 		return ApiResponse.success(concertService.createConcert(request));
 	}

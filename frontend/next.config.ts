@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
     prependData: `@use "abstracts/variables" as *;`,
   },
   images: {
-    domains: ['example.com'],
+    domains: [
+      'example.com',
+      'cdnticket.melon.co.kr',
+      'ticketimage.interpark.com',
+    ],
     remotePatterns: [
       {
         protocol: 'https',

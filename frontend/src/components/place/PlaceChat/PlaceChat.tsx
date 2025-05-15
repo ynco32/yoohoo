@@ -4,122 +4,111 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './PlaceChat.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
 import ChatInput from '@/components/common/ChatInput/ChatInput';
-
-interface Message {
-  id: number;
-  nickname: string;
-  time: string;
-  content: string;
-  replyTo?: Message;
-  isMe?: boolean;
-  isSystem?: boolean;
-}
+import { useChatWebSocket } from '@/hooks/useChatWebSocket';
+import { Message } from '@/types/chat';
 
 interface PlaceChatProps {
   arenaId: number;
 }
 
 export default function PlaceChat({ arenaId }: PlaceChatProps) {
-  // 초기 메시지 목록
-  const initialMessages = [
-    {
-      id: 1,
-      nickname: '콘끼리 짱팬',
-      time: '23:55',
-      content: '괜찮을 거 같아요',
-    },
-    {
-      id: 2,
-      nickname: '익명익명의명',
-      time: '23:55',
-      content:
-        '지금 화장실 가고 싶은데\n자리 어디세요??\n동편 화장실은 줄 길어서 좀 아슬아슬할듯\n멀지 않으면 서편 화장실로 가세요\n저 방금 다녀옴',
-    },
-    {
-      id: 3,
-      nickname: '닉네임닉네임',
-      time: '23:55',
-      content: '5분은 늦어도 ㄱㅊ아요',
-    },
-    {
-      id: 4,
-      nickname: '콘끼리 짱팬',
-      time: '23:55',
-      content: '어차피 10분은 VCR이라 ㄱㅊㄱㅊ',
-      replyTo: {
-        id: 3,
-        nickname: '닉네임닉네임',
-        time: '23:55',
-        content: '5분은 늦어도 ㄱㅊ아요',
-      },
-    },
-  ];
+  const {
+    messages,
+    isConnected,
+    isLoading,
+    error,
+    sendMessage,
+    loadPreviousMessages,
+  } = useChatWebSocket({ chatRoomId: arenaId });
 
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [input, setInput] = useState('');
-  const [textareaHeight, setTextareaHeight] = useState('44px');
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messageListRef = useRef<HTMLDivElement>(null);
 
-  // 처음 채팅에 진입했을 때 안내 메시지를 표시하는 효과
+  // 스크롤 위치 저장 참조
+  const scrollPositionRef = useRef(0);
+
+  // 컴포넌트 마운트 시 스크롤 위치 복원
   useEffect(() => {
-    // 처음 채팅방 입장인지 확인
-    const hasSeenGuide = sessionStorage.getItem(`chat-guide-${arenaId}`);
-
-    if (!hasSeenGuide) {
-      // 안내 메시지 생성 (채팅방 입장 후 약간의 딜레이를 두고 표시)
-      const timer = setTimeout(() => {
-        const systemMessage: Message = {
-          id: 999, // 임의의 ID 사용
-          nickname: '',
-          time: '',
-          content:
-            '폭언, 음란, 불법 행위, 상업적 홍보 등 채팅방 사용을 저해하는 활동에 대해 메세지 삭제 및 계정 정지 조치를 할 수 있습니다.',
-          isSystem: true,
-        };
-
-        setMessages((prevMessages) => [...prevMessages, systemMessage]);
-
-        // 안내 메시지를 봤다고 표시
-        sessionStorage.setItem(`chat-guide-${arenaId}`, 'true');
-      }, 500); // 0.5초 딜레이
-
-      return () => clearTimeout(timer);
+    if (messageListRef.current && scrollPositionRef.current > 0) {
+      messageListRef.current.scrollTop = scrollPositionRef.current;
+    } else {
+      // 스크롤 위치가 없으면 맨 아래로 스크롤
+      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [arenaId]);
-
-  // 새 메시지가 추가될 때마다 스크롤을 아래로 이동
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // PlaceChat.tsx 내의 handleSend 함수 수정
-  const handleSend = (message: string) => {
-    // 매개변수로 메시지 텍스트 받음
-    // 현재 시간 가져오기
-    const now = new Date();
-    const timeString = `${now.getHours().toString().padStart(2, '0')}:${now
-      .getMinutes()
-      .toString()
-      .padStart(2, '0')}`;
+  // 컴포넌트 언마운트 시 스크롤 위치 저장
+  useEffect(() => {
+    return () => {
+      if (messageListRef.current) {
+        scrollPositionRef.current = messageListRef.current.scrollTop;
+      }
+    };
+  }, []);
 
-    const newMsg: Message = {
-      id: Math.max(...messages.map((m) => m.id)) + 1,
-      nickname: '나',
-      time: timeString,
-      content: message, // ChatInput에서 받은 메시지 사용
-      isMe: true,
-      replyTo: replyingTo || undefined,
+  // 스크롤 이벤트로 이전 메시지 로드
+  useEffect(() => {
+    const handleScroll = async () => {
+      const container = messageListRef.current;
+
+      if (
+        container &&
+        container.scrollTop < 50 &&
+        messages.length > 0 &&
+        !isLoading
+      ) {
+        // 스크롤이 거의 맨 위에 도달했을 때 이전 메시지 로드
+        const oldestMessage = messages[0];
+        const scrollHeightBefore = container.scrollHeight;
+
+        // 이전 메시지 로드
+        const moreMessagesAvailable = await loadPreviousMessages(
+          oldestMessage.time
+        );
+
+        // 스크롤 위치 유지
+        if (moreMessagesAvailable) {
+          setTimeout(() => {
+            if (container) {
+              const scrollHeightAfter = container.scrollHeight;
+              container.scrollTop = scrollHeightAfter - scrollHeightBefore;
+            }
+          }, 100);
+        }
+      }
     };
 
-    setMessages((prev) => [...prev, newMsg]);
-    setReplyingTo(null); // 답글 상태 초기화
-  };
-  const handleReply = (message: Message) => {
-    // 시스템 메시지는 답글을 달 수 없음
-    if (message.isSystem) return;
+    const messageList = messageListRef.current;
+    if (messageList) {
+      messageList.addEventListener('scroll', handleScroll);
+    }
 
+    return () => {
+      if (messageList) {
+        messageList.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [messages, isLoading, loadPreviousMessages]);
+
+  // 메시지 전송 처리
+  const handleSend = (content: string) => {
+    if (content.trim() === '') return;
+
+    const success = sendMessage(content, replyingTo || undefined);
+
+    if (success) {
+      setReplyingTo(null); // 답글 상태 초기화
+
+      // 메시지 전송 후 스크롤 맨 아래로
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  };
+
+  // 답글 처리
+  const handleReply = (message: Message) => {
     setReplyingTo(message);
     // 입력창으로 포커스 이동
     const inputElement = document.querySelector('input') as HTMLInputElement;
@@ -128,6 +117,7 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
     }
   };
 
+  // 메시지로 스크롤 이동
   const scrollToMessage = (messageId: number) => {
     const messageElement = document.getElementById(`message-${messageId}`);
     if (messageElement) {
@@ -140,35 +130,56 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
     }
   };
 
+  // 답글 취소
   const cancelReply = () => {
     setReplyingTo(null);
   };
 
+  // 오류 처리
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()}>새로고침</button>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.chatContainer}>
-      <div className={styles.messagesWrapper}>
+      <div className={styles.messagesWrapper} ref={messageListRef}>
         <div className={styles.messageList}>
-          <div className={styles.dateLabel}>2025년 4월 18일</div>
-          {messages.map((msg) =>
-            msg.isSystem ? (
-              <div key={msg.id} className={styles.systemMessageContainer}>
-                <div className={styles.systemMessage}>{msg.content}</div>
-              </div>
-            ) : (
-              <div id={`message-${msg.id}`} key={msg.id}>
-                <MessageItem
-                  message={msg}
-                  replyTo={msg.replyTo}
-                  onReply={() => handleReply(msg)}
-                  onReplyClick={
-                    msg.replyTo
-                      ? () => scrollToMessage(msg.replyTo?.id || 0)
-                      : undefined
-                  }
-                />
-              </div>
-            )
+          {isLoading && messages.length === 0 && (
+            <div className={styles.loadingContainer}>
+              메시지를 불러오는 중...
+            </div>
           )}
+
+          {messages.length > 0 && (
+            <div className={styles.dateLabel}>
+              {new Date().toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </div>
+          )}
+
+          {/* 시스템 메시지 및 일반 메시지 렌더링 */}
+          {messages.map((msg) => (
+            <div id={`message-${msg.id}`} key={msg.id}>
+              <MessageItem
+                message={msg}
+                replyTo={msg.replyTo}
+                onReply={() => handleReply(msg)}
+                onReplyClick={
+                  msg.replyTo
+                    ? () => scrollToMessage(msg.replyTo!.id)
+                    : undefined
+                }
+              />
+            </div>
+          ))}
           <div ref={messageEndRef} />
         </div>
       </div>
@@ -200,6 +211,12 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
           />
         </div>
       </div>
+
+      {!isConnected && (
+        <div className={styles.connectionMessage}>
+          채팅 서버에 연결 중입니다...
+        </div>
+      )}
     </div>
   );
 }

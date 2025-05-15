@@ -2,6 +2,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { clearError } from '@/store/slices/errorSlice';
+import styles from './ErrorPopup.module.scss';
 
 interface ErrorPopupProps {
   isOpen: boolean;
@@ -14,8 +15,8 @@ export default function ErrorPopup({ isOpen, children }: ErrorPopupProps) {
   if (!isOpen) return null;
 
   return (
-    <div className='error-popup'>
-      <div className='error-content'>
+    <div className={styles.errorPopup}>
+      <div className={styles.errorContent}>
         <p>{children}</p>
         <button onClick={() => dispatch(clearError())}>확인</button>
       </div>

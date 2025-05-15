@@ -110,6 +110,8 @@ export const tryReserveSeat = createAsyncThunk<
     }
 
     try {
+      console.log('POST 요청 보냄!! 좌석 예약!!');
+      console.log({ section, seat });
       // apiClient 사용하여 POST 요청
       const response = await apiClient.post(
         '/api/v1/ticketing/sections/seats',

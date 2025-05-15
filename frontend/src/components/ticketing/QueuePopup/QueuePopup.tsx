@@ -4,17 +4,19 @@ import { RootState } from '@/store';
 import styles from './QueuePopup.module.scss';
 import CloseIcon from '@/assets/icons/close.svg';
 
-// Props에서 Redux로 가져올 속성들은 제거
+// Props에 isLoading 추가
 interface QueuePopupProps {
   isOpen: boolean;
   title: string;
   onClose: () => void;
+  isLoading?: boolean; // 로딩 상태 표시를 위한 prop 추가
 }
 
 export default function QueuePopup({
   title,
   onClose,
   isOpen,
+  isLoading = false, // 기본값은 false
 }: QueuePopupProps) {
   // Redux에서 상태 가져오기
   const { queueNumber, waitingTime, peopleBehind } = useSelector(
@@ -55,11 +57,24 @@ export default function QueuePopup({
           </button>
         </div>
         <div className={styles.content}>
-          <p>좌석 선택 진입 중</p>
-          <p className={styles.queueNumber}>내 대기 순서 {queueNumber}번째</p>
-          <p>
-            뒤에 {peopleBehind}명 / {expectedTimeInForm} 소요 예상
-          </p>
+          {isLoading ? (
+            // 로딩 중일 때 표시할 내용
+            <>
+              <div className={styles.loadingSpinner}></div>
+              <p className={styles.loadingText}>대기열에 입장 중입니다...</p>
+            </>
+          ) : (
+            // 기존 내용
+            <>
+              <p>좌석 선택 진입 중</p>
+              <p className={styles.queueNumber}>
+                내 대기 순서 {queueNumber}번째
+              </p>
+              <p>
+                뒤에 {peopleBehind}명 / {expectedTimeInForm} 소요 예상
+              </p>
+            </>
+          )}
         </div>
         <div className={styles.footer}>
           <p className={styles.warning}>

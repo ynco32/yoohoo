@@ -2,44 +2,38 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './page.module.scss';
-import Splash from '@/components/splash/Splash';
+import LogoIcon from '/public/svgs/main/logo.svg';
 import { useAuthStatus } from '@/hooks/useAuthState';
 
 export default function Home() {
-  const [showSplash, setShowSplash] = useState(true);
   const router = useRouter();
-  const { isLoggedIn, isNamed, isLoading, error } = useAuthStatus();
+  const [progress, setProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState('');
+  const { isLoggedIn, isNamed, isLoading } = useAuthStatus();
+  const [redirectTriggered, setRedirectTriggered] = useState(false);
 
-  useEffect(() => {
-    // 방문 기록 확인
-    const checkVisitStatus = () => {
-      if (typeof window !== 'undefined') {
-        const hasVisitedBefore = localStorage.getItem('hasVisitedBefore');
-
-        if (hasVisitedBefore) {
-          // 이전에 방문한 적이 있으면 스플래시 화면 건너뛰기
-          setShowSplash(false);
-        } else {
-          // 첫 방문 기록 저장
-          localStorage.setItem('hasVisitedBefore', 'true');
-        }
-      }
-    };
-
-    checkVisitStatus();
-  }, []);
-
-  // 로그인 상태가 변경되면 리다이렉트
-  useEffect(() => {
-    // 로딩 중이 아니고 스플래시 화면이 표시되지 않을 때만 리다이렉트
-    if (!isLoading && !showSplash) {
-      redirectBasedOnAuthStatus();
-    }
-  }, [isLoading, showSplash, isLoggedIn, isNamed]);
+  const loadingTexts = [
+    '잠시만 기다려주시끼리...',
+    '풍선에 바람 넣는 중...',
+    '최고의 시야 찾아내는 중...',
+    '티켓팅 연습하러 가는 중...',
+    '티켓팅에 운 영끌 중...',
+    '현장답사 뛰는 중...',
+    '인간 크롤러 가동 중...',
+    '콘서트로 도파민 충전 중...',
+    '콘끼리와 함께하는 여정 시작!',
+  ];
 
   // 인증 상태에 따라 리다이렉트
   const redirectBasedOnAuthStatus = () => {
+    // 중복 리다이렉트 방지
+    if (redirectTriggered) return;
+
+    setRedirectTriggered(true);
+    console.log('리다이렉트 실행');
+
     if (isLoggedIn) {
       if (isNamed) {
         // 로그인 상태이고 닉네임이 설정된 경우 메인으로 이동
@@ -54,34 +48,83 @@ export default function Home() {
     }
   };
 
-  // 스플래시 화면이 끝났을 때 호출될 함수
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-    // 이미 로그인 상태 확인이 완료된 경우 바로 리다이렉트
-    if (!isLoading) {
+  // 스플래시 화면 로직 - 항상 3초간 표시
+  useEffect(() => {
+    // 스플래시 화면 초기화
+    console.log('스플래시 화면 초기화');
+
+    // 랜덤한 로딩 문구 선택
+    const randomIndex = Math.floor(Math.random() * loadingTexts.length);
+    setLoadingText(loadingTexts[randomIndex]);
+
+    // 프로그레스 바 애니메이션
+    let startTime = Date.now();
+    const duration = 3000; // 3초 딱 맞게 설정
+
+    const animationInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min(100, (elapsed / duration) * 100);
+      setProgress(newProgress);
+
+      if (newProgress >= 100) {
+        clearInterval(animationInterval);
+      }
+    }, 16); // 약 60fps
+
+    // 정확히 3초 후에 리다이렉트
+    const redirectTimer = setTimeout(() => {
+      console.log('3초 타이머 완료');
+
+      // 인증 상태 로딩이 완료되었으면 바로 리다이렉트
+      if (!isLoading) {
+        redirectBasedOnAuthStatus();
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(animationInterval);
+      clearTimeout(redirectTimer);
+    };
+  }, []);
+
+  // 인증 상태가 변경되었고, 3초가 지났을 때 리다이렉트
+  useEffect(() => {
+    // 인증 로딩이 완료되었고, 프로그레스가 100%에 도달했을 때만 리다이렉트
+    if (!isLoading && progress >= 100 && !redirectTriggered) {
+      console.log('인증 로딩 완료 및 프로그레스 100% 도달');
       redirectBasedOnAuthStatus();
     }
-  };
+  }, [isLoading, progress, redirectTriggered]);
 
-  // 로딩 중이면서 스플래시 화면이 표시되지 않는 경우 로딩 표시
-  if (isLoading && !showSplash) {
-    return (
-      <div className={styles.loading}>
-        <p>로딩 중...</p>
-      </div>
-    );
-  }
-
+  // 항상 스플래시 화면 표시
   return (
-    <>
-      {showSplash ? (
-        <Splash onComplete={handleSplashComplete} duration={1000} />
-      ) : (
-        <div className={styles.page}>
-          <h1>콘끼리 홈</h1>
-          <div>랜딩페이지!!</div>
+    <div className={styles.page}>
+      <div className={styles.content}>
+        {/* 로고 */}
+        <div className={styles.logoContainer}>
+          <LogoIcon className={styles.logo} />
         </div>
-      )}
-    </>
+
+        {/* 캐릭터 이미지 */}
+        <div className={styles.characterContainer}>
+          <Image
+            src='/images/profiles/profile-1.png'
+            alt='콘끼리 캐릭터'
+            width={180}
+            height={180}
+            className={styles.character}
+          />
+        </div>
+
+        <div className={styles.loadingText}>{loadingText}</div>
+
+        <div className={styles.loadingContainer}>
+          <div
+            className={styles.loadingBar}
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      </div>
+    </div>
   );
 }

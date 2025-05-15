@@ -8,6 +8,7 @@ import com.conkiri.domain.base.dto.response.ArenaResponseDTO;
 import com.conkiri.domain.base.entity.Arena;
 import com.conkiri.domain.base.entity.QArena;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -25,14 +26,20 @@ public class ArenaRepositoryCustomImpl implements ArenaRepositoryCustom {
 	public ArenaResponseDTO findArenas(String searchWord) {
 		QArena arena = QArena.arena;
 
-		BooleanExpression conditions = (searchWord != null && !searchWord.isBlank()) ? arena.arenaName.containsIgnoreCase(searchWord) : null;
+		BooleanExpression conditions = (searchWord != null && !searchWord.isBlank()) ?
+			arena.arenaName.containsIgnoreCase(searchWord) : null;
 
 		List<Arena> results = jpaQueryFactory
 			.selectFrom(arena)
 			.where(conditions)
+			.orderBy(
+				Expressions.cases()
+					.when(arena.arenaId.in(1L, 2L)).then(1)
+					.otherwise(0).asc(),
+				arena.arenaId.asc()
+			)
 			.fetch();
 
 		return ArenaResponseDTO.from(results);
 	}
-
 }

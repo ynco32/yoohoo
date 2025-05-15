@@ -3,20 +3,22 @@ import React, { useState, useEffect } from 'react';
 import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import QueuePopup from '@/components/ticketing/QueuePopup/QueuePopup';
 
 interface WebSocketProviderProps {
-  children: React.ReactNode;
   onEnterQueue?: boolean;
+  title?: string; // QueuePopup에 표시할 제목
 }
 
 export default function WebSocketProvider({
-  children,
   onEnterQueue = false,
+  title = '티켓팅', // 기본 제목
 }: WebSocketProviderProps) {
   const { enterQueue } = useWebSocketQueue();
   const [hasEnteredQueue, setHasEnteredQueue] = useState(false);
   const queueInfo = useSelector((state: RootState) => state.queue);
   const [isLoading, setIsLoading] = useState(false);
+  const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -25,6 +27,7 @@ export default function WebSocketProvider({
     if (onEnterQueue && !hasEnteredQueue) {
       console.log('🤝 WebSocketProvider: enterQueue 호출 시작');
       setIsLoading(true);
+      setQueuePopupOpen(true); // 팝업 열기
       setHasEnteredQueue(true);
 
       // enterQueue 호출
@@ -66,15 +69,20 @@ export default function WebSocketProvider({
     }
   }, [queueInfo]);
 
-  // 로딩 중일 때 로딩 인디케이터 표시, 그러나 children은 계속 렌더링
+  const handleQueuePopupClose = () => {
+    setQueuePopupOpen(false);
+  };
+
   return (
     <>
-      {isLoading && (
-        <div className='loading-overlay'>
-          <div className='loading-spinner'>대기열에 입장 중입니다...</div>
-        </div>
+      {isQueuePopupOpen && (
+        <QueuePopup
+          title={title}
+          onClose={handleQueuePopupClose}
+          isOpen={isQueuePopupOpen}
+          isLoading={isLoading} // 로딩 상태 전달
+        />
       )}
-      {children}
     </>
   );
 }

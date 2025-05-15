@@ -1,23 +1,45 @@
 // src/hooks/useReview.ts
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { reviewApi } from '@/api/sight/review';
-import { ReviewRequest, Review } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로, ReviewResponse를 Review로 변경
+import { ReviewRequest, Review, ReviewUpdateRequest } from '@/types/review';
+import { ApiResponse } from '@/types/api';
+import { useRouter } from 'next/router';
 
-interface UseReviewReturn {
-  createReview: (
-    data: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
-    files: File[]
-  ) => Promise<number | undefined>;
+// ID가 있을 때의 반환 타입
+export interface UseReviewWithIdReturn {
+  review: Review | null;
   isLoading: boolean;
   error: string | null;
+  fetchReview: (id: string | number) => Promise<void>;
+  updateReview: (
+    id: string | number,
+    data: ReviewUpdateRequest,
+    files: File[]
+  ) => Promise<Review | undefined>;
+  deleteReview: (id: string | number) => Promise<boolean>;
 }
 
-export const useReview = (): UseReviewReturn => {
-  const [isLoading, setIsLoading] = useState(false);
+// ID가 없을 때의 반환 타입
+export interface UseReviewWithoutIdReturn {
+  isLoading: boolean;
+  error: string | null;
+  createReview: (
+    data: ReviewRequest,
+    files: File[]
+  ) => Promise<number | undefined>;
+}
+
+// 함수 오버로딩 정의
+export function useReview(reviewId: string | number): UseReviewWithIdReturn;
+export function useReview(): UseReviewWithoutIdReturn;
+export function useReview(reviewId?: string | number) {
+  const [review, setReview] = useState<Review | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 리뷰 생성
   const createReview = async (
-    data: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
+    data: ReviewRequest,
     files: File[]
   ): Promise<number | undefined> => {
     try {
@@ -44,9 +66,90 @@ export const useReview = (): UseReviewReturn => {
     }
   };
 
+  // 리뷰 로드
+  const fetchReview = async (id: string | number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await reviewApi.getReviewById(id);
+      // response에서 리뷰 데이터 추출
+      if (response && response.data) {
+        setReview(response.data.data);
+      } else {
+        setError('리뷰 정보를 찾을 수 없습니다.');
+      }
+    } catch (err: any) {
+      setError(err.message || '리뷰를 불러오는 중 오류가 발생했습니다.');
+      console.error('리뷰 로드 오류:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 리뷰 수정
+  const updateReview = async (
+    id: string | number,
+    reviewData: ReviewUpdateRequest,
+    files: File[]
+  ): Promise<Review | undefined> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await reviewApi.updateReview(id, reviewData, files);
+      if (response && response.data) {
+        setReview(response.data);
+        return response.data;
+      }
+    } catch (err: any) {
+      setError(err.message || '리뷰를 수정하는 중 오류가 발생했습니다.');
+      console.error('리뷰 수정 오류:', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 리뷰 삭제
+  const deleteReview = async (id: string | number): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await reviewApi.deleteReview(id);
+      // 성공했을 경우 true 반환
+      return true;
+    } catch (err: any) {
+      setError(err.message || '리뷰를 삭제하는 중 오류가 발생했습니다.');
+      console.error('리뷰 삭제 오류:', err);
+      // 실패했을 경우 에러 발생
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // reviewId가 있으면 자동으로 리뷰 로드
+  useEffect(() => {
+    if (reviewId) {
+      fetchReview(reviewId);
+    }
+  }, [reviewId]);
+
+  // reviewId가 제공된 경우 (상세 보기/수정/삭제)
+  if (reviewId) {
+    return {
+      review,
+      isLoading,
+      error,
+      fetchReview,
+      updateReview,
+      deleteReview,
+    };
+  }
+
+  // reviewId가 제공되지 않은 경우 (리뷰 생성)
   return {
-    createReview,
     isLoading,
     error,
+    createReview,
   };
-};
+}

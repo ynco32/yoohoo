@@ -92,16 +92,17 @@ const DUMMY_REVIEWS: Review[] = [
     arenaName: '고척스카이돔',
     seatId: 101,
     section: '1',
-    rowLine: 12,
+    rowLine: '12',
     columnLine: 5,
     artistGrade: ArtistGrade.CLOSE,
     stageGrade: StageGrade.CLEAR,
     screenGrade: ScreenGrade.CLEAR,
-    content: '음향도 좋고 시야도 좋았어요. 다만 거리가 조금 있어서 표정은 잘 안 보였지만 전체적으로 만족스러웠습니다.',
+    content:
+      '음향도 좋고 시야도 좋았어요. 다만 거리가 조금 있어서 표정은 잘 안 보였지만 전체적으로 만족스러웠습니다.',
     cameraBrand: 'APPLE',
     cameraModel: 'iPhone 15 Pro',
     createdAt: '2025-04-10T15:30:00.000Z',
-    photoUrls: ['/images/dummyConcert.jpg', '/images/dummyConcert.jpg']
+    photoUrls: ['/images/dummyConcert.jpg', '/images/dummyConcert.jpg'],
   },
   {
     reviewId: 2,
@@ -110,16 +111,17 @@ const DUMMY_REVIEWS: Review[] = [
     arenaName: '서울월드컵경기장',
     seatId: 202,
     section: '2',
-    rowLine: 5,
+    rowLine: '5',
     columnLine: 20,
     artistGrade: ArtistGrade.MODERATE,
     stageGrade: StageGrade.SIDE,
     screenGrade: ScreenGrade.CLEAR,
-    content: '2층이라 멀긴 했지만 시야는 나쁘지 않았어요. 큰 화면으로 잘 볼 수 있었습니다.',
+    content:
+      '2층이라 멀긴 했지만 시야는 나쁘지 않았어요. 큰 화면으로 잘 볼 수 있었습니다.',
     cameraBrand: 'SAMSUNG',
     cameraModel: 'Galaxy S24',
     createdAt: '2025-03-22T14:20:00.000Z',
-    photoUrls: ['/images/dummyConcert.jpg']
+    photoUrls: ['/images/dummyConcert.jpg'],
   },
   {
     reviewId: 3,
@@ -128,16 +130,21 @@ const DUMMY_REVIEWS: Review[] = [
     arenaName: 'KSPO DOME',
     seatId: 303,
     section: 'B',
-    rowLine: 0, // 스탠딩은 열 번호가 없으므로 0으로 설정
+    rowLine: '0', // 스탠딩은 열 번호가 없으므로 0으로 설정
     columnLine: 0, // 스탠딩은 좌석 번호가 없으므로 0으로 설정
     artistGrade: ArtistGrade.VERY_CLOSE,
     stageGrade: StageGrade.CLEAR,
     screenGrade: ScreenGrade.SIDE,
-    content: '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
+    content:
+      '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
     cameraBrand: 'SONY',
     cameraModel: 'Alpha 7 IV',
     createdAt: '2025-02-15T18:45:00.000Z',
-    photoUrls: ['/images/dummyConcert.jpg', '/images/review3_2.jpg', '/images/review3_3.jpg']
+    photoUrls: [
+      '/images/dummyConcert.jpg',
+      '/images/review3_2.jpg',
+      '/images/review3_3.jpg',
+    ],
   },
   {
     reviewId: 4,
@@ -146,17 +153,22 @@ const DUMMY_REVIEWS: Review[] = [
     arenaName: 'KSPO DOME',
     seatId: 303,
     section: 'B',
-    rowLine: 0, // 스탠딩은 열 번호가 없으므로 0으로 설정
+    rowLine: '0', // 스탠딩은 열 번호가 없으므로 0으로 설정
     columnLine: 0, // 스탠딩은 좌석 번호가 없으므로 0으로 설정
     artistGrade: ArtistGrade.VERY_CLOSE,
     stageGrade: StageGrade.CLEAR,
     screenGrade: ScreenGrade.SIDE,
-    content: '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
+    content:
+      '스탠딩이라 힘들었지만 가까이서 볼 수 있어서 좋았어요. 음향도 괜찮았습니다.',
     cameraBrand: 'SONY',
     cameraModel: 'Alpha 7 IV',
     createdAt: '2025-02-15T18:45:00.000Z',
-    photoUrls: ['/images/dummyConcert.jpg', '/images/review3_2.jpg', '/images/review3_3.jpg']
-  }
+    photoUrls: [
+      '/images/dummyConcert.jpg',
+      '/images/review3_2.jpg',
+      '/images/review3_3.jpg',
+    ],
+  },
 ];
 
 // 서버 컴포넌트에서 사용할 데이터 가져오기 함수들

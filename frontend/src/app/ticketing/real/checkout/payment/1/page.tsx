@@ -101,7 +101,7 @@ export default function TicketingPage() {
         hasVisitedPayment,
         timestamp: new Date().toISOString(),
       });
-      router.push('2');
+      router.push('/ticketing/real/checkout/payment/2');
     }, 100);
   };
 

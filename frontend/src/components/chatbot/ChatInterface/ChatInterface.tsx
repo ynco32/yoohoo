@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import styles from './ChatInterface.module.scss';
+import ChatInput from '@/components/common/ChatInput/ChatInput';
 
 interface Message {
   id: number;
@@ -53,22 +54,15 @@ export default function ChatInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (inputValue.trim() === '') return;
-
+  const handleSendMessage = (message: string) => {
     const newUserMessage = {
       id: messages.length + 1,
-      text: inputValue,
+      text: message,
       isUser: true,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, newUserMessage]);
-    setInputValue('');
 
     // 모의 응답 생성
     setTimeout(() => {
@@ -92,7 +86,6 @@ export default function ChatInterface() {
       setMessages((prev) => [...prev, newBotMessage]);
     }, 1000);
   };
-
   return (
     <div className={styles.chatInterface}>
       <div className={styles.messagesContainer}>
@@ -115,20 +108,11 @@ export default function ChatInterface() {
         <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputContainer}>
-        <input
-          type='text'
-          value={inputValue}
-          onChange={handleInputChange}
+        <ChatInput
+          onSend={handleSendMessage}
           placeholder='여기에 질문을 입력하세요.'
-          className={styles.input}
+          buttonText='전송'
         />
-        <button
-          className={styles.sendButton}
-          onClick={handleSubmit}
-          disabled={inputValue.trim() === ''}
-        >
-          전송
-        </button>
       </div>
     </div>
   );

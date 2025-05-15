@@ -1,4 +1,3 @@
-// 전체 코드
 // src/redux/slices/ticketingSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import {
@@ -125,22 +124,36 @@ export const tryReserveSeat = createAsyncThunk<
       let errorObj: TicketingError;
 
       if (error.response) {
-        // 서버 응답이 있는 경우
-        if (error.response.status === 400) {
+        // 서버 에러 응답 데이터 가져오기
+        const errorResponse = error.response.data;
+        const errorData = errorResponse?.error;
+
+        // 서버에서 전송한 실제 에러 메시지와 이름 사용
+        if (errorData) {
+          // 서버의 실제 에러 메시지와 이름 사용
           errorObj = {
-            code: TICKETING_ERRORS.ALREADY_PARTICIPATED.code,
-            message: TICKETING_ERRORS.ALREADY_PARTICIPATED.message,
-          };
-        } else if (error.response.status === 409) {
-          errorObj = {
-            code: TICKETING_ERRORS.SEAT_ALREADY_RESERVED.code,
-            message: TICKETING_ERRORS.SEAT_ALREADY_RESERVED.message,
+            code: errorData.name || 'UNKNOWN',
+            message: errorData.message || '알 수 없는 오류가 발생했습니다.',
           };
         } else {
-          errorObj = {
-            code: TICKETING_ERRORS.RESERVATION_FAILED.code,
-            message: TICKETING_ERRORS.RESERVATION_FAILED.message,
-          };
+          // 응답 코드에 따른 기본 에러 메시지 사용
+          if (error.response.status === 400) {
+            errorObj = {
+              code: TICKETING_ERRORS.ALREADY_PARTICIPATED.code,
+              message: TICKETING_ERRORS.ALREADY_PARTICIPATED.message,
+            };
+          } else if (error.response.status === 409) {
+            // 상태 코드에 따른 기본 처리
+            errorObj = {
+              code: TICKETING_ERRORS.SEAT_ALREADY_RESERVED.code,
+              message: TICKETING_ERRORS.SEAT_ALREADY_RESERVED.message,
+            };
+          } else {
+            errorObj = {
+              code: TICKETING_ERRORS.RESERVATION_FAILED.code,
+              message: TICKETING_ERRORS.RESERVATION_FAILED.message,
+            };
+          }
         }
       } else {
         errorObj = {
@@ -148,6 +161,8 @@ export const tryReserveSeat = createAsyncThunk<
           message: TICKETING_ERRORS.RESERVATION_FAILED.message,
         };
       }
+
+      console.log('예약 에러 발생:', errorObj);
 
       await dispatch(fetchSeatsByArea(section));
       return rejectWithValue(errorObj);

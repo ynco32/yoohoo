@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
@@ -21,6 +21,8 @@ const SeatMap: React.FC<SeatMapProps> = ({
 }) => {
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
   const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(true);
 
   // 좌석 선택 처리 함수
   const handleSeatClick = (row: string, seatNumber: number) => {
@@ -63,36 +65,62 @@ const SeatMap: React.FC<SeatMapProps> = ({
 
   return (
     <div className={styles.container}>
+      <div className={styles.scrollHint}>
+        좌우로 스크롤하여 모든 좌석을 확인하세요
+      </div>
+
       <div
         className={styles.seatMapContainer}
         style={{ maxWidth: `${maxWidth}px` }}
       >
-        {seatData.seatMap.map((row, rowIndex) => {
-          if (isEmptyRow(row)) {
-            return (
-              <div key={`empty-${rowIndex}`} className={styles.emptyRow}></div>
-            );
-          }
-
-          return (
-            <div key={`row-${row.row}`} className={styles.rowContainer}>
-              <div className={styles.rowNumber}>{row.row}</div>
-              <div className={styles.seatRow}>
-                {row.activeSeats.map((seat, seatIndex) => (
-                  <Seat
-                    key={`seat-${row.row}-${seatIndex}`}
-                    seatNumber={seat.seat}
-                    isReviewed={seat.isReviewed}
-                    isSelected={isSeatSelected(row.row, seat.seat)}
-                    onClick={() =>
-                      seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
-                    }
-                  />
-                ))}
+        <div className={styles.rowNumberColumn}>
+          {seatData.seatMap.map((row, rowIndex) =>
+            !isEmptyRow(row) ? (
+              <div
+                key={`row-number-${row.row}`}
+                className={styles.rowNumberCell}
+              >
+                {row.row}
               </div>
-            </div>
-          );
-        })}
+            ) : (
+              <div
+                key={`empty-number-${rowIndex}`}
+                className={styles.emptyRowNumber}
+              ></div>
+            )
+          )}
+        </div>
+
+        <div className={styles.seatsContainer} ref={scrollContainerRef}>
+          {seatData.seatMap.map((row, rowIndex) => {
+            if (isEmptyRow(row)) {
+              return (
+                <div
+                  key={`empty-${rowIndex}`}
+                  className={styles.emptyRow}
+                ></div>
+              );
+            }
+
+            return (
+              <div key={`row-${row.row}`} className={styles.rowContainer}>
+                <div className={styles.seatRow}>
+                  {row.activeSeats.map((seat, seatIndex) => (
+                    <Seat
+                      key={`seat-${row.row}-${seatIndex}`}
+                      seatNumber={seat.seat}
+                      isReviewed={seat.isReviewed}
+                      isSelected={isSeatSelected(row.row, seat.seat)}
+                      onClick={() =>
+                        seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -37,12 +37,16 @@ public class User {
 	@Column(name = "notification_enabled", nullable = false)
 	private boolean notificationEnabled;
 
+	@Column(name = "profile_number")
+	private Integer profileNumber;
+
 	private User(String email, String userName, String nickname) {
 		this.email = email;
 		this.userName = userName;
 		this.nickname = nickname;
 		this.role = "ROLE_USER";
 		this.notificationEnabled = false;
+		this.profileNumber = 1;
 	}
 
 	public static User of(String email, String userName, String nickname) {
@@ -59,5 +63,9 @@ public class User {
 
 	public void updateNotificationStatus() {
 		this.notificationEnabled = !this.notificationEnabled;
+	}
+
+	public void updateProfileNumber(Integer profileNumber) {
+		this.profileNumber = profileNumber;
 	}
 }

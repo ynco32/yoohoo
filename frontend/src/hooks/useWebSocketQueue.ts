@@ -106,7 +106,7 @@ export const useWebSocketQueue = () => {
 
             if (response && response.data === true) {
               console.log('🤝 입장 가능 상태, 페이지 이동 시작');
-              router.push('./real/areaSelect');
+              router.push('/ticketing/real/areas/areaSelect');
             } else {
               console.log('🤝 아직 입장 불가능 상태');
             }

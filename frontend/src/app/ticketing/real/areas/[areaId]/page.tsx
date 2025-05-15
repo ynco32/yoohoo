@@ -167,7 +167,7 @@ export default function SeatPage() {
 
       // 성공 시에만 페이지 이동
       if (tryReserveSeat.fulfilled.match(resultAction)) {
-        router.push('payment/1');
+        router.push('/ticketing/real/checkout/payment/1');
       }
     } catch (_error) {
       // 에러는 store에서 처리됨

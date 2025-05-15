@@ -23,10 +23,10 @@ const TicketingArea: React.FC = () => {
     // document.cookie = 'ticketing-progress=2; path=/';
     if (selectedSection) {
       try {
-        await router.push(`/ticketing/real/${selectedSection}`);
+        await router.push(`/ticketing/real/areas/${selectedSection}`);
       } catch (error) {
         console.error('라우팅 에러:', error);
-        window.location.href = `/ticketing/real/${selectedSection}`;
+        window.location.href = `/ticketing/real/areas/${selectedSection}`;
       }
     }
     setIsPopupOpen(false);

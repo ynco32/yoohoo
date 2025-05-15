@@ -6,17 +6,13 @@ import TicketingSeatList from '@/components/ticketing/TicketingSeatList/Ticketin
 import TicketingBottomButton from '@/components/ticketing/TicketingBottomButton/TicketingBottomButton';
 import ErrorPopup from '@/components/ticketing/ErrorPopup/ErrorPopup';
 import Captcha from '@/components/ticketing/Captcha/Captcha';
-
 import {
   tryReserveSeat,
   fetchSeatsByArea,
   selectTicketingState,
 } from '@/store/slices/ticketingSeatSlice';
 import { setCaptchaState } from '@/store/slices/captchaSlice';
-
-// 커스텀 훅 사용
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-// RootState 타입 import
 import { RootState } from '@/store/types';
 
 import styles from './page.module.scss';
@@ -62,8 +58,6 @@ export default function SeatPage() {
 
   const handleReservationClick = async () => {
     if (!selectedSeatNumber || !userId) {
-      console.log('선택된 좌석이 없거나 유저 아이디가 없음');
-      console.log(userId);
       return;
     }
 
@@ -73,14 +67,13 @@ export default function SeatPage() {
     }
 
     try {
-      // 여기서 타입 단언(as any)을 사용하여 TypeScript 오류를 우회합니다
       const resultAction = await dispatch(
         tryReserveSeat({ section: areaId, seat: selectedSeatNumber }) as any
       );
 
       // 성공 시에만 페이지 이동
       if (tryReserveSeat.fulfilled.match(resultAction)) {
-        router.push('payment1');
+        router.push('payment/1');
       }
     } catch (_error) {
       // 에러는 store에서 처리됨

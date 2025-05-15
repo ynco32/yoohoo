@@ -7,9 +7,9 @@ interface QueueState {
 }
 
 const initialState: QueueState = {
-  queueNumber: 0,
-  waitingTime: 0,
-  peopleBehind: 0,
+  queueNumber: -1,
+  waitingTime: -1,
+  peopleBehind: -1,
 };
 
 export const queueSlice = createSlice({

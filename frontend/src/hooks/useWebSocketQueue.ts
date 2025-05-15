@@ -244,9 +244,9 @@ export const useWebSocketQueue = () => {
     // 대기열 정보 초기화
     dispatch(
       setQueueInfo({
-        queueNumber: -1,
-        waitingTime: -1,
-        peopleBehind: -1,
+        queueNumber: 0,
+        waitingTime: 0,
+        peopleBehind: 0,
       })
     );
   };

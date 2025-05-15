@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.user.repository.UserRepository;
+import com.conkiri.domain.user.service.UserService;
 import com.conkiri.global.auth.entity.Auth;
 import com.conkiri.global.auth.repository.AuthRepository;
 import com.conkiri.global.auth.token.UserPrincipal;
@@ -27,6 +28,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
 	private final AuthRepository authRepository;
+	private final UserService userService;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -54,6 +56,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
 	private User createUser(String email, String nickname) {
 		User user = User.of(email, nickname, null);
+		user = userRepository.save(user);
+		userService.createAndSetAnonymNickname(user);
 		return userRepository.save(user);
 	}
 

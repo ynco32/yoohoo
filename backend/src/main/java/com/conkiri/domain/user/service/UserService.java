@@ -53,4 +53,19 @@ public class UserService {
 		}
 	}
 
+	public String generateAnonymNickname(Long userId) {
+		String[] adjectives = {"행복한", "용감한", "신비한", "귀여운", "멋진", "활발한", "재미있는", "지혜로운", "친절한", "아름다운",
+			"느긋한", "조용한", "당당한", "화려한", "우아한", "사랑스러운", "따뜻한", "시원한", "엉뚱한", "정직한"};
+
+		int adjectiveIndex = Math.abs(userId.hashCode()) % adjectives.length;
+		String adjective = adjectives[adjectiveIndex];
+
+		return adjective + " 코끼리 " + userId;
+	}
+
+	@Transactional
+	public void createAndSetAnonymNickname(User user) {
+		String anonymNickname = generateAnonymNickname(user.getUserId());
+		user.updateAnonym(anonymNickname);
+	}
 }

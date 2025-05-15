@@ -4,7 +4,7 @@ import { ReviewRequest } from '@/types/review';
 // 폼 데이터에 추가 필드를 포함하는 확장 타입 정의
 export interface ReviewFormData extends Partial<ReviewRequest> {
   section?: string;
-  rowLine?: number;
+  rowLine?: string;
   columnLine?: number;
 }
 
@@ -13,7 +13,7 @@ export const validateReviewForm = (reviewData: ReviewFormData): boolean => {
   const requiredFields = [
     reviewData.concertId !== undefined,
     reviewData.section !== undefined && reviewData.section.trim() !== '',
-    reviewData.rowLine !== undefined && reviewData.rowLine > 0,
+    reviewData.rowLine !== undefined && reviewData.rowLine.trim() !== '',
     reviewData.columnLine !== undefined && reviewData.columnLine > 0,
     reviewData.artistGrade !== undefined,
     reviewData.stageGrade !== undefined,

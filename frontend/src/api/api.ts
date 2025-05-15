@@ -1,6 +1,9 @@
+import { ApiResponse } from '@/types/api';
 import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -13,3 +16,27 @@ export const serverApiClient = axios.create({
   withCredentials: false,
   timeout: 10000,
 });
+
+export const apiRequest = async <T>(
+  method: HttpMethod,
+  url: string,
+  data?: any,
+  params?: any
+): Promise<T | undefined> => {
+  try {
+    const response = await apiClient.request<ApiResponse<T>>({
+      method,
+      url,
+      data,
+      params,
+    });
+    return response.data.data;
+  } catch (error: any) {
+    const errorResponse = error.response?.data as ApiResponse<null>;
+    if (errorResponse?.error) {
+      throw {
+        ...errorResponse.error,
+      };
+    }
+  }
+};

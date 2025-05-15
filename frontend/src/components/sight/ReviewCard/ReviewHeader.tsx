@@ -2,38 +2,64 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-// import { useRouter } from 'next/navigation'; // 라우터 import 주석 처리
+import { useRouter } from 'next/navigation';
 import styles from './ReviewHeader.module.scss';
-import { useAppSelector } from '@/hooks/reduxHooks';
+import { useAppSelector } from '@/store/reduxHooks';
 // import { Modal } from '@/components/common/Modal';
 import Dot from '@/assets/icons/dots.svg';
 import { ReviewHeaderProps } from '@/types/review';
+import { useReview } from '@/hooks/useReview';
 
 export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   const user = useAppSelector((state) => state.user.data);
   const [showMenu, setShowMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // useReview 훅 사용하여 deleteReview 함수 가져오기
+  const { deleteReview } = useReview(review.reviewId);
 
   // 현재 로그인한 사용자가 작성자인지 확인
   const isAuthor = user?.userId === review.userId;
-  // const router = useRouter(); // 라우터 사용 주석 처리
+  const router = useRouter();
 
   const handleMenuClick = () => {
     setShowMenu(!showMenu);
   };
 
   const handleDelete = async () => {
+    if (isDeleting) return; // 중복 삭제 방지
+
+    setIsDeleting(true);
     try {
-      console.log('삭제 버튼 클릭!!');
-      // 삭제 API 호출 로직
-      window.location.reload();
+      console.log('삭제 작업 시작...');
+
+      // 삭제 API 호출
+      if (deleteReview) {
+        const success = await deleteReview(review.reviewId);
+
+        if (success) {
+          console.log('리뷰가 성공적으로 삭제되었습니다.');
+          // 삭제 후 리뷰 목록 페이지로 이동
+          router.push('/sight/reviews');
+          // 또는 상위 컴포넌트에 삭제 이벤트 알림
+          if (onEdit) {
+            onEdit();
+          }
+        } else {
+          alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
+        }
+      } else {
+        throw new Error('삭제 기능을 사용할 수 없습니다.');
+      }
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        alert(`오류 발생: ${error.message}`);
       } else {
-        alert('리뷰 삭제에 실패했습니다. 다시 시도해주세요.');
+        alert('리뷰 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
       }
     } finally {
+      setIsDeleting(false);
       setShowDeleteModal(false);
     }
   };
@@ -45,13 +71,13 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
 
   const handleEdit = () => {
     // 실제 환경에서는 아래 코드 사용
-    // router.push(`/sight/reviews/${review.reviewId}/edit`);
+    router.push(`/sight/reviews/${review.reviewId}/edit`);
 
     // 스토리북 테스트 환경용 코드
-    console.log(`Edit review ${review.reviewId}`);
-    if (onEdit) {
-      onEdit();
-    }
+    // console.log(`Edit review ${review.reviewId}`);
+    // if (onEdit) {
+    //   onEdit();
+    // }
   };
 
   useEffect(() => {
@@ -120,6 +146,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
         </div>
       </div>
 
+      {/* 모달 컴포넌트가 주석 처리되어 있으므로 필요시 아래 주석을 해제하여 사용 */}
       {/* {showDeleteModal && (
         <Modal
           isOpen={showDeleteModal}
@@ -130,6 +157,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
           onConfirm={handleDelete}
           type='confirm'
           variant='danger'
+          isLoading={isDeleting}
         />
       )} */}
     </>

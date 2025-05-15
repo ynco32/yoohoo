@@ -1,15 +1,15 @@
 import styles from './DateSelectionModal.module.scss';
 import ConcertSelectForm from '@/components/auth/ConcertSelectForm/ConcertSelectForm';
+import { ConcertInfo } from '@/types/mypage';
 
 interface DateSelectionModalProps {
   isClosing: boolean;
-  selectedConcert: {
-    id: number;
-    name: string;
-  } | null;
-  initialSelectedDates: string[];
+  selectedConcert: ConcertInfo | null;
+  initialSelectedDates: { date: string; concertDetailId: number }[];
   onClose: () => void;
-  onConfirm: (selectedDates: string[]) => void;
+  onConfirm: (
+    selectedDates: { date: string; concertDetailId: number }[]
+  ) => void;
 }
 
 export const DateSelectionModal = ({
@@ -33,6 +33,7 @@ export const DateSelectionModal = ({
         <ConcertSelectForm
           onConfirm={onConfirm}
           initialSelectedDates={initialSelectedDates}
+          concert={selectedConcert}
         />
       </div>
     </div>

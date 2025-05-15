@@ -108,7 +108,7 @@
   line-height: 1.3;
   // 2줄로 제한하고 넘치면 ...으로 표시 (크로스 브라우저 호환성)
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -21,7 +21,7 @@ export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
   
   // 좌석 정보 포맷팅
   let seatInfo = '';
-  if (review.rowLine === 0 && review.columnLine === 0) {
+  if (review.rowLine === '0' && review.columnLine === 0) {
     // 스탠딩인 경우
     seatInfo = `스탠딩 ${review.section}구역`;
   } else {

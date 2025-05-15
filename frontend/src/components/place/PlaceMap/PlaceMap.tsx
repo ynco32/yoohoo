@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './PlaceMap.module.scss';
 import useKakaoMap from '@/hooks/useKakaoMap';
@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { updateMapSettings } from '@/store/slices/arenaSlice';
 import useMarkers from '@/hooks/useMarkers';
+import ChatbotButton from '@/components/chatbot/ChatbotButton/ChatbotButton';
+import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 
 interface PlaceMapProps {
   latitude: number;
@@ -27,6 +29,7 @@ export default function PlaceMap({
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const userMarkerRef = useRef<kakao.maps.Marker | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+  const { openChatbot } = useChatbot();
 
   // 마커 데이터 가져오기
   const {
@@ -232,8 +235,11 @@ export default function PlaceMap({
         icon='gps'
         onClick={moveToMyLocation}
         className={styles.myLocationBtn}
-        iconSize={24}
+        iconSize={30}
+        variant='medium'
       />
+
+      <ChatbotButton onClick={openChatbot} />
 
       <div ref={mapRef} className={styles.kakaoMap} />
     </div>

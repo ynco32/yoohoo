@@ -214,6 +214,43 @@ export const useWebSocketQueue = () => {
     }
   };
 
+  // 웹소켓 연결 해제 함수 추가
+  const disconnectWebSocket = () => {
+    console.log('🤝 웹소켓 연결 해제 시작');
+
+    if (globalStompClient && globalStompClient.connected) {
+      try {
+        // 웹소켓 연결 종료
+        globalStompClient.deactivate();
+        console.log('🤝 웹소켓 연결 해제 완료');
+      } catch (error) {
+        console.error('🤝 웹소켓 연결 해제 중 오류:', error);
+      }
+    } else {
+      console.log('🤝 웹소켓이 이미 연결 해제되었거나 초기화되지 않았습니다.');
+    }
+
+    // 전역 상태 초기화
+    globalStompClient = null;
+    isConnecting = false;
+    isSubscribing = false;
+    hasSubscribed = false;
+    globalSessionId = null;
+
+    // 로컬 상태 업데이트
+    setSessionId(null);
+    setIsSubscribed(false);
+
+    // 대기열 정보 초기화
+    dispatch(
+      setQueueInfo({
+        queueNumber: -1,
+        waitingTime: -1,
+        peopleBehind: -1,
+      })
+    );
+  };
+
   // 한 번만 실행되는 초기화 로직
   useEffect(() => {
     if (hasInitializedRef.current) return;
@@ -327,5 +364,6 @@ export const useWebSocketQueue = () => {
     enterQueue,
     sessionId,
     isSubscribed,
+    disconnectWebSocket, // 새로 추가된 함수 반환
   };
 };

@@ -6,18 +6,20 @@ import TicketingSeatList from '@/components/ticketing/TicketingSeatList/Ticketin
 import TicketingBottomButton from '@/components/ticketing/TicketingBottomButton/TicketingBottomButton';
 import ErrorPopup from '@/components/ticketing/ErrorPopup/ErrorPopup';
 import Captcha from '@/components/ticketing/Captcha/Captcha';
-
 import {
   tryReserveSeat,
   fetchSeatsByArea,
   selectTicketingState,
 } from '@/store/slices/ticketingSeatSlice';
 import { setCaptchaState } from '@/store/slices/captchaSlice';
-
-// 커스텀 훅 사용
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-// RootState 타입 import
 import { RootState } from '@/store/types';
+import { apiRequest } from '@/api/api'; // 프로젝트에 있는 API 파일 사용
+import {
+  setHasVisitedPayment,
+  setPrevAdress,
+  selectRevertSeatState,
+} from '@/store/slices/revertSeatSlice'; // revertSeatSlice에서 액션과 선택자 임포트
 
 import styles from './page.module.scss';
 
@@ -47,6 +49,90 @@ export default function SeatPage() {
     (state: RootState) => state.captcha?.onSuccess
   );
 
+  // revertSeat 상태 가져오기
+  const { hasVisitedPayment, prevAdress } = useAppSelector(
+    (state) =>
+      selectRevertSeatState(state as any) || {
+        hasVisitedPayment: false,
+        prevAdress: '',
+      }
+  );
+
+  console.log('🏁 Seat 컴포넌트 초기 렌더링:', {
+    prevAdress,
+    hasVisitedPayment,
+    timestamp: new Date().toISOString(),
+  });
+
+  // cleanup 함수 정의 (apiRequest 사용)
+  const cleanup = async () => {
+    try {
+      console.log('🧹 Cleanup API 호출 전 상태:', {
+        prevAdress,
+        hasVisitedPayment,
+        timestamp: new Date().toISOString(),
+      });
+
+      await apiRequest('DELETE', '/api/v1/ticketing/result');
+      console.log('✅ Cleanup API 호출 성공');
+    } catch (error) {
+      console.error('❌ Cleanup API 호출 실패:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 cleanup 체크 및 실행
+  useEffect(() => {
+    let isMounted = true;
+
+    const handleMount = async () => {
+      console.log('🎯 마운트 시 상태 체크:', {
+        prevAdress,
+        hasVisitedPayment,
+        timestamp: new Date().toISOString(),
+      });
+
+      // 'payment'나 'payment-left' 상태 모두에서 cleanup 실행
+      if (
+        hasVisitedPayment &&
+        (prevAdress === 'payment' || prevAdress === 'payment-left')
+      ) {
+        console.log('✨ Cleanup 조건 충족, 실행 시작');
+
+        try {
+          console.log('🧹 Cleanup API 호출 전');
+          await cleanup();
+          console.log('✅ Cleanup API 호출 성공');
+
+          if (isMounted) {
+            // 상태 초기화 (Redux 액션 디스패치)
+            dispatch(setPrevAdress(''));
+            dispatch(setHasVisitedPayment(false));
+            console.log('🔄 상태 초기화 완료');
+          }
+        } catch (error) {
+          console.error('❌ Cleanup 실패:', error);
+        }
+      } else {
+        console.log('❌ Cleanup 조건 불충족:', {
+          hasVisitedPayment,
+          prevAdress,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    };
+
+    handleMount();
+
+    return () => {
+      isMounted = false;
+      console.log('🔚 Seat 페이지 언마운트:', {
+        prevAdress,
+        hasVisitedPayment,
+        timestamp: new Date().toISOString(),
+      });
+    };
+  }, []); // 최초 마운트시에만 실행하도록 빈 배열 유지
+
   // 컴포넌트 마운트 시 해당 구역의 좌석 정보 로드
   useEffect(() => {
     if (areaId) {
@@ -62,8 +148,6 @@ export default function SeatPage() {
 
   const handleReservationClick = async () => {
     if (!selectedSeatNumber || !userId) {
-      console.log('선택된 좌석이 없거나 유저 아이디가 없음');
-      console.log(userId);
       return;
     }
 
@@ -73,14 +157,13 @@ export default function SeatPage() {
     }
 
     try {
-      // 여기서 타입 단언(as any)을 사용하여 TypeScript 오류를 우회합니다
       const resultAction = await dispatch(
         tryReserveSeat({ section: areaId, seat: selectedSeatNumber }) as any
       );
 
       // 성공 시에만 페이지 이동
       if (tryReserveSeat.fulfilled.match(resultAction)) {
-        router.push('payment1');
+        router.push('payment/1');
       }
     } catch (_error) {
       // 에러는 store에서 처리됨

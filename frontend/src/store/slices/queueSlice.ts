@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface QueueState {
-  queueNumber: number | string;
+  queueNumber: number;
   waitingTime: number;
-  peopleBehind: number | string;
+  peopleBehind: number;
 }
 
 const initialState: QueueState = {
@@ -19,9 +19,9 @@ export const queueSlice = createSlice({
     setQueueInfo: (
       state,
       action: PayloadAction<{
-        queueNumber: number | string;
+        queueNumber: number;
         waitingTime: number;
-        peopleBehind: number | string;
+        peopleBehind: number;
       }>
     ) => {
       state.queueNumber = action.payload.queueNumber;

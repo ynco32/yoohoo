@@ -6,6 +6,7 @@ import {
   TicketingSeatState,
 } from '@/types/ticketingSeat';
 import { UserInfo } from '@/types/user';
+import { Marker, MarkerCategory } from '@/types/marker';
 
 // 사용자 상태 타입
 export interface UserState {
@@ -33,6 +34,14 @@ export interface CaptchaState {
   onSuccess: boolean;
 }
 
+// 마커 상태 타입
+export interface MarkerState {
+  markers: Record<MarkerCategory, Marker[]>;
+  loading: boolean;
+  error: string | null;
+  currentArenaId: string | number | null;
+}
+
 // 티켓팅 좌석 상태 타입은 외부에서 import (이미 정의됨)
 // export interface TicketingSeatState {
 //   seats: TicketingSeatProps[];
@@ -49,6 +58,7 @@ export interface RootState {
   error: ErrorState;
   ticketingSeat: TicketingSeatState;
   captcha: CaptchaState;
+  marker: MarkerState;
 }
 
 // AppDispatch 타입

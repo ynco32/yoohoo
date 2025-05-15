@@ -49,3 +49,6 @@ export default persistReducer(persistConfig, revertSeatSlice.reducer);
 
 // 리듀서만 필요한 경우를 위해 원본 리듀서도 내보내기
 export const revertSeatReducer = revertSeatSlice.reducer;
+// 선택자 함수 추가
+export const selectRevertSeatState = (state: { revertSeat: RevertSeatState }) =>
+  state.revertSeat || { hasVisitedPayment: false, prevAdress: '' };

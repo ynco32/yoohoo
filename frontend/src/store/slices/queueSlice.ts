@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface QueueState {
-  queueNumber: number | string;
+  queueNumber: number;
   waitingTime: number;
-  peopleBehind: number | string;
+  peopleBehind: number;
 }
 
 const initialState: QueueState = {
-  queueNumber: 0,
-  waitingTime: 0,
-  peopleBehind: 0,
+  queueNumber: -1,
+  waitingTime: -1,
+  peopleBehind: -1,
 };
 
 export const queueSlice = createSlice({
@@ -19,9 +19,9 @@ export const queueSlice = createSlice({
     setQueueInfo: (
       state,
       action: PayloadAction<{
-        queueNumber: number | string;
+        queueNumber: number;
         waitingTime: number;
-        peopleBehind: number | string;
+        peopleBehind: number;
       }>
     ) => {
       state.queueNumber = action.payload.queueNumber;

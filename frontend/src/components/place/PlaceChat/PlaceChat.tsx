@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './PlaceChat.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
+import ChatInput from '@/components/common/ChatInput/ChatInput';
 
 interface Message {
   id: number;
@@ -93,9 +94,9 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-
+  // PlaceChat.tsx 내의 handleSend 함수 수정
+  const handleSend = (message: string) => {
+    // 매개변수로 메시지 텍스트 받음
     // 현재 시간 가져오기
     const now = new Date();
     const timeString = `${now.getHours().toString().padStart(2, '0')}:${now
@@ -107,46 +108,14 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
       id: Math.max(...messages.map((m) => m.id)) + 1,
       nickname: '나',
       time: timeString,
-      content: input,
+      content: message, // ChatInput에서 받은 메시지 사용
       isMe: true,
       replyTo: replyingTo || undefined,
     };
 
     setMessages((prev) => [...prev, newMsg]);
-    setInput('');
-    setReplyingTo(null);
-    setTextareaHeight('44px');
-
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.style.height = '44px';
-    }
+    setReplyingTo(null); // 답글 상태 초기화
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      if (e.shiftKey) {
-        // 시프트 엔터는 줄바꿈 (기본 동작 유지)
-        return;
-      } else {
-        // 엔터만 누르면 메시지 전송
-        e.preventDefault();
-        handleSend();
-      }
-    }
-  };
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-
-    // 높이 자동 조절
-    e.target.style.height = '44px'; // 기본 높이로 초기화
-    const scrollHeight = e.target.scrollHeight;
-    const newHeight = Math.min(scrollHeight, 120) + 'px'; // 최대 높이 제한
-    e.target.style.height = newHeight;
-    setTextareaHeight(newHeight);
-  };
-
   const handleReply = (message: Message) => {
     // 시스템 메시지는 답글을 달 수 없음
     if (message.isSystem) return;
@@ -222,24 +191,13 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
         )}
         <div className={styles.nicknameDisplay}>나</div>
         <div className={styles.inputWrapper}>
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={handleTextareaChange}
-            onKeyDown={handleKeyDown}
+          <ChatInput
+            onSend={handleSend}
             placeholder={
               replyingTo ? '답글 작성하기' : '궁금한 내용을 물어볼 수 있어요!'
             }
-            className={styles.messageInput}
-            style={{ height: textareaHeight }}
+            buttonText='보내기'
           />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim()}
-            className={styles.sendButton}
-          >
-            보내기
-          </button>
         </div>
       </div>
     </div>

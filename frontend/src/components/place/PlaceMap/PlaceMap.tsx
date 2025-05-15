@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './PlaceMap.module.scss';
 import useKakaoMap from '@/hooks/useKakaoMap';
 import IconButton from '@/components/common/IconButton/IconButton';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store';
+import { useAppDispatch } from '@/store/reduxHooks';
 import { updateMapSettings } from '@/store/slices/arenaSlice';
-import useMarkers from '@/hooks/useMarkers';
+import ChatbotButton from '@/components/chatbot/ChatbotButton/ChatbotButton';
+import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
+import useMarkers, { UICategoryType } from '@/hooks/useMarkers';
+import { MarkerCategory } from '@/types/marker';
 
 interface PlaceMapProps {
   latitude: number;
@@ -25,10 +27,12 @@ export default function PlaceMap({
 }: PlaceMapProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
-  const userMarkerRef = useRef<kakao.maps.Marker | null>(null);
-  const dispatch = useDispatch<AppDispatch>();
+  const userMarkerRef = useRef<kakao.maps.CustomOverlay | null>(null);
+  const dispatch = useAppDispatch();
+  const { openChatbot } = useChatbot();
 
-  // 마커 데이터 가져오기
+
+  // 마커 데이터 가져오기 (이제 Redux를 통해 가져옴)
   const {
     markers,
     loading,
@@ -104,12 +108,19 @@ export default function PlaceMap({
           userMarkerRef.current.setMap(null);
         }
 
-        // 마커 표시
-        const marker = new window.kakao.maps.Marker({
-          map,
+        // 현재 위치 표시용 HTML 엘리먼트 생성
+        const content = document.createElement('div');
+        content.className = styles.myLocationMarker;
+
+        // 커스텀 오버레이로 현재 위치 표시
+        const customOverlay = new window.kakao.maps.CustomOverlay({
           position: latlng,
+          content: content,
+          map: map,
+          zIndex: 10,
         });
-        userMarkerRef.current = marker;
+
+        userMarkerRef.current = customOverlay;
 
         // 지도 중심 이동
         map.setCenter(latlng);
@@ -232,8 +243,11 @@ export default function PlaceMap({
         icon='gps'
         onClick={moveToMyLocation}
         className={styles.myLocationBtn}
-        iconSize={24}
+        iconSize={30}
+        variant='medium'
       />
+
+      <ChatbotButton onClick={openChatbot} />
 
       <div ref={mapRef} className={styles.kakaoMap} />
     </div>

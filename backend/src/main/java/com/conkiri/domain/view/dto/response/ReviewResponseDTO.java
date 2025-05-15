@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.conkiri.domain.view.entity.Review;
-import com.conkiri.domain.view.entity.ReviewPhoto;
 
 public record ReviewResponseDTO(
 	List<ReviewDetailResponseDTO> reviews

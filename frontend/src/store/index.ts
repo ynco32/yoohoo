@@ -18,6 +18,7 @@ import ticketingSeatReducer from './slices/ticketingSeatSlice';
 import captchaReducer from './slices/captchaSlice';
 import arenaReducer from './slices/arenaSlice';
 import sectionReducer from './slices/sectionSlice';
+import markerReducer from './slices/markerSlice';
 import revertSeatReducer from './slices/revertSeatSlice'; // 새로 추가된 리듀서
 import {
   TypedUseSelectorHook,
@@ -32,6 +33,14 @@ const arenaPersistConfig = {
   whitelist: ['currentArena'], // 경기장 정보만 지속
 };
 
+// 마커 persist 설정
+const markerPersistConfig = {
+  key: 'marker',
+  storage,
+  whitelist: ['markers', 'currentArenaId'], // 마커 데이터와 현재 경기장 ID만 지속
+};
+
+// 다른 persist 설정이 필요한 경우
 // 사용자 정보 persist 설정
 const userPersistConfig = {
   key: 'user',
@@ -41,6 +50,12 @@ const userPersistConfig = {
 
 // persist 적용
 const persistedArenaReducer = persistReducer(arenaPersistConfig, arenaReducer);
+
+const persistedMarkerReducer = persistReducer(
+  markerPersistConfig,
+  markerReducer
+);
+// 필요한 경우 user reducer에도 persist 적용
 // 사용자 정보에도 persist 적용
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 
@@ -53,6 +68,7 @@ export const store = configureStore({
     captcha: captchaReducer,
     arena: persistedArenaReducer,
     section: sectionReducer,
+    marker: persistedMarkerReducer,
     revertSeat: revertSeatReducer, // 새로 추가된 리듀서
     // 다른 리듀서들 추가
   },

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import ScheduleSelection from '@/components/ticketing/ScheduleSelection/ScheduleSelection';
+import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
 import styles from './page.module.scss';
 
 // WebSocket을 사용하는 컴포넌트만 dynamic으로 로드
@@ -27,12 +28,19 @@ export default function RealModePage() {
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
   const [hasError, setHasError] = useState(false);
   const { buttonDisabled, buttonMessage } = useTicketingTimer();
+  const { disconnectWebSocket } = useWebSocketQueue();
 
   const error = useSelector((state: RootState) => state.error.message);
 
   const handleScheduleSelect = () => {
     setSchedulePopupOpen(false);
     setQueuePopupOpen(true);
+  };
+
+  const handleQueuePopupClose = () => {
+    // QueuePopup을 닫을 때 웹소켓 연결도 해제
+    disconnectWebSocket();
+    setQueuePopupOpen(false);
   };
 
   return (
@@ -138,7 +146,7 @@ export default function RealModePage() {
         <DynamicWebSocketProvider onEnterQueue={true}>
           <DynamicQueuePopup
             title='ASIA TOUR LOG in SEOUL'
-            onClose={() => setQueuePopupOpen(false)}
+            onClose={handleQueuePopupClose}
             isOpen={true}
           />
         </DynamicWebSocketProvider>

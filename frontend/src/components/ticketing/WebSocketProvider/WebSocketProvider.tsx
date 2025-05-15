@@ -13,7 +13,7 @@ export default function WebSocketProvider({
   children,
   onEnterQueue = false,
 }: WebSocketProviderProps) {
-  const { enterQueue } = useWebSocketQueue();
+  const { enterQueue, disconnectWebSocket } = useWebSocketQueue();
   const [hasEnteredQueue, setHasEnteredQueue] = useState(false);
   const queueInfo = useSelector((state: RootState) => state.queue);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -24,7 +24,13 @@ export default function WebSocketProvider({
       setHasEnteredQueue(true);
       enterQueue();
     }
-  }, [onEnterQueue]);
+
+    // 컴포넌트가 언마운트될 때 웹소켓 연결 해제
+    return () => {
+      console.log('🤝 WebSocketProvider: 언마운트, 연결 해제');
+      disconnectWebSocket();
+    };
+  }, [onEnterQueue, enterQueue, disconnectWebSocket]);
 
   // queueInfo가 초기값이 아닐 때 dataLoaded를 true로 설정
   useEffect(() => {

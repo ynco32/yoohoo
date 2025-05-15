@@ -164,15 +164,10 @@ export default function RealModePage() {
 
       {/* 웹소켓 연결 및 큐 팝업 관리 */}
       {isWebSocketConnected && (
-        <DynamicWebSocketProvider onEnterQueue={true}>
-          {isQueuePopupOpen && (
-            <DynamicQueuePopup
-              title='ASIA TOUR LOG in SEOUL'
-              onClose={handleQueuePopupClose}
-              isOpen={true}
-            />
-          )}
-        </DynamicWebSocketProvider>
+        <DynamicWebSocketProvider
+          onEnterQueue={true}
+          title='ASIA TOUR LOG in SEOUL'
+        />
       )}
 
       {error && <DynamicErrorPopup isOpen={!!error}>{error}</DynamicErrorPopup>}

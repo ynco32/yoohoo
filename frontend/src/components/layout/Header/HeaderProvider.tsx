@@ -65,6 +65,8 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [shouldShowDetail, setShouldShowDetail] = useState(false);
   const [seatDetail, setSeatDetail] = useState<string | null>(null);
+  // 티켓팅 진행 중 마지막으로 선택한 구역 저장
+  const [lastSelectedArea, setLastSelectedArea] = useState<string | null>(null);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -84,13 +86,24 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     dispatch(resetToDefaultMapView());
   };
 
-  // 경로 변경 추적
+  // 경로 변경 추적 및 마지막 선택 구역 업데이트
   useEffect(() => {
     // 이전 경로를 저장
     const prevPath = sessionStorage.getItem('currentPath') || '';
     // 현재 경로 업데이트
     sessionStorage.setItem('previousPath', prevPath);
     sessionStorage.setItem('currentPath', pathname);
+
+    // 구역 페이지 방문 시 마지막 선택 구역 저장
+    if (pathname.match(/^\/ticketing\/real\/areas\/[^\/]+$/)) {
+      // /ticketing/real/areas/A 에서 A 추출
+      const areaId = pathname.split('/').pop();
+      if (areaId) {
+        sessionStorage.setItem('lastSelectedArea', areaId);
+        setLastSelectedArea(areaId);
+      }
+    }
+
     updateDetailState(pathname);
   }, [pathname]);
 
@@ -128,6 +141,23 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     else if (path.match(/^\/place\/[^\/]+$/)) {
       setShouldShowDetail(true);
       setSeatDetail('현장');
+    }
+    // /ticketing/real/areas/[areaId] - 구역 선택 페이지
+    else if (path.match(/^\/ticketing\/real\/areas\/[^\/]+$/)) {
+      setShouldShowDetail(true);
+      // 경로에서 구역 정보 추출
+      const areaId = path.split('/').pop();
+      setSeatDetail(areaId ? `${areaId} 구역` : '구역 선택');
+    }
+    // /ticketing/real/checkout/payment/1 - 결제 첫 단계
+    else if (path.match(/^\/ticketing\/real\/checkout\/payment\/1$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('결제 정보');
+    }
+    // /ticketing/real/checkout/payment/2 - 결제 두번째 단계
+    else if (path.match(/^\/ticketing\/real\/checkout\/payment\/2$/)) {
+      setShouldShowDetail(true);
+      setSeatDetail('결제 확인');
     } else {
       setShouldShowDetail(false);
 
@@ -181,6 +211,28 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
   // 뒤로 가기 동작 처리
   const handleBack = () => {
     const previousPath = sessionStorage.getItem('previousPath') || '';
+
+    // 결제 첫 단계 페이지에서의 뒤로가기 - 마지막으로 선택한 구역으로 이동
+    if (pathname === '/ticketing/real/checkout/payment/1') {
+      // sessionStorage에서 마지막 선택 구역 가져오기
+      const areaId = sessionStorage.getItem('lastSelectedArea');
+      if (areaId) {
+        // 마지막으로 선택한 구역으로 이동
+        router.push(`/ticketing/real/areas/${areaId}`);
+      } else {
+        // 구역 정보가 없으면 기본 구역 선택 페이지로 이동
+        router.push('/ticketing/real/areas');
+      }
+      return;
+    }
+
+    // 결제 두번째 단계에서는 첫 단계로 이동
+    if (pathname === '/ticketing/real/checkout/payment/2') {
+      router.push('/ticketing/real/checkout/payment/1');
+      return;
+    }
+
+    // 일반적인 뒤로가기 동작 처리
     const navAction = determineBackNavigation(pathname, previousPath);
 
     switch (navAction.type) {

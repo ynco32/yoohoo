@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -13,7 +12,7 @@ export default function Home() {
   const [loadingText, setLoadingText] = useState('');
   const { isLoggedIn, isNamed, isLoading } = useAuthStatus();
   const [redirectTriggered, setRedirectTriggered] = useState(false);
-
+  const [hasVisited, setHasVisited] = useState(false);
   const loadingTexts = [
     '잠시만 기다려주시끼리...',
     '풍선에 바람 넣는 중...',
@@ -25,6 +24,20 @@ export default function Home() {
     '콘서트로 도파민 충전 중...',
     '콘끼리와 함께하는 여정 시작!',
   ];
+
+  // 방문 이력 확인
+  useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window !== 'undefined') {
+      const visitedBefore = localStorage.getItem('hasVisitedSplash');
+      setHasVisited(!!visitedBefore);
+
+      if (visitedBefore && !isLoading) {
+        // 방문 이력이 있으면 즉시 리다이렉트
+        redirectBasedOnAuthStatus();
+      }
+    }
+  }, [isLoading]);
 
   // 인증 상태에 따라 리다이렉트
   const redirectBasedOnAuthStatus = () => {
@@ -48,8 +61,11 @@ export default function Home() {
     }
   };
 
-  // 스플래시 화면 로직 - 항상 3초간 표시
+  // 스플래시 화면 로직 - 처음 방문 시에만 3초간 표시
   useEffect(() => {
+    // 이미 방문한 이력이 있으면 스플래시 화면 표시하지 않음
+    if (hasVisited) return;
+
     // 스플래시 화면 초기화
     console.log('스플래시 화면 초기화');
 
@@ -75,6 +91,11 @@ export default function Home() {
     const redirectTimer = setTimeout(() => {
       console.log('3초 타이머 완료');
 
+      // 방문 이력 저장
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('hasVisitedSplash', 'true');
+      }
+
       // 인증 상태 로딩이 완료되었으면 바로 리다이렉트
       if (!isLoading) {
         redirectBasedOnAuthStatus();
@@ -85,18 +106,26 @@ export default function Home() {
       clearInterval(animationInterval);
       clearTimeout(redirectTimer);
     };
-  }, []);
+  }, [hasVisited, isLoading]);
 
   // 인증 상태가 변경되었고, 3초가 지났을 때 리다이렉트
   useEffect(() => {
+    // 방문 이력이 있으면 스킵
+    if (hasVisited) return;
+
     // 인증 로딩이 완료되었고, 프로그레스가 100%에 도달했을 때만 리다이렉트
     if (!isLoading && progress >= 100 && !redirectTriggered) {
       console.log('인증 로딩 완료 및 프로그레스 100% 도달');
       redirectBasedOnAuthStatus();
     }
-  }, [isLoading, progress, redirectTriggered]);
+  }, [isLoading, progress, redirectTriggered, hasVisited]);
 
-  // 항상 스플래시 화면 표시
+  // 방문 이력이 있으면 아무것도 표시하지 않음 (로딩 중에만 잠시 표시)
+  if (hasVisited) {
+    return <div className={styles.page}></div>;
+  }
+
+  // 첫 방문 시에만 스플래시 화면 표시
   return (
     <div className={styles.page}>
       <div className={styles.content}>
@@ -104,7 +133,6 @@ export default function Home() {
         <div className={styles.logoContainer}>
           <LogoIcon className={styles.logo} />
         </div>
-
         {/* 캐릭터 이미지 */}
         <div className={styles.characterContainer}>
           <Image
@@ -115,9 +143,7 @@ export default function Home() {
             className={styles.character}
           />
         </div>
-
         <div className={styles.loadingText}>{loadingText}</div>
-
         <div className={styles.loadingContainer}>
           <div
             className={styles.loadingBar}

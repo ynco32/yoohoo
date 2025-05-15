@@ -10,6 +10,7 @@ import {
   tryReserveSeat,
   fetchSeatsByArea,
   selectTicketingState,
+  clearError,
 } from '@/store/slices/ticketingSeatSlice';
 import { setCaptchaState } from '@/store/slices/captchaSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
@@ -30,7 +31,10 @@ export default function SeatPage() {
 
   // params 디버깅
   const params = useParams();
-
+  const handleCloseErrorPopup = () => {
+    // ticketingSlice의 clearError 액션 사용
+    dispatch(clearError());
+  };
   // URL 파라미터에서 areaId 가져오기 (params.areaId로 접근)
   const areaId = (params?.areaId as string) || '';
 
@@ -194,7 +198,11 @@ export default function SeatPage() {
           : '선택된 좌석 없음'}
       </TicketingBottomButton>
 
-      {error && <ErrorPopup isOpen={!!error}>{error.message}</ErrorPopup>}
+      {error && (
+        <ErrorPopup isOpen={!!error} onClose={handleCloseErrorPopup}>
+          {error.message}
+        </ErrorPopup>
+      )}
       <Captcha
         isOpen={isSecurityMessageOpen}
         onPostpone={() => setIsSecurityMessageOpen(false)}

@@ -35,16 +35,16 @@ export interface Review {
   arenaName: string;
   seatId: number;
   section: string;
-  rowLine: number;
+  rowLine: string; // API 응답에 맞게 string으로 변경
   columnLine: number;
-  artistGrade: ArtistGrade; // API 응답에 맞게 enum 타입으로 변경
-  stageGrade: StageGrade; // API 응답에 맞게 enum 타입으로 변경
-  screenGrade: ScreenGrade; // API 응답에 맞게 enum 타입으로 변경
+  artistGrade: ArtistGrade;
+  stageGrade: StageGrade;
+  screenGrade: ScreenGrade;
   content: string;
   cameraBrand?: string;
   cameraModel?: string;
   createdAt: string;
-  photoUrls: string[]; // API 응답에 맞게 변경
+  photoUrls: string[];
 }
 
 // 선택 옵션 인터페이스
@@ -62,7 +62,7 @@ export interface ReviewData {
   concertTitle: string;
   seatId: number;
   section: string;
-  rowLine: number;
+  rowLine: string; // string으로 변경
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
@@ -95,7 +95,7 @@ export interface ReviewRequest {
   concertId: number;
   seatId: number;
   section: string;
-  rowLine: number;
+  rowLine: string; // string으로 변경
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
@@ -106,7 +106,21 @@ export interface ReviewRequest {
   photos?: string[];
 }
 
+// 리뷰 수정 요청 데이터 타입 (추가)
+export interface ReviewUpdateRequest {
+  concertId: number;
+  section: string;
+  rowLine: string;
+  columnLine: number;
+  artistGrade: ArtistGrade;
+  stageGrade: StageGrade;
+  screenGrade: ScreenGrade;
+  content: string;
+  cameraBrand?: string;
+  cameraModel?: string;
+  existingPhotoUrls: string[];
+}
 
-export interface ReviewListApi{
+export interface ReviewListApi {
   reviewList: Review[];
 }

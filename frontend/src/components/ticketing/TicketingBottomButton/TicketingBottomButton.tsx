@@ -22,13 +22,12 @@ export default function TicketingBottomButton({
   const router = useRouter(); // [Next.js] router 인스턴스 생성
   // Redux 사용
   const dispatch = useDispatch<AppDispatch>();
+  const areaId = useParams().areaId as string;
 
   const refresh = () => {
     dispatch(fetchSeatsByArea(areaId));
     router.refresh(); // 현재 페이지의 데이터만 새로고침
   };
-
-  const areaId = useParams().areaType as string;
 
   return (
     <div className={styles.bottomBarContainer}>
@@ -38,7 +37,7 @@ export default function TicketingBottomButton({
         </button>
 
         <button
-          disabled={isActive}
+          disabled={!isActive}
           onClick={onClick}
           className={isActive ? styles.activeButton : styles.nonActiveButton}
         >

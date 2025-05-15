@@ -1,31 +1,64 @@
 // src/components/main/UserProfile/UserProfile.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserProfile } from '@/api/auth/auth';
+import { setUser, setLoading, setError } from '@/store/slices/userSlice';
+import { RootState } from '@/store';
 import styles from './UserProfile.module.scss';
 import ProfileBackground from '/public/svgs/main/profile-bg.svg';
 
-type UserProfileProps = {
-  nickname: string;
-  profileImage: string;
-  onClick?: () => void;
-};
-
-export default function UserProfile({
-  nickname,
-  profileImage,
-  onClick,
-}: UserProfileProps) {
+export default function UserProfile() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { data: userInfo, loading } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  // 프로필 번호에 따른 이미지 경로 생성 함수
+  const getProfileImagePath = (profileNumber?: number) => {
+    // 프로필 번호가 없으면 기본 이미지 반환
+    if (profileNumber === undefined) {
+      return '/images/default-profile.png';
+    }
+
+    // 프로필 번호에 따른 이미지 경로 반환
+    return `/images/profiles/profile-${profileNumber}.png`;
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        dispatch(setLoading(true));
+        const response = await getUserProfile();
+        if (response) {
+          dispatch(setUser(response));
+        }
+      } catch (error) {
+        dispatch(
+          setError(
+            error instanceof Error
+              ? error.message
+              : '사용자 정보를 가져오는 중 오류가 발생했습니다.'
+          )
+        );
+        console.error('사용자 정보를 가져오는 중 오류:', error);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    // 사용자 정보가 없는 경우에만 API 호출
+    if (!userInfo) {
+      fetchUserInfo();
+    }
+  }, [dispatch, userInfo]);
 
   const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      router.push('/mypage');
-    }
+    router.push('/mypage');
   };
 
   return (
@@ -49,22 +82,30 @@ export default function UserProfile({
 
         {/* 컨텐츠 컨테이너 */}
         <div className={styles.contentContainer}>
-          {/* 프로필 캐릭터 이미지 */}
-          <div className={styles.characterImageContainer}>
-            <Image
-              src={profileImage}
-              alt={nickname}
-              width={255}
-              height={250}
-              className={styles.characterImage}
-              priority
-            />
-          </div>
+          {loading ? (
+            <div className={styles.loadingState}>로딩 중...</div>
+          ) : (
+            <>
+              {/* 프로필 캐릭터 이미지 */}
+              <div className={styles.characterImageContainer}>
+                <Image
+                  src={getProfileImagePath(userInfo?.profileNumber)}
+                  alt={`${userInfo?.nickname || '사용자'} 프로필 이미지`}
+                  width={255}
+                  height={250}
+                  className={styles.characterImage}
+                  priority
+                />
+              </div>
 
-          {/* 닉네임 */}
-          <div className={styles.nicknameSection}>
-            <span className={styles.nickname}>{nickname}님</span>
-          </div>
+              {/* 닉네임 */}
+              <div className={styles.nicknameSection}>
+                <span className={styles.nickname}>
+                  {userInfo?.nickname || '사용자'}님
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

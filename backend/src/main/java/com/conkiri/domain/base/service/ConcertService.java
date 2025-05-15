@@ -1,11 +1,7 @@
 package com.conkiri.domain.base.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -239,10 +235,11 @@ public class ConcertService {
 
 		artistNames.stream()
 			.filter(name -> name != null && !name.trim().isEmpty())
-			.map(this::findOrCreateArtist)
-			.forEach(artist -> {
-				Cast cast = Cast.of(concert, artist);
-				castRepository.save(cast);
+			.map(this::findArtist)
+				.filter(artist -> artist != null)
+				.forEach(artist -> {
+					Cast cast = Cast.of(concert, artist);
+					castRepository.save(cast);
 			});
 	}
 
@@ -258,9 +255,22 @@ public class ConcertService {
 		}
 	}
 
-	private Artist findOrCreateArtist(String artistName) {
-		return artistRepository.findByArtistName(artistName)
-			.orElseGet(() -> artistRepository.save(Artist.of(artistName, null)));
+	private Artist findArtist(String artistName) {
+		if (artistName == null || artistName.isEmpty()) {
+			return null;
+		}
+
+		Optional<Artist> artistByKoreanName = artistRepository.findByArtistName(artistName);
+		if (artistByKoreanName.isPresent()) {
+			return artistByKoreanName.get();
+		}
+
+		Optional<Artist> artistByEnglishName = artistRepository.findByArtistEngName(artistName);
+		if (artistByEnglishName.isPresent()) {
+			return artistByEnglishName.get();
+		}
+
+		return null;
 	}
 
 	private Arena findMatchingArena(String arenaName) {

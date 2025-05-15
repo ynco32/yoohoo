@@ -56,7 +56,7 @@ public class SecurityConfig {
 				.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/error").permitAll()
 				.requestMatchers("/api/v1/arena/**", "/api/v1/view/arenas/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/v1/view/reviews/**").permitAll()
-				.requestMatchers(HttpMethod.GET, "/api/v1/concerts/create").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/v1/concerts/create").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/v1/concerts/checkExists").permitAll()
 				.requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()

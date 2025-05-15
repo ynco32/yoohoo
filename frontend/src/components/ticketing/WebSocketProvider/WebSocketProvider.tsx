@@ -13,40 +13,68 @@ export default function WebSocketProvider({
   children,
   onEnterQueue = false,
 }: WebSocketProviderProps) {
-  const { enterQueue, disconnectWebSocket } = useWebSocketQueue();
+  const { enterQueue } = useWebSocketQueue();
   const [hasEnteredQueue, setHasEnteredQueue] = useState(false);
   const queueInfo = useSelector((state: RootState) => state.queue);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
+    // WebSocket 연결 및 대기열 진입
     if (onEnterQueue && !hasEnteredQueue) {
-      console.log('🤝 WebSocketProvider: enterQueue 호출');
+      console.log('🤝 WebSocketProvider: enterQueue 호출 시작');
+      setIsLoading(true);
       setHasEnteredQueue(true);
-      enterQueue();
+
+      // enterQueue 호출
+      const enterQueueAsync = async () => {
+        try {
+          await enterQueue();
+          console.log('🤝 WebSocketProvider: enterQueue 완료');
+        } catch (error) {
+          console.error('🤝 WebSocketProvider: enterQueue 오류', error);
+        } finally {
+          if (isMounted) {
+            // 짧은 지연 후 로딩 종료
+            setTimeout(() => {
+              if (isMounted) {
+                setIsLoading(false);
+              }
+            }, 800);
+          }
+        }
+      };
+
+      enterQueueAsync();
     }
 
-    // 컴포넌트가 언마운트될 때 웹소켓 연결 해제
     return () => {
-      console.log('🤝 WebSocketProvider: 언마운트, 연결 해제');
-      disconnectWebSocket();
+      isMounted = false;
+      console.log('🤝 WebSocketProvider: clean-up 함수 실행');
     };
-  }, [onEnterQueue, enterQueue, disconnectWebSocket]);
+  }, [onEnterQueue, enterQueue, hasEnteredQueue]);
 
-  // queueInfo가 초기값이 아닐 때 dataLoaded를 true로 설정
+  // queueInfo 업데이트 시 로딩 상태 확인
   useEffect(() => {
     if (
-      queueInfo.queueNumber > -1 ||
-      queueInfo.waitingTime > -1 ||
-      queueInfo.peopleBehind > -1
+      queueInfo.queueNumber > 0 ||
+      queueInfo.waitingTime > 0 ||
+      queueInfo.peopleBehind > 0
     ) {
-      setDataLoaded(true);
+      setIsLoading(false);
     }
   }, [queueInfo]);
 
-  // 데이터가 로드되었을 때만 children을 렌더링
-  if (onEnterQueue && !dataLoaded) {
-    return <div className='loading'>데이터를 불러오는 중...</div>; // 로딩 표시기
-  }
-
-  return <>{children}</>;
+  // 로딩 중일 때 로딩 인디케이터 표시, 그러나 children은 계속 렌더링
+  return (
+    <>
+      {isLoading && (
+        <div className='loading-overlay'>
+          <div className='loading-spinner'>대기열에 입장 중입니다...</div>
+        </div>
+      )}
+      {children}
+    </>
+  );
 }

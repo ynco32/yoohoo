@@ -11,9 +11,14 @@ interface SelectedSeat {
 interface SeatMapProps {
   arenaId: string;
   sectionId: string;
+  maxWidth?: number; // 최대 너비를 props로 받을 수 있도록 추가
 }
 
-const SeatMap: React.FC<SeatMapProps> = ({ arenaId, sectionId }) => {
+const SeatMap: React.FC<SeatMapProps> = ({
+  arenaId,
+  sectionId,
+  maxWidth = 800,
+}) => {
   const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
   const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
 
@@ -58,7 +63,10 @@ const SeatMap: React.FC<SeatMapProps> = ({ arenaId, sectionId }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.seatMapContainer}>
+      <div
+        className={styles.seatMapContainer}
+        style={{ maxWidth: `${maxWidth}px` }}
+      >
         {seatData.seatMap.map((row, rowIndex) => {
           if (isEmptyRow(row)) {
             return (

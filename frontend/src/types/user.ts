@@ -14,9 +14,6 @@ export interface UserInfo {
   /** 사용자 이름 */
   userName: string;
 
-  /** 캐릭터 URL */
-  characterUrl: string;
-
-  /** 사용자 역할 */
-  role: string;
+  /** 프로필 이미지 번호 (선택적) */
+  profileNumber?: number;
 }

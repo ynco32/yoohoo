@@ -7,18 +7,9 @@ import TicketIcon from '/public/svgs/main/menuTicket.svg';
 import UserProfile from '@/components/main/UserProfile';
 
 export default function MainMenu() {
-  // 실제로는 API에서 가져온 사용자 데이터를 사용
-  const userProfile = {
-    nickname: '똘병이',
-    profileImage: '/svgs/main/profile.svg', // 실제 프로필 이미지 경로로 대체
-  };
-
   return (
     <div className={styles.container}>
-      <UserProfile
-        nickname={userProfile.nickname}
-        profileImage={userProfile.profileImage}
-      />
+      <UserProfile />
       <div className={styles.mainMenu}>
         {/* 시야보기 메뉴 - 세로로 두 칸 차지 */}
         <div

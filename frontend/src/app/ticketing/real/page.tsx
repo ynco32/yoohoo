@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useSelector } from 'react-redux';
@@ -26,21 +26,41 @@ const DynamicErrorPopup = dynamic(
 export default function RealModePage() {
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [isWebSocketConnected, setWebSocketConnected] = useState(false);
   const { buttonDisabled, buttonMessage } = useTicketingTimer();
-  const { disconnectWebSocket } = useWebSocketQueue();
+  const { disconnectWebSocket, enterQueue } = useWebSocketQueue();
+  const mountedRef = useRef(false);
 
   const error = useSelector((state: RootState) => state.error.message);
 
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   const handleScheduleSelect = () => {
     setSchedulePopupOpen(false);
-    setQueuePopupOpen(true);
+
+    // 웹소켓 연결 준비
+    console.log('스케줄 선택 완료, 웹소켓 연결 준비');
+    setWebSocketConnected(true);
+
+    // 일단 팝업은 약간 지연시켜 표시
+    setTimeout(() => {
+      if (mountedRef.current) {
+        setQueuePopupOpen(true);
+      }
+    }, 300);
   };
 
   const handleQueuePopupClose = () => {
     // QueuePopup을 닫을 때 웹소켓 연결도 해제
+    console.log('큐 팝업 닫기, 웹소켓 연결 해제 중');
     disconnectWebSocket();
     setQueuePopupOpen(false);
+    setWebSocketConnected(false);
   };
 
   return (
@@ -142,13 +162,16 @@ export default function RealModePage() {
         onScheduleSelect={handleScheduleSelect}
       />
 
-      {isQueuePopupOpen && !hasError && (
+      {/* 웹소켓 연결 및 큐 팝업 관리 */}
+      {isWebSocketConnected && (
         <DynamicWebSocketProvider onEnterQueue={true}>
-          <DynamicQueuePopup
-            title='ASIA TOUR LOG in SEOUL'
-            onClose={handleQueuePopupClose}
-            isOpen={true}
-          />
+          {isQueuePopupOpen && (
+            <DynamicQueuePopup
+              title='ASIA TOUR LOG in SEOUL'
+              onClose={handleQueuePopupClose}
+              isOpen={true}
+            />
+          )}
         </DynamicWebSocketProvider>
       )}
 

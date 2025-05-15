@@ -77,7 +77,7 @@ export default function SeatPage() {
         timestamp: new Date().toISOString(),
       });
 
-      await apiRequest('DELETE', '/api/v1/ticketing/result');
+      await apiRequest('DELETE', '/api/v1/ticketing/sections/seats');
       console.log('✅ Cleanup API 호출 성공');
     } catch (error) {
       console.error('❌ Cleanup API 호출 실패:', error);

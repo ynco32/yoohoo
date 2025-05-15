@@ -1,0 +1,111 @@
+.chatInterface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.quickLinks {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quickLink {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: white;
+  border-radius: 8px;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  span {
+    flex: 1;
+    margin-left: 8px;
+    font-size: 14px;
+  }
+}
+
+.messagesContainer {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  -webkit-overflow-scrolling: touch; // 모바일에서 부드러운 스크롤
+
+  // 스크롤바 숨기기 위한 코드
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    width: 0;
+    background: transparent;
+  }
+}
+
+.messageWrapper {
+  display: flex;
+  margin-bottom: 12px;
+
+  &.userMessage {
+    justify-content: flex-end;
+  }
+
+  &.botMessage {
+    justify-content: flex-start;
+  }
+}
+
+.botAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e1f5fe;
+  margin-right: 8px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.messageContent {
+  padding: 10px 16px;
+  border-radius: 16px;
+  max-width: 90%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: $font-size-md;
+
+  &.userContent {
+    background-color: $con-blue;
+    color: white;
+    border-top-right-radius: 4px;
+  }
+
+  &.botContent {
+    background-color: white;
+    color: $text-main;
+    border-top-left-radius: 4px;
+  }
+}
+
+.botContent :global(.highlight) {
+  font-weight: $font-weight-bold;
+  color: $con-blue;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: white;
+  border-top: 1px solid #eeeeee;
+}

@@ -7,6 +7,8 @@ import useKakaoMap from '@/hooks/useKakaoMap';
 import IconButton from '@/components/common/IconButton/IconButton';
 import { useAppDispatch } from '@/store/reduxHooks';
 import { updateMapSettings } from '@/store/slices/arenaSlice';
+import ChatbotButton from '@/components/chatbot/ChatbotButton/ChatbotButton';
+import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 import useMarkers, { UICategoryType } from '@/hooks/useMarkers';
 import { MarkerCategory } from '@/types/marker';
 
@@ -27,6 +29,8 @@ export default function PlaceMap({
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const userMarkerRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const dispatch = useAppDispatch();
+  const { openChatbot } = useChatbot();
+
 
   // 마커 데이터 가져오기 (이제 Redux를 통해 가져옴)
   const {
@@ -239,8 +243,11 @@ export default function PlaceMap({
         icon='gps'
         onClick={moveToMyLocation}
         className={styles.myLocationBtn}
-        iconSize={24}
+        iconSize={30}
+        variant='medium'
       />
+
+      <ChatbotButton onClick={openChatbot} />
 
       <div ref={mapRef} className={styles.kakaoMap} />
     </div>

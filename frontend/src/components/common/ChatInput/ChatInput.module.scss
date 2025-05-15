@@ -1,0 +1,54 @@
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .messageInput {
+    flex: 1;
+    min-height: 44px;
+    max-height: 120px; // 최대 높이 제한
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    padding: 12px 16px;
+    font-size: 15px;
+    outline: none;
+    background-color: #fff;
+    resize: none; // 사용자가 크기 조절하지 못하게 설정
+    overflow-y: hidden;
+    line-height: 1.4;
+    font-size: $font-size-xs;
+    color: $text-main;
+
+    &::placeholder {
+      color: #999;
+    }
+
+    &:focus {
+      border-color: $con-blue;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+}
+
+.sendButton {
+  margin-left: 8px;
+  height: 44px;
+  min-width: 80px;
+  border-radius: 8px;
+  background-color: $con-blue;
+  color: white;
+  font-weight: 500;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #d0d0d0;
+    cursor: not-allowed;
+  }
+}

@@ -13,7 +13,7 @@ export const postNickname = async (nickname: string) => {
 };
 
 export const checkLogin = async () => {
-  return apiRequest<checkLoginResponse>('GET', '/api/v1/user/login/check');
+  return apiRequest<checkLoginResponse>('GET', '/api/v1/auth/login');
 };
 
 export const getUserProfile = async () => {

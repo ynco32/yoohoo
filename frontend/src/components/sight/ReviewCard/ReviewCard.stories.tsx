@@ -25,8 +25,6 @@ const createTestStore = (userId: number | null = null) => {
       nickname: '테스트 사용자',
       email: 'test@example.com',
       userName: '홍길동',
-      characterUrl: '/images/dummy.png',
-      role: 'ROLE_USER',
     };
 
     store.dispatch(setUser(mockUser));

@@ -36,6 +36,12 @@ public class UserService {
 		user.updateNickname(nickname);
 	}
 
+	public void updateProfile(Long userId, Integer profileNumber) {
+
+		User user = userReadService.findUserByIdOrElseThrow(userId);
+		user.updateProfileNumber(profileNumber);
+	}
+
 	public boolean checkNicknameExists(String nickname) {
 		return !userRepository.existsByNickname(nickname);
 	}

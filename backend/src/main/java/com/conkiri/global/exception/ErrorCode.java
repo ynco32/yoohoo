@@ -79,6 +79,7 @@ public enum ErrorCode {
 
     // 현장
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "채팅방을 찾을 수 없습니다."),
 
     // 알림
     FAIL_NOTIFICATION(HttpStatus.BAD_REQUEST, "알림 발송 실패"),

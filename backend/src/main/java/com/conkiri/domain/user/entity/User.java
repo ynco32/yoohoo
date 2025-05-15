@@ -40,6 +40,9 @@ public class User {
 	@Column(name = "profile_number")
 	private Integer profileNumber;
 
+	@Column(name = "anonym", length = 100)
+	private String anonym;
+
 	private User(String email, String userName, String nickname) {
 		this.email = email;
 		this.userName = userName;
@@ -55,6 +58,10 @@ public class User {
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public void updateAnonym(String anonym) {
+		this.anonym = anonym;
 	}
 
 	public void updateFcmToken(String fcmToken) {

@@ -7,7 +7,8 @@ public record UserResponseDTO(
 	String nickname,
 	String email,
 	String userName,
-	Integer profileNumber
+	Integer profileNumber,
+	String anonym
 
 ) {
 	public static UserResponseDTO from(User user) {
@@ -16,7 +17,8 @@ public record UserResponseDTO(
 			user.getNickname(),
 			user.getEmail(),
 			user.getUserName(),
-			user.getProfileNumber()
+			user.getProfileNumber(),
+			user.getAnonym()
 		);
 	}
 }

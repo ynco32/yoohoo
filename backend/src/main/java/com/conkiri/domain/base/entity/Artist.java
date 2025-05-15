@@ -14,23 +14,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Artist {
 
-	@Id
-	@Column(name = "artist_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long artistId;
+    @Id
+    @Column(name = "artist_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long artistId;
 
-	@Column(name = "artist_name", length = 100)
-	private String artistName;
+    @Column(name = "artist_name", length = 100)
+    private String artistName;
 
-	@Column(name = "photo_url", length = 200)
-	private String photoUrl;
+    @Column(name = "artist_eng_name", length = 100)
+    private String artistEngName;
 
-	private Artist(String artistName, String photoUrl) {
-		this.artistName = artistName;
-		this.photoUrl = photoUrl;
-	}
+    @Column(name = "photo_url", length = 200)
+    private String photoUrl;
 
-	public static Artist of(String artistName, String photoUrl) {
-		return new Artist(artistName, photoUrl);
-	}
+    private Artist(String artistName, String artistEngName, String photoUrl) {
+        this.artistName = artistName;
+        this.artistEngName = artistEngName;
+        this.photoUrl = photoUrl;
+    }
+
+    public static Artist of(String artistName, String artistEngName, String photoUrl) {
+        return new Artist(artistName, artistEngName, photoUrl);
+    }
 }

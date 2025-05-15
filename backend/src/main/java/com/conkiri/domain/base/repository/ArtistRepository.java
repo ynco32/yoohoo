@@ -9,4 +9,6 @@ import com.conkiri.domain.base.entity.Artist;
 public interface ArtistRepository extends JpaRepository<Artist, Long>, ArtistRepositoryCustom {
 
     Optional<Artist> findByArtistName(String artistName);
+
+    Optional<Artist> findByArtistEngName(String artistEngName);
 }

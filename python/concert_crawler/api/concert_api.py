@@ -11,7 +11,7 @@ def check_concert_exists(concert_name):
     Returns:
         bool: 이미 존재하면 True, 아니면 False
     """
-    api_url = API_BASE_URL + "/api/v1/concert/checkExists" 
+    api_url = API_BASE_URL + "/api/v1/concerts/checkExists" 
     
     try:
         params = {"concertName": concert_name}
@@ -20,15 +20,21 @@ def check_concert_exists(concert_name):
             result = response.json()
             return result.get("data", False)
         else:
-            print(f"❌ API 호출 실패: {response.status_code} - {response.text}")
-            return False
+            error_message = (f"❌ API 호출 실패: {response.status_code} - {response.text}")
+            print(error_message)
+            raise ConnectionError(error_message)
+    except requests.RequestException as e:
+        error_message = f"❌ API 연결 오류: {str(e)}"
+        print(error_message)
+        raise ConnectionError(error_message)  # 연결 예외 시 ConnectionError로 변환
     except Exception as e:
-        print(f"❌ API 호출 오류: {str(e)}")
-        return False
+        error_message = f"❌ 예상치 못한 오류: {str(e)}"
+        print(error_message)
+        raise ConnectionError(error_message)  # 기타 예외도 ConnectionError로 변환
 
 def save_concert_to_java_api(concert_data):
     """콘서트 데이터를 Java API로 전송"""
-    api_url = API_BASE_URL + "/api/v1/concert"  # API 엔드포인트
+    api_url = API_BASE_URL + "/api/v1/concerts/create"  # API 엔드포인트
 
     concert_name = concert_data.get('title') or concert_data.get('concert_name')
     venue_name = concert_data.get('place') or concert_data.get('venue')

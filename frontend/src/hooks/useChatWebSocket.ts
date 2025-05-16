@@ -299,32 +299,12 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         setIsConnected(false);
       };
 
-      // 타임아웃 설정 (5초)
-      connectionTimeout = setTimeout(() => {
-        if (!hasConnected) {
-          console.warn('웹소켓 연결 시간 초과');
-          setError(
-            '서버 연결 시간이 초과되었습니다. 서버 상태를 확인해주세요.'
-          );
-
-          if (clientRef.current) {
-            clientRef.current.deactivate();
-            clientRef.current = null;
-          }
-        }
-      }, 5000);
-
       // 연결 시작
       client.activate();
       clientRef.current = client;
 
       // 컴포넌트 언마운트 시 실행될 정리 함수
       return () => {
-        // 타임아웃 정리
-        if (connectionTimeout) {
-          clearTimeout(connectionTimeout);
-        }
-
         // 구독 해제
         if (subscriptionRef.current) {
           subscriptionRef.current.unsubscribe();

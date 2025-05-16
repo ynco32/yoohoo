@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { notificationApi } from '@/api/notification/notification';
 import { Notification } from '@/types/notification';

@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { useNotifications } from '@/hooks/useNotification';
 import NotificationCard from '@/components/notification/NotificationCard/NotificationCard';

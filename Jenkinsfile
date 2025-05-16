@@ -102,6 +102,13 @@ pipeline {  // 파이프라인 정의 시작
                                         string(credentialsId: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY', variable: 'NEXT_PUBLIC_KAKAO_MAP_API_KEY'),
                                         string(credentialsId: 'NEXT_PUBLIC_SKT_API_KEY', variable: 'NEXT_PUBLIC_SKT_API_KEY'),
                                         string(credentialsId: 'NEXT_PUBLIC_SKT_API_URL', variable: 'NEXT_PUBLIC_SKT_API_URL'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_API_KEY', variable: 'NEXT_PUBLIC_FIREBASE_API_KEY'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN', variable: 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID', variable: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET', variable: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', variable: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_APP_ID', variable: 'NEXT_PUBLIC_FIREBASE_APP_ID'),
+                                        string(credentialsId: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY', variable: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY')
                                     ])
 
                                     if (env.BRANCH_NAME == 'dev') {
@@ -120,7 +127,14 @@ pipeline {  // 파이프라인 정의 시작
                                             export NEXT_PUBLIC_SKT_API_KEY=$NEXT_PUBLIC_SKT_API_KEY
                                             export NEXT_PUBLIC_SKT_API_URL=$NEXT_PUBLIC_SKT_API_URL
                                             export NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-                                            
+                                            export NEXT_PUBLIC_FIREBASE_API_KEY
+                                            export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+                                            export NEXT_PUBLIC_FIREBASE_PROJECT_ID
+                                            export NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+                                            export NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+                                            export NEXT_PUBLIC_FIREBASE_APP_ID
+                                            export NEXT_PUBLIC_FIREBASE_VAPID_KEY
+
                                             yarn install
                                             yarn build
                                         '''
@@ -267,6 +281,13 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'FIREBASE_CLIENT_ID', variable: 'FIREBASE_CLIENT_ID'),
                             string(credentialsId: 'FIREBASE_PRIVATE_KEY_ID', variable: 'FIREBASE_PRIVATE_KEY_ID'),
                             string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_API_KEY', variable: 'NEXT_PUBLIC_FIREBASE_API_KEY'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN', variable: 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID', variable: 'NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET', variable: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', variable: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_APP_ID', variable: 'NEXT_PUBLIC_FIREBASE_APP_ID'),
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY', variable: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY')
                         ])
                         
                         // 브랜치별 추가 credentials
@@ -323,7 +344,14 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg FIREBASE_PRIVATE_KEY=$FIREBASE_PRIVATE_KEY \
                                     --build-arg FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID \
                                     --build-arg FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID \
-                                    --build-arg OPENAI_API_KEY=$OPENAI_API_KEY
+                                    --build-arg OPENAI_API_KEY=$OPENAI_API_KEY \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=$NEXT_PUBLIC_FIREBASE_API_KEY \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=$NEXT_PUBLIC_FIREBASE_PROJECT_ID \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID \
+                                    --build-arg NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
 
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''

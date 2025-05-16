@@ -328,6 +328,9 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         if (subscriptionRef.current) {
           subscriptionRef.current.unsubscribe();
         }
+
+        // disconnect 함수 호출하여 연결 완전히 해제
+        disconnect();
       };
     } catch (err) {
       console.error('웹소켓 초기화 오류:', err);
@@ -337,7 +340,6 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
   }, [
     chatRoomId,
     convertApiMessageToClientMessage,
-    isConnected,
     loadInitialMessages,
     storageKey,
     userInfo,

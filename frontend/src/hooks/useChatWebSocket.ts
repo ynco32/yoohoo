@@ -180,14 +180,23 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
     // 쿠키 확인
     const getCookie = (name: string): string | null => {
-      const match = document.cookie.match(
-        new RegExp('(^|;\\s*)' + name + '=([^;]*)')
-      );
-      return match ? decodeURIComponent(match[2]) : null;
+      console.log('모든 쿠키:', document.cookie); // 디버깅용
+
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const parts = cookie.trim().split('=');
+        if (parts.length >= 2 && parts[0].trim() === name) {
+          return decodeURIComponent(parts.slice(1).join('='));
+        }
+      }
+      return null;
     };
 
     const accessToken = getCookie('access_token');
     console.log('액세스 토큰 존재 여부:', !!accessToken);
+    if (accessToken) {
+      console.log('액세스 토큰 일부:', accessToken.substring(0, 10) + '...');
+    }
 
     // Redux 스토어에서 로그인 상태 확인
     const isLoggedInViaRedux = userInfo && userInfo.userId;
@@ -201,77 +210,28 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       return;
     }
 
-    // API URL 구성
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    const sockJsUrl = `${baseUrl}/place-ws`;
+    try {
+      console.log('채팅 웹소켓 연결 시도...');
 
-    // 타임아웃 변수 (정리 함수에서 사용)
-    let connectionTimeout: NodeJS.Timeout;
+      // API URL 구성 - WebSocket 프로토콜 사용
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      // HTTP/HTTPS를 WS/WSS로 변환
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsBaseUrl = baseUrl.replace(/^https?:\/\//, ''); // 도메인만 추출
 
-    // SockJS는 초기 연결 시 HTTP 요청을 보내므로, 먼저 간단한 fetch로 확인
-    fetch(`${sockJsUrl}/info`, {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-    })
-      .then(() => {
-        // fetch가 성공하면 웹소켓 연결 진행
-        console.log('사전 요청 성공, 웹소켓 연결 시도...');
-        connectWebSocket();
-      })
-      .catch((err) => {
-        // CORS 또는 네트워크 오류 감지
-        console.error('사전 요청 실패:', err);
+      // WebSocket URL 생성
+      const wsUrl = `${wsProtocol}//${wsBaseUrl}/place-ws`;
+      console.log('사용할 웹소켓 URL:', wsUrl);
 
-        if (
-          err.name === 'TypeError' ||
-          err.message?.includes('Failed to fetch')
-        ) {
-          setError(
-            'CORS 정책으로 인해 서버 연결에 실패했습니다. 개발 환경에서는 서버의 CORS 설정을 확인해주세요.'
-          );
-        } else {
-          setError(
-            '서버 연결에 실패했습니다. 네트워크 또는 서버 설정을 확인해주세요.'
-          );
-        }
+      // 네이티브 WebSocket 생성
+      const socket = new WebSocket(wsUrl);
+      let hasConnected = false;
 
-        setIsConnected(false);
-      });
+      socket.onopen = () => {
+        console.log('WebSocket 연결 성공');
+        hasConnected = true;
 
-    // 실제 웹소켓 연결 함수
-    function connectWebSocket() {
-      try {
-        console.log('채팅 웹소켓 연결 시도...');
-
-        // 연결 상태 변수
-        let hasConnected = false;
-
-        // SockJS 인스턴스 생성
-        const socket = new SockJS(sockJsUrl);
-
-        // SockJS 이벤트 리스너
-        socket.onopen = () => {
-          console.log('SockJS 소켓 열림');
-          hasConnected = true;
-        };
-
-        socket.onclose = (event) => {
-          console.log('SockJS 소켓 닫힘', event);
-          if (!hasConnected) {
-            console.error('소켓이 열리기 전에 닫힘');
-            setError('서버 연결에 실패했습니다. 서버 상태를 확인해주세요.');
-            setIsConnected(false);
-          }
-        };
-
-        socket.onerror = (error) => {
-          console.error('SockJS 소켓 오류:', error);
-          setError('웹소켓 연결 중 오류가 발생했습니다.');
-          setIsConnected(false);
-        };
-
-        // Stomp 클라이언트 생성
+        // STOMP 클라이언트 생성
         const client = new Client({
           webSocketFactory: () => socket,
           debug: (str) => console.log('CHAT STOMP: ' + str),
@@ -282,7 +242,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
         // 연결 성공 콜백
         client.onConnect = () => {
-          console.log('웹소켓 연결 성공');
+          console.log('STOMP 연결 성공');
           setIsConnected(true);
           setError(null);
 
@@ -334,49 +294,56 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
           setIsConnected(false);
         };
 
-        client.onWebSocketError = (event) => {
-          console.error('웹소켓 오류:', event);
-          setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-          setIsConnected(false);
-        };
-
-        // 타임아웃 설정 (5초)
-        connectionTimeout = setTimeout(() => {
-          if (!isConnected && !hasConnected) {
-            console.warn('웹소켓 연결 시간 초과');
-            setError(
-              '서버 연결 시간이 초과되었습니다. 서버 상태를 확인해주세요.'
-            );
-
-            if (clientRef.current) {
-              clientRef.current.deactivate();
-              clientRef.current = null;
-            }
-          }
-        }, 5000);
-
         // 연결 시작
         client.activate();
         clientRef.current = client;
-      } catch (err) {
-        console.error('웹소켓 초기화 오류:', err);
-        setError('연결 초기화 중 오류가 발생했습니다.');
+      };
+
+      socket.onclose = (event) => {
+        console.log('WebSocket 닫힘:', event);
+        if (!hasConnected) {
+          console.error('WebSocket이 열리기 전에 닫힘');
+          setError('서버 연결에 실패했습니다. 서버 상태를 확인해주세요.');
+        }
         setIsConnected(false);
-      }
-    }
+      };
 
-    // 컴포넌트 언마운트 시 실행될 정리 함수
-    return () => {
-      // 타임아웃 정리
-      if (connectionTimeout) {
+      socket.onerror = (error) => {
+        console.error('WebSocket 오류:', error);
+        setError('웹소켓 연결 중 오류가 발생했습니다.');
+        setIsConnected(false);
+      };
+
+      // 타임아웃 설정
+      const connectionTimeout = setTimeout(() => {
+        if (!isConnected && !hasConnected) {
+          console.warn('웹소켓 연결 시간 초과');
+          setError('서버 연결에 실패했습니다.');
+
+          socket.close();
+
+          if (clientRef.current) {
+            clientRef.current.deactivate();
+            clientRef.current = null;
+          }
+        }
+      }, 5000);
+
+      // 정리 함수
+      return () => {
         clearTimeout(connectionTimeout);
-      }
 
-      // 구독 해제 (기존 정리 함수)
-      if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
-      }
-    };
+        if (subscriptionRef.current) {
+          subscriptionRef.current.unsubscribe();
+        }
+
+        socket.close();
+      };
+    } catch (err) {
+      console.error('웹소켓 초기화 오류:', err);
+      setError('연결 초기화 중 오류가 발생했습니다.');
+      setIsConnected(false);
+    }
   }, [
     chatRoomId,
     convertApiMessageToClientMessage,

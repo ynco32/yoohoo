@@ -60,7 +60,7 @@ services:
       - TZ=Asia/Seoul
     volumes:
       - ./python/concert_crawler/temp_images:/app/temp_images
-    restart: unless-stopped
+    restart: on-failure:1
     networks:
       app-network:
         aliases:

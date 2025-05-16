@@ -46,6 +46,26 @@ services:
           - backend-dev-new
         # - backend-dev-new
 
+  # 콘서트 크롤러 서비스 추가
+  concert-crawler-dev:
+    container_name: concert-crawler-dev
+    build:
+      context: ./python/concert_crawler
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - S3_REGION=${AWS_REGION}
+      - API_BASE_URL=${NEXT_PUBLIC_API_URL}
+      - TZ=Asia/Seoul
+    volumes:
+      - ./python/concert_crawler/temp_images:/app/temp_images
+    restart: unless-stopped
+    networks:
+      app-network:
+        aliases:
+          - concert-crawler-dev
+
   frontend-dev:
     container_name: frontend-dev-new
     # container_name: frontend-dev

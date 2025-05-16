@@ -266,6 +266,7 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'FIREBASE_PRIVATE_KEY', variable: 'FIREBASE_PRIVATE_KEY'),
                             string(credentialsId: 'FIREBASE_CLIENT_ID', variable: 'FIREBASE_CLIENT_ID'),
                             string(credentialsId: 'FIREBASE_PRIVATE_KEY_ID', variable: 'FIREBASE_PRIVATE_KEY_ID'),
+                            string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY'),
                         ])
                         
                         // 브랜치별 추가 credentials
@@ -321,7 +322,8 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg FIREBASE_CLIENT_EMAIL=$FIREBASE_CLIENT_EMAIL \
                                     --build-arg FIREBASE_PRIVATE_KEY=$FIREBASE_PRIVATE_KEY \
                                     --build-arg FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID \
-                                    --build-arg FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID
+                                    --build-arg FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID \
+                                    --build-arg OPENAI_API_KEY=$OPENAI_API_KEY
 
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''

@@ -364,6 +364,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         const messageRequest: SendMessageRequest = {
           content: content.trim(),
           parentMessageId: replyToMessage?.id,
+          parentTempId: replyToMessage?.tempId,
         };
 
         console.log('메시지 전송:', messageRequest);

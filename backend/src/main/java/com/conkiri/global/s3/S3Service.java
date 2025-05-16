@@ -64,13 +64,17 @@ public class S3Service {
 
 	// 이미지 삭제
 	public void deleteImage(String imageUrl) {
-		String fileName = imageUrl.substring(imageUrl.indexOf("com/") + 4);
+		try {
+			String fileName = imageUrl.substring(imageUrl.indexOf("com/") + 4);
 
-		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-			.bucket(bucket)
-			.key(fileName)
-			.build();
+			DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+				.bucket(bucket)
+				.key(fileName)
+				.build();
 
-		s3Client.deleteObject(deleteObjectRequest);
+			s3Client.deleteObject(deleteObjectRequest);
+		} catch (Exception e) {
+			log.error("이미지 삭제 실패: {}, 이미지 URL: {}", e.getMessage(), imageUrl);
+		}
 	}
 }

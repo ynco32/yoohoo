@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 import styles from './PlaceChat.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
 import ChatInput from '@/components/common/ChatInput/ChatInput';
@@ -12,6 +14,9 @@ interface PlaceChatProps {
 }
 
 export default function PlaceChat({ arenaId }: PlaceChatProps) {
+  // Redux에서 사용자 정보 가져오기
+  const { data: userInfo } = useSelector((state: RootState) => state.user);
+
   const {
     messages,
     isConnected,
@@ -200,7 +205,9 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
             </button>
           </div>
         )}
-        <div className={styles.nicknameDisplay}>나</div>
+        <div className={styles.nicknameDisplay}>
+          {userInfo?.nickname || '닉네임'}
+        </div>
         <div className={styles.inputWrapper}>
           <ChatInput
             onSend={handleSend}

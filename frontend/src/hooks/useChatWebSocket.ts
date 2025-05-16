@@ -190,11 +190,9 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
       // API URL 구성
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      console.log('API 기본 URL:', baseUrl);
 
       // SockJS 인스턴스 생성 (상대 경로 사용)
       const sockJsUrl = `${baseUrl}/place-ws`;
-      console.log('SockJS URL:', sockJsUrl);
       const socket = new SockJS(sockJsUrl);
 
       // Stomp 클라이언트 생성 (SockJS 사용)

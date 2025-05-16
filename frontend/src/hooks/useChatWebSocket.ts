@@ -300,7 +300,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
       // 타임아웃 설정 (5초)
       connectionTimeout = setTimeout(() => {
-        if (!isConnected && !hasConnected) {
+        if (!hasConnected) {
           console.warn('웹소켓 연결 시간 초과');
           setError(
             '서버 연결 시간이 초과되었습니다. 서버 상태를 확인해주세요.'

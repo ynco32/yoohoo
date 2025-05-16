@@ -15,7 +15,7 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   const handleClose = () => {
-    router.replace('/');
+    router.replace('/main');
   };
 
   return (

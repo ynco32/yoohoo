@@ -1,4 +1,4 @@
-import { apiClient } from '@/api';
+import { apiClient } from '@/api/api';
 import { Notification } from '@/types/notification';
 
 export const notificationApi = {

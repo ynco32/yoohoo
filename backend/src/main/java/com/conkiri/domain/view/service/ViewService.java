@@ -2,7 +2,6 @@ package com.conkiri.domain.view.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,20 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.base.entity.Concert;
 import com.conkiri.domain.base.repository.ArenaRepository;
-import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
-import com.conkiri.domain.view.dto.response.SectionResponseDTO;
-import com.conkiri.domain.view.entity.Seat;
 import com.conkiri.domain.base.repository.ConcertRepository;
-import com.conkiri.domain.view.repository.SeatRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
 import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
+import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
+import com.conkiri.domain.view.dto.response.SectionResponseDTO;
 import com.conkiri.domain.view.entity.Review;
 import com.conkiri.domain.view.entity.ReviewPhoto;
+import com.conkiri.domain.view.entity.Seat;
 import com.conkiri.domain.view.repository.ReviewPhotoRepository;
 import com.conkiri.domain.view.repository.ReviewRepository;
+import com.conkiri.domain.view.repository.SeatRepository;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
+import com.conkiri.global.s3.S3Service;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,11 +39,11 @@ public class ViewService {
 	private final ReviewRepository reviewRepository;
 	private final ReviewPhotoRepository reviewPhotoRepository;
 	private final ArenaRepository arenaRepository;
+	private final S3Service s3Service;
 
 	// 후기 작성
 	public Long createReview(ReviewRequestDTO dto, List<MultipartFile> files, User user) {
-		int fileCount = getFileCount(files);
-		validatePhotoCount(fileCount);
+		validatePhotoCount(getFileCount(files));
 
 		Concert concert = getConcert(dto.concertId());
 		Seat seat = getSeat(dto, concert);
@@ -91,8 +91,15 @@ public class ViewService {
 		validateReviewOwner(review, user);
 		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReview(review);
 
+		List<String> photoUrls = reviewPhotos.stream()
+			.map(ReviewPhoto::getPhotoUrl)
+			.collect(Collectors.toList());
+
 		reviewPhotoRepository.deleteAll(reviewPhotos);
 		reviewRepository.delete(review);
+
+		for (String url : photoUrls)
+			s3Service.deleteImage(url);
 
 		return null;
 	}
@@ -183,14 +190,22 @@ public class ViewService {
 			.map(file -> createReviewPhoto(file, review))
 			.toList();
 
+		List<String> photoUrls = photosToDelete.stream()
+			.map(ReviewPhoto::getPhotoUrl)
+			.collect(Collectors.toList());
+
 		reviewPhotoRepository.deleteAll(photosToDelete);
+
+		for (String url : photoUrls)
+			s3Service.deleteImage(url);
+
 		reviewPhotoRepository.saveAll(photosToAdd);
 	}
 
 	private ReviewPhoto createReviewPhoto(MultipartFile file, Review review) {
-		String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-		String uniqueName = UUID.randomUUID() + ext;
-		String url = "https://example.com/dummy/" + uniqueName;
+		String dirName = "reviews";
+		String url = s3Service.uploadImage(file, dirName);
+
 		return ReviewPhoto.of(review, url);
 	}
 }

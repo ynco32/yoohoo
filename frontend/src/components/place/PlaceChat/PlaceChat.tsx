@@ -69,7 +69,7 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
 
         // 이전 메시지 로드
         const moreMessagesAvailable = await loadPreviousMessages(
-          oldestMessage.time
+          oldestMessage
         );
 
         // 스크롤 위치 유지

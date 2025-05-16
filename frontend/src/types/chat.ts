@@ -20,6 +20,7 @@ export interface Message {
   tempId?: string;
   nickname: string; // senderNickname으로 매핑
   time: string; // createdAt을 포맷팅
+  createdAt?: string; 
   content: string; // content 그대로 사용
   isMe?: boolean; // senderId와 현재 사용자 ID 비교
   replyTo?: Message; // 부모 메시지가 있는 경우 변환

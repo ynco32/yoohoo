@@ -63,6 +63,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         id: apiMessage.messageId,
         nickname: apiMessage.senderNickname,
         time: formattedTime,
+        createdAt: apiMessage.createdAt,
         content: apiMessage.content,
         isMe,
         replyTo,
@@ -118,20 +119,20 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
   // 이전 메시지 로드 (무한 스크롤)
   const loadPreviousMessages = useCallback(
-    async (beforeTime: string, size: number = 20) => {
+    async (message: Message, size: number = 20) => {
       if (isLoading) return false;
 
       try {
         setIsLoading(true);
 
         // ISO 형식으로 날짜 변환
-        const isoDateTime = new Date(beforeTime).toISOString();
+        const beforeTime = message.createdAt;
 
         const response = await apiRequest<MessagesResponse>(
           'GET',
           `/api/v1/place/chat/chat-rooms/${chatRoomId}/messages/before`,
           undefined,
-          { beforeTime: isoDateTime, size }
+          { beforeTime, size }
         );
 
         if (response?.messages) {

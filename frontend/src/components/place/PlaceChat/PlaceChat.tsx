@@ -35,12 +35,8 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
 
   // 컴포넌트 마운트 시 스크롤 위치 복원
   useEffect(() => {
-    if (messageListRef.current && scrollPositionRef.current > 0) {
-      messageListRef.current.scrollTop = scrollPositionRef.current;
-    } else {
-      // 스크롤 위치가 없으면 맨 아래로 스크롤
-      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    // 항상 맨 아래로 스크롤
+    messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
   }, [messages]);
 
   // 컴포넌트 언마운트 시 스크롤 위치 저장
@@ -68,9 +64,7 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
         const scrollHeightBefore = container.scrollHeight;
 
         // 이전 메시지 로드
-        const moreMessagesAvailable = await loadPreviousMessages(
-          oldestMessage
-        );
+        const moreMessagesAvailable = await loadPreviousMessages(oldestMessage);
 
         // 스크롤 위치 유지
         if (moreMessagesAvailable) {

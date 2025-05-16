@@ -40,9 +40,14 @@ export function determineBackNavigation(
   // 루트 레벨 페이지 처리
   if (
     pathSegments.length === 1 &&
-    ['sight', 'sharing', 'mypage', 'ticketing', 'congestion'].includes(
-      pathSegments[0]
-    )
+    [
+      'sight',
+      'sharing',
+      'mypage',
+      'ticketing',
+      'congestion',
+      'minigame',
+    ].includes(pathSegments[0])
   ) {
     return { type: 'push', path: '/main' };
   }

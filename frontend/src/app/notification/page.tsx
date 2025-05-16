@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNotifications } from '@/hooks/useNotification';
 import NotificationCard from '@/components/notification/NotificationCard/NotificationCard';
-import styles from './NotificationPage.module.scss';
+import styles from './page.module.scss';
 import { Notification } from '@/types/notification';
 
 export default function NotificationPage() {

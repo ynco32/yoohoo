@@ -27,6 +27,7 @@ import styles from './page.module.scss';
 export default function SeatPage() {
   const [isActive, setIsActive] = useState(false);
   const [isSecurityMessageOpen, setIsSecurityMessageOpen] = useState(false);
+  const [cleanupPerformed, setCleanupPerformed] = useState(false); // cleanup 수행 여부 추적
   const router = useRouter();
 
   // params 디버깅
@@ -77,8 +78,17 @@ export default function SeatPage() {
         timestamp: new Date().toISOString(),
       });
 
+      // API 요청 보내기
       await apiRequest('DELETE', '/api/v1/ticketing/sections/seats');
       console.log('✅ Cleanup API 호출 성공');
+
+      // 상태 초기화 (Redux 액션 디스패치)
+      dispatch(setPrevAdress(''));
+      dispatch(setHasVisitedPayment(false));
+      console.log('🔄 상태 초기화 완료');
+
+      // cleanup 수행 표시
+      setCleanupPerformed(true);
     } catch (error) {
       console.error('❌ Cleanup API 호출 실패:', error);
     }
@@ -92,34 +102,23 @@ export default function SeatPage() {
       console.log('🎯 마운트 시 상태 체크:', {
         prevAdress,
         hasVisitedPayment,
+        cleanupPerformed,
         timestamp: new Date().toISOString(),
       });
 
-      // 'payment'나 'payment-left' 상태 모두에서 cleanup 실행
+      // 'payment'나 'payment-left' 상태에서만 cleanup 실행 및 아직 cleanup을 수행하지 않은 경우
       if (
         hasVisitedPayment &&
-        (prevAdress === 'payment' || prevAdress === 'payment-left')
+        (prevAdress === 'payment' || prevAdress === 'payment-left') &&
+        !cleanupPerformed
       ) {
         console.log('✨ Cleanup 조건 충족, 실행 시작');
-
-        try {
-          console.log('🧹 Cleanup API 호출 전');
-          await cleanup();
-          console.log('✅ Cleanup API 호출 성공');
-
-          if (isMounted) {
-            // 상태 초기화 (Redux 액션 디스패치)
-            dispatch(setPrevAdress(''));
-            dispatch(setHasVisitedPayment(false));
-            console.log('🔄 상태 초기화 완료');
-          }
-        } catch (error) {
-          console.error('❌ Cleanup 실패:', error);
-        }
+        await cleanup();
       } else {
         console.log('❌ Cleanup 조건 불충족:', {
           hasVisitedPayment,
           prevAdress,
+          cleanupPerformed,
           timestamp: new Date().toISOString(),
         });
       }
@@ -132,6 +131,7 @@ export default function SeatPage() {
       console.log('🔚 Seat 페이지 언마운트:', {
         prevAdress,
         hasVisitedPayment,
+        cleanupPerformed,
         timestamp: new Date().toISOString(),
       });
     };

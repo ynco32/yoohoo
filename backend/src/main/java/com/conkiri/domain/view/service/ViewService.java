@@ -91,15 +91,8 @@ public class ViewService {
 		validateReviewOwner(review, user);
 		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReview(review);
 
-		List<String> photoUrls = reviewPhotos.stream()
-			.map(ReviewPhoto::getPhotoUrl)
-			.collect(Collectors.toList());
-
-		reviewPhotoRepository.deleteAll(reviewPhotos);
+		deletePhotos(reviewPhotos);
 		reviewRepository.delete(review);
-
-		for (String url : photoUrls)
-			s3Service.deleteImage(url);
 
 		return null;
 	}
@@ -113,22 +106,10 @@ public class ViewService {
 	}
 
 	// (선택한 구역의) 모든 후기 조회
-	public ReviewResponseDTO getReviews(Long arenaId, String section) {
+	public ReviewResponseDTO getReviewsOfSection(Long arenaId, String section) {
 		List<Review> reviews = reviewRepository.findAllByArenaIdAndSection(arenaId, section);
 
-		List<Long> reviewIds = reviews.stream()
-			.map(Review::getReviewId)
-			.toList();
-
-		List<ReviewPhoto> reviewPhotos = reviewPhotoRepository.findAllByReviewIdIn(reviewIds);
-
-		Map<Long, List<String>> reviewPhotoMap = reviewPhotos.stream()
-			.collect(Collectors.groupingBy(
-				rp -> rp.getReview().getReviewId(),
-				Collectors.mapping(ReviewPhoto::getPhotoUrl, Collectors.toList())
-			));
-
-		return ReviewResponseDTO.of(reviews, reviewPhotoMap);
+		return getReviews(reviews);
 	}
 
 	// ========== 이하 공통 메서드 ==========
@@ -190,16 +171,20 @@ public class ViewService {
 			.map(file -> createReviewPhoto(file, review))
 			.toList();
 
-		List<String> photoUrls = photosToDelete.stream()
-			.map(ReviewPhoto::getPhotoUrl)
-			.collect(Collectors.toList());
+		deletePhotos(photosToDelete);
 
-		reviewPhotoRepository.deleteAll(photosToDelete);
+		reviewPhotoRepository.saveAll(photosToAdd);
+	}
+
+	private void deletePhotos(List<ReviewPhoto> photos) {
+		List<String> photoUrls = photos.stream()
+			.map(ReviewPhoto::getPhotoUrl)
+			.toList();
+
+		reviewPhotoRepository.deleteAll(photos);
 
 		for (String url : photoUrls)
 			s3Service.deleteImage(url);
-
-		reviewPhotoRepository.saveAll(photosToAdd);
 	}
 
 	private ReviewPhoto createReviewPhoto(MultipartFile file, Review review) {
@@ -207,5 +192,21 @@ public class ViewService {
 		String url = s3Service.uploadImage(file, dirName);
 
 		return ReviewPhoto.of(review, url);
+	}
+
+	public ReviewResponseDTO getReviews(List<Review> reviews) {
+		List<Long> reviewIds = reviews.stream()
+			.map(Review::getReviewId)
+			.toList();
+
+		List<ReviewPhoto> allPhotos = reviewPhotoRepository.findAllByReviewIdIn(reviewIds);
+
+		Map<Long, List<String>> reviewPhotoMap = allPhotos.stream()
+			.collect(Collectors.groupingBy(
+				rp -> rp.getReview().getReviewId(),
+				Collectors.mapping(ReviewPhoto::getPhotoUrl, Collectors.toList())
+			));
+
+		return ReviewResponseDTO.of(reviews, reviewPhotoMap);
 	}
 }

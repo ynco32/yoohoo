@@ -84,6 +84,6 @@ public class ViewController {
 		@PathVariable("arenaId") Long arenaId,
 		@PathVariable("section") String section) {
 
-		return ApiResponse.success(viewService.getReviews(arenaId, section));
+		return ApiResponse.success(viewService.getReviewsOfSection(arenaId, section));
 	}
 }

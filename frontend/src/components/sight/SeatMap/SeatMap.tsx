@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+// 수정된 부분
+import React, { useRef, useState } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
-
-interface SelectedSeat {
-  row: string;
-  seat: number;
-}
+import { useDispatch, useSelector } from '@/store';
+import { addSeat, removeSeat } from '@/store/slices/seatSelectionSlice';
 
 interface SeatMapProps {
   arenaId: string;
   sectionId: string;
-  maxWidth?: number; // 최대 너비를 props로 받을 수 있도록 추가
+  maxWidth?: number;
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
@@ -19,23 +17,31 @@ const SeatMap: React.FC<SeatMapProps> = ({
   sectionId,
   maxWidth = 800,
 }) => {
-  const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
+  const dispatch = useDispatch();
+  const selectedSeats = useSelector(
+    (state) => state.seatSelection.selectedSeats
+  );
+
   const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(true);
 
   // 좌석 선택 처리 함수
-  const handleSeatClick = (row: string, seatNumber: number) => {
+  const handleSeatClick = (row: string, seat: number, seatId: number) => {
     const isAlreadySelected = selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seatNumber
+      (selected) => selected.row === row && selected.seat === seat
+    );
+
+    console.log(
+      `좌석 클릭: ${row}행 ${seat}번 (ID: ${seatId}) - 이미 선택됨: ${isAlreadySelected}`
     );
 
     if (isAlreadySelected) {
-      setSelectedSeats(
-        selectedSeats.filter(
-          (selected) => !(selected.row === row && selected.seat === seatNumber)
-        )
-      );
+      dispatch(removeSeat({ row, seat }));
+      console.log(`좌석 선택 해제: ${row}행 ${seat}번`);
     } else {
-      setSelectedSeats([...selectedSeats, { row, seat: seatNumber }]);
+      dispatch(addSeat({ row, seat, seatId }));
+      console.log(`좌석 선택 추가: ${row}행 ${seat}번 (ID: ${seatId})`);
     }
   };
 
@@ -63,36 +69,63 @@ const SeatMap: React.FC<SeatMapProps> = ({
 
   return (
     <div className={styles.container}>
+      <div className={styles.scrollHint}>
+        좌우로 스크롤하여 모든 좌석을 확인하세요
+      </div>
+
       <div
         className={styles.seatMapContainer}
         style={{ maxWidth: `${maxWidth}px` }}
       >
-        {seatData.seatMap.map((row, rowIndex) => {
-          if (isEmptyRow(row)) {
-            return (
-              <div key={`empty-${rowIndex}`} className={styles.emptyRow}></div>
-            );
-          }
-
-          return (
-            <div key={`row-${row.row}`} className={styles.rowContainer}>
-              <div className={styles.rowNumber}>{row.row}</div>
-              <div className={styles.seatRow}>
-                {row.activeSeats.map((seat, seatIndex) => (
-                  <Seat
-                    key={`seat-${row.row}-${seatIndex}`}
-                    seatNumber={seat.seat}
-                    isReviewed={seat.isReviewed}
-                    isSelected={isSeatSelected(row.row, seat.seat)}
-                    onClick={() =>
-                      seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
-                    }
-                  />
-                ))}
+        <div className={styles.rowNumberColumn}>
+          {seatData.seatMap.map((row, rowIndex) =>
+            !isEmptyRow(row) ? (
+              <div
+                key={`row-number-${row.row}`}
+                className={styles.rowNumberCell}
+              >
+                {row.row}
               </div>
-            </div>
-          );
-        })}
+            ) : (
+              <div
+                key={`empty-number-${rowIndex}`}
+                className={styles.emptyRowNumber}
+              ></div>
+            )
+          )}
+        </div>
+
+        <div className={styles.seatsContainer} ref={scrollContainerRef}>
+          {seatData.seatMap.map((row, rowIndex) => {
+            if (isEmptyRow(row)) {
+              return (
+                <div
+                  key={`empty-${rowIndex}`}
+                  className={styles.emptyRow}
+                ></div>
+              );
+            }
+
+            return (
+              <div key={`row-${row.row}`} className={styles.rowContainer}>
+                <div className={styles.seatRow}>
+                  {row.activeSeats.map((seat, seatIndex) => (
+                    <Seat
+                      key={`seat-${row.row}-${seatIndex}`}
+                      seatNumber={seat.seat}
+                      isReviewed={seat.isReviewed}
+                      isSelected={isSeatSelected(row.row, seat.seat)}
+                      onClick={() =>
+                        seat.seat !== 0 &&
+                        handleSeatClick(row.row, seat.seat, seat.seatId)
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

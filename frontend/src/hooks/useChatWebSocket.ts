@@ -178,34 +178,12 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       return;
     }
 
-    // 쿠키 확인
-    const getCookie = (name: string): string | null => {
-      console.log('모든 쿠키:', document.cookie); // 디버깅용
-
-      const cookies = document.cookie.split(';');
-      for (const cookie of cookies) {
-        const parts = cookie.trim().split('=');
-        if (parts.length >= 2 && parts[0].trim() === name) {
-          return decodeURIComponent(parts.slice(1).join('='));
-        }
-      }
-      return null;
-    };
-
-    const accessToken = getCookie('access_token');
-    console.log('액세스 토큰 존재 여부:', !!accessToken);
-    if (accessToken) {
-      console.log('액세스 토큰 일부:', accessToken.substring(0, 10) + '...');
-    }
-
     // Redux 스토어에서 로그인 상태 확인
     const isLoggedInViaRedux = userInfo && userInfo.userId;
     console.log('Redux 로그인 상태:', !!isLoggedInViaRedux);
 
     // 인증 확인
-    const isAuthenticated = !!accessToken || !!isLoggedInViaRedux;
-
-    if (!isAuthenticated) {
+    if (!isLoggedInViaRedux) {
       setError('로그인이 필요합니다. 로그인 후 다시 시도해주세요.');
       return;
     }
@@ -213,114 +191,120 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
     try {
       console.log('채팅 웹소켓 연결 시도...');
 
-      // API URL 구성 - WebSocket 프로토콜 사용
+      // API URL 구성
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      // HTTP/HTTPS를 WS/WSS로 변환
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsBaseUrl = baseUrl.replace(/^https?:\/\//, ''); // 도메인만 추출
+      const sockJsUrl = `${baseUrl}/place-ws`;
+      console.log('사용할 웹소켓 URL:', sockJsUrl);
 
-      // WebSocket URL 생성
-      const wsUrl = `${wsProtocol}//${wsBaseUrl}/place-ws`;
-      console.log('사용할 웹소켓 URL:', wsUrl);
+      // 타임아웃 변수 (정리 함수에서 사용)
+      let connectionTimeout: NodeJS.Timeout;
 
-      // 네이티브 WebSocket 생성
-      const socket = new WebSocket(wsUrl);
+      // 연결 상태 변수
       let hasConnected = false;
 
+      // SockJS 인스턴스 생성
+      const socket = new SockJS(sockJsUrl);
+
+      // SockJS 이벤트 리스너
       socket.onopen = () => {
-        console.log('WebSocket 연결 성공');
+        console.log('SockJS 소켓 열림');
         hasConnected = true;
-
-        // STOMP 클라이언트 생성
-        const client = new Client({
-          webSocketFactory: () => socket,
-          debug: (str) => console.log('CHAT STOMP: ' + str),
-          reconnectDelay: 10000,
-          heartbeatIncoming: 4000,
-          heartbeatOutgoing: 4000,
-        });
-
-        // 연결 성공 콜백
-        client.onConnect = () => {
-          console.log('STOMP 연결 성공');
-          setIsConnected(true);
-          setError(null);
-
-          // 채팅방 메시지 구독
-          subscriptionRef.current = client.subscribe(
-            `/topic/chat/${chatRoomId}`,
-            (messageEvent) => {
-              try {
-                const receivedMessage = JSON.parse(
-                  messageEvent.body
-                ) as ApiChatMessage;
-                console.log('새 메시지 수신:', receivedMessage);
-
-                // API 메시지를 클라이언트 메시지로 변환
-                const clientMessage =
-                  convertApiMessageToClientMessage(receivedMessage);
-
-                // 중복 메시지 방지를 위한 ID 체크
-                setMessages((prevMessages) => {
-                  // ID로 중복 체크
-                  if (prevMessages.some((msg) => msg.id === clientMessage.id)) {
-                    return prevMessages;
-                  }
-
-                  const updatedMessages = [...prevMessages, clientMessage];
-
-                  // 업데이트된 메시지를 세션 스토리지에 캐싱
-                  sessionStorage.setItem(
-                    storageKey,
-                    JSON.stringify(updatedMessages)
-                  );
-
-                  return updatedMessages;
-                });
-              } catch (err) {
-                console.error('메시지 처리 오류:', err);
-              }
-            }
-          );
-
-          // 연결 성공 후 초기 메시지 로드
-          loadInitialMessages();
-        };
-
-        // 오류 처리
-        client.onStompError = (frame) => {
-          console.error('STOMP 오류:', frame);
-          setError(`연결 오류: ${frame.headers.message}`);
-          setIsConnected(false);
-        };
-
-        // 연결 시작
-        client.activate();
-        clientRef.current = client;
       };
 
       socket.onclose = (event) => {
-        console.log('WebSocket 닫힘:', event);
+        console.log('SockJS 소켓 닫힘', event);
+        console.log('닫힘 코드:', event.code);
+        console.log('닫힘 이유:', event.reason || '이유 없음');
+
         if (!hasConnected) {
-          console.error('WebSocket이 열리기 전에 닫힘');
+          console.error('소켓이 열리기 전에 닫힘');
           setError('서버 연결에 실패했습니다. 서버 상태를 확인해주세요.');
+          setIsConnected(false);
         }
-        setIsConnected(false);
       };
 
       socket.onerror = (error) => {
-        console.error('WebSocket 오류:', error);
+        console.error('SockJS 소켓 오류:', error);
         setError('웹소켓 연결 중 오류가 발생했습니다.');
         setIsConnected(false);
       };
 
-      // 타임아웃 설정
-      const connectionTimeout = setTimeout(() => {
+      // Stomp 클라이언트 생성
+      const client = new Client({
+        webSocketFactory: () => socket,
+        debug: (str) => console.log('CHAT STOMP: ' + str),
+        reconnectDelay: 10000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+      });
+
+      // 연결 성공 콜백
+      client.onConnect = () => {
+        console.log('웹소켓 연결 성공');
+        setIsConnected(true);
+        setError(null);
+
+        // 채팅방 메시지 구독
+        subscriptionRef.current = client.subscribe(
+          `/topic/chat/${chatRoomId}`,
+          (messageEvent) => {
+            try {
+              const receivedMessage = JSON.parse(
+                messageEvent.body
+              ) as ApiChatMessage;
+              console.log('새 메시지 수신:', receivedMessage);
+
+              // API 메시지를 클라이언트 메시지로 변환
+              const clientMessage =
+                convertApiMessageToClientMessage(receivedMessage);
+
+              // 중복 메시지 방지를 위한 ID 체크
+              setMessages((prevMessages) => {
+                // ID로 중복 체크
+                if (prevMessages.some((msg) => msg.id === clientMessage.id)) {
+                  return prevMessages;
+                }
+
+                const updatedMessages = [...prevMessages, clientMessage];
+
+                // 업데이트된 메시지를 세션 스토리지에 캐싱
+                sessionStorage.setItem(
+                  storageKey,
+                  JSON.stringify(updatedMessages)
+                );
+
+                return updatedMessages;
+              });
+            } catch (err) {
+              console.error('메시지 처리 오류:', err);
+            }
+          }
+        );
+
+        // 연결 성공 후 초기 메시지 로드
+        loadInitialMessages();
+      };
+
+      // 오류 처리
+      client.onStompError = (frame) => {
+        console.error('STOMP 오류:', frame);
+        setError(`연결 오류: ${frame.headers.message}`);
+        setIsConnected(false);
+      };
+
+      client.onWebSocketError = (event) => {
+        console.error('웹소켓 오류:', event);
+        setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setIsConnected(false);
+      };
+
+      // 타임아웃 설정 (5초)
+      connectionTimeout = setTimeout(() => {
         if (!isConnected && !hasConnected) {
           console.warn('웹소켓 연결 시간 초과');
-          setError('서버 연결에 실패했습니다.');
-
-          socket.close();
+          setError(
+            '서버 연결 시간이 초과되었습니다. 서버 상태를 확인해주세요.'
+          );
 
           if (clientRef.current) {
             clientRef.current.deactivate();
@@ -329,15 +313,21 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         }
       }, 5000);
 
-      // 정리 함수
-      return () => {
-        clearTimeout(connectionTimeout);
+      // 연결 시작
+      client.activate();
+      clientRef.current = client;
 
+      // 컴포넌트 언마운트 시 실행될 정리 함수
+      return () => {
+        // 타임아웃 정리
+        if (connectionTimeout) {
+          clearTimeout(connectionTimeout);
+        }
+
+        // 구독 해제
         if (subscriptionRef.current) {
           subscriptionRef.current.unsubscribe();
         }
-
-        socket.close();
       };
     } catch (err) {
       console.error('웹소켓 초기화 오류:', err);

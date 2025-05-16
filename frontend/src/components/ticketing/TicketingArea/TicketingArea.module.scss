@@ -45,7 +45,7 @@
 .popupOverlay {
   position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: $z-index-overlay;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +53,7 @@
 }
 
 .popupContent {
-  z-index: 50;
+  z-index: $z-index-popup;
   width: 100%;
   max-width: 300px;
   border-radius: $border-radius-lg;
@@ -68,28 +68,39 @@
 }
 
 .selectedBox {
-  margin: $spacing-xs;
-  background-color: #f7f7f8; // gray-50 색상
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  margin: $spacing-md;
+  color: $con-blue;
+  font-weight: $font-weight-bold;
+  border-top: 0.1px solid $con-gray;
+  border-bottom: 0.1px solid $con-gray;
+  background-color: #f9f9f9; // gray-50 색상
   padding: $spacing-sm;
 }
 
 .popupDescription {
   font-size: $font-size-sm;
-  color: #6c6e84; // gray-500 색상
+  color: $text-sub;
   text-align: center;
 }
 
 .buttonContainer {
-  margin-top: $spacing-sm;
+  margin-top: $spacing-md;
   display: flex;
   justify-content: space-between;
   justify-content: space-evenly;
-  gap: $spacing-sm;
-  border-top: 1px solid #dbdbe1; // gray-100 색상
-  padding-top: $spacing-sm;
+  gap: $spacing-md;
+  border-top: 0.1px solid #dbdbe1; // gray-100 색상
+  padding-top: $spacing-md;
 }
 
 .popupButton {
   text-align: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  background-color: transparent;
   color: $con-blue; // primary-main 색상
 }

@@ -14,7 +14,7 @@ export default function WebSocketProvider({
   onEnterQueue = false,
   title = '티켓팅', // 기본 제목
 }: WebSocketProviderProps) {
-  const { enterQueue } = useWebSocketQueue();
+  const { enterQueue, disconnectWebSocket } = useWebSocketQueue();
   const [hasEnteredQueue, setHasEnteredQueue] = useState(false);
   const queueInfo = useSelector((state: RootState) => state.queue);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +70,9 @@ export default function WebSocketProvider({
   }, [queueInfo]);
 
   const handleQueuePopupClose = () => {
+    // QueuePopup을 닫을 때 웹소켓 연결도 해제
+    console.log('🤝 WebSocketProvider: 큐 팝업 닫기, 웹소켓 연결 해제 중');
+    disconnectWebSocket();
     setQueuePopupOpen(false);
   };
 

@@ -40,9 +40,14 @@ export function determineBackNavigation(
   // 루트 레벨 페이지 처리
   if (
     pathSegments.length === 1 &&
-    ['sight', 'sharing', 'mypage', 'ticketing', 'congestion'].includes(
-      pathSegments[0]
-    )
+    [
+      'sight',
+      'sharing',
+      'mypage',
+      'ticketing',
+      'congestion',
+      'minigame',
+    ].includes(pathSegments[0])
   ) {
     return { type: 'push', path: '/main' };
   }
@@ -64,6 +69,16 @@ function handleTicketingBack(pathSegments: string[]): NavigationAction {
   // /ticketing 루트 경로에서는 메인으로
   if (pathSegments.length === 1) {
     return { type: 'push', path: '/main' };
+  }
+
+  // /ticketing/real/areas/[areaId] 경로에서는 areaSelect로 이동
+  if (
+    pathSegments.length >= 4 &&
+    pathSegments[1] === 'real' &&
+    pathSegments[2] === 'areas' &&
+    pathSegments[3] !== 'areaSelect'
+  ) {
+    return { type: 'push', path: '/ticketing/real/areas/areaSelect' };
   }
 
   // /ticketing/*/real 하위 경로에서는 일반 뒤로가기 실행

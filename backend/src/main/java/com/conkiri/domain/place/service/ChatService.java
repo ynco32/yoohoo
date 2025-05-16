@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,6 @@ import com.conkiri.domain.place.entity.ChatRoom;
 import com.conkiri.domain.place.repository.ChatMessageRepository;
 import com.conkiri.domain.place.repository.ChatRoomRepository;
 import com.conkiri.domain.user.entity.User;
-import com.conkiri.domain.user.repository.UserRepository;
 import com.conkiri.domain.user.service.UserReadService;
 import com.conkiri.global.exception.BaseException;
 import com.conkiri.global.exception.ErrorCode;
@@ -38,14 +38,7 @@ public class ChatService {
 	private final ChatMessageRepository messageRepository;
 	private final ChatRoomRepository chatRoomRepository;
 	private final RedisTemplate<String, Object> chatRedisTemplate;
-	private final UserRepository userRepository;
 	private final UserReadService userReadService;
-
-	// 채팅방 조회
-	public ChatRoom getChatRoom(Long chatRoomId) {
-
-		return findChatRoom(chatRoomId);
-	}
 
 	// 최신 메시지 조회
 	public ChatMessageDTO getLatestMessages(Long chatRoomId) {
@@ -72,17 +65,77 @@ public class ChatService {
 	}
 
 	private List<ChatMessageDetailDTO> getPendingMessagesFromRedis(Long chatRoomId) {
-
 		String listKey = "chat:pending:" + chatRoomId;
 		List<Object> rawMessages = chatRedisTemplate.opsForList().range(listKey, 0, -1);
 
-		if (rawMessages == null) return List.of();
+		log.info("Redis 키 {}: 조회된 메시지 수 = {}", listKey,
+			rawMessages != null ? rawMessages.size() : 0);
 
-		return rawMessages.stream()
-			.filter(ChatWebSocketMessageDTO.class::isInstance)
-			.map(obj -> (ChatWebSocketMessageDTO) obj)
-			.map(this::convertWebSocketDTOToDetailDTO)
-			.toList();
+		if (rawMessages == null || rawMessages.isEmpty()) {
+			return List.of();
+		}
+
+		List<ChatMessageDetailDTO> result = new ArrayList<>();
+
+		for (Object obj : rawMessages) {
+			log.info("메시지 타입: {}", obj.getClass().getName());
+
+			try {
+				// Map 형태로 역직렬화된 경우를 처리
+				if (obj instanceof Map) {
+					Map<String, Object> map = (Map<String, Object>) obj;
+					result.add(convertMapToDetailDTO(map));
+				}
+				// 원래 타입으로 정상 역직렬화된 경우
+				else if (obj instanceof ChatWebSocketMessageDTO) {
+					ChatWebSocketMessageDTO wsMsg = (ChatWebSocketMessageDTO) obj;
+					result.add(convertWebSocketDTOToDetailDTO(wsMsg));
+				}
+				else {
+					log.warn("처리할 수 없는 메시지 타입: {}", obj.getClass().getName());
+				}
+			} catch (Exception e) {
+				log.error("메시지 변환 오류: {}", e.getMessage(), e);
+			}
+		}
+
+		log.info("반환될 메시지 수: {}", result.size());
+		return result;
+	}
+
+	private ChatMessageDetailDTO convertMapToDetailDTO(Map<String, Object> map) {
+		// Map에서 필드 추출
+		Long parentMessageId = null;
+		if (map.get("parentMessageId") instanceof Number) {
+			parentMessageId = ((Number) map.get("parentMessageId")).longValue();
+		}
+
+		Long senderId = null;
+		if (map.get("senderId") instanceof Number) {
+			senderId = ((Number) map.get("senderId")).longValue();
+		}
+
+		LocalDateTime createdAt = LocalDateTime.now();
+		if (map.get("createdAt") instanceof String) {
+			try {
+				createdAt = LocalDateTime.parse((String) map.get("createdAt"));
+			} catch (Exception e) {
+				log.warn("날짜 파싱 오류: {}", e.getMessage());
+			}
+		}
+
+		return new ChatMessageDetailDTO(
+			null,
+			(String) map.get("tempId"),
+			senderId,
+			(String) map.get("senderNickname"),
+			(String) map.get("content"),
+			parentMessageId,
+			(String) map.get("parentTempId"),
+			(String) map.get("parentContent"),
+			(String) map.get("parentSenderNickname"),
+			createdAt
+		);
 	}
 
 	private ChatMessageDetailDTO convertWebSocketDTOToDetailDTO(ChatWebSocketMessageDTO wsMsg) {
@@ -103,11 +156,18 @@ public class ChatService {
 
 	// 이전 메시지 조회 (무한 스크롤)
 	public ChatMessageDTO getMessagesBeforeTime(Long chatRoomId, LocalDateTime beforeTime, int size) {
-
 		List<ChatMessageDetailDTO> messages = getOldMessagesFromDB(chatRoomId, beforeTime, size);
-		messages.sort(Comparator.comparing(ChatMessageDetailDTO::createdAt));
 
-		return new ChatMessageDTO(messages);
+		// 정렬 가능한 새 리스트 생성 후 정렬
+		List<ChatMessageDetailDTO> sortedMessages = new ArrayList<>(messages);
+		sortedMessages.sort((m1, m2) -> {
+			if (m1.createdAt() == null && m2.createdAt() == null) return 0;
+			if (m1.createdAt() == null) return -1;
+			if (m2.createdAt() == null) return 1;
+			return m1.createdAt().compareTo(m2.createdAt());
+		});
+
+		return new ChatMessageDTO(sortedMessages);
 	}
 
 	private List<ChatMessageDetailDTO> getOldMessagesFromDB(Long chatRoomId, LocalDateTime beforeTime, int size) {

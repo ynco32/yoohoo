@@ -1,5 +1,4 @@
-// 전체 코드
-import { apiClient } from '../api';
+import { apiClient } from '@/api';
 import { Notification } from '@/types/notification';
 
 export const notificationApi = {

@@ -19,7 +19,8 @@ import captchaReducer from './slices/captchaSlice';
 import arenaReducer from './slices/arenaSlice';
 import sectionReducer from './slices/sectionSlice';
 import markerReducer from './slices/markerSlice';
-import revertSeatReducer from './slices/revertSeatSlice'; // 새로 추가된 리듀서
+import revertSeatReducer from './slices/revertSeatSlice';
+import seatSelectionReducer from './slices/seatSelectionSlice';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
@@ -69,7 +70,8 @@ export const store = configureStore({
     arena: persistedArenaReducer,
     section: sectionReducer,
     marker: persistedMarkerReducer,
-    revertSeat: revertSeatReducer, // 새로 추가된 리듀서
+    revertSeat: revertSeatReducer,
+    seatSelection: seatSelectionReducer,
     // 다른 리듀서들 추가
   },
   middleware: (getDefaultMiddleware) =>

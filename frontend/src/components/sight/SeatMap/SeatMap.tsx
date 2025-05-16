@@ -1,17 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+// 수정된 부분
+import React, { useRef, useState } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
-
-interface SelectedSeat {
-  row: string;
-  seat: number;
-}
+import { useDispatch, useSelector } from '@/store';
+import { addSeat, removeSeat } from '@/store/slices/seatSelectionSlice';
 
 interface SeatMapProps {
   arenaId: string;
   sectionId: string;
-  maxWidth?: number; // 최대 너비를 props로 받을 수 있도록 추가
+  maxWidth?: number;
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
@@ -19,25 +17,31 @@ const SeatMap: React.FC<SeatMapProps> = ({
   sectionId,
   maxWidth = 800,
 }) => {
-  const [selectedSeats, setSelectedSeats] = useState<SelectedSeat[]>([]);
+  const dispatch = useDispatch();
+  const selectedSeats = useSelector(
+    (state) => state.seatSelection.selectedSeats
+  );
+
   const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(true);
 
   // 좌석 선택 처리 함수
-  const handleSeatClick = (row: string, seatNumber: number) => {
+  const handleSeatClick = (row: string, seat: number, seatId: number) => {
     const isAlreadySelected = selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seatNumber
+      (selected) => selected.row === row && selected.seat === seat
+    );
+
+    console.log(
+      `좌석 클릭: ${row}행 ${seat}번 (ID: ${seatId}) - 이미 선택됨: ${isAlreadySelected}`
     );
 
     if (isAlreadySelected) {
-      setSelectedSeats(
-        selectedSeats.filter(
-          (selected) => !(selected.row === row && selected.seat === seatNumber)
-        )
-      );
+      dispatch(removeSeat({ row, seat }));
+      console.log(`좌석 선택 해제: ${row}행 ${seat}번`);
     } else {
-      setSelectedSeats([...selectedSeats, { row, seat: seatNumber }]);
+      dispatch(addSeat({ row, seat, seatId }));
+      console.log(`좌석 선택 추가: ${row}행 ${seat}번 (ID: ${seatId})`);
     }
   };
 
@@ -112,7 +116,8 @@ const SeatMap: React.FC<SeatMapProps> = ({
                       isReviewed={seat.isReviewed}
                       isSelected={isSeatSelected(row.row, seat.seat)}
                       onClick={() =>
-                        seat.seat !== 0 && handleSeatClick(row.row, seat.seat)
+                        seat.seat !== 0 &&
+                        handleSeatClick(row.row, seat.seat, seat.seatId)
                       }
                     />
                   ))}

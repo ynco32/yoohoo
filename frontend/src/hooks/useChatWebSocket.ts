@@ -197,9 +197,6 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       const sockJsUrl = `${baseUrl}/place-ws`;
       console.log('사용할 웹소켓 URL:', sockJsUrl);
 
-      // 타임아웃 변수 (정리 함수에서 사용)
-      let connectionTimeout: NodeJS.Timeout;
-
       // 연결 상태 변수
       let hasConnected = false;
 

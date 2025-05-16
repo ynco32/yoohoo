@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.conkiri.domain.place.dto.response.ChatMessageDTO;
-import com.conkiri.domain.place.entity.ChatRoom;
 import com.conkiri.domain.place.service.ChatService;
 import com.conkiri.global.common.ApiResponse;
 
@@ -22,14 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class PlaceChatRestController {
 
 	private final ChatService chatService;
-
-	// 채팅방 조회
-	@GetMapping("/chat-rooms/{chatRoomId}")
-	public ApiResponse<ChatRoom> getChatRoom(
-		@PathVariable("chatRoomId") Long chatRoomId) {
-
-		return ApiResponse.success(chatService.getChatRoom(chatRoomId));
-	}
 
 	// 최신 메시지 조회
 	@GetMapping("/chat-rooms/{chatRoomId}/messages")

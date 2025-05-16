@@ -1,6 +1,7 @@
 // src/hooks/useChatWebSocket.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { apiRequest } from '@/api/api';
@@ -177,80 +178,104 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       return;
     }
 
-    // 새 STOMP 클라이언트 생성
-    const client = new Client({
-      brokerURL: 'wss://conkiri.shop/place-ws',
-      reconnectDelay: 10000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
+    // 쿠키 확인 - access_token 없으면 바로 오류 설정
+    const hasAccessToken = document.cookie.includes('access_token');
+    if (!hasAccessToken) {
+      setError('로그인이 필요합니다. 로그인 후 다시 시도해주세요.');
+      return; // 토큰 없으면 연결 시도 자체를 하지 않음
+    }
 
-    // 연결 성공 콜백
-    client.onConnect = () => {
-      console.log('웹소켓 연결 성공');
-      setIsConnected(true);
-      setError(null);
+    try {
+      console.log('채팅 웹소켓 연결 시도...');
 
-      // 채팅방 메시지 구독
-      subscriptionRef.current = client.subscribe(
-        `/topic/chat/${chatRoomId}`,
-        (messageEvent) => {
-          try {
-            const receivedMessage = JSON.parse(
-              messageEvent.body
-            ) as ApiChatMessage;
-            console.log('새 메시지 수신:', receivedMessage);
-
-            // API 메시지를 클라이언트 메시지로 변환
-            const clientMessage =
-              convertApiMessageToClientMessage(receivedMessage);
-
-            // 중복 메시지 방지를 위한 ID 체크
-            setMessages((prevMessages) => {
-              // ID로 중복 체크
-              if (prevMessages.some((msg) => msg.id === clientMessage.id)) {
-                return prevMessages;
-              }
-
-              const updatedMessages = [...prevMessages, clientMessage];
-
-              // 업데이트된 메시지를 세션 스토리지에 캐싱
-              sessionStorage.setItem(
-                storageKey,
-                JSON.stringify(updatedMessages)
-              );
-
-              return updatedMessages;
-            });
-          } catch (err) {
-            console.error('메시지 처리 오류:', err);
-          }
-        }
+      // 쿠키 확인 (디버깅용)
+      console.log('현재 쿠키:', document.cookie);
+      console.log(
+        'access_token 존재 여부:',
+        document.cookie.includes('access_token')
       );
 
-      // 연결 성공 후 초기 메시지 로드
-      loadInitialMessages();
-    };
+      // API URL 구성
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
-    // 오류 처리
-    client.onStompError = (frame) => {
-      console.error('STOMP 오류:', frame);
-      setError(`연결 오류: ${frame.headers.message}`);
-      setIsConnected(false);
-    };
+      // SockJS 인스턴스 생성 (상대 경로 사용)
+      const sockJsUrl = `${baseUrl}/place-ws`;
+      const socket = new SockJS(sockJsUrl);
 
-    client.onWebSocketError = (event) => {
-      console.error('웹소켓 오류:', event);
-      setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
-      setIsConnected(false);
-    };
+      // Stomp 클라이언트 생성 (SockJS 사용)
+      const client = new Client({
+        webSocketFactory: () => socket,
+        debug: (str) => console.log('CHAT STOMP: ' + str),
+        reconnectDelay: 10000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+      });
 
-    // 연결 시작
-    try {
+      // 연결 성공 콜백
+      client.onConnect = () => {
+        console.log('웹소켓 연결 성공');
+        setIsConnected(true);
+        setError(null);
+
+        // 채팅방 메시지 구독
+        subscriptionRef.current = client.subscribe(
+          `/topic/chat/${chatRoomId}`,
+          (messageEvent) => {
+            try {
+              const receivedMessage = JSON.parse(
+                messageEvent.body
+              ) as ApiChatMessage;
+              console.log('새 메시지 수신:', receivedMessage);
+
+              // API 메시지를 클라이언트 메시지로 변환
+              const clientMessage =
+                convertApiMessageToClientMessage(receivedMessage);
+
+              // 중복 메시지 방지를 위한 ID 체크
+              setMessages((prevMessages) => {
+                // ID로 중복 체크
+                if (prevMessages.some((msg) => msg.id === clientMessage.id)) {
+                  return prevMessages;
+                }
+
+                const updatedMessages = [...prevMessages, clientMessage];
+
+                // 업데이트된 메시지를 세션 스토리지에 캐싱
+                sessionStorage.setItem(
+                  storageKey,
+                  JSON.stringify(updatedMessages)
+                );
+
+                return updatedMessages;
+              });
+            } catch (err) {
+              console.error('메시지 처리 오류:', err);
+            }
+          }
+        );
+
+        // 연결 성공 후 초기 메시지 로드
+        loadInitialMessages();
+      };
+
+      // 오류 처리
+      client.onStompError = (frame) => {
+        console.error('STOMP 오류:', frame);
+        setError(`연결 오류: ${frame.headers.message}`);
+        setIsConnected(false);
+      };
+
+      client.onWebSocketError = (event) => {
+        console.error('웹소켓 오류:', event);
+        setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        setIsConnected(false);
+      };
+
+      // 연결 시작
       client.activate();
       clientRef.current = client;
     } catch (err) {
-      console.error('웹소켓 활성화 오류:', err);
+      console.error('웹소켓 초기화 오류:', err);
       setError('연결 초기화 중 오류가 발생했습니다.');
     }
 

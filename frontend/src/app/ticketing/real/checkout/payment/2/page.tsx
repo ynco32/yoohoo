@@ -117,7 +117,7 @@ export default function PaymentPage() {
       confirmText: '결제완료',
       onConfirm: () => {
         // document.cookie = 'ticketing-progress=5; path=/';
-        router.push('../result');
+        router.push('/ticketing/real/result');
         dispatch(reset()); // Redux 액션 디스패치로 captcha 상태 초기화
       },
     });

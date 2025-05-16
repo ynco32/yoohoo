@@ -31,7 +31,7 @@ RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | awk -F'.' '{pr
     && rm chromedriver_linux64.zip
 
 # 필요한 Python 패키지 설치
-COPY requirements-crawler.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements-crawler.txt
 
 # 애플리케이션 코드 복사

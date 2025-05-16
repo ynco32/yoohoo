@@ -178,6 +178,13 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       return;
     }
 
+    // 쿠키 확인 - access_token 없으면 바로 오류 설정
+    const hasAccessToken = document.cookie.includes('access_token');
+    if (!hasAccessToken) {
+      setError('로그인이 필요합니다. 로그인 후 다시 시도해주세요.');
+      return; // 토큰 없으면 연결 시도 자체를 하지 않음
+    }
+
     try {
       console.log('채팅 웹소켓 연결 시도...');
 

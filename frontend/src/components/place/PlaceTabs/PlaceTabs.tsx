@@ -25,20 +25,6 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
   const arenaIdNum =
     typeof arenaId === 'string' ? parseInt(arenaId, 10) : arenaId;
 
-  // 로컬 스토리지에서 마지막 활성 탭 가져오기
-  useEffect(() => {
-    const savedTab = localStorage.getItem(`place-active-tab-${arenaIdNum}`);
-    if (savedTab !== null) {
-      const tabIndex = parseInt(savedTab, 10);
-      setActiveTab(tabIndex);
-
-      // 저장된 탭이 채팅 탭이면 채팅 표시 상태 설정
-      if (tabIndex === 1) {
-        setChatShown(true);
-      }
-    }
-  }, [arenaIdNum]);
-
   // 탭 변경 처리
   const handleTabChange = (idx: number) => {
     // 탭 상태 저장

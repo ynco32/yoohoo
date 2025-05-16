@@ -54,6 +54,6 @@ public class MyPageController {
 	public ApiResponse<ReviewResponseDTO> getMyReviews(
 		@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-		return ApiResponse.success(myPageService.getMyReviews(userPrincipal.getUser()));
+		return ApiResponse.success(myPageService.getReviewsOfUser(userPrincipal.getUser()));
 	}
 }

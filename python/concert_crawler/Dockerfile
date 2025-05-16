@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libnss3 \
     libgconf-2-4 \
     libfontconfig1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Chrome 설치
@@ -32,7 +33,7 @@ RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | awk -F'.' '{pr
 
 # 필요한 Python 패키지 설치
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements-crawler.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 애플리케이션 코드 복사
 COPY . .

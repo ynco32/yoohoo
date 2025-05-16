@@ -61,78 +61,74 @@ export default function Captcha({
   return (
     <div className={`${styles.captchaOverlay} ${className || ''}`}>
       <div className={styles.captchaContainer}>
-        <div>
-          <h2 className={styles.captchaTitle}>인증예매</h2>
-        </div>
+        <h2 className={styles.captchaTitle}>인증예매</h2>
 
         <div className={styles.captchaContent}>
           <p className={styles.captchaInfo}>
             부정예매 방지를 위해 보안문자를 정확히 입력해주세요.
           </p>
 
-          <div>
-            <div className={styles.captchaDisplay}>
-              <div className={styles.captchaText}>{captchaText}</div>
-              <div className={styles.captchaActions}>
-                <button
-                  onClick={generateCaptcha}
-                  className={styles.actionButton}
-                  aria-label='새로고침'
+          <div className={styles.captchaDisplay}>
+            <div className={styles.captchaText}>{captchaText}</div>
+            <div className={styles.captchaActions}>
+              <button
+                onClick={generateCaptcha}
+                className={styles.actionButton}
+                aria-label='새로고침'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
                 >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-5 w-5'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={speakCaptcha}
-                  className={styles.actionButton}
-                  aria-label='소리로 듣기'
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={speakCaptcha}
+                className={styles.actionButton}
+                aria-label='소리로 듣기'
+              >
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
                 >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-5 w-5'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z'
-                    />
-                  </svg>
-                </button>
-              </div>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z'
+                  />
+                </svg>
+              </button>
             </div>
-
-            <input
-              type='text'
-              value={inputText}
-              onChange={handleInputChange}
-              placeholder='대소문자 구분없이 문자입력'
-              maxLength={8}
-              className={styles.captchaInput}
-            />
           </div>
+
+          <input
+            type='text'
+            value={inputText}
+            onChange={handleInputChange}
+            placeholder='대소문자 구분없이 문자입력'
+            maxLength={8}
+            className={styles.captchaInput}
+          />
 
           {error && (
             <p className={styles.errorMessage}>문자를 정확히 입력하세요</p>
           )}
+
           <div className={styles.submitButton}>
-            <button onClick={handleSubmit}>입력 완료</button>
+            <button onClick={handleSubmit}>입력완료</button>
           </div>
+
           <button className={styles.postponeButton} onClick={onPostpone}>
             <span>좌석 먼저 확인하고 나중에 입력하기</span>
           </button>

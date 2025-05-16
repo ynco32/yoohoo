@@ -1,9 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // useEffect 추가
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import styles from './page.module.scss';
 import { useTicketingResult } from '@/hooks/useTicketingResult';
+import { useDispatch } from '@/store'; // Redux dispatch 추가
+import { resetState } from '@/store/slices/revertSeatSlice'; // resetState 액션 추가
 
 // SuccessModal 컴포넌트
 interface SuccessModalProps {
@@ -45,6 +47,14 @@ export default function RealResultPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch(); // Redux dispatch 추가
+
+  // 컴포넌트 마운트 시 티켓팅 과정이 완료되었으므로 Redux 상태 초기화
+  useEffect(() => {
+    console.log('🔄 결과 페이지 마운트 - Redux 상태 초기화');
+    dispatch(resetState());
+    console.log('✅ Redux 상태 초기화 완료');
+  }, [dispatch]);
 
   const handleSaveData = async () => {
     if (isSaved || !ticketingResult) return;

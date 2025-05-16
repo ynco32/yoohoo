@@ -23,7 +23,8 @@ export default function QueuePopup({
     (state: RootState) => state.queue
   );
 
-  if (!isOpen) return null;
+  // 팝업이 닫혀 있거나 로딩 중이면 아무것도 표시하지 않음
+  if (!isOpen || isLoading) return null;
 
   const timeFormat = (expectedSeconds: number): string => {
     const hours = Math.floor(expectedSeconds / 3600);
@@ -57,24 +58,11 @@ export default function QueuePopup({
           </button>
         </div>
         <div className={styles.content}>
-          {isLoading ? (
-            // 로딩 중일 때 표시할 내용
-            <>
-              <div className={styles.loadingSpinner}></div>
-              <p className={styles.loadingText}>대기열에 입장 중입니다...</p>
-            </>
-          ) : (
-            // 기존 내용
-            <>
-              <p>좌석 선택 진입 중</p>
-              <p className={styles.queueNumber}>
-                내 대기 순서 {queueNumber}번째
-              </p>
-              <p>
-                뒤에 {peopleBehind}명 / {expectedTimeInForm} 소요 예상
-              </p>
-            </>
-          )}
+          <p>좌석 선택 진입 중</p>
+          <p className={styles.queueNumber}>내 대기 순서 {queueNumber}번째</p>
+          <p>
+            뒤에 {peopleBehind}명 / {expectedTimeInForm} 소요 예상
+          </p>
         </div>
         <div className={styles.footer}>
           <p className={styles.warning}>

@@ -6,6 +6,7 @@ import styles from './page.module.scss';
 import { useTicketingResult } from '@/hooks/useTicketingResult';
 import { useDispatch } from '@/store'; // Redux dispatch 추가
 import { resetState } from '@/store/slices/revertSeatSlice'; // resetState 액션 추가
+import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
 
 // SuccessModal 컴포넌트
 interface SuccessModalProps {
@@ -22,7 +23,8 @@ function SuccessModal({
   secondMessage,
 }: SuccessModalProps) {
   if (!isOpen) return null;
-
+  const { disconnectWebSocket } = useWebSocketQueue();
+  disconnectWebSocket();
   return (
     <div className={styles.modalContainer}>
       <div className={styles.modalContent}>

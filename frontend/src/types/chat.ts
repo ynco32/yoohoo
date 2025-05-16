@@ -17,6 +17,7 @@ export interface ApiChatMessage {
 // 클라이언트에서 사용할 메시지 타입 (MessageItem 컴포넌트와 호환)
 export interface Message {
   id: number; // messageId로 매핑
+  tempId?: string;
   nickname: string; // senderNickname으로 매핑
   time: string; // createdAt을 포맷팅
   content: string; // content 그대로 사용

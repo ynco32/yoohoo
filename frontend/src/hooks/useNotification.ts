@@ -1,12 +1,12 @@
-// src/hooks/notification/useNotificationState.ts
+// src/hooks/useNotification.ts
 import { useState, useCallback } from 'react';
-import type { NotificationType } from '@/types/notification';
+import { NotificationType } from '@/types/notification';
 import { notificationApi } from '@/api/notification/notification';
 
 /**
  * 알림 상태와 기본 CRUD 작업을 관리하는 훅
  */
-export const useNotificationState = () => {
+export const useNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

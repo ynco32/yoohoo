@@ -44,7 +44,7 @@ const PushNotificationManager: React.FC<PushNotificationProps> = ({
             // 토큰을 서버에 등록
             try {
               await apiRequest('POST', '/api/v1/notifications/fcm-token', {
-                token,
+                fcmToken: token,
               });
               console.log(
                 'MANAGER:: FCM 토큰이 서버에 성공적으로 등록되었습니다.'

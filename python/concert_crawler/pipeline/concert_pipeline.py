@@ -19,12 +19,6 @@ class ConcertPipeline:
             
             # 1. 상세 정보 크롤링
             detail_info = crawler.get_concert_detail(concert['show_id'], concert)
-
-            # OCR과 웹페이지 본문 합침침
-            # combined_text = ""  # 
-            # if 'content_text' in detail_info and detail_info['content_text']:
-            #     combined_text += "【웹페이지 본문】\n" + detail_info['content_text'] + "\n\n"
-            
             
             # 2. 이미지 처리 (공통 로직)
             if 'notice_image_url' in detail_info:

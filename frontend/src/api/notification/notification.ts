@@ -29,6 +29,12 @@ export const notificationApi = {
    */
   checkNotificationAccess: () =>
     apiRequest<boolean>('GET', '/api/v1/notifications/settings'),
+  
+  /**
+   * 알림 권한 변경
+   */
+  changeNotificationAccess: () =>
+    apiRequest<null>('PATCH', '/api/v1/notifications/settings'),
 
   /**
    * 특정 알림 읽음 처리

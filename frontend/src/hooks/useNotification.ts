@@ -100,17 +100,49 @@ export const useNotifications = () => {
     setHasUnread(true);
   }, []);
 
+  /**
+   * 알림 권한 확인
+   */
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const checkNotificationAccess = useCallback(async () => {
+    try {
+      const hasPermission = await notificationApi.checkNotificationAccess();
+      setHasAccess(hasPermission || false);
+      return hasPermission;
+    } catch (err) {
+      console.error('알림 권한 확인 실패:', err);
+      setHasAccess(false);
+      return false;
+    }
+  }, []);
+
+  /**
+   * 알림 권한 변경
+   */
+  const changeNotificationAccess = useCallback(async () => {
+    try {
+      await notificationApi.changeNotificationAccess();
+      return true;
+    } catch (err) {
+      console.error('알림 권한 변경 실패:', err);
+      throw err;
+    }
+  }, []);
+
   return {
     // 상태
     notifications,
     loading,
     error,
     hasUnread,
+    hasAccess,
     // 작업
     fetchNotifications,
     markAsRead,
     markAllAsRead,
     addNotification,
     setNotifications,
+    checkNotificationAccess,
+    changeNotificationAccess,
   };
 };

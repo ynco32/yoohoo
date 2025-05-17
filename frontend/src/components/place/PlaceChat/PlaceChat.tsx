@@ -121,7 +121,7 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
   };
 
   // 메시지로 스크롤 이동
-  const scrollToMessage = (messageId: number) => {
+  const scrollToMessage = (messageId: number | string) => {
     const messageElement = document.getElementById(`message-${messageId}`);
     if (messageElement) {
       messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -170,14 +170,20 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
 
           {/* 시스템 메시지 및 일반 메시지 렌더링 */}
           {messages.map((msg) => (
-            <div id={`message-${msg.id}`} key={msg.id}>
+            <div
+              id={`message-${msg.id || msg.tempId}`}
+              key={msg.id || msg.tempId}
+            >
               <MessageItem
                 message={msg}
                 replyTo={msg.replyTo}
                 onReply={() => handleReply(msg)}
                 onReplyClick={
                   msg.replyTo
-                    ? () => scrollToMessage(msg.replyTo!.id)
+                    ? () =>
+                        scrollToMessage(
+                          msg.replyTo?.id || msg.replyTo?.tempId || ''
+                        )
                     : undefined
                 }
               />

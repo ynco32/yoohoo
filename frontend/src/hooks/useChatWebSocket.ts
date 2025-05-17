@@ -49,7 +49,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       let replyTo: Message | undefined = undefined;
       if (apiMessage.parentMessageId || apiMessage.parentTempId) {
         replyTo = {
-          id: apiMessage.parentMessageId || 0, // parentMessageId가 없으면 0
+          id: apiMessage.parentMessageId || apiMessage.parentTempId || '', // parentMessageId가 없으면 parentTempId 사용
           tempId: apiMessage.parentTempId || '', // parentTempId가 없으면 빈 문자열
           nickname: apiMessage.parentSenderNickname || '',
           time: '',
@@ -60,8 +60,11 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
       // 내가 보낸 메시지인지 확인
       const isMe = apiMessage.senderId === userInfo?.userId;
 
+      // messageId가 있으면 그대로 사용, 없으면 tempId를 id로 사용
+      const id = apiMessage.messageId || apiMessage.tempId;
+
       return {
-        id: apiMessage.messageId,
+        id,
         tempId: apiMessage.tempId,
         nickname: apiMessage.senderNickname,
         time: formattedTime,
@@ -274,7 +277,10 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
                         msg.tempId === clientMessage.tempId) // tempId로 체크
                   )
                 ) {
-                  console.log('중복 메시지 감지, 무시됨:');
+                  console.log('중복 메시지 감지, 무시됨:', {
+                    messageId: clientMessage.id,
+                    tempId: clientMessage.tempId,
+                  });
                   return prevMessages;
                 }
                 console.log('새 메시지 추가됨:');
@@ -356,9 +362,19 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         // 전송할 메시지 데이터
         const messageRequest: SendMessageRequest = {
           content: content.trim(),
-          parentTempId: replyToMessage?.tempId,
-          parentMessageId: replyToMessage?.id,
         };
+        // 답글인 경우 부모 메시지 정보 추가
+        if (replyToMessage) {
+          // parentTempId 항상 추가 (가장 우선)
+          if (replyToMessage.tempId) {
+            messageRequest.parentTempId = replyToMessage.tempId;
+          }
+
+          // parentMessageId는 타입이 number인 경우에만 추가
+          if (typeof replyToMessage.id === 'number') {
+            messageRequest.parentMessageId = replyToMessage.id;
+          }
+        }
 
         console.log('메시지 전송:', messageRequest);
 

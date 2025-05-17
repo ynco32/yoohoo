@@ -31,6 +31,7 @@ public class RabbitMQConfig {
 			.deadLetterExchange(RabbitMQConstants.DLQ_EXCHANGE)  // 처리 실패 시 메시지가 이동할 Exchange
 			.deadLetterRoutingKey(RabbitMQConstants.DLQ_ROUTING_KEY)  // DLQ로 라우팅할 때 사용할 키
 			.ttl(86400000)  // 메시지 만료 시간 = 24시간 (1일), 이 시간 후 자동 삭제
+			.singleActiveConsumer()
 			.build();
 	}
 

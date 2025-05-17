@@ -30,14 +30,19 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       },
     }));
 
+    const MAX_LENGTH = 200;
+
     const handleTextareaChange = (
       e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-      setInput(e.target.value);
+      const value = e.target.value;
+
+      if (value.length > MAX_LENGTH) return; // 200자 초과시 무시
+
+      setInput(value);
 
       // 높이 자동 조절
-      e.target.style.height = '44px'; // 기본 높이로 초기화
-      setInput(e.target.value);
+      e.target.style.height = '60px'; // 기본 높이로 초기화
       const scrollHeight = e.target.scrollHeight;
       const newHeight = Math.min(scrollHeight, 120) + 'px'; // 최대 높이 제한
       e.target.style.height = newHeight;
@@ -62,30 +67,35 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
       onSend(input); // 입력된 메시지를 부모 컴포넌트로 전달
       setInput(''); // 입력 필드 초기화
-      setTextareaHeight('44px');
+      setTextareaHeight('60px');
       textareaRef.current?.focus();
     };
 
     return (
       <div className={styles.inputWrapper}>
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={handleTextareaChange}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className={`${styles.messageInput} ${
-            isReplying ? styles.replying : ''
-          }`}
-          style={{ height: textareaHeight }}
-        />
-        <button
-          onClick={handleSend}
-          disabled={!input.trim()}
-          className={styles.sendButton}
-        >
-          {buttonText}
-        </button>
+        <div className={styles.inputRow}>
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={handleTextareaChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className={`${styles.messageInput} ${
+              isReplying ? styles.replying : ''
+            }`}
+            style={{ height: textareaHeight }}
+          />
+          <div className={styles.sendButtonWrapper}>
+            <button
+              onClick={handleSend}
+              disabled={!input.trim()}
+              className={styles.sendButton}
+            >
+              {buttonText}
+            </button>
+            <div className={styles.lengthIndicator}>{input.length} / 200</div>
+          </div>
+        </div>
       </div>
     );
   }

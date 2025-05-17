@@ -13,15 +13,13 @@ export const useNotifications = () => {
     setLoading(true);
     try {
       const response = await notificationApi.getAllNotification();
-      if (response && response.data) {
-        setNotifications(response.data);
-      }
+
+      // apiRequest가 undefined를 반환할 수 있으므로 안전하게 처리
+      setNotifications(response || []);
 
       // 안 읽은 알림 확인
       const unreadResponse = await notificationApi.hasUnreadNotification();
-      if (unreadResponse && unreadResponse.data !== undefined) {
-        setHasUnread(unreadResponse.data);
-      }
+      setHasUnread(unreadResponse || false);
 
       setError(null);
     } catch (err) {
@@ -30,6 +28,7 @@ export const useNotifications = () => {
           ? err
           : new Error('알림을 불러오는데 실패했습니다.')
       );
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -46,6 +45,14 @@ export const useNotifications = () => {
             : notification
         )
       );
+
+      // 읽지 않은 알림이 있는지 다시 확인
+      const anyUnread = notifications.some(
+        (notification) =>
+          notification.notificationId.toString() !== notificationId &&
+          !notification.isRead
+      );
+      setHasUnread(anyUnread);
     } catch (err) {
       console.error('알림 읽음 처리 실패:', err);
     }

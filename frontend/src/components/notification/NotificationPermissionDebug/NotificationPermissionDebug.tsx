@@ -270,26 +270,6 @@ const NotificationPermissionDebug: React.FC = () => {
             </button>
           </div>
         </div>
-
-        <div className={styles.testNotification}>
-          <h3>알림 테스트</h3>
-          <div className={styles.notificationInput}>
-            <input
-              type='text'
-              value={testMessage}
-              onChange={(e) => setTestMessage(e.target.value)}
-              placeholder='테스트 알림 메시지 입력'
-              className={styles.messageInput}
-            />
-            <button
-              className={styles.sendButton}
-              onClick={handleShowNotification}
-              disabled={notificationPermission !== 'granted'}
-            >
-              알림 보내기
-            </button>
-          </div>
-        </div>
       </div>
 
       {receivedMessages.length > 0 && (

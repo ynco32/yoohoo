@@ -45,6 +45,7 @@ public class FCMService {
 			Message message = messageBuilder.build();
 			String response = FirebaseMessaging.getInstance().send(message);
 
+			System.out.println(message.toString());
 			log.info("FCM 메시지 전송 성공: messageId={}", response);
 			return true;
 		} catch (Exception e) {

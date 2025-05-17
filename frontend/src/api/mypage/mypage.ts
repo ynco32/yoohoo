@@ -1,4 +1,4 @@
-import { apiRequest } from '@/api/api';
+import { apiRequest, serverApiRequest } from '@/api/api';
 import { ArtistResponse, ConcertResponse } from '@/types/mypage';
 
 export const getArtists = async (search?: string, last?: number) => {
@@ -21,7 +21,7 @@ export const getMyArtists = async (last?: number) => {
 };
 
 export const deleteArtist = async (artistId: number) => {
-  return apiRequest<null>('DELETE', `api/v1/artists/${artistId}`);
+  return apiRequest<null>('DELETE', `api/v1/artists/my/${artistId}`);
 };
 
 export const getConcerts = async (search?: string, last?: number) => {
@@ -49,5 +49,5 @@ export const getMyConcerts = async (search?: string, last?: number) => {
 };
 
 export const deleteConcert = async (concertId: number) => {
-  return apiRequest<null>('DELETE', `/api/v1/concerts/${concertId}`);
+  return apiRequest<null>('DELETE', `/api/v1/concerts/my/${concertId}`);
 };

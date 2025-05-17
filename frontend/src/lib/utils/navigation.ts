@@ -47,6 +47,10 @@ export function determineBackNavigation(
     return { type: 'push', path: '/main' };
   }
 
+  if (['artists', 'concerts'].includes(pathSegments[0])) {
+    return { type: 'replace', path: '/mypage' };
+  }
+
   // 그 외 경로에서는 한 단계 위로 이동
   if (pathSegments.length > 1) {
     const upperPath = '/' + pathSegments.slice(0, -1).join('/');

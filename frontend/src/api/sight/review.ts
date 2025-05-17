@@ -1,5 +1,5 @@
 // src/api/sight/review.ts
-import { apiClient } from '../api';
+import { apiClient, apiRequest, serverApiRequest } from '../api';
 import {
   ReviewRequest,
   Review,
@@ -107,4 +107,7 @@ export const reviewApi = {
 
     return response.data;
   },
+
+  getMyReviews: () =>
+    serverApiRequest<ReviewListApi>('GET', '/api/v1/mypage/reviews'),
 };

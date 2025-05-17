@@ -4,6 +4,7 @@ import { useNotifications } from '@/hooks/useNotification';
 import NotificationCard from '@/components/notification/NotificationCard/NotificationCard';
 import styles from './page.module.scss';
 import { Notification } from '@/types/notification';
+import Link from 'next/link';
 
 export default function NotificationPage() {
   const {
@@ -45,6 +46,7 @@ export default function NotificationPage() {
 
   return (
     <div className={styles.container}>
+      <Link href='/notification/setting'> 설정페이지 가기</Link>
       <div className={styles.header}>
         <h1 className={styles.title}>알림</h1>
         <div className={styles.actions}>

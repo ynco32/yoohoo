@@ -26,6 +26,7 @@
   font-size: 14px;
   color: #666;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .scrollContainer {
@@ -55,20 +56,21 @@
   margin-right: 16px;
   width: 80px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .artistImageContainer {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
   margin-bottom: 8px;
+  position: relative;
 }
 
 .artistImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .artistName {
@@ -95,7 +97,8 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #f0f0f0;
+  background-color: transparent;
+  box-shadow: $shadow-con;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,4 +139,21 @@
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 14px;
+  color: #fff;
 }

@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import styles from './PlaceChat.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
-import ChatInput from '@/components/common/ChatInput/ChatInput';
+import ChatInput, {
+  ChatInputHandle,
+} from '@/components/common/ChatInput/ChatInput';
 import { useChatWebSocket } from '@/hooks/useChatWebSocket';
 import { Message } from '@/types/chat';
 import IconBox from '@/components/common/IconBox/IconBox';
@@ -38,6 +40,7 @@ export default function PlaceChat({
   const messageEndRef = useRef<HTMLDivElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const chatInputRef = useRef<ChatInputHandle>(null);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -159,11 +162,7 @@ export default function PlaceChat({
   // 답글 처리
   const handleReply = (message: Message) => {
     setReplyingTo(message);
-    // 입력창으로 포커스 이동
-    const inputElement = document.querySelector('input') as HTMLInputElement;
-    if (inputElement) {
-      inputElement.focus();
-    }
+    chatInputRef.current?.focusInput(); // 🔹 포커싱
   };
 
   // 메시지로 스크롤 이동
@@ -291,12 +290,15 @@ export default function PlaceChat({
         </div>
         <div className={styles.inputWrapper}>
           <ChatInput
+            ref={chatInputRef}
             onSend={handleSend}
             placeholder={
               replyingTo ? '답글 작성하기' : '궁금한 내용을 물어볼 수 있어요!'
             }
             buttonText='보내기'
+            isReplying={!!replyingTo}
           />
+          ;
         </div>
       </div>
       {!isConnected && (

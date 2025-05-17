@@ -1,12 +1,22 @@
 import { apiRequest } from '@/api/api';
-import { Notification } from '@/types/notification';
+import { NotificationType } from '@/types/notification';
 
 export const notificationApi = {
+  /**
+   *
+   * @param token
+   * FCM 토큰 등록
+   */
+  sendFCMToken: (token: string) =>
+    apiRequest<null>('POST', '/api/v1/notifications/fcm-token', {
+      fcmToken: token,
+    }),
+
   /**
    * 전체 알림 조회
    */
   getAllNotification: () =>
-    apiRequest<Notification[]>('GET', '/api/v1/notifications'),
+    apiRequest<NotificationType[]>('GET', '/api/v1/notifications'),
 
   /**
    * 안 읽은 알림이 있는지 조회

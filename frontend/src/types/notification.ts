@@ -4,7 +4,7 @@ export interface NotificationType {
   notificationId: number;
   title: string;
   body: string;
-  type: NotificationType;
+  type: NotificationCategory;
   isRead: boolean;
   createdAt: string;
   concert?: Concert;

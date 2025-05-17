@@ -41,6 +41,8 @@ export default function PlaceChat({
   const messageListRef = useRef<HTMLDivElement>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
   const chatInputRef = useRef<ChatInputHandle>(null);
+  const [inputHeight, setInputHeight] = useState(60);
+  const replyRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -101,6 +103,20 @@ export default function PlaceChat({
     container?.addEventListener('scroll', handleScroll);
     return () => container?.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 동적 패딩 추가
+  useEffect(() => {
+    const replyHeight = replyRef.current?.offsetHeight || 0;
+    const bottomPadding = inputHeight + replyHeight + 20;
+
+    const container = messageListRef.current;
+    if (container) {
+      container.style.setProperty(
+        '--chat-bottom-padding',
+        `${bottomPadding}px`
+      );
+    }
+  }, [inputHeight, replyingTo]);
 
   // 스크롤 이벤트로 이전 메시지 로드
   useEffect(() => {
@@ -298,6 +314,7 @@ export default function PlaceChat({
             }
             buttonText='보내기'
             isReplying={!!replyingTo}
+            onHeightChange={(h) => setInputHeight(h)}
           />
         </div>
       </div>

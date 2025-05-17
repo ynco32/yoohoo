@@ -1,7 +1,13 @@
 // components/common/ChatInput/ChatInput.tsx
 'use client';
 
-import { useState, useImperativeHandle, forwardRef, useRef } from 'react';
+import {
+  useState,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+  useRef,
+} from 'react';
 import styles from './ChatInput.module.scss';
 
 interface ChatInputProps {
@@ -9,6 +15,7 @@ interface ChatInputProps {
   placeholder?: string;
   buttonText?: string;
   isReplying?: boolean;
+  onHeightChange?: (height: number) => void;
 }
 
 export interface ChatInputHandle {
@@ -17,7 +24,13 @@ export interface ChatInputHandle {
 
 const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
   (
-    { onSend, placeholder = '메시지 입력', buttonText = '전송', isReplying },
+    {
+      onSend,
+      placeholder = '메시지 입력',
+      buttonText = '전송',
+      isReplying,
+      onHeightChange,
+    },
     ref
   ) => {
     const [input, setInput] = useState('');
@@ -29,6 +42,10 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         textareaRef.current?.focus();
       },
     }));
+
+    useEffect(() => {
+      onHeightChange?.(parseInt(textareaHeight));
+    }, [textareaHeight]);
 
     const MAX_LENGTH = 200;
 

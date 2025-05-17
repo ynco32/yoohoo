@@ -42,12 +42,19 @@ export default function PlaceChat({
 
   // 컴포넌트 마운트 시 스크롤 위치 복원
   useEffect(() => {
-    if (messageListRef.current && scrollPositionRef.current > 0) {
-      messageListRef.current.scrollTop = scrollPositionRef.current;
-    } else {
-      // 항상 맨 아래로 스크롤
-      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-    }
+    if (messages.length === 0) return;
+
+    const timeout = setTimeout(() => {
+      const container = messageListRef.current;
+
+      if (container && scrollPositionRef.current > 0) {
+        container.scrollTop = scrollPositionRef.current;
+      } else {
+        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      }
+    }, 50); // DOM 렌더링 이후 실행
+
+    return () => clearTimeout(timeout);
   }, [messages]);
 
   // 컴포넌트 언마운트 시 스크롤 위치 저장

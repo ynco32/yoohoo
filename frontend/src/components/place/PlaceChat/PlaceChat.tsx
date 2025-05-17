@@ -13,7 +13,14 @@ interface PlaceChatProps {
   arenaId: number;
 }
 
-export default function PlaceChat({ arenaId }: PlaceChatProps) {
+export default function PlaceChat({
+  arenaId,
+  scrollY,
+  setScrollY,
+}: PlaceChatProps & {
+  scrollY: number;
+  setScrollY: (y: number) => void;
+}) {
   // Redux에서 사용자 정보 가져오기
   const { data: userInfo } = useSelector((state: RootState) => state.user);
 
@@ -48,6 +55,21 @@ export default function PlaceChat({ arenaId }: PlaceChatProps) {
     return () => {
       if (messageListRef.current) {
         scrollPositionRef.current = messageListRef.current.scrollTop;
+      }
+    };
+  }, []);
+
+  // 탭 전환시 스크롤 위치 복원
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = scrollY;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (messageListRef.current) {
+        setScrollY(messageListRef.current.scrollTop);
       }
     };
   }, []);

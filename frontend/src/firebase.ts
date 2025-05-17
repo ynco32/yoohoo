@@ -6,11 +6,6 @@ import {
   onMessage,
   Messaging,
 } from 'firebase/messaging';
-import {
-  firebaseConfig,
-  firebaseMessagingConfig,
-  isFirebaseConfigValid,
-} from '@/firebase.config';
 
 // Firebase 앱과 메시징 인스턴스 초기 선언
 let app: FirebaseApp | null = null;
@@ -32,8 +27,33 @@ const initializeFirebase = (): {
   }
 
   try {
+    // 환경변수 직접 참조 방식으로 Firebase 설정
+    const firebaseConfig = {
+      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+      messagingSenderId:
+        process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+    };
+
+    // 디버깅용 로그
+    console.log('Firebase 직접 환경변수 설정:', firebaseConfig);
+
+    // 필수 필드 확인
+    const requiredFields = [
+      'apiKey',
+      'projectId',
+      'messagingSenderId',
+      'appId',
+    ];
+    const isFirebaseConfigValid = requiredFields.every((field) =>
+      Boolean(firebaseConfig[field as keyof typeof firebaseConfig])
+    );
+
     // 설정 유효성 검사
-    if (isFirebaseConfigValid()) {
+    if (isFirebaseConfigValid) {
       // Firebase 앱 초기화
       app = initializeApp(firebaseConfig);
       console.log('Firebase가 성공적으로 초기화되었습니다.');
@@ -96,14 +116,17 @@ export const requestFCMToken = async (): Promise<string | null> => {
       return null;
     }
 
+    // vapidKey 직접 참조
+    const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || '';
+
     // vapidKey가 존재하는지 확인
-    if (!firebaseMessagingConfig.vapidKey) {
+    if (!vapidKey) {
       console.error('Firebase vapidKey가 설정되지 않았습니다.');
       return null;
     }
 
     const currentToken = await getToken(messaging, {
-      vapidKey: firebaseMessagingConfig.vapidKey,
+      vapidKey: vapidKey,
     });
 
     if (currentToken) {
@@ -156,8 +179,7 @@ export const registerServiceWorker =
     try {
       // Firebase 설정과 관계없이 서비스 워커 등록 시도
       const swPath =
-        firebaseMessagingConfig.serviceWorkerPath ||
-        '/firebase-messaging-sw.js';
+        process.env.NEXT_PUBLIC_FIREBASE_SW_PATH || '/firebase-messaging-sw.js';
       const registration = await navigator.serviceWorker.register(swPath, {
         scope: '/',
       });

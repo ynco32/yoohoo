@@ -88,53 +88,42 @@ def create_rag_chain(vectorstore):
 당신은 콘서트 관련 정보를 제공하는 도우미인 '콘끼리봇'입니다. 
 아래 제공된 콘서트 공지사항 정보를 바탕으로 사용자의 질문에 정확하게 답변해주세요.
 말끝마다 '뿌우'를 붙여주세요. 예: "안녕하세요, 뿌우"
-아래는 콘서트 공지사항입니다.
 
 <콘서트_정보>
-콘서트명: {concert_name}
-공연장: {arena_name}
-아티스트: {artists}
-티켓팅 플랫폼: {ticketing_platform}
-</콘서트_정보>
-
-<콘서트_공지사항>
+다음 정보는 관련 콘서트에 대한 정보입니다. 이 정보도 참고하여 답변해주세요.
 {context}
-</콘서트_공지사항>
+</콘서트_정보>
 
 질문: {question}
 답변:
 """
-    def get_metadata_value(context, key, default):
-        if context and len(context) > 0 and hasattr(context[0], 'metadata'):
-            return context[0].metadata.get(key, default)
-        return default
-    
     PROMPT = PromptTemplate(
-        template=prompt_template,
-        input_variables=["context", "question"],
-        partial_variables={
-            "concert_name": lambda x: get_metadata_value(x, 'concert_name', '알 수 없는 콘서트'),
-            "arena_name": lambda x: get_metadata_value(x, 'arena_name', '알 수 없는 공연장'),
-            "artists": lambda x: get_metadata_value(x, 'artists', '알 수 없는 아티스트'),  # 아티스트 정보 유지 👈
-            "ticketing_platform": lambda x: get_metadata_value(x, 'ticketing_platform', '알 수 없음')
-        }
-    )
+            template=prompt_template,
+            input_variables=["context", "question"]
+        )
+        
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
     
-    
-    # QA 체인 생성
     chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=vectorstore.as_retriever(search_kwargs={"k": 5}),
+        retriever=retriever,
         return_source_documents=True,
-        chain_type_kwargs={"prompt": PROMPT}
+        chain_type_kwargs={
+            "prompt": PROMPT,
+            "document_prompt": PromptTemplate(
+                input_variables=["page_content"], 
+                template="{page_content}"
+            ),
+            "document_variable_name": "context",
+            "document_separator": "\n\n"
+        }
     )
     
     logger.info("RAG 체인 생성 완료!")
     return chain
 
 def query_rag_system(chain, query, concert_id=None):
-
     """RAG 시스템에 질의합니다."""
     logger.info(f"질의 처리 중: '{query}'")
     
@@ -143,73 +132,45 @@ def query_rag_system(chain, query, concert_id=None):
     if concert_id:
         search_kwargs["filter"] = {"concert_id": concert_id}
         # 검색 파라미터 업데이트
-        retriever = chain.retriever
-        retriever.search_kwargs.update(search_kwargs)
+        if hasattr(chain, 'retriever'):
+            retriever = chain.retriever
+            retriever.search_kwargs.update(search_kwargs)
     
     try:
-        # 검색 먼저 실행하여 문서 가져오기 👈
-        docs = chain.retriever.get_relevant_documents(query)
+        result = chain.invoke({"query": query})
         
-        # 문서 구조 확인 👈
-        if docs:
-            logger.info(f"검색된 문서 수: {len(docs)}")
-            logger.info(f"첫 번째 문서 타입: {type(docs[0])}")
-            logger.info(f"첫 번째 문서 내용: {docs[0].page_content[:100]}...")
-            
-            # 메타데이터 구조 확인 👈
-            if hasattr(docs[0], 'metadata'):
-                logger.info(f"첫 번째 문서 메타데이터: {docs[0].metadata}")
-                # 메타데이터 접근 테스트
-                logger.info(f"concert_name 접근 테스트: {docs[0].metadata.get('concert_name', '없음')}")
-            else:
-                logger.info("문서에 metadata 속성이 없습니다.")
+        # 결과 형식 확인 및 처리
+        if isinstance(result, dict) and "result" in result:
+            answer = result.get("result", "응답을 찾을 수 없습니다.")
+        elif isinstance(result, str):
+            answer = result
         else:
-            logger.info("검색된 문서가 없습니다.")
-
-        # 체인 실행
-        result = chain({"query": query})
-
-        answer = {
-            "answer": result["result"],
-            "concert_info": {
-                "concert_id": concert_id,
-                "concert_name": docs[0].metadata.get("concert_name") if docs and docs[0].metadata else None,
-                "arena_name": docs[0].metadata.get("arena_name") if docs and docs[0].metadata else None,
-            },
-            "source_documents": [
+            logger.warning(f"예상치 못한 결과 형식: {type(result)}")
+            answer = str(result)
+        
+        # 통일된 결과 형식
+        response = {
+            "answer": answer,
+            "source_documents": []
+        }
+        
+        # 소스 문서 추가 (있는 경우)
+        if isinstance(result, dict) and "source_documents" in result:
+            response["source_documents"] = [
                 {
                     "content": doc.page_content,
                     "metadata": doc.metadata
                 } for doc in result["source_documents"]
             ]
-        }
-
-
-    
-    # 결과 가공 - 콘서트 정보 포함
-    # answer = {
-    #     "answer": result["result"],
-    #     "concert_info": {
-    #         "concert_id": concert_id,
-    #         "concert_name": result["source_documents"][0].metadata.get("concert_name") if result["source_documents"] else None,
-    #         "arena_name": result["source_documents"][0].metadata.get("arena_name") if result["source_documents"] else None,
-    #     },
-    #     "source_documents": [
-    #         {
-    #             "content": doc.page_content,
-    #             "metadata": doc.metadata
-    #         } for doc in result["source_documents"]
-    #     ]
-    # }
-    
+        
         logger.info("질의 처리 완료")
-        return answer
+        return response
     
     except Exception as e:
         logger.error(f"질의 처리 중 오류: {str(e)}")
         # 간소화된 답변 반환
         return {
             "answer": f"죄송합니다, 질문에 답변하는 과정에서 오류가 발생했습니다. 오류: {str(e)} 뿌우",
-            "error": str(e)
+            "error": str(e),
+            "source_documents": []
         }
-    

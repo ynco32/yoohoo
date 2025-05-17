@@ -8,6 +8,7 @@ import MessageItem from '../MessageItem/MessageItem';
 import ChatInput from '@/components/common/ChatInput/ChatInput';
 import { useChatWebSocket } from '@/hooks/useChatWebSocket';
 import { Message } from '@/types/chat';
+import IconBox from '@/components/common/IconBox/IconBox';
 
 interface PlaceChatProps {
   arenaId: number;
@@ -36,6 +37,7 @@ export default function PlaceChat({
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const messageEndRef = useRef<HTMLDivElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
+  const [showScrollDown, setShowScrollDown] = useState(false);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -79,6 +81,21 @@ export default function PlaceChat({
         setScrollY(messageListRef.current.scrollTop);
       }
     };
+  }, []);
+
+  // 스크롤 상단에 있을때 버튼 표시
+  useEffect(() => {
+    const container = messageListRef.current;
+
+    const handleScroll = () => {
+      if (container) {
+        const shouldShow = container.scrollTop < container.scrollHeight - 500;
+        setShowScrollDown(shouldShow);
+      }
+    };
+
+    container?.addEventListener('scroll', handleScroll);
+    return () => container?.removeEventListener('scroll', handleScroll);
   }, []);
 
   // 스크롤 이벤트로 이전 메시지 로드
@@ -251,6 +268,17 @@ export default function PlaceChat({
           />
         </div>
       </div>
+
+      {showScrollDown && (
+        <button
+          className={styles.scrollToBottomButton}
+          onClick={() =>
+            messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+          }
+        >
+          <IconBox name='chevron-small-down' size={15} color='#666' />
+        </button>
+      )}
 
       {!isConnected && (
         <div className={styles.connectionMessage}>

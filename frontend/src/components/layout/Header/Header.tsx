@@ -112,13 +112,9 @@ const Header = () => {
             <h1 className={styles.headerTitle}>{title}</h1>
           </div>
           <div className={styles.rightSection}>
-            <button
-              onClick={handleNotificationClick}
-              className={styles.iconButton}
-              aria-label='알림'
-            >
+            <Link href='/notification' className={styles.logo}>
               <NotificationIcon className={styles.icon} />
-            </button>
+            </Link>
             <button
               onClick={handleMenuClick}
               className={styles.iconButton}

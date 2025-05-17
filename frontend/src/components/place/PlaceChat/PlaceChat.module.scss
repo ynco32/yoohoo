@@ -11,6 +11,7 @@
 .messagesWrapper {
   flex: 1;
   overflow-y: auto; /* 메시지 영역에 스크롤 적용 */
+  padding-bottom: var(--chat-bottom-padding, 10px);
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -22,7 +23,6 @@
 .messageList {
   position: relative;
   padding: 0 16px;
-  padding-bottom: var(--chat-bottom-padding, 10px);
   padding-bottom: 10px;
 }
 

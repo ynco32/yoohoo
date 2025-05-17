@@ -1,6 +1,6 @@
 // src/types/notification.ts
 
-export interface Notification {
+export interface NotificationType {
   notificationId: number;
   title: string;
   body: string;
@@ -17,7 +17,7 @@ export interface Concert {
   photoUrl: string;
 }
 
-export type NotificationType =
+export type NotificationCategory =
   | 'TICKETING_DAY'
   | 'TICKETING_SOON'
   | 'CONCERT_DAY'

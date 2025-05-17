@@ -4,6 +4,9 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '@/store';
 import { ReactNode } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '@/assets/styles/toast-custom.scss';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -14,6 +17,17 @@ export function Providers({ children }: ProvidersProps) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         {children}
+        <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </PersistGate>
     </Provider>
   );

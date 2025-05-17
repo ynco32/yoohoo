@@ -12,6 +12,7 @@ const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보�
 
 export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [chatScrollY, setChatScrollY] = useState(0);
 
   // 채팅 탭 상태
   const [chatShown, setChatShown] = useState(false);
@@ -78,7 +79,13 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
             height: '100%',
           }}
         >
-          {chatShown && <PlaceChat arenaId={arenaIdNum} />}
+          {chatShown && (
+            <PlaceChat
+              arenaId={arenaIdNum}
+              scrollY={chatScrollY}
+              setScrollY={setChatScrollY}
+            />
+          )}
         </div>
       </div>
     </div>

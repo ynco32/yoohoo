@@ -1,13 +1,5 @@
 import styles from './MessageItem.module.scss';
-
-interface Message {
-  id: number;
-  nickname: string;
-  time: string;
-  content: string;
-  isMe?: boolean;
-  replyTo?: Message;
-}
+import { Message } from '@/types/chat';
 
 interface Props {
   message: Message;

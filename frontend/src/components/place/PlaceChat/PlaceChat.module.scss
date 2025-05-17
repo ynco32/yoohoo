@@ -274,29 +274,6 @@
   }
 }
 
-// 새 메시지 알림 버튼
-.newMessageNotification {
-  position: fixed;
-  bottom: 130px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4d89ff;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-
-  svg {
-    margin-right: 6px;
-    font-size: 16px;
-  }
-}
-
 // 튕김 효과 (메시지 전송 성공 시)
 .bounceAnimation {
   animation: messageBounce 0.5s ease;
@@ -319,4 +296,15 @@
   .connectionMessage {
     max-width: 100%;
   }
+}
+
+.scrollToBottomButton {
+  position: absolute;
+  bottom: 110px;
+  right: 20px;
+  z-index: 10;
+  background: white;
+  padding: 8px;
+  padding-top: 10px;
+  border-radius: 6px;
 }

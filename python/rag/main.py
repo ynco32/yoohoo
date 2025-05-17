@@ -61,7 +61,7 @@ def main(ocr_file_path, concert_id, output_dir="./output"):
         save_json(grouped_paragraphs, grouped_output_path)
         
         # 6. 문서 분할
-        texts, metadatas = split_documents(paragraphs, concert_info)
+        texts, metadatas = split_documents(grouped_paragraphs, concert_info)
         
         # 7. 임베딩 모델 초기화
         embeddings = get_embeddings_model()

@@ -287,7 +287,7 @@ export default function PlaceChat({
           </div>
         )}
         <div className={styles.nicknameDisplay}>
-          {userInfo?.nickname || '닉네임'}
+          {userInfo?.anonym || '닉네임'}
         </div>
         <div className={styles.inputWrapper}>
           <ChatInput

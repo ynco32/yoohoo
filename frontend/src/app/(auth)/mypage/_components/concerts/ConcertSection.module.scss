@@ -26,6 +26,7 @@
   font-size: 14px;
   color: #666;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .scrollContainer {
@@ -51,10 +52,42 @@
   flex-shrink: 0;
   margin-right: 16px;
   width: 140px;
+  position: relative;
+  padding-top: 10px;
+  padding-right: 10px;
 
   &:last-child {
     margin-right: 0;
   }
+}
+
+.addConcertItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  width: 100px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.addConcertContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: transparent;
+  box-shadow: $shadow-con;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.addText {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  text-align: center;
 }
 
 .emptyState {
@@ -84,4 +117,22 @@
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 0;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }

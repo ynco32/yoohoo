@@ -1,18 +1,12 @@
 'use client';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import Button from '@/components/common/Button/Button';
-import styles from './ArtistContainer.module.scss';
-import { useArtist } from '@/hooks/useArtist';
+import styles from './MyPageArtistContainer.module.scss';
+import { useMypageArtist } from '@/hooks/useMypageArtist';
 
-export default function ArtistContainer() {
-  const {
-    artists,
-    selected,
-    loadMoreRef,
-    handleSearch,
-    handleSelect,
-    handleSubmit,
-  } = useArtist();
+export default function MyPageArtistContainer() {
+  const { artists, loadMoreRef, handleSearch, handleSelect, handleSubmit } =
+    useMypageArtist();
 
   return (
     <>
@@ -23,7 +17,7 @@ export default function ArtistContainer() {
         {artists.map((artist) => (
           <div
             key={artist.artistId}
-            className={`${styles.artistItem} ${selected.includes(artist.artistId) ? styles.selected : ''}`}
+            className={`${styles.artistItem} ${artist.isFollowing ? styles.selected : ''}`}
             onClick={() => handleSelect(artist.artistId)}
           >
             <div className={styles.artistImage}>
@@ -37,30 +31,18 @@ export default function ArtistContainer() {
                 }}
               />
             </div>
-            {selected.includes(artist.artistId) && (
-              <span className={styles.checkmark}>✔</span>
-            )}
+            {artist.isFollowing && <span className={styles.checkmark}>✔</span>}
             <div className={styles.artistName}>{artist.artistName}</div>
           </div>
         ))}
         <div ref={loadMoreRef} className={styles.loadMoreTrigger} />
-        <div />
       </div>
       <div className={styles.buttonContainer}>
-        {selected.length > 0 ? (
-          <Button
-            children={'완료'}
-            className={styles.submitBtn}
-            onClick={handleSubmit}
-          />
-        ) : (
-          <Button
-            children={'건너뛰기'}
-            variant='outline'
-            className={styles.outlineBtn}
-            onClick={handleSubmit}
-          />
-        )}
+        <Button
+          children={'완료'}
+          className={styles.submitBtn}
+          onClick={handleSubmit}
+        />
       </div>
     </>
   );

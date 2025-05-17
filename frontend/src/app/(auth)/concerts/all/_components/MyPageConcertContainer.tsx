@@ -4,44 +4,42 @@ import Button from '@/components/common/Button/Button';
 import { ConfirmModal } from '@/components/common/ConfirmModal/ConfirmModal';
 import { DateSelectionModal } from '@/components/auth/DateSelectionModal/DateSelectionModal';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
-import styles from './ConcertContainer.module.scss';
-import { useConcert } from '@/hooks/useConcert';
-import { ConcertInfo } from '@/types/mypage';
+import styles from './MyPageConcertContainer.module.scss';
+import { useMypageConcert } from '@/hooks/useMypageConcert';
 
-export default function ConcertContainer() {
+export default function MyPageConcertContainer() {
   const {
     concerts,
     selected,
     isLoading,
-    search,
     loadMoreRef,
-    selectedDatesMap,
     isDateModalOpen,
-    selectedConcertForDate,
     isClosing,
+    selectedConcertForDate,
     isConfirmModalOpen,
+    selectedDatesMap,
     handleSearchChange,
     handleConcertSelect,
     handleSeatInfoClick,
-    handleCloseModal,
     handleDateConfirm,
+    handleCloseModal,
     handleReselect,
     handleConfirmDeselect,
     handleCancelDeselect,
     handleSubmit,
-  } = useConcert();
+  } = useMypageConcert();
 
   return (
     <>
       <div className={styles.form}>
         <SearchBar
-          initialValue={search}
+          initialValue={''}
           onSearch={handleSearchChange}
           placeholder='공연, 아티스트로 검색'
         />
       </div>
       <div className={styles.concertContainer}>
-        {concerts.map((concert: ConcertInfo) => (
+        {concerts.map((concert) => (
           <ConcertCard
             key={concert.concertId}
             className={`${styles.concertCard} ${selected.includes(concert.concertId) ? styles.selected : ''}`}
@@ -55,8 +53,9 @@ export default function ConcertContainer() {
             onReselect={() => handleReselect(concert.concertId)}
           />
         ))}
-        <div ref={loadMoreRef} className={styles.loadMore} />
-        <div style={{ height: '70px' }} />
+        <div ref={loadMoreRef} className={styles.loadMore}>
+          {isLoading && <div className={styles.loader}>로딩 중...</div>}
+        </div>
       </div>
       {isDateModalOpen && (
         <DateSelectionModal
@@ -72,20 +71,11 @@ export default function ConcertContainer() {
         />
       )}
       <div className={styles.buttonContainer}>
-        {selected.length > 0 ? (
-          <Button
-            children={'완료'}
-            className={styles.submitBtn}
-            onClick={handleSubmit}
-          />
-        ) : (
-          <Button
-            children={'건너뛰기'}
-            variant='outline'
-            className={styles.outlineBtn}
-            onClick={handleSubmit}
-          />
-        )}
+        <Button
+          children={'티켓팅 알림받기'}
+          className={styles.submitBtn}
+          onClick={handleSubmit}
+        />
       </div>
       {isConfirmModalOpen && (
         <ConfirmModal

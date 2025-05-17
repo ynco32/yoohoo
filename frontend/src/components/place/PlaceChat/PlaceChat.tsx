@@ -73,18 +73,19 @@ export default function PlaceChat({
 
   // 탭 전환시 스크롤 위치 복원
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = scrollY;
-    }
-  }, []);
+    const container = messageListRef.current;
+    if (!container) return;
 
-  useEffect(() => {
-    return () => {
-      if (messageListRef.current) {
-        setScrollY(messageListRef.current.scrollTop);
-      }
+    // 복원
+    container.scrollTop = scrollY;
+
+    const handleScroll = () => {
+      setScrollY(container.scrollTop);
     };
-  }, []);
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [scrollY, setScrollY]);
 
   // 스크롤 상단에 있을때 버튼 표시
   useEffect(() => {

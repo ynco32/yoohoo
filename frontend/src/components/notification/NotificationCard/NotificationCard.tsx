@@ -1,9 +1,9 @@
 import React from 'react';
-import { Notification, NotificationType } from '@/types/notification';
+import { NotificationType, NotificationCategory } from '@/types/notification';
 import styles from './NotificationCard.module.scss';
 
 interface NotificationCardProps {
-  notification: Notification;
+  notification: NotificationType;
   onActionClick?: () => void;
 }
 

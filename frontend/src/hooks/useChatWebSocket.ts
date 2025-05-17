@@ -262,36 +262,42 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
               ) as ApiChatMessage;
               console.log('새 메시지 수신:', receivedMessage);
 
-              // API 메시지를 클라이언트 메시지로 변환
-              const clientMessage =
-                convertApiMessageToClientMessage(receivedMessage);
-
               // 중복 메시지 방지를 위한 ID 체크
               setMessages((prevMessages) => {
-                // ID로 중복 체크
-                if (
-                  prevMessages.some(
-                    (msg) =>
-                      (clientMessage.id && msg.id === clientMessage.id) || // messageId로 체크
-                      (clientMessage.tempId &&
-                        msg.tempId === clientMessage.tempId) // tempId로 체크
-                  )
-                ) {
-                  console.log('중복 메시지 감지, 무시됨:', {
-                    messageId: clientMessage.id,
-                    tempId: clientMessage.tempId,
-                  });
-                  return prevMessages;
-                }
-                console.log('새 메시지 추가됨:');
-                const updatedMessages = [...prevMessages, clientMessage];
+                // API 메시지를 클라이언트 메시지로 변환
+                const clientMessage =
+                  convertApiMessageToClientMessage(receivedMessage);
 
-                // 업데이트된 메시지를 세션 스토리지에 캐싱
+                // 메시지 배열에서 parentTempId에 해당하는 원본 찾아 채워 넣기
+                if (
+                  receivedMessage.parentTempId &&
+                  (!receivedMessage.parentContent ||
+                    !receivedMessage.parentSenderNickname)
+                ) {
+                  const original = prevMessages.find(
+                    (msg) => msg.tempId === receivedMessage.parentTempId
+                  );
+
+                  if (original && clientMessage.replyTo) {
+                    clientMessage.replyTo.content ||= original.content;
+                    clientMessage.replyTo.nickname ||= original.nickname;
+                  }
+                }
+
+                const isDuplicate = prevMessages.some(
+                  (msg) =>
+                    (clientMessage.id && msg.id === clientMessage.id) ||
+                    (clientMessage.tempId &&
+                      msg.tempId === clientMessage.tempId)
+                );
+
+                if (isDuplicate) return prevMessages;
+
+                const updatedMessages = [...prevMessages, clientMessage];
                 sessionStorage.setItem(
                   storageKey,
                   JSON.stringify(updatedMessages)
                 );
-
                 return updatedMessages;
               });
             } catch (err) {

@@ -6,7 +6,7 @@ import { store, persistor } from '@/store';
 import { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '@/assets/styles/toast-custom.scss'; // 커스텀 스타일 파일 (아직 만들지 않았다면 생성 필요)
+import '@/assets/styles/toast-custom.scss';
 
 interface ProvidersProps {
   children: ReactNode;

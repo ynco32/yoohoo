@@ -23,9 +23,19 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 };
 
+const getSafeVapidKey = (): string => {
+  const key = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || '';
+
+  // 키가 없으면 빈 문자열 반환
+  if (!key) return '';
+
+  // 키에서 불필요한 공백, 줄바꿈 제거
+  return key.trim();
+};
+
 // 푸시 알림 관련 설정도 직접 접근 방식으로 변경
 export const firebaseMessagingConfig = {
-  vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || '',
+  vapidKey: getSafeVapidKey(),
   serviceWorkerPath: '/firebase-messaging-sw.js',
 };
 

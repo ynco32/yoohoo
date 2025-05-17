@@ -35,11 +35,7 @@ export const FirebaseDebug = () => {
 
     // Firebase 메시징 설정 상태
     const messagingStatus: Record<string, any> = {
-      vapidKey: firebaseMessagingConfig.vapidKey
-        ? '***' +
-          String(firebaseMessagingConfig.vapidKey).substring(0, 3) +
-          '...'
-        : firebaseMessagingConfig.vapidKey,
+      vapidKey: firebaseMessagingConfig.vapidKey,
       vapidKeyLength: firebaseMessagingConfig.vapidKey
         ? String(firebaseMessagingConfig.vapidKey).length
         : 0,

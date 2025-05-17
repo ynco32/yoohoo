@@ -198,14 +198,14 @@ public class ChatService {
 			return ChatWebSocketMessageDTO.createMessage(
 				tempId,
 				user.getUserId(),
-				user.getNickname(),
+				user.getAnonym(),
 				request.content()
 			);
 		} else {
 			return ChatWebSocketMessageDTO.createReply(
 				tempId,
 				user.getUserId(),
-				user.getNickname(),
+				user.getAnonym(),
 				request.content(),
 				request.parentTempId(),
 				request.parentMessageId(),

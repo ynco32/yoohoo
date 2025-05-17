@@ -1,9 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNotifications } from '@/hooks/useNotification';
 import NotificationCard from '@/components/notification/NotificationCard/NotificationCard';
+import NotificationModal from '@/components/notification/NotificationModal/NotificationModal';
 import styles from './page.module.scss';
-import { Notification } from '@/types/notification';
+import { NotificationType } from '@/types/notification';
+import SettingIcon from '@/assets/icons/setting.svg';
 import Link from 'next/link';
 
 export default function NotificationPage() {
@@ -17,8 +19,15 @@ export default function NotificationPage() {
     markAllAsRead,
   } = useNotifications();
 
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 모달 열기/닫기 핸들러
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   // 알림 클릭 핸들러
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = (notification: NotificationType) => {
     // 읽지 않은 알림이면 읽음 처리
     if (!notification.isRead) {
       markAsRead(notification.notificationId.toString());
@@ -37,7 +46,7 @@ export default function NotificationPage() {
   };
 
   // 예매하러 가기 버튼 클릭 핸들러
-  const handleTicketingClick = (notification: Notification) => {
+  const handleTicketingClick = (notification: NotificationType) => {
     if (notification.concert) {
       console.log(`티켓팅 페이지로 이동: ${notification.concert.concertId}`);
       // 실제 구현에서는 라우터 사용: router.push(`/concerts/${notification.concert.concertId}/ticketing`);
@@ -46,10 +55,17 @@ export default function NotificationPage() {
 
   return (
     <div className={styles.container}>
-      <Link href='/notification/setting'> 설정페이지 가기</Link>
       <div className={styles.header}>
         <h1 className={styles.title}>알림</h1>
         <div className={styles.actions}>
+          <button
+            className={styles.settingsButton}
+            onClick={openModal}
+            aria-label='알림 설정'
+          >
+            <SettingIcon className={styles.icon} />
+          </button>
+
           {notifications.length > 0 && (
             <button
               className={styles.readAllButton}
@@ -95,6 +111,10 @@ export default function NotificationPage() {
           ))}
         </div>
       )}
+      <Link href='/notification/setting'>디버깅 페이지로 가기 </Link>
+
+      {/* 알림 설정 모달 */}
+      <NotificationModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 }

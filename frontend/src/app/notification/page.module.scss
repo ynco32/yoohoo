@@ -149,3 +149,67 @@
     }
   }
 }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-main;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.settingsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-full;
+  color: $text-main;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.readAllButton {
+  padding: 6px 12px;
+  border-radius: $border-radius-sm;
+  background-color: $con-blue;
+  color: white;
+  border: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: darken($con-blue, 10%);
+  }
+
+  &:disabled {
+    background-color: $con-gray;
+    cursor: not-allowed;
+  }
+}

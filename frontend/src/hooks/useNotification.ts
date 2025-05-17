@@ -1,25 +1,29 @@
-'use client';
-import { useState, useEffect } from 'react';
+// src/hooks/useNotification.ts
+import { useState, useCallback } from 'react';
+import { NotificationType } from '@/types/notification';
 import { notificationApi } from '@/api/notification/notification';
-import { Notification } from '@/types/notification';
 
+/**
+ * 알림 상태와 기본 CRUD 작업을 관리하는 훅
+ */
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [hasUnread, setHasUnread] = useState(false);
 
-  const fetchNotifications = async () => {
+  /**
+   * 알림 목록 가져오기
+   */
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
       const response = await notificationApi.getAllNotification();
-
-      // apiRequest가 undefined를 반환할 수 있으므로 안전하게 처리
       setNotifications(response || []);
 
       // 안 읽은 알림 확인
       const unreadResponse = await notificationApi.hasUnreadNotification();
-      setHasUnread(unreadResponse || false);
+      setHasUnread(unreadResponse === true ? true : false);
 
       setError(null);
     } catch (err) {
@@ -32,59 +36,113 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const markAsRead = async (notificationId: string) => {
-    try {
-      await notificationApi.readNotification(notificationId);
-      // 상태 업데이트 로직
-      setNotifications((prevNotifications) =>
-        prevNotifications.map((notification) =>
-          notification.notificationId.toString() === notificationId
-            ? { ...notification, isRead: true }
-            : notification
-        )
-      );
+  /**
+   * 특정 알림 읽음 처리
+   */
+  const markAsRead = useCallback(
+    async (notificationId: number | string) => {
+      try {
+        const idAsString = notificationId.toString();
 
-      // 읽지 않은 알림이 있는지 다시 확인
-      const anyUnread = notifications.some(
-        (notification) =>
-          notification.notificationId.toString() !== notificationId &&
-          !notification.isRead
-      );
-      setHasUnread(anyUnread);
-    } catch (err) {
-      console.error('알림 읽음 처리 실패:', err);
-    }
-  };
+        await notificationApi.readNotification(idAsString);
 
-  const markAllAsRead = async () => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notification) =>
+            notification.notificationId.toString() === idAsString
+              ? { ...notification, isRead: true }
+              : notification
+          )
+        );
+
+        const anyUnread = notifications.some(
+          (notification) =>
+            notification.notificationId.toString() !== idAsString &&
+            !notification.isRead
+        );
+
+        setHasUnread(anyUnread);
+      } catch (err) {
+        console.error('알림 읽음 처리 실패:', err);
+        throw err;
+      }
+    },
+    [notifications]
+  );
+
+  /**
+   * 모든 알림 읽음 처리
+   */
+  const markAllAsRead = useCallback(async () => {
     try {
       await notificationApi.readAllNotifications();
-      // 모든 알림을 읽음 상태로 업데이트
+
       setNotifications((prevNotifications) =>
         prevNotifications.map((notification) => ({
           ...notification,
           isRead: true,
         }))
       );
+
       setHasUnread(false);
     } catch (err) {
       console.error('전체 알림 읽음 처리 실패:', err);
+      throw err;
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    fetchNotifications();
+  /**
+   * 새로운 알림 추가
+   */
+  const addNotification = useCallback((notification: NotificationType) => {
+    setNotifications((prev) => [notification, ...prev]);
+    setHasUnread(true);
+  }, []);
+
+  /**
+   * 알림 권한 확인
+   */
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const checkNotificationAccess = useCallback(async () => {
+    try {
+      const hasPermission = await notificationApi.checkNotificationAccess();
+      setHasAccess(hasPermission || false);
+      return hasPermission;
+    } catch (err) {
+      console.error('알림 권한 확인 실패:', err);
+      setHasAccess(false);
+      return false;
+    }
+  }, []);
+
+  /**
+   * 알림 권한 변경
+   */
+  const changeNotificationAccess = useCallback(async () => {
+    try {
+      await notificationApi.changeNotificationAccess();
+      return true;
+    } catch (err) {
+      console.error('알림 권한 변경 실패:', err);
+      throw err;
+    }
   }, []);
 
   return {
+    // 상태
     notifications,
     loading,
     error,
     hasUnread,
+    hasAccess,
+    // 작업
     fetchNotifications,
     markAsRead,
     markAllAsRead,
+    addNotification,
+    setNotifications,
+    checkNotificationAccess,
+    changeNotificationAccess,
   };
 };

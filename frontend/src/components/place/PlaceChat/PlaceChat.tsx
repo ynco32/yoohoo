@@ -257,6 +257,16 @@ export default function PlaceChat({
             </div>
           ))}
           <div ref={messageEndRef} />
+          {showScrollDown && (
+            <button
+              className={styles.scrollToBottomButton}
+              onClick={() =>
+                messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+              }
+            >
+              <IconBox name='chevron-small-down' size={15} color='#666' />
+            </button>
+          )}
         </div>
       </div>
 
@@ -289,18 +299,6 @@ export default function PlaceChat({
           />
         </div>
       </div>
-
-      {showScrollDown && (
-        <button
-          className={styles.scrollToBottomButton}
-          onClick={() =>
-            messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-          }
-        >
-          <IconBox name='chevron-small-down' size={15} color='#666' />
-        </button>
-      )}
-
       {!isConnected && (
         <div className={styles.connectionMessage}>
           채팅 서버에 연결 중입니다...

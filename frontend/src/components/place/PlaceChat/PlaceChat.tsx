@@ -299,7 +299,6 @@ export default function PlaceChat({
             buttonText='보내기'
             isReplying={!!replyingTo}
           />
-          ;
         </div>
       </div>
       {!isConnected && (

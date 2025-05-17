@@ -40,3 +40,27 @@ export const apiRequest = async <T>(
     }
   }
 };
+
+export const serverApiRequest = async <T>(
+  method: HttpMethod,
+  url: string,
+  data?: any,
+  params?: any
+): Promise<T | undefined> => {
+  try {
+    const response = await serverApiClient.request<ApiResponse<T>>({
+      method,
+      url,
+      data,
+      params,
+    });
+    return response.data.data;
+  } catch (error: any) {
+    const errorResponse = error.response?.data as ApiResponse<null>;
+    if (errorResponse?.error) {
+      throw {
+        ...errorResponse.error,
+      };
+    }
+  }
+};

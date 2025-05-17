@@ -35,7 +35,6 @@
   background: transparent;
   z-index: 100;
   transform: translateX(-50%);
-  left: 50%;
 }
 
 .submitBtn {
@@ -45,21 +44,6 @@
   font-size: 16px;
   font-weight: 700;
   border: none;
-  border-radius: 12px;
-  padding: 14px 0;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &.notSelected {
-    background: $con-lightblue;
-    color: #fff;
-  }
-}
-
-.outlineBtn {
-  width: 100%;
-  font-size: 16px;
-  font-weight: 700;
   border-radius: 12px;
   padding: 14px 0;
   cursor: pointer;

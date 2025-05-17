@@ -16,4 +16,7 @@ export interface UserInfo {
 
   /** 프로필 이미지 번호 (선택적) */
   profileNumber?: number;
+
+  /** 랜덤 닉네임 */
+  anonym: string;
 }

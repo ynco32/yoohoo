@@ -25,6 +25,7 @@ const createTestStore = (userId: number | null = null) => {
       nickname: '테스트 사용자',
       email: 'test@example.com',
       userName: '홍길동',
+      anonym: '테스트닉네임',
     };
 
     store.dispatch(setUser(mockUser));

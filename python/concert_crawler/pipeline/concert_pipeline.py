@@ -21,9 +21,9 @@ class ConcertPipeline:
             detail_info = crawler.get_concert_detail(concert['show_id'], concert)
 
             # OCR과 웹페이지 본문 합침침
-            combined_text = ""  # 
-            if 'content_text' in detail_info and detail_info['content_text']:
-                combined_text += "【웹페이지 본문】\n" + detail_info['content_text'] + "\n\n"
+            # combined_text = ""  # 
+            # if 'content_text' in detail_info and detail_info['content_text']:
+            #     combined_text += "【웹페이지 본문】\n" + detail_info['content_text'] + "\n\n"
             
             
             # 2. 이미지 처리 (공통 로직)
@@ -33,6 +33,8 @@ class ConcertPipeline:
                     original_image_url, 
                     concert['show_id']
                 )
+                print(f"DEBUG: OCR 처리 후 반환된 텍스트 길이 = {len(ocr_text) if ocr_text else 0}")
+
                 print(f"🤚🤚 S3 URL: {s3_url}")
                 print(f"🤚🤚 OCR Text: {ocr_text}")
                 
@@ -43,6 +45,7 @@ class ConcertPipeline:
                     detail_info.update(extracted_info)
                     
                 detail_info['ocr_text'] = ocr_text
+                print(f"DEBUG: detail_info에 저장된 OCR 텍스트 길이 = {len(detail_info['ocr_text']) if detail_info['ocr_text'] else 0}")
                 detail_info['s3_url'] = s3_url
             
             # 4. 기본 정보에 상세 정보 병합

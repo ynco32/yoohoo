@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNotifications } from '@/hooks/useNotification';
 import NotificationCard from '@/components/notification/NotificationCard/NotificationCard';
 import NotificationModal from '@/components/notification/NotificationModal/NotificationModal';
@@ -21,6 +21,11 @@ export default function NotificationPage() {
 
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 컴포넌트 마운트 시 알림 목록 가져오기
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   // 모달 열기/닫기 핸들러
   const openModal = () => setIsModalOpen(true);

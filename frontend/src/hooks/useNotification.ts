@@ -21,9 +21,9 @@ export const useNotifications = () => {
       const response = await notificationApi.getAllNotification();
       setNotifications(response || []);
 
-      // 안 읽은 알림 확인
+      // 안 읽은 알림이 있는지 API 호출로 확인
       const unreadResponse = await notificationApi.hasUnreadNotification();
-      setHasUnread(unreadResponse === true ? true : false);
+      setHasUnread(unreadResponse || false);
 
       setError(null);
     } catch (err) {
@@ -41,35 +41,28 @@ export const useNotifications = () => {
   /**
    * 특정 알림 읽음 처리
    */
-  const markAsRead = useCallback(
-    async (notificationId: number | string) => {
-      try {
-        const idAsString = notificationId.toString();
+  const markAsRead = useCallback(async (notificationId: number | string) => {
+    try {
+      const idAsString = notificationId.toString();
 
-        await notificationApi.readNotification(idAsString);
+      await notificationApi.readNotification(idAsString);
 
-        setNotifications((prevNotifications) =>
-          prevNotifications.map((notification) =>
-            notification.notificationId.toString() === idAsString
-              ? { ...notification, isRead: true }
-              : notification
-          )
-        );
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification.notificationId.toString() === idAsString
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
 
-        const anyUnread = notifications.some(
-          (notification) =>
-            notification.notificationId.toString() !== idAsString &&
-            !notification.isRead
-        );
-
-        setHasUnread(anyUnread);
-      } catch (err) {
-        console.error('알림 읽음 처리 실패:', err);
-        throw err;
-      }
-    },
-    [notifications]
-  );
+      // 읽음 처리 후 안 읽은 알림이 있는지 확인
+      const unreadResponse = await notificationApi.hasUnreadNotification();
+      setHasUnread(unreadResponse || false);
+    } catch (err) {
+      console.error('알림 읽음 처리 실패:', err);
+      throw err;
+    }
+  }, []);
 
   /**
    * 모든 알림 읽음 처리

@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import styles from './PlaceChat.module.scss';
 import MessageItem from '../MessageItem/MessageItem';
-import ChatInput from '@/components/common/ChatInput/ChatInput';
+import ChatInput, {
+  ChatInputHandle,
+} from '@/components/common/ChatInput/ChatInput';
 import { useChatWebSocket } from '@/hooks/useChatWebSocket';
 import { Message } from '@/types/chat';
 import IconBox from '@/components/common/IconBox/IconBox';
@@ -38,6 +40,9 @@ export default function PlaceChat({
   const messageEndRef = useRef<HTMLDivElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const chatInputRef = useRef<ChatInputHandle>(null);
+  const [inputHeight, setInputHeight] = useState(60);
+  const replyRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -70,18 +75,19 @@ export default function PlaceChat({
 
   // 탭 전환시 스크롤 위치 복원
   useEffect(() => {
-    if (messageListRef.current) {
-      messageListRef.current.scrollTop = scrollY;
-    }
-  }, []);
+    const container = messageListRef.current;
+    if (!container) return;
 
-  useEffect(() => {
-    return () => {
-      if (messageListRef.current) {
-        setScrollY(messageListRef.current.scrollTop);
-      }
+    // 복원
+    container.scrollTop = scrollY;
+
+    const handleScroll = () => {
+      setScrollY(container.scrollTop);
     };
-  }, []);
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [scrollY, setScrollY]);
 
   // 스크롤 상단에 있을때 버튼 표시
   useEffect(() => {
@@ -97,6 +103,20 @@ export default function PlaceChat({
     container?.addEventListener('scroll', handleScroll);
     return () => container?.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 동적 패딩 추가
+  useEffect(() => {
+    const replyHeight = replyRef.current?.offsetHeight || 0;
+    const bottomPadding = inputHeight + replyHeight + 20;
+
+    const container = messageListRef.current;
+    if (container) {
+      container.style.setProperty(
+        '--chat-bottom-padding',
+        `${bottomPadding}px`
+      );
+    }
+  }, [inputHeight, replyingTo]);
 
   // 스크롤 이벤트로 이전 메시지 로드
   useEffect(() => {
@@ -159,11 +179,7 @@ export default function PlaceChat({
   // 답글 처리
   const handleReply = (message: Message) => {
     setReplyingTo(message);
-    // 입력창으로 포커스 이동
-    const inputElement = document.querySelector('input') as HTMLInputElement;
-    if (inputElement) {
-      inputElement.focus();
-    }
+    chatInputRef.current?.focusInput(); // 🔹 포커싱
   };
 
   // 메시지로 스크롤 이동
@@ -257,6 +273,16 @@ export default function PlaceChat({
             </div>
           ))}
           <div ref={messageEndRef} />
+          {showScrollDown && (
+            <button
+              className={styles.scrollToBottomButton}
+              onClick={() =>
+                messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+              }
+            >
+              <IconBox name='chevron-small-down' size={15} color='#666' />
+            </button>
+          )}
         </div>
       </div>
 
@@ -277,30 +303,21 @@ export default function PlaceChat({
           </div>
         )}
         <div className={styles.nicknameDisplay}>
-          {userInfo?.nickname || '닉네임'}
+          {userInfo?.anonym || '닉네임'}
         </div>
         <div className={styles.inputWrapper}>
           <ChatInput
+            ref={chatInputRef}
             onSend={handleSend}
             placeholder={
               replyingTo ? '답글 작성하기' : '궁금한 내용을 물어볼 수 있어요!'
             }
             buttonText='보내기'
+            isReplying={!!replyingTo}
+            onHeightChange={(h) => setInputHeight(h)}
           />
         </div>
       </div>
-
-      {showScrollDown && (
-        <button
-          className={styles.scrollToBottomButton}
-          onClick={() =>
-            messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-          }
-        >
-          <IconBox name='chevron-small-down' size={15} color='#666' />
-        </button>
-      )}
-
       {!isConnected && (
         <div className={styles.connectionMessage}>
           채팅 서버에 연결 중입니다...

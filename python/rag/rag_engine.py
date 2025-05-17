@@ -29,12 +29,17 @@ def split_documents(paragraphs, concert_info):
     # 각 문단을 처리
     for i, paragraph in enumerate(paragraphs):
         text = paragraph["text"]
+
+        para_metadata = paragraph["metadata"]  # 그룹화된 문단에는 항상 metadata가 있음
+
         metadata = {
             "concert_id": concert_info["concert_id"],
             "paragraph_id": i,
-            "top_y": paragraph["top_y"],
-            "bottom_y": paragraph["bottom_y"]
+            "top_y": para_metadata.get("top_y"),
+            "bottom_y": para_metadata.get("bottom_y"),
+            "category": para_metadata.get("category", "일반 정보")
         }
+
         
         # 콘서트 정보 메타데이터 추가 
         metadata["concert_name"] = concert_info["concert_name"]

@@ -47,11 +47,12 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
       // 부모 메시지가 있는지 확인
       let replyTo: Message | undefined = undefined;
-      if (apiMessage.parentMessageId) {
+      if (apiMessage.parentMessageId || apiMessage.parentTempId) {
         replyTo = {
-          id: apiMessage.parentMessageId,
+          id: apiMessage.parentMessageId || 0, // parentMessageId가 없으면 0
+          tempId: apiMessage.parentTempId || '', // parentTempId가 없으면 빈 문자열
           nickname: apiMessage.parentSenderNickname || '',
-          time: '', // 부모 메시지 시간은 API에서 제공되지 않음
+          time: '',
           content: apiMessage.parentContent || '',
         };
       }
@@ -61,6 +62,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
       return {
         id: apiMessage.messageId,
+        tempId: apiMessage.tempId,
         nickname: apiMessage.senderNickname,
         time: formattedTime,
         createdAt: apiMessage.createdAt,
@@ -144,8 +146,13 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
           // 중복 제거 후 메시지 목록 앞에 추가
           setMessages((prevMessages) => {
             const existingIds = new Set(prevMessages.map((msg) => msg.id));
+            const existingTempIds = new Set(
+              prevMessages.map((msg) => msg.tempId)
+            );
+
             const newMessages = clientMessages.filter(
-              (msg) => !existingIds.has(msg.id)
+              (msg) =>
+                !existingIds.has(msg.id) && !existingTempIds.has(msg.tempId)
             );
             const updatedMessages = [...newMessages, ...prevMessages];
 
@@ -259,10 +266,18 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
               // 중복 메시지 방지를 위한 ID 체크
               setMessages((prevMessages) => {
                 // ID로 중복 체크
-                if (prevMessages.some((msg) => msg.id === clientMessage.id)) {
+                if (
+                  prevMessages.some(
+                    (msg) =>
+                      (clientMessage.id && msg.id === clientMessage.id) || // messageId로 체크
+                      (clientMessage.tempId &&
+                        msg.tempId === clientMessage.tempId) // tempId로 체크
+                  )
+                ) {
+                  console.log('중복 메시지 감지, 무시됨:');
                   return prevMessages;
                 }
-
+                console.log('새 메시지 추가됨:');
                 const updatedMessages = [...prevMessages, clientMessage];
 
                 // 업데이트된 메시지를 세션 스토리지에 캐싱
@@ -341,8 +356,8 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
         // 전송할 메시지 데이터
         const messageRequest: SendMessageRequest = {
           content: content.trim(),
-          parentMessageId: replyToMessage?.id,
           parentTempId: replyToMessage?.tempId,
+          parentMessageId: replyToMessage?.id,
         };
 
         console.log('메시지 전송:', messageRequest);

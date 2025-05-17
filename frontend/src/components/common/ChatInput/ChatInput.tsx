@@ -50,12 +50,13 @@ const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      const isMobile =
+        typeof window !== 'undefined' &&
+        /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
       if (e.key === 'Enter') {
-        if (e.shiftKey) {
-          // 시프트 엔터는 줄바꿈 (기본 동작 유지)
-          return;
-        } else {
-          // 엔터만 누르면 메시지 전송
+        if (isMobile) return; // 모바일은 줄바꿈
+        if (!e.shiftKey) {
           e.preventDefault();
           handleSend();
         }

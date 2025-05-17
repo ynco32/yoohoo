@@ -36,7 +36,8 @@ public record ChatMessageDetailDTO(
 				}
 
 				if (parentSenderNickname == null && parent.getUser() != null) {
-					parentSenderNickname = parent.getUser().getNickname();
+					// 부모 익명 닉네임 사용
+					parentSenderNickname = parent.getUser().getAnonym();
 				}
 			} catch (Exception e) {
 				// 지연 로딩 오류 등 무시
@@ -47,7 +48,7 @@ public record ChatMessageDetailDTO(
 			message.getMessageId(),
 			message.getTempId(),
 			message.getUser().getUserId(),
-			message.getUser().getNickname(),
+			message.getUser().getAnonym(), // 익명 닉네임 사용
 			message.getContent(),
 			parentId,
 			parentTempId,

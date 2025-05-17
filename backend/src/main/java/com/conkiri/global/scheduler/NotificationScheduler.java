@@ -3,9 +3,9 @@ package com.conkiri.global.scheduler;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -137,24 +137,26 @@ public class NotificationScheduler {
 			.distinct()
 			.toList();
 
+		log.info("콘서트 관련 아티스트 수: {}", artists.size());
 		List<MyArtist> myArtists = myArtistRepository.findByArtistInWithUser(artists);
-		Map<Long, List<User>> artistFollowersMap = myArtists.stream()
-			.collect(Collectors.groupingBy(
-				ma -> ma.getArtist().getArtistId(),
-				Collectors.mapping(MyArtist::getUser, Collectors.toList())
-			));
+		Set<User> uniqueUsers = new HashSet<>();
+		for (MyArtist myArtist : myArtists) {
+			uniqueUsers.add(myArtist.getUser());
+		}
 
-		for (Cast cast : casts) {
-			List<User> followers = artistFollowersMap.getOrDefault(
-				cast.getArtist().getArtistId(),
-				List.of()
-			);
+		log.info("알림 발송 대상 사용자 수: {}", uniqueUsers.size());
 
-			for (User follower : followers) {
-				if (!isNotificationAlreadySent(follower, concert, NotificationType.CONCERT_OPEN)) {
-					notificationSendService.sendTicketingNotification(
-						follower, concert, NotificationType.CONCERT_OPEN);
-				}
+		// 4. 각 사용자에게 한 번만 알림 발송
+		for (User user : uniqueUsers) {
+			// 알림이 이미 발송되었는지 확인
+			if (!notificationRepository.existsByUserAndConcertAndNotificationType(
+				user, concert, NotificationType.CONCERT_OPEN)) {
+
+				log.info("알림 발송: userId={}, concertId={}", user.getUserId(), concert.getConcertId());
+				notificationSendService.sendTicketingNotification(
+					user, concert, NotificationType.CONCERT_OPEN);
+			} else {
+				log.info("이미 알림 발송됨: userId={}, concertId={}", user.getUserId(), concert.getConcertId());
 			}
 		}
 	}

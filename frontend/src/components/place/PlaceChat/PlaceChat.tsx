@@ -61,6 +61,32 @@ export default function PlaceChat({
     return () => clearTimeout(timeout);
   }, [messages]);
 
+  // 새 메시지 수신 시 스크롤 방지
+  const isNearBottom = () => {
+    const container = messageListRef.current;
+    if (!container) return false;
+    return (
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      150
+    );
+  };
+
+  useEffect(() => {
+    if (messages.length === 0 || !didInitialScrollRef.current) return;
+
+    const container = messageListRef.current;
+    if (!container) return;
+
+    // 새 메시지 맨 아래 자동 스크롤은 아래에 있을 때만
+    if (isNearBottom()) {
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      setShowScrollDown(true); // 새 메시지 알림 버튼 보이게
+    }
+  }, [messages]);
+
   // 컴포넌트 언마운트 시 스크롤 위치 저장
   useEffect(() => {
     return () => {
@@ -275,16 +301,6 @@ export default function PlaceChat({
             </div>
           ))}
           <div ref={messageEndRef} />
-          {showScrollDown && (
-            <button
-              className={styles.scrollToBottomButton}
-              onClick={() =>
-                messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-              }
-            >
-              <IconBox name='chevron-small-down' size={15} color='#666' />
-            </button>
-          )}
         </div>
       </div>
 

@@ -22,6 +22,10 @@ import com.conkiri.domain.base.dto.response.ConcertCastResponseDTO;
 import com.conkiri.domain.base.dto.response.ConcertDetailResponseDTO;
 import com.conkiri.domain.base.dto.response.ConcertResponseDTO;
 import com.conkiri.domain.base.dto.response.ConcertSessionDTO;
+import com.conkiri.domain.base.entity.Concert;
+import com.conkiri.domain.base.entity.QArtist;
+import com.conkiri.domain.base.entity.QCast;
+import com.conkiri.domain.base.entity.QConcert;
 import com.conkiri.domain.user.entity.User;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -376,4 +380,21 @@ public class ConcertRepositoryCustomImpl implements ConcertRepositoryCustom {
 	}
 
 	private record ConcertBasicInfo(String name, String photoUrl, String arenaName) {}
+
+	@Override
+	public List<Concert> findConcertsByArtist(String artistName) {
+		QConcert concert = QConcert.concert;
+		QCast cast = QCast.cast;
+		QArtist artist = QArtist.artist;
+
+		return queryFactory
+			.selectFrom(concert)
+			.leftJoin(concert.arena).fetchJoin()
+			.innerJoin(cast).on(cast.concert.eq(concert))
+			.innerJoin(artist).on(cast.artist.eq(artist))
+			.where(artist.artistName.containsIgnoreCase(artistName)
+				.or(artist.artistEngName.containsIgnoreCase(artistName)))
+			.distinct()
+			.fetch();
+	}
 }

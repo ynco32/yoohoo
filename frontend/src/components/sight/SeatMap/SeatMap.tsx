@@ -1,28 +1,38 @@
-// 수정된 부분
+// src/components/sight/SeatMap/SeatMap.tsx
+'use client';
+
 import React, { useRef, useState } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
 import { useDispatch, useSelector } from '@/store';
 import { addSeat, removeSeat } from '@/store/slices/seatSelectionSlice';
+import { SeatRow, SectionSeatsApi } from '@/types/arena';
 
 interface SeatMapProps {
   arenaId: string;
   sectionId: string;
   maxWidth?: number;
+  initialSeatData?: SectionSeatsApi;
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
   arenaId,
   sectionId,
   maxWidth = 800,
+  initialSeatData,
 }) => {
   const dispatch = useDispatch();
   const selectedSeats = useSelector(
     (state) => state.seatSelection.selectedSeats
   );
 
-  const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
+  const { seatData, isLoading, error } = useSeatMap(
+    arenaId,
+    sectionId,
+    initialSeatData
+  );
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(true);
 
@@ -53,7 +63,7 @@ const SeatMap: React.FC<SeatMapProps> = ({
   };
 
   // 빈 행 여부 확인 함수
-  const isEmptyRow = (row: any) => row.row === '';
+  const isEmptyRow = (row: SeatRow) => row.row === '';
 
   if (isLoading) {
     return <div className={styles.container}>로딩 중...</div>;

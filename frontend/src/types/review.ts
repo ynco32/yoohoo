@@ -62,7 +62,7 @@ export interface ReviewData {
   concertTitle: string;
   seatId: number;
   section: string;
-  rowLine: string; // string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
@@ -93,9 +93,8 @@ export interface ReviewCardProps {
 // 리뷰 생성 요청 데이터 타입
 export interface ReviewRequest {
   concertId: number;
-  seatId: number;
   section: string;
-  rowLine: string; // string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;

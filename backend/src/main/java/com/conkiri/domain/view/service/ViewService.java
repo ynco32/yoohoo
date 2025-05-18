@@ -14,6 +14,7 @@ import com.conkiri.domain.base.repository.ArenaRepository;
 import com.conkiri.domain.base.repository.ConcertRepository;
 import com.conkiri.domain.user.entity.User;
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
+import com.conkiri.domain.view.dto.response.ConcertDTO;
 import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
@@ -110,6 +111,15 @@ public class ViewService {
 		List<Review> reviews = reviewRepository.findAllByArenaIdAndSection(arenaId, section);
 
 		return getReviews(reviews);
+	}
+
+	// 가수로 콘서트 검색
+	public List<ConcertDTO> getConcerts(String searchWord) {
+		List<Concert> concerts = concertRepository.findConcertsByArtist(searchWord);
+
+		return concerts.stream()
+			.map(ConcertDTO::from)
+			.toList();
 	}
 
 	// ========== 이하 공통 메서드 ==========

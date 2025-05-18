@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.conkiri.domain.view.dto.request.ReviewRequestDTO;
+import com.conkiri.domain.view.dto.response.ConcertDTO;
 import com.conkiri.domain.view.dto.response.ReviewDetailResponseDTO;
 import com.conkiri.domain.view.dto.response.ReviewResponseDTO;
 import com.conkiri.domain.view.dto.response.SectionResponseDTO;
@@ -85,5 +87,13 @@ public class ViewController {
 		@PathVariable("section") String section) {
 
 		return ApiResponse.success(viewService.getReviewsOfSection(arenaId, section));
+	}
+
+	// 가수로 콘서트 검색
+	@GetMapping("/concerts")
+	public ApiResponse<List<ConcertDTO>> getConcerts(
+		@RequestParam(value = "searchWord") String searchWord) {
+
+		return ApiResponse.success(viewService.getConcerts(searchWord));
 	}
 }

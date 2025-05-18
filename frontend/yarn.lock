@@ -8580,6 +8580,7 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-redux: "npm:^9.2.0"
     react-toastify: "npm:^11.0.5"
+    react-zoom-pan-pinch: "npm:^3.7.0"
     redux-logger: "npm:^3.0.6"
     redux-persist: "npm:^6.0.0"
     sass: "npm:^1.87.0"
@@ -11509,6 +11510,16 @@ __metadata:
     react: ^18 || ^19
     react-dom: ^18 || ^19
   checksum: 10c0/50f5b81323ebb1957b2efd0963fac24aa1407155d16ab756ffd6d0f42f8af17e796b3958a9fce13e9d1b945d6c3a5a9ebf13529478474d8a2af4bf1dd0db67d2
+  languageName: node
+  linkType: hard
+
+"react-zoom-pan-pinch@npm:^3.7.0":
+  version: 3.7.0
+  resolution: "react-zoom-pan-pinch@npm:3.7.0"
+  peerDependencies:
+    react: "*"
+    react-dom: "*"
+  checksum: 10c0/96889849800a953128fe7f9e42bed0d5cbc48d03024995b136f5e972146236688efb24d7381d8e6f09598f5512b4897d2420f62d828a665fdf24b745b7d55911
   languageName: node
   linkType: hard
 

@@ -9,6 +9,7 @@ import HandballSvg from '@/assets/svgs/handball.svg';
 import JamsilSvg from '@/assets/svgs/jamsil.svg';
 import { useRouter } from 'next/navigation';
 import { ArenaInfo } from '@/types/arena'; // 기존 타입 임포트
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 interface SectionMapProps {
   arenaId: string;
@@ -17,6 +18,7 @@ interface SectionMapProps {
 
 export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
   const router = useRouter();
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const handleSectionClick = (sectionId: string) => {
     const routingUrl = arenaId + sectionId;
@@ -92,8 +94,48 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
 
   return (
     <div className={styles.sectionMap}>
-      {/* 구역표 표시 로직 */}
-      <div className={styles.svgContainer}>{renderArenaMap()}</div>
+      {/* 구역표 표시 로직 - 핀치 줌 기능 추가 */}
+      <div className={styles.svgContainer}>
+        <TransformWrapper
+          initialScale={1}
+          minScale={1}
+          maxScale={3}
+          centerOnInit={true}
+          limitToBounds={false}
+          wheel={{ step: 0.1 }}
+          doubleClick={{ disabled: false, mode: 'toggle' }}
+          panning={{ disabled: false, velocityDisabled: false }}
+          onZoom={({ state }) => {
+            // 확대/축소 상태 업데이트
+            setIsZoomed(state.scale !== 1);
+          }}
+        >
+          {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+              <TransformComponent
+                wrapperClass={styles.transformWrapper}
+                contentClass={styles.transformContent}
+              >
+                {renderArenaMap()}
+              </TransformComponent>
+
+              {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
+              {isZoomed && (
+                <div className={styles.zoomControls}>
+                  <button
+                    className={styles.resetZoomButton}
+                    onClick={() => resetTransform()}
+                  >
+                    <span className={styles.resetZoomIcon}>⟲</span>
+                    <span>초기화</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </TransformWrapper>
+      </div>
+
       <div className={styles.card}>
         {arenaInfo ? (
           <>

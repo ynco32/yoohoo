@@ -22,7 +22,7 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
-  access-token-expiration: 32400000  # 9시간
+  access-token-expiration:  2592000000  # 9시간
   refresh-token-expiration: 1209600000  # 14일
 
 frontend:

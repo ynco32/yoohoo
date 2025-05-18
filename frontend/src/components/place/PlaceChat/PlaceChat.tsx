@@ -43,25 +43,53 @@ export default function PlaceChat({
   const chatInputRef = useRef<ChatInputHandle>(null);
   const [inputHeight, setInputHeight] = useState(60);
   const replyRef = useRef<HTMLDivElement>(null);
+  const newMessageRef = useRef<number | string | undefined>(null);
+  const inputAreaRef = useRef<HTMLDivElement>(null);
+  const [bottomOffset, setBottomOffset] = useState(120);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
 
-  // 컴포넌트 마운트 시 스크롤 위치 복원
+  // 최초 렌더일 때만 맨 아래로 이동
+  const didInitialScrollRef = useRef(false);
+
   useEffect(() => {
-    if (messages.length === 0) return;
+    if (messages.length === 0 || didInitialScrollRef.current) return;
 
     const timeout = setTimeout(() => {
-      const container = messageListRef.current;
-
-      if (container && scrollPositionRef.current > 0) {
-        container.scrollTop = scrollPositionRef.current;
-      } else {
-        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      }
-    }, 50); // DOM 렌더링 이후 실행
+      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      didInitialScrollRef.current = true;
+    }, 50);
 
     return () => clearTimeout(timeout);
+  }, [messages]);
+
+  // 메시지 수신 시 마지막 메시지 저장
+  useEffect(() => {
+    if (messages.length === 0 || !didInitialScrollRef.current) return;
+
+    const container = messageListRef.current;
+    if (!container) return;
+
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      150;
+
+    // 새 메시지 맨 아래 자동 스크롤은 아래에 있을 때만
+    if (isNearBottom) {
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      // 수동 스크롤 유도 (사용자는 위쪽을 보고 있음)
+      setShowScrollDown(true);
+
+      // 마지막 메시지를 따로 저장
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage) {
+        newMessageRef.current = lastMessage.id || lastMessage.tempId;
+      }
+    }
   }, [messages]);
 
   // 컴포넌트 언마운트 시 스크롤 위치 저장
@@ -78,31 +106,77 @@ export default function PlaceChat({
     const container = messageListRef.current;
     if (!container) return;
 
-    // 복원
-    container.scrollTop = scrollY;
+    // 렌더링 이후에 scrollTop 복원
+    const timeout = setTimeout(() => {
+      container.scrollTop = scrollY;
+    }, 50);
 
     const handleScroll = () => {
       setScrollY(container.scrollTop);
     };
 
     container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeout);
+    };
   }, [scrollY, setScrollY]);
 
   // 스크롤 상단에 있을때 버튼 표시
   useEffect(() => {
     const container = messageListRef.current;
+    if (!container) return;
 
     const handleScroll = () => {
-      if (container) {
-        const shouldShow = container.scrollTop < container.scrollHeight - 500;
-        setShowScrollDown(shouldShow);
-      }
+      const isFarFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight >
+        150;
+
+      setShowScrollDown(isFarFromBottom); // 스크롤 위치에 따라 버튼 표시
     };
 
-    container?.addEventListener('scroll', handleScroll);
-    return () => container?.removeEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
+  // 인풋창 높이 계산
+  useEffect(() => {
+    const inputArea = inputAreaRef.current;
+    const replyBox = replyRef.current;
+
+    if (!inputArea) return;
+
+    const replyHeight = replyBox?.offsetHeight || 0;
+    const inputBoxHeight = inputArea.offsetHeight;
+
+    const totalBottomPadding = inputBoxHeight + 10;
+
+    const container = messageListRef.current;
+    if (container) {
+      container.style.setProperty(
+        '--chat-bottom-padding',
+        `${totalBottomPadding}px`
+      );
+    }
+
+    setBottomOffset(totalBottomPadding); // ✅ 버튼 위치 업데이트
+  }, [inputHeight, replyingTo]);
+
+  // 하단 이동 버튼 클릭 핸들러
+  const handleScrollToNewMessage = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    if (newMessageRef.current) {
+      // 딜레이 줘야 스크롤 완료 후 실행됨
+      setTimeout(() => {
+        scrollToMessage(newMessageRef.current!);
+        newMessageRef.current = null; // 이동 후 초기화
+      }, 300);
+    }
+  };
 
   // 동적 패딩 추가
   useEffect(() => {
@@ -273,16 +347,6 @@ export default function PlaceChat({
             </div>
           ))}
           <div ref={messageEndRef} />
-          {showScrollDown && (
-            <button
-              className={styles.scrollToBottomButton}
-              onClick={() =>
-                messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-              }
-            >
-              <IconBox name='chevron-small-down' size={15} color='#666' />
-            </button>
-          )}
         </div>
       </div>
 
@@ -317,6 +381,15 @@ export default function PlaceChat({
             onHeightChange={(h) => setInputHeight(h)}
           />
         </div>
+        {showScrollDown && (
+          <button
+            className={styles.scrollToBottomButton}
+            style={{ bottom: `${bottomOffset}px` }}
+            onClick={handleScrollToNewMessage}
+          >
+            <IconBox name='chevron-small-down' size={15} color='#666' />
+          </button>
+        )}
       </div>
       {!isConnected && (
         <div className={styles.connectionMessage}>

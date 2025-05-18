@@ -39,27 +39,30 @@ const SeatMap: React.FC<SeatMapProps> = ({
   // 좌석 선택 처리 함수
   const handleSeatClick = (row: string, seat: number, seatId: number) => {
     const isAlreadySelected = selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seat
-    );
-
-    console.log(
-      `좌석 클릭: ${row}행 ${seat}번 (ID: ${seatId}) - 이미 선택됨: ${isAlreadySelected}`
+      (selected) =>
+        selected.arenaId === arenaId &&
+        selected.sectionId === sectionId &&
+        selected.row === row &&
+        selected.seat === seat
     );
 
     if (isAlreadySelected) {
-      dispatch(removeSeat({ row, seat }));
-      console.log(`좌석 선택 해제: ${row}행 ${seat}번`);
+      dispatch(removeSeat({ arenaId, sectionId, row, seat }));
     } else {
-      dispatch(addSeat({ row, seat, seatId }));
-      console.log(`좌석 선택 추가: ${row}행 ${seat}번 (ID: ${seatId})`);
+      dispatch(addSeat({ arenaId, sectionId, row, seat, seatId }));
     }
   };
 
   // 좌석이 선택되었는지 확인하는 함수
   const isSeatSelected = (row: string, seatNumber: number) => {
-    return selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seatNumber
+    const result = selectedSeats.some(
+      (selected) =>
+        selected.arenaId === arenaId &&
+        selected.sectionId === sectionId &&
+        selected.row === row &&
+        selected.seat === seatNumber
     );
+    return result;
   };
 
   // 빈 행 여부 확인 함수

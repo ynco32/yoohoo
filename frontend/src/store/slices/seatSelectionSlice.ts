@@ -1,9 +1,11 @@
-// src/store/seatSelectionSlice.ts
+// src/store/slices/seatSelectionSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Seat } from '@/types/arena';
 
 // 선택된 좌석 정보
 export interface SelectedSeat {
+  arenaId: string;
+  sectionId: string;
   row: string;
   seat: number;
   seatId: number;
@@ -26,12 +28,20 @@ export const seatSelectionSlice = createSlice({
     },
     removeSeat: (
       state,
-      action: PayloadAction<{ row: string; seat: number }>
+      action: PayloadAction<{
+        arenaId: string;
+        sectionId: string;
+        row: string;
+        seat: number;
+      }>
     ) => {
       state.selectedSeats = state.selectedSeats.filter(
         (seat) =>
           !(
-            seat.row === action.payload.row && seat.seat === action.payload.seat
+            seat.arenaId === action.payload.arenaId &&
+            seat.sectionId === action.payload.sectionId &&
+            seat.row === action.payload.row &&
+            seat.seat === action.payload.seat
           )
       );
     },

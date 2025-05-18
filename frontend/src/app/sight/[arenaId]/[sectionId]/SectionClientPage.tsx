@@ -46,6 +46,8 @@ export default function ClientSectionPage({
           for (const seat of row.activeSeats) {
             if (seat.seat !== 0) {
               allSeats.push({
+                arenaId: arenaId,
+                sectionId: sectionId,
                 row: row.row,
                 seat: seat.seat,
                 seatId: seat.seatId,
@@ -57,7 +59,6 @@ export default function ClientSectionPage({
 
       // 리덕스 상태 업데이트
       dispatch(setSeats(allSeats));
-      console.log('전체 좌석 선택됨:', allSeats.length, '개');
     }
   };
 
@@ -71,11 +72,18 @@ export default function ClientSectionPage({
     setSheetPosition('closed');
   };
 
-  // 선택된 좌석이 있는지 확인
-  const hasSelectedSeats = selectedSeats.length > 0;
+  // 현재 구역에 대한 선택된 좌석만 필터링
+  const currentSectionSelectedSeats = selectedSeats.filter(
+    (seat) => seat.arenaId === arenaId && seat.sectionId === sectionId
+  );
 
-  // seatId 목록 생성 - ReviewsBottomSheet 컴포넌트에 맞게 형식 변환
-  const selectedSeatIds = selectedSeats.map((seat) => seat.seatId.toString());
+  // 선택된 좌석이 있는지 확인 (현재 구역에서만)
+  const hasSelectedSeats = currentSectionSelectedSeats.length > 0;
+
+  // 현재 구역의 seatId 목록 생성 - ReviewsBottomSheet 컴포넌트에 맞게 형식 변환
+  const selectedSeatIds = currentSectionSelectedSeats.map((seat) =>
+    seat.seatId.toString()
+  );
 
   return (
     <>

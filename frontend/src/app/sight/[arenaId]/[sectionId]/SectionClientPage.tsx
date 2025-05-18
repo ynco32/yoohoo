@@ -8,6 +8,7 @@ import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './page.module.scss';
 import { useDispatch, useSelector } from '@/store';
 import { resetSeats, setSeats } from '@/store/slices/seatSelectionSlice';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 // 바텀시트 위치 상태 타입 정의
 type SheetPosition = 'full' | 'half' | 'closed';
@@ -27,6 +28,9 @@ export default function ClientSectionPage({
   const selectedSeats = useSelector(
     (state) => state.seatSelection.selectedSeats
   );
+
+  // 확대/축소 상태 추적
+  const [isZoomed, setIsZoomed] = useState(false);
 
   // 리뷰 바텀시트 위치 상태 (초기값: 'closed')
   const [sheetPosition, setSheetPosition] = useState<SheetPosition>('closed');
@@ -90,11 +94,48 @@ export default function ClientSectionPage({
       <MiniMap arenaId={arenaId} currentSectionId={sectionId} />
 
       <div className={styles.seatMapContainer}>
-        <SeatMap
-          arenaId={arenaId}
-          sectionId={sectionId}
-          initialSeatData={initialSeatData}
-        />
+        <TransformWrapper
+          initialScale={1}
+          minScale={1}
+          maxScale={3}
+          centerOnInit={true}
+          limitToBounds={false}
+          wheel={{ step: 0.1 }}
+          doubleClick={{ disabled: false, mode: 'toggle' }}
+          panning={{ disabled: false, velocityDisabled: false }}
+          onZoom={({ state }) => {
+            // 확대/축소 상태 업데이트
+            setIsZoomed(state.scale !== 1);
+          }}
+        >
+          {({ zoomIn, zoomOut, resetTransform }) => (
+            <>
+              <TransformComponent
+                wrapperClass={styles.transformWrapper}
+                contentClass={styles.transformContent}
+              >
+                <SeatMap
+                  arenaId={arenaId}
+                  sectionId={sectionId}
+                  initialSeatData={initialSeatData}
+                />
+              </TransformComponent>
+
+              {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
+              {isZoomed && (
+                <div className={styles.zoomControls}>
+                  <button
+                    className={styles.resetZoomButton}
+                    onClick={() => resetTransform()}
+                  >
+                    <span className={styles.resetZoomIcon}>⟲</span>
+                    <span>초기화</span>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </TransformWrapper>
       </div>
 
       <div className={styles.buttons}>

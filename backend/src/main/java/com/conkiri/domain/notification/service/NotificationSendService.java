@@ -120,17 +120,23 @@ public class NotificationSendService {
 	private String createTicketingDayBody(Concert concert) {
 
 		LocalDateTime ticketingTime = getTicketingTime(concert);
-		return String.format("오늘 %s에 %s 티켓팅이 시작됩니다.",
+		String ticketingType = isAdvancedReservationToday(concert) ? "선예매" : "일반예매";
+
+		return String.format("오늘 %s에 %s %s가 시작됩니다.",
 			ticketingTime.format(TIME_FORMATTER),
-			concert.getConcertName());
+			concert.getConcertName(),
+			ticketingType);
 	}
 
 	private String createTicketingSoonBody(Concert concert) {
 
 		LocalDateTime ticketingTime = getTicketingTime(concert);
-		return String.format("잠시 후 %s에 %s 티켓팅이 시작됩니다.",
+		String ticketingType = isAdvancedReservationSoon(concert) ? "선예매" : "일반예매";
+
+		return String.format("잠시 후 %s에 %s %s가 시작됩니다.",
 			ticketingTime.format(TIME_FORMATTER),
-			concert.getConcertName());
+			concert.getConcertName(),
+			ticketingType);
 	}
 
 	private String createConcertDayBody(Concert concert) {
@@ -150,6 +156,34 @@ public class NotificationSendService {
 
 		return concert.getAdvancedReservation() != null ?
 			concert.getAdvancedReservation() : concert.getReservation();
+	}
+
+	private boolean isAdvancedReservationToday(Concert concert) {
+
+		LocalDateTime advancedReservation = concert.getAdvancedReservation();
+		if (advancedReservation == null) {
+			return false;
+		}
+
+		LocalDateTime now = LocalDateTime.now();
+		return isSameDay(advancedReservation, now);
+	}
+
+	private boolean isAdvancedReservationSoon(Concert concert) {
+
+		LocalDateTime advancedReservation = concert.getAdvancedReservation();
+		if (advancedReservation == null) {
+			return false;
+		}
+
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime soon = now.plusMinutes(90); // 90분 이내
+
+		return advancedReservation.isAfter(now) && advancedReservation.isBefore(soon);
+	}
+
+	private boolean isSameDay(LocalDateTime date1, LocalDateTime date2) {
+		return date1.toLocalDate().equals(date2.toLocalDate());
 	}
 }
 

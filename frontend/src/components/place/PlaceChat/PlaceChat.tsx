@@ -43,6 +43,7 @@ export default function PlaceChat({
   const chatInputRef = useRef<ChatInputHandle>(null);
   const [inputHeight, setInputHeight] = useState(60);
   const replyRef = useRef<HTMLDivElement>(null);
+  const newMessageRef = useRef<number | string | undefined>(null);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -61,29 +62,31 @@ export default function PlaceChat({
     return () => clearTimeout(timeout);
   }, [messages]);
 
-  // 새 메시지 수신 시 스크롤 방지
-  const isNearBottom = () => {
-    const container = messageListRef.current;
-    if (!container) return false;
-    return (
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      150
-    );
-  };
-
+  // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {
     if (messages.length === 0 || !didInitialScrollRef.current) return;
 
     const container = messageListRef.current;
     if (!container) return;
 
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      150;
+
     // 새 메시지 맨 아래 자동 스크롤은 아래에 있을 때만
-    if (isNearBottom()) {
+    if (isNearBottom) {
       setTimeout(() => {
         messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } else {
-      setShowScrollDown(true); // 새 메시지 알림 버튼 보이게
+      // 수동 스크롤 유도 (사용자는 위쪽을 보고 있음)
+      setShowScrollDown(true);
+
+      // 마지막 메시지를 따로 저장
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage) {
+        newMessageRef.current = lastMessage.id || lastMessage.tempId;
+      }
     }
   }, [messages]);
 
@@ -131,6 +134,19 @@ export default function PlaceChat({
     container?.addEventListener('scroll', handleScroll);
     return () => container?.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 하단 이동 버튼 클릭 핸들러
+  const handleScrollToNewMessage = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    if (newMessageRef.current) {
+      // 딜레이 줘야 스크롤 완료 후 실행됨
+      setTimeout(() => {
+        scrollToMessage(newMessageRef.current!);
+        newMessageRef.current = null; // 이동 후 초기화
+      }, 300);
+    }
+  };
 
   // 동적 패딩 추가
   useEffect(() => {
@@ -338,9 +354,7 @@ export default function PlaceChat({
         {showScrollDown && (
           <button
             className={styles.scrollToBottomButton}
-            onClick={() =>
-              messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-            }
+            onClick={handleScrollToNewMessage}
           >
             <IconBox name='chevron-small-down' size={15} color='#666' />
           </button>

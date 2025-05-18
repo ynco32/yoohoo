@@ -153,7 +153,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
   // 이전 메시지 로드 (무한 스크롤)
   const loadPreviousMessages = useCallback(
-    async (message: Message, size: number = 20) => {
+    async (message: Message, size: number = 50) => {
       if (isLoading) return false;
 
       try {

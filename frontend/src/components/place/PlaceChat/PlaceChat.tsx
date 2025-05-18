@@ -47,19 +47,16 @@ export default function PlaceChat({
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
 
-  // 컴포넌트 마운트 시 스크롤 위치 복원
+  // 최초 렌더일 때만 맨 아래로 이동
+  const didInitialScrollRef = useRef(false);
+
   useEffect(() => {
-    if (messages.length === 0) return;
+    if (messages.length === 0 || didInitialScrollRef.current) return;
 
     const timeout = setTimeout(() => {
-      const container = messageListRef.current;
-
-      if (container && scrollPositionRef.current > 0) {
-        container.scrollTop = scrollPositionRef.current;
-      } else {
-        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      }
-    }, 50); // DOM 렌더링 이후 실행
+      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      didInitialScrollRef.current = true;
+    }, 50);
 
     return () => clearTimeout(timeout);
   }, [messages]);

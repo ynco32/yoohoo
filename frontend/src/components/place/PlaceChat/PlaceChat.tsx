@@ -162,7 +162,7 @@ export default function PlaceChat({
       );
     }
 
-    setBottomOffset(totalBottomPadding); // ✅ 버튼 위치 업데이트
+    setBottomOffset(totalBottomPadding);
   }, [inputHeight, replyingTo]);
 
   // 하단 이동 버튼 클릭 핸들러
@@ -350,9 +350,9 @@ export default function PlaceChat({
         </div>
       </div>
 
-      <div className={styles.inputArea}>
+      <div className={styles.inputArea} ref={inputAreaRef}>
         {replyingTo && (
-          <div className={styles.replyingToContainer}>
+          <div className={styles.replyingToContainer} ref={replyRef}>
             <div className={styles.replyingToContent}>
               <span className={styles.replyingToNickname}>
                 {replyingTo.nickname}

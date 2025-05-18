@@ -42,7 +42,6 @@ export default function PlaceChat({
   const [showScrollDown, setShowScrollDown] = useState(false);
   const chatInputRef = useRef<ChatInputHandle>(null);
   const [inputHeight, setInputHeight] = useState(60);
-  const replyRef = useRef<HTMLDivElement>(null);
   const newMessageRef = useRef<number | string | undefined>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
   const [bottomOffset, setBottomOffset] = useState(120);
@@ -145,11 +144,9 @@ export default function PlaceChat({
   // 인풋창 높이 계산
   useEffect(() => {
     const inputArea = inputAreaRef.current;
-    const replyBox = replyRef.current;
 
     if (!inputArea) return;
 
-    const replyHeight = replyBox?.offsetHeight || 0;
     const inputBoxHeight = inputArea.offsetHeight;
 
     const totalBottomPadding = inputBoxHeight + 10;
@@ -177,20 +174,6 @@ export default function PlaceChat({
       }, 300);
     }
   };
-
-  // 동적 패딩 추가
-  useEffect(() => {
-    const replyHeight = replyRef.current?.offsetHeight || 0;
-    const bottomPadding = inputHeight + replyHeight + 20;
-
-    const container = messageListRef.current;
-    if (container) {
-      container.style.setProperty(
-        '--chat-bottom-padding',
-        `${bottomPadding}px`
-      );
-    }
-  }, [inputHeight, replyingTo]);
 
   // 스크롤 이벤트로 이전 메시지 로드
   useEffect(() => {
@@ -352,7 +335,7 @@ export default function PlaceChat({
 
       <div className={styles.inputArea} ref={inputAreaRef}>
         {replyingTo && (
-          <div className={styles.replyingToContainer} ref={replyRef}>
+          <div className={styles.replyingToContainer}>
             <div className={styles.replyingToContent}>
               <span className={styles.replyingToNickname}>
                 {replyingTo.nickname}

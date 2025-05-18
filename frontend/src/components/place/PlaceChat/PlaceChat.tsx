@@ -335,6 +335,16 @@ export default function PlaceChat({
             onHeightChange={(h) => setInputHeight(h)}
           />
         </div>
+        {showScrollDown && (
+          <button
+            className={styles.scrollToBottomButton}
+            onClick={() =>
+              messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }
+          >
+            <IconBox name='chevron-small-down' size={15} color='#666' />
+          </button>
+        )}
       </div>
       {!isConnected && (
         <div className={styles.connectionMessage}>

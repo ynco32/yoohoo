@@ -75,15 +75,20 @@ export default function PlaceChat({
     const container = messageListRef.current;
     if (!container) return;
 
-    // 복원
-    container.scrollTop = scrollY;
+    // 렌더링 이후에 scrollTop 복원
+    const timeout = setTimeout(() => {
+      container.scrollTop = scrollY;
+    }, 50);
 
     const handleScroll = () => {
       setScrollY(container.scrollTop);
     };
 
     container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeout);
+    };
   }, [scrollY, setScrollY]);
 
   // 스크롤 상단에 있을때 버튼 표시

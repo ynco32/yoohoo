@@ -9,6 +9,7 @@ import ImageUpload from '@/components/sight/ImageUpload/ImageUpload';
 import { ReviewSelect } from '@/components/sight/ReviewSelect/ReviewSelect';
 import Button from '@/components/common/Button/Button';
 import { useReviewForm } from '@/hooks/useReviewForm';
+import TextInput from '@/components/common/TextInput/TextInput';
 import {
   CAMERA_BRANDS,
   CAMERA_MODELS,
@@ -51,6 +52,13 @@ export default function WriteReviewPage() {
         <div className={styles.seatInfo}>
           {/* 좌석 정보 */}
           <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
+          <TextInput
+            className={styles.consertSearch}
+            value={'가수명으로 콘서트 검색하기'}
+            onChange={function (value: string): void {
+              throw new Error('Function not implemented.');
+            }}
+          />
           <Dropdown
             options={[]}
             placeholder='다녀온 콘서트를 선택해주세요'

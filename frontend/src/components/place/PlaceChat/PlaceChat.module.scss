@@ -5,7 +5,7 @@
   flex-direction: column;
   background-color: white;
   position: relative;
-  padding-bottom: 110px;
+  padding-bottom: 10px;
 }
 
 .messagesWrapper {
@@ -296,7 +296,7 @@
 
 .scrollToBottomButton {
   position: absolute;
-  bottom: 110px;
+  bottom: 120px;
   right: 20px;
   z-index: 10;
   background: white;

@@ -44,6 +44,8 @@ export default function PlaceChat({
   const [inputHeight, setInputHeight] = useState(60);
   const replyRef = useRef<HTMLDivElement>(null);
   const newMessageRef = useRef<number | string | undefined>(null);
+  const inputAreaRef = useRef<HTMLDivElement>(null);
+  const [bottomOffset, setBottomOffset] = useState(120);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -123,17 +125,45 @@ export default function PlaceChat({
   // 스크롤 상단에 있을때 버튼 표시
   useEffect(() => {
     const container = messageListRef.current;
+    if (!container) return;
 
     const handleScroll = () => {
-      if (container) {
-        const shouldShow = container.scrollTop < container.scrollHeight - 500;
-        setShowScrollDown(shouldShow);
-      }
+      const isFarFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight >
+        150;
+
+      setShowScrollDown(isFarFromBottom); // 스크롤 위치에 따라 버튼 표시
     };
 
-    container?.addEventListener('scroll', handleScroll);
-    return () => container?.removeEventListener('scroll', handleScroll);
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
+  // 인풋창 높이 계산
+  useEffect(() => {
+    const inputArea = inputAreaRef.current;
+    const replyBox = replyRef.current;
+
+    if (!inputArea) return;
+
+    const replyHeight = replyBox?.offsetHeight || 0;
+    const inputBoxHeight = inputArea.offsetHeight;
+
+    const totalBottomPadding = inputBoxHeight + 10;
+
+    const container = messageListRef.current;
+    if (container) {
+      container.style.setProperty(
+        '--chat-bottom-padding',
+        `${totalBottomPadding}px`
+      );
+    }
+
+    setBottomOffset(totalBottomPadding); // ✅ 버튼 위치 업데이트
+  }, [inputHeight, replyingTo]);
 
   // 하단 이동 버튼 클릭 핸들러
   const handleScrollToNewMessage = () => {
@@ -354,6 +384,7 @@ export default function PlaceChat({
         {showScrollDown && (
           <button
             className={styles.scrollToBottomButton}
+            style={{ bottom: `${bottomOffset}px` }}
             onClick={handleScrollToNewMessage}
           >
             <IconBox name='chevron-small-down' size={15} color='#666' />

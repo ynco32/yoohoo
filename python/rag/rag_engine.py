@@ -95,7 +95,41 @@ def create_rag_chain(vectorstore):
 </콘서트_정보>
 
 질문: {question}
-답변:
+
+다음 지침에 따라 답변해주세요:
+1. 질문이 콘서트와 관련이 없거나 주어진 정보로 답변할 수 없는 경우, 정중하게 거절하세요.
+2. 주어진 콘서트 공지사항 정보를 기반으로만 답변하세요.
+3. 답변에 사용한 근거 중 가장 중요한 출처를 하나 선택하세요.
+4. 만약 적절한 근거가 없다면, [증거_좌표] 섹션에 "없음"이라고 명시하세요.
+5. 응답 형식을 정확히 따라주세요: 
+
+[답변]
+당신의 답변 내용을 여기에 작성하세요.
+
+[증거_좌표]
+적절한 근거가 있는 경우: top_y=숫자값,bottom_y=숫자값
+적절한 근거가 없는 경우: 없음
+
+예시 1 (근거가 있는 경우):
+[답변]
+콘서트는 5월 17일 오후 6시에 시작합니다. 뿌우
+
+[증거_좌표]
+top_y=500,bottom_y=600
+
+예시 2 (근거가 없는 경우):
+[답변]
+죄송합니다만, 공지에서 매표소 위치에 대한 내용을 찾을 수 없습니다. 뿌우
+
+[증거_좌표]
+없음
+
+예시 3 (콘서트와 관련 없는 질문):
+[답변]
+죄송합니다만, 저는 콘서트 관련 정보만 제공할 수 있어요. 다른 주제에 대해서는 답변드리기 어렵습니다. 뿌우
+
+[증거_좌표]
+없음
 """
     PROMPT = PromptTemplate(
             template=prompt_template,
@@ -141,17 +175,43 @@ def query_rag_system(chain, query, concert_id=None):
         
         # 결과 형식 확인 및 처리
         if isinstance(result, dict) and "result" in result:
-            answer = result.get("result", "응답을 찾을 수 없습니다.")
+            answer_text = result.get("result", "응답을 찾을 수 없습니다.")
         elif isinstance(result, str):
-            answer = result
+            answer_text = result
         else:
             logger.warning(f"예상치 못한 결과 형식: {type(result)}")
-            answer = str(result)
+            answer_text = str(result)
+
+        import re
+        answer_match = re.search(r'\[답변\](.*?)(?=\[증거_좌표\]|\Z)', answer_text, re.DOTALL) 
+        coords_match = re.search(r'\[증거_좌표\](.*?)(?=\[|\Z)', answer_text, re.DOTALL)
+
+        if answer_match: 
+            answer = answer_match.group(1).strip() 
+        else: 
+            answer = answer_text
+        
+        evidence_coordinates = [] 
+        if coords_match: 
+            coords_text = coords_match.group(1).strip()
+
+            if "없음" in coords_text or "none" in coords_text.lower():
+                pass
+            else:
+                coords_pattern = r'top_y=(\d+),bottom_y=(\d+)'
+                coords_values = re.search(coords_pattern, coords_text)
+
+                if coords_values:
+                    evidence_coordinates.append({ 
+                        "top_y": int(coords_values.group(1)), 
+                        "bottom_y": int(coords_values.group(2)) 
+                    }) 
         
         # 통일된 결과 형식
         response = {
             "answer": answer,
-            "source_documents": []
+            "source_documents": [],
+            "evidence_coordinates": evidence_coordinates 
         }
         
         # 소스 문서 추가 (있는 경우)
@@ -162,15 +222,26 @@ def query_rag_system(chain, query, concert_id=None):
                     "metadata": doc.metadata
                 } for doc in result["source_documents"]
             ]
+        #     response["evidence_coordinates"] = [
+        #     {
+        #         "top_y": doc.metadata["top_y"],
+        #         "bottom_y": doc.metadata["bottom_y"],
+        #         "category": doc.metadata.get("category", "일반 정보")
+        #     } for doc in result["source_documents"] 
+        #     if "top_y" in doc.metadata and "bottom_y" in doc.metadata
+        # ]
         
         logger.info("질의 처리 완료")
         return response
     
     except Exception as e:
         logger.error(f"질의 처리 중 오류: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc()) 
         # 간소화된 답변 반환
         return {
-            "answer": f"죄송합니다, 질문에 답변하는 과정에서 오류가 발생했습니다. 오류: {str(e)} 뿌우",
+            "answer": f"죄송합니다, 질문에 답변하는 과정에서 오류가 발생했습니다 뿌우...",
             "error": str(e),
-            "source_documents": []
+            "source_documents": [],
+            "evidence_coordinates": []
         }

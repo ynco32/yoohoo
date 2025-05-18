@@ -5,15 +5,15 @@
   flex-direction: column;
   background-color: white;
   position: relative;
-  padding-bottom: 110px;
+  padding-bottom: 10px;
 }
 
 .messagesWrapper {
-  flex: 1;
   overflow-y: auto; /* 메시지 영역에 스크롤 적용 */
   padding-bottom: var(--chat-bottom-padding, 10px);
   -ms-overflow-style: none;
   scrollbar-width: none;
+  height: calc(100dvh - 110px);
 
   &::-webkit-scrollbar {
     display: none;
@@ -296,7 +296,7 @@
 
 .scrollToBottomButton {
   position: absolute;
-  bottom: 110px;
+  bottom: 120px;
   right: 20px;
   z-index: 10;
   background: white;

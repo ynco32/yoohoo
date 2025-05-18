@@ -4,12 +4,8 @@ import styles from './SectionSkeleton.module.scss';
 export default function SectionSkeleton() {
   return (
     <div className={styles.skeleton}>
-      {/* 미니맵 스켈레톤 */}
-      <div className={styles.miniMapSkeleton}></div>
-
       {/* 좌석맵 스켈레톤 */}
       <div className={styles.seatMapSkeleton}>
-        <div className={styles.scrollHintSkeleton}></div>
         <div className={styles.seatGridSkeleton}>
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={`row-${i}`} className={styles.rowSkeleton}>

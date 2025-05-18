@@ -73,7 +73,7 @@ public class AuthService {
 			.secure(true)   // HTTPS에서만 사용
 			.sameSite("None") // SameSite=None 설정
 			.path("/")      // 전체 경로에서 유효
-			.maxAge(32400)  // 9시간 유지
+			.maxAge(2592000)  // 9시간 유지
 			.build();
 
 		addCookieToResponse(cookie, response);

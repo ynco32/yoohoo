@@ -18,17 +18,17 @@ DB_NAME = os.getenv("DB_NAME", "common")
 
 def get_connection():
     """데이터베이스 연결을 생성합니다."""
-    # return mysql.connector.connect(
-    #     host=DB_HOST,
-    #     port=DB_PORT, 
-    #     user=DB_USER,
-    #     password=DB_PASSWORD,
-    #     database=DB_NAME
-    # )
+    return mysql.connector.connect(
+        host=DB_HOST,
+        port=DB_PORT, 
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
+    )
 
-    return None
 
 def get_concert_info(concert_id):
+
     """콘서트 ID로 콘서트 정보를 조회합니다. (하드코딩 방식)"""
     logger.info(f"콘서트 ID {concert_id}에 대한 정보를 하드코딩된 데이터로 반환합니다.")
     
@@ -117,3 +117,5 @@ def get_concert_info(concert_id):
     #         cursor.close()
     #     if conn and conn.is_connected():
     #         conn.close()
+
+    

@@ -1,7 +1,6 @@
-// src/components/sight/SeatMap/SeatMap.tsx
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
@@ -34,7 +33,33 @@ const SeatMap: React.FC<SeatMapProps> = ({
   );
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollHint, setShowScrollHint] = useState(true);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  useEffect(() => {
+    // 컴포넌트가 마운트되거나 seatData가 변경되면 스크롤 가능 여부를 확인
+    const checkScrollable = () => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        // 컨테이너의 스크롤 너비가 클라이언트 너비보다 크면 스크롤 가능
+        const hasHorizontalScroll =
+          container.scrollWidth > container.clientWidth;
+        setIsScrollable(hasHorizontalScroll);
+        setShowScrollHint(hasHorizontalScroll);
+      }
+    };
+
+    // 초기 스크롤 가능 여부 확인
+    checkScrollable();
+
+    // 윈도우 리사이즈 이벤트에 대응
+    window.addEventListener('resize', checkScrollable);
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('resize', checkScrollable);
+    };
+  }, [seatData, showScrollHint]);
 
   // 좌석 선택 처리 함수
   const handleSeatClick = (row: string, seat: number, seatId: number) => {
@@ -82,9 +107,11 @@ const SeatMap: React.FC<SeatMapProps> = ({
 
   return (
     <div className={styles.container}>
-      <div className={styles.scrollHint}>
-        좌우로 스크롤하여 모든 좌석을 확인하세요
-      </div>
+      {isScrollable && showScrollHint && (
+        <div className={styles.scrollHint}>
+          좌우로 스크롤하여 모든 좌석을 확인하세요
+        </div>
+      )}
 
       <div
         className={styles.seatMapContainer}

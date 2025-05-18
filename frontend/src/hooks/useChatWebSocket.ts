@@ -279,8 +279,11 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
                   );
 
                   if (original && clientMessage.replyTo) {
-                    clientMessage.replyTo.content ||= original.content;
-                    clientMessage.replyTo.nickname ||= original.nickname;
+                    clientMessage.replyTo = {
+                      ...clientMessage.replyTo,
+                      content: original.content,
+                      nickname: original.nickname,
+                    };
                   }
                 }
 
@@ -293,7 +296,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
                 if (isDuplicate) return prevMessages;
 
-                const updatedMessages = [...prevMessages, clientMessage];
+                const updatedMessages = [...prevMessages, { ...clientMessage }];
                 sessionStorage.setItem(
                   storageKey,
                   JSON.stringify(updatedMessages)

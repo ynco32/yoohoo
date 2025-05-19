@@ -78,6 +78,13 @@
   font-size: $font-size-xs;
 }
 
+.replyNickname {
+  font-size: 12px;
+  font-weight: 600;
+  color: $con-blue;
+  margin-bottom: 2px;
+}
+
 .replyDivider {
   border: none;
   border-top: 1px solid #a7deff;

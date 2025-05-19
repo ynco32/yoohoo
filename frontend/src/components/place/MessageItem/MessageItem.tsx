@@ -46,6 +46,9 @@ export default function MessageItem({
               if (onReplyClick) onReplyClick();
             }}
           >
+            {replyTo?.nickname && (
+              <div className={styles.replyNickname}>{replyTo.nickname}</div>
+            )}
             <div className={styles.replyContent}>{replyTo?.content}</div>
           </div>
           <hr className={styles.replyDivider} />

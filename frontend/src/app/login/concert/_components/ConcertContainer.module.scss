@@ -31,15 +31,17 @@
   bottom: 0;
   width: 100%;
   max-width: 400px;
-  padding: 0 24px 24px;
+  padding: 0 12px 24px;
   background: transparent;
   z-index: 100;
   transform: translateX(-50%);
   left: 50%;
+  display: flex;
+  gap: 10px;
 }
 
 .submitBtn {
-  width: 100%;
+  flex: 5;
   background: #1976ed;
   color: #fff;
   font-size: 16px;
@@ -57,13 +59,26 @@
 }
 
 .outlineBtn {
-  width: 100%;
+  flex: 5;
   font-size: 16px;
   font-weight: 700;
   border-radius: 12px;
   padding: 14px 0;
   cursor: pointer;
   transition: background 0.2s;
+}
+
+.prevBtn {
+  flex: 2;
+  color: $con-blue;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 14px 0;
+  cursor: pointer;
+  background: $con-lightblue;
+  transition: background 0.2s;
+  // border: 1px solid #4a85d3;
 }
 
 .form {

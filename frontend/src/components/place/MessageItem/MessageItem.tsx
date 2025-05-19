@@ -6,6 +6,7 @@ interface Props {
   replyTo?: Message;
   onReply: () => void;
   onReplyClick?: () => void;
+  showNickname?: boolean;
 }
 
 export default function MessageItem({
@@ -13,8 +14,9 @@ export default function MessageItem({
   replyTo,
   onReply,
   onReplyClick,
+  showNickname = true,
 }: Props) {
-  const isMine = message.isMe || message.nickname === '나';
+  const isMine = message.isMe;
   const wrapperClass = `${styles.messageWrapper} ${
     isMine ? styles.mine : styles.other
   }`;
@@ -22,7 +24,9 @@ export default function MessageItem({
   // 일반 메시지 렌더링
   const renderRegularMessage = () => (
     <>
-      {!isMine && <div className={styles.nickname}>{message.nickname}</div>}
+      {!isMine && showNickname && (
+        <div className={styles.nickname}>{message.nickname}</div>
+      )}
       <div className={styles.bubbleRow}>
         {isMine && <span className={styles.meta}>{message.time}</span>}
         <div className={styles.bubble} onClick={onReply}>
@@ -36,7 +40,9 @@ export default function MessageItem({
   // 답글 메시지 렌더링
   const renderReplyMessage = () => (
     <>
-      {!isMine && <div className={styles.nickname}>{message.nickname}</div>}
+      {!isMine && showNickname && (
+        <div className={styles.nickname}>{message.nickname}</div>
+      )}
       <div className={styles.bubbleRow}>
         <div className={styles.bubble}>
           <div
@@ -46,7 +52,9 @@ export default function MessageItem({
               if (onReplyClick) onReplyClick();
             }}
           >
-            <div className={styles.replyContent}>{replyTo?.content}</div>
+            <div className={styles.replyContent}>
+              {replyTo?.nickname} : {replyTo?.content}
+            </div>
           </div>
           <hr className={styles.replyDivider} />
           <div className={styles.messageContent} onClick={onReply}>

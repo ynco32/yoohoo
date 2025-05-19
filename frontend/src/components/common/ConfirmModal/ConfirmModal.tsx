@@ -1,21 +1,27 @@
 import styles from './ConfirmModal.module.scss';
 
-interface ConfirmModalProps {
+export interface ConfirmModalProps {
   onConfirm: () => void;
   onCancel: () => void;
+  title?: string;
+  message?: string;
 }
 
-export const ConfirmModal = ({ onConfirm, onCancel }: ConfirmModalProps) => {
+export const ConfirmModal = ({
+  onConfirm,
+  onCancel,
+  title,
+  message,
+}: ConfirmModalProps) => {
   return (
     <div className={styles.modalOverlay} onClick={onCancel}>
       <div
         className={`${styles.modalContent} ${styles.confirmModalContent}`}
         onClick={(e) => e.stopPropagation()}
       >
+        {title && <h3 className={styles.confirmTitle}>{title}</h3>}
         <p className={styles.confirmMessage}>
-          선택하신 날짜가 해제됩니다.
-          <br />
-          선택 해제하시겠습니까?
+          {message ? message : <>선택하신 날짜가 해제됩니다.</>}
         </p>
         <div className={styles.confirmButtons}>
           <button

@@ -108,10 +108,39 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
           convertApiMessageToClientMessage
         );
 
-        // 세션 스토리지에 메시지 캐싱
-        sessionStorage.setItem(storageKey, JSON.stringify(clientMessages));
+        // tempId 기반으로 parent 메시지 채우기
+        const tempIdMap = new Map<string, Message>();
+        clientMessages.forEach((msg) => {
+          if (msg.tempId) {
+            tempIdMap.set(msg.tempId, msg);
+          }
+        });
 
-        setMessages(clientMessages);
+        const enrichedMessages = clientMessages.map((msg) => {
+          if (
+            msg.replyTo &&
+            msg.replyTo.tempId &&
+            (!msg.replyTo.content || !msg.replyTo.nickname)
+          ) {
+            const parent = tempIdMap.get(msg.replyTo.tempId);
+            if (parent) {
+              return {
+                ...msg,
+                replyTo: {
+                  ...msg.replyTo,
+                  content: parent.content,
+                  nickname: parent.nickname,
+                },
+              };
+            }
+          }
+          return msg;
+        });
+
+        // 세션 스토리지에 메시지 캐싱
+        sessionStorage.setItem(storageKey, JSON.stringify(enrichedMessages));
+
+        setMessages(enrichedMessages);
         setError(null);
       }
     } catch (err: any) {
@@ -124,7 +153,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
   // 이전 메시지 로드 (무한 스크롤)
   const loadPreviousMessages = useCallback(
-    async (message: Message, size: number = 20) => {
+    async (message: Message, size: number = 50) => {
       if (isLoading) return false;
 
       try {
@@ -279,8 +308,11 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
                   );
 
                   if (original && clientMessage.replyTo) {
-                    clientMessage.replyTo.content ||= original.content;
-                    clientMessage.replyTo.nickname ||= original.nickname;
+                    clientMessage.replyTo = {
+                      ...clientMessage.replyTo,
+                      content: original.content,
+                      nickname: original.nickname,
+                    };
                   }
                 }
 
@@ -293,7 +325,7 @@ export function useChatWebSocket({ chatRoomId }: UseChatWebSocketProps) {
 
                 if (isDuplicate) return prevMessages;
 
-                const updatedMessages = [...prevMessages, clientMessage];
+                const updatedMessages = [...prevMessages, { ...clientMessage }];
                 sessionStorage.setItem(
                   storageKey,
                   JSON.stringify(updatedMessages)

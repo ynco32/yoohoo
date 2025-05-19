@@ -1,59 +1,97 @@
-// 수정된 부분
-import React, { useRef, useState } from 'react';
+'use client';
+
+import React, { useRef, useState, useEffect } from 'react';
 import Seat from '@/components/sight/Seat/Seat';
 import styles from './SeatMap.module.scss';
 import { useSeatMap } from '@/hooks/useSeatMap';
 import { useDispatch, useSelector } from '@/store';
 import { addSeat, removeSeat } from '@/store/slices/seatSelectionSlice';
+import { SeatRow, SectionSeatsApi } from '@/types/arena';
 
 interface SeatMapProps {
   arenaId: string;
   sectionId: string;
   maxWidth?: number;
+  initialSeatData?: SectionSeatsApi;
 }
 
 const SeatMap: React.FC<SeatMapProps> = ({
   arenaId,
   sectionId,
   maxWidth = 800,
+  initialSeatData,
 }) => {
   const dispatch = useDispatch();
   const selectedSeats = useSelector(
     (state) => state.seatSelection.selectedSeats
   );
 
-  const { seatData, isLoading, error } = useSeatMap(arenaId, sectionId);
+  const { seatData, isLoading, error } = useSeatMap(
+    arenaId,
+    sectionId,
+    initialSeatData
+  );
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showScrollHint, setShowScrollHint] = useState(true);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  useEffect(() => {
+    // 컴포넌트가 마운트되거나 seatData가 변경되면 스크롤 가능 여부를 확인
+    const checkScrollable = () => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        // 컨테이너의 스크롤 너비가 클라이언트 너비보다 크면 스크롤 가능
+        const hasHorizontalScroll =
+          container.scrollWidth > container.clientWidth;
+        setIsScrollable(hasHorizontalScroll);
+        setShowScrollHint(hasHorizontalScroll);
+      }
+    };
+
+    // 초기 스크롤 가능 여부 확인
+    checkScrollable();
+
+    // 윈도우 리사이즈 이벤트에 대응
+    window.addEventListener('resize', checkScrollable);
+
+    // 클린업 함수
+    return () => {
+      window.removeEventListener('resize', checkScrollable);
+    };
+  }, [seatData, showScrollHint]);
 
   // 좌석 선택 처리 함수
   const handleSeatClick = (row: string, seat: number, seatId: number) => {
     const isAlreadySelected = selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seat
-    );
-
-    console.log(
-      `좌석 클릭: ${row}행 ${seat}번 (ID: ${seatId}) - 이미 선택됨: ${isAlreadySelected}`
+      (selected) =>
+        selected.arenaId === arenaId &&
+        selected.sectionId === sectionId &&
+        selected.row === row &&
+        selected.seat === seat
     );
 
     if (isAlreadySelected) {
-      dispatch(removeSeat({ row, seat }));
-      console.log(`좌석 선택 해제: ${row}행 ${seat}번`);
+      dispatch(removeSeat({ arenaId, sectionId, row, seat }));
     } else {
-      dispatch(addSeat({ row, seat, seatId }));
-      console.log(`좌석 선택 추가: ${row}행 ${seat}번 (ID: ${seatId})`);
+      dispatch(addSeat({ arenaId, sectionId, row, seat, seatId }));
     }
   };
 
   // 좌석이 선택되었는지 확인하는 함수
   const isSeatSelected = (row: string, seatNumber: number) => {
-    return selectedSeats.some(
-      (selected) => selected.row === row && selected.seat === seatNumber
+    const result = selectedSeats.some(
+      (selected) =>
+        selected.arenaId === arenaId &&
+        selected.sectionId === sectionId &&
+        selected.row === row &&
+        selected.seat === seatNumber
     );
+    return result;
   };
 
   // 빈 행 여부 확인 함수
-  const isEmptyRow = (row: any) => row.row === '';
+  const isEmptyRow = (row: SeatRow) => row.row === '';
 
   if (isLoading) {
     return <div className={styles.container}>로딩 중...</div>;
@@ -69,9 +107,11 @@ const SeatMap: React.FC<SeatMapProps> = ({
 
   return (
     <div className={styles.container}>
-      <div className={styles.scrollHint}>
-        좌우로 스크롤하여 모든 좌석을 확인하세요
-      </div>
+      {isScrollable && showScrollHint && (
+        <div className={styles.scrollHint}>
+          좌우로 스크롤하여 모든 좌석을 확인하세요
+        </div>
+      )}
 
       <div
         className={styles.seatMapContainer}

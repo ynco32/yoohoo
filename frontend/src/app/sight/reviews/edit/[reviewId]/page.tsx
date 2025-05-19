@@ -12,6 +12,10 @@ import ImageUpload from '@/components/sight/ImageUpload/ImageUpload';
 import { ReviewSelect } from '@/components/sight/ReviewSelect/ReviewSelect';
 import Button from '@/components/common/Button/Button';
 import { useReviewEditForm } from '@/hooks/useReviewEditForm';
+import TextInput from '@/components/common/TextInput/TextInput';
+import { useSearchConcerts } from '@/hooks/useSearchConcert';
+import { concert } from '@/types/concert';
+import { apiRequest } from '@/api/api'; // API 클라이언트 추가
 import {
   CAMERA_BRANDS,
   CAMERA_MODELS,
@@ -26,15 +30,19 @@ export default function EditReviewPage() {
   const params = useParams<{ reviewId: string }>();
   const reviewId = params?.reviewId;
   const [isLoading, setIsLoading] = useState(true);
+  const [initialConcert, setInitialConcert] = useState<concert | null>(null);
 
-  // 데이터 로딩 상태 관리
-  useEffect(() => {
-    if (reviewId) {
-      setIsLoading(false);
-    } else {
-      router.push('/sight/reviews');
-    }
-  }, [reviewId, router]);
+  // 콘서트 검색 훅 추가
+  const {
+    concerts,
+    isLoading: isSearching,
+    error: searchError,
+    searchWord,
+    setSearchWord,
+  } = useSearchConcerts();
+
+  // 선택된 콘서트 상태 추가
+  const [selectedConcert, setSelectedConcert] = useState<concert | null>(null);
 
   const {
     reviewData,
@@ -52,6 +60,73 @@ export default function EditReviewPage() {
     handleSubmit,
     isFormValid,
   } = useReviewEditForm(reviewId || '');
+
+  // 기존 콘서트 정보 가져오기
+  useEffect(() => {
+    const fetchConcertInfo = async () => {
+      if (reviewId && reviewData.concertId) {
+        try {
+          // concertId를 사용하여 콘서트 정보 가져오기
+          const concert = await apiRequest<concert>(
+            'GET',
+            `/api/concerts/${reviewData.concertId}`
+          );
+
+          if (concert) {
+            setInitialConcert(concert);
+            // 초기 검색어를 콘서트 이름이나 아티스트로 설정
+            setSearchWord('');
+          }
+        } catch (err) {
+          console.error('콘서트 정보를 가져오는 데 실패했습니다:', err);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    if (reviewData.concertId) {
+      fetchConcertInfo();
+    } else if (reviewId) {
+      setIsLoading(false);
+    } else {
+      router.push('/sight/reviews');
+    }
+  }, [reviewId, reviewData.concertId, router]);
+
+  // 콘서트 옵션 생성 - 초기 콘서트를 포함
+  const concertOptions = React.useMemo(() => {
+    const options = concerts.map((concert) => ({
+      value: concert.concertId.toString(),
+      label: concert.concertName,
+    }));
+
+    // 초기 콘서트가 있고 아직 옵션에 없다면 추가
+    if (
+      initialConcert &&
+      !options.some(
+        (option) => option.value === initialConcert.concertId.toString()
+      )
+    ) {
+      options.unshift({
+        value: initialConcert.concertId.toString(),
+        label: initialConcert.concertName,
+      });
+    }
+
+    return options;
+  }, [concerts, initialConcert]);
+
+  // 콘서트 선택 핸들러 함수 추가
+  const handleConcertSelect = (value: string) => {
+    handleChange('concertId', parseInt(value, 10));
+
+    // 선택된 콘서트 정보 업데이트
+    const selected =
+      concerts.find((concert) => concert.concertId.toString() === value) ||
+      initialConcert;
+
+    setSelectedConcert(selected);
+  };
 
   // ImageUpload 컴포넌트의 onChange 타입에 맞게 핸들러 래핑
   const handleImageChange = (files: (File | string)[] | null) => {
@@ -93,18 +168,28 @@ export default function EditReviewPage() {
 
       {/* 에러 메시지 */}
       {error && <div className={styles.errorMessage}>{error}</div>}
+      {searchError && <div className={styles.errorMessage}>{searchError}</div>}
 
       <div className={styles.form}>
         <div className={styles.seatInfo}>
           {/* 좌석 정보 */}
           <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
-          <Dropdown
-            options={[]}
-            placeholder='다녀온 콘서트를 선택해주세요'
-            value={String(reviewData.concertId)} // concertId를 문자열로 변환
-            onChange={(value) => handleChange('concertId', value)}
-            disabled={true} // 수정 페이지에서는 콘서트 변경 불가
+          <TextInput
+            className={styles.concertSearch}
+            value={searchWord}
+            onChange={(value: string) => setSearchWord(value)}
+            placeholder='가수명으로 콘서트 검색하기'
           />
+
+          {/* 항상 드롭다운 표시 - 초기 콘서트가 있으면 그 정보로 시작 */}
+          <Dropdown
+            options={concertOptions}
+            placeholder='다녀온 콘서트를 선택해주세요'
+            onChange={handleConcertSelect}
+            disabled={isSearching}
+            value={reviewData.concertId ? reviewData.concertId.toString() : ''}
+          />
+
           <div className={styles.seatValue}>
             {/* 기본 input 태그로 구역 구현 */}
             <div className={styles.numberInputContainer}>

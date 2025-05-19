@@ -324,9 +324,15 @@ export default function PlaceChat({
           {Object.entries(grouped).map(([date, messagesForDate]) => (
             <div key={date}>
               <div className={styles.dateDivider}>{date}</div>
+              {messagesForDate.map((msg, index) => {
+                const prevMsg = messagesForDate[index - 1];
+                const showNickname =
+                  !msg.isSystem &&
+                  (!prevMsg ||
+                    prevMsg.nickname !== msg.nickname ||
+                    prevMsg.isSystem);
 
-              {messagesForDate.map((msg) =>
-                msg.isSystem ? (
+                return msg.isSystem ? (
                   <div key={msg.id} className={styles.systemMessageContainer}>
                     <div className={styles.systemMessage}>{msg.content}</div>
                   </div>
@@ -347,10 +353,11 @@ export default function PlaceChat({
                               )
                           : undefined
                       }
+                      showNickname={showNickname}
                     />
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
           ))}
           <div ref={messageEndRef} />

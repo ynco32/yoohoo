@@ -11,6 +11,7 @@ import com.conkiri.domain.view.entity.StageGrade;
 public record ReviewDetailResponseDTO(
 	Long reviewId,
 	String nickname,
+	Integer profileNumber,
 	String concertName,
 	String arenaName,
 	Long seatId,
@@ -31,6 +32,7 @@ public record ReviewDetailResponseDTO(
 		return new ReviewDetailResponseDTO(
 			review.getReviewId(),
 			review.getUser().getNickname(),
+			review.getUser().getProfileNumber(),
 			review.getConcert().getConcertName(),
 			review.getConcert().getArena().getArenaName(),
 			review.getSeat().getSeatId(),

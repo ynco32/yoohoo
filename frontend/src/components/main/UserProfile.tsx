@@ -32,20 +32,7 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    // 브라우저 세션 상태 확인
-    const browserSessionActive = sessionStorage.getItem(
-      'browser_session_active'
-    );
-    const resetUserState = localStorage.getItem('reset_user_state');
-
-    console.log('UserProfile 마운트됨, 상태 점검:', {
-      userInfo,
-      isLoggedIn,
-      browserSessionActive,
-      resetUserState,
-      sessionId: localStorage.getItem('session_id'),
-      currentPage: window.location.pathname,
-    });
+    console.log('UserProfile 마운트됨, 현재 페이지:', window.location.pathname);
 
     const fetchUserInfo = async () => {
       try {
@@ -56,13 +43,7 @@ export default function UserProfile() {
 
         if (response) {
           dispatch(setUser(response));
-          console.log('사용자 정보 저장 완료:', response);
-
-          // 스토어에 저장된 데이터 확인을 위한 타임아웃
-          setTimeout(() => {
-            const currentState = store.getState().user;
-            console.log('스토어에 저장된 사용자 상태 확인:', currentState);
-          }, 500);
+          console.log('사용자 정보 저장 완료');
         }
       } catch (error) {
         console.error('사용자 정보를 가져오는 중 오류:', error);
@@ -80,7 +61,7 @@ export default function UserProfile() {
 
     // 사용자 정보가 없거나 로그인 상태인데 정보가 없는 경우 API 호출
     if (!userInfo || (isLoggedIn && !userInfo.nickname)) {
-      console.log('사용자 정보 없음, API 호출 필요:', { userInfo, isLoggedIn });
+      console.log('사용자 정보 없음, API 호출 필요');
       fetchUserInfo();
     }
   }, [dispatch, userInfo, isLoggedIn]);

@@ -1,41 +1,45 @@
 # test_chatbot.py
-from chatbot_service import ConcertChatbot
+import os
 import logging
+from chatbot_service import ConcertChatbot
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def test_chatbot():
-    """챗봇 테스트 함수"""
+    """챗봇 기능 테스트"""
+    # 테스트할 콘서트 ID 설정
+    concert_id = 41  # 실제 존재하는 콘서트 ID로 변경하세요
+    
+    # 테스트할 질문 목록
+    test_questions = [
+        "이 콘서트의 공연 시간은 언제인가요?",
+        "티켓팅은 언제부터 가능한가요?",
+        "입장 시 필요한 신분증은 무엇인가요?"
+    ]
+    
     # 챗봇 인스턴스 생성
     chatbot = ConcertChatbot()
     
-    # 테스트할 콘서트 ID
-    concert_id = 41  # 테스트용 콘서트 ID
-    
-    # 테스트 질문들
-    test_questions = [
-        "이 콘서트의 공연 시작 시간은 언제인가요?",
-        "휠체어석 예매하려는데 어떻게 하면 되나요?",
-        "입장 시 필요한 신분증은 무엇인가요?",
-        "오늘 날씨는 어때요?",  # 콘서트와 관련 없는 질문
-    ]
-    
     # 각 질문에 대해 테스트
     for question in test_questions:
-        print(f"\n[질문] {question}")
+        print(f"\n----- 질문: {question} -----")
         
-        # 질의 처리
+        # 응답 생성
         response = chatbot.process_query(question, concert_id)
         
-        # 결과 출력
-        print(f"[답변] {response['answer']}")
+        # 결과 확인
+        print(f"답변: {response['answer']}")
         
         if response["has_evidence_image"]:
-            print(f"[증거 이미지] {response['evidence_image_path']}")
+            print(f"증거 이미지 URL: {response['evidence_image_url']}")
         else:
-            print("[증거 이미지] 없음")
+            print("증거 이미지 없음")
+        
+        # 소스 문서 개수 출력
+        source_count = len(response.get("source_documents", []))
+        print(f"참조 문서 수: {source_count}")
         
         print("-" * 50)
 

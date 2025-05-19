@@ -57,7 +57,7 @@ export interface GradeOption<T> {
 // UI 표시용 리뷰 데이터 타입 (ReviewHeader에서 필요로 하는 형식)
 export interface ReviewData {
   reviewId: number;
-  userId: number;
+  profileNumber: number;
   concertId: number;
   concertTitle: string;
   seatId: number;

@@ -91,7 +91,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
       <div className={styles.header}>
         <div className={styles.profileWrapper}>
           <Image
-            src={review.profilePicture}
+            src={`/images/profiles/profile-${review.profileNumber}.png`}
             alt={`${review.nickName}의 프로필 사진`}
             width={0}
             height={0}

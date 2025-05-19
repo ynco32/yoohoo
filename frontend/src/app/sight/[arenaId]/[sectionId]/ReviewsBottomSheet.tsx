@@ -65,32 +65,33 @@ export default function ReviewsBottomSheet({
   }, [onClose]);
 
   // ReviewCard에 필요한 형태로 review 데이터 변환
-  const mapReviewForCard = (review: any) => {
-    console.log('매핑 전 리뷰 데이터:', review);
+  // const mapReviewForCard = (review: any) => {
+  //   console.log('매핑 전 리뷰 데이터:', review);
 
-    const mappedReview = {
-      reviewId: review.reviewId || 0,
-      nickname: review.nickname || '익명',
-      concertName: review.concertName || '공연 정보 없음',
-      arenaName: review.arenaName || '공연장 정보 없음',
-      section: review.section || sectionId,
-      seatId: review.seatId || 0,
-      rowLine: review.rowLine || 0,
-      columnLine: review.columnLine || 0,
-      artistGrade: review.artistGrade || ArtistGrade.MODERATE,
-      stageGrade: review.stageGrade || StageGrade.CLEAR,
-      screenGrade: review.screenGrade || ScreenGrade.CLEAR,
-      content: review.content || '',
-      createdAt: review.createdAt || new Date().toISOString(),
-      photoUrls: review.photoUrls || [],
-      cameraBrand: review.cameraBrand,
-      cameraModel: review.cameraModel,
-    };
+  //   const mappedReview = {
+  //     reviewId: review.reviewId || 0,
+  //     nickname: review.nickname || '익명',
+  //     profileNumber: review.profileNumber || 0,
+  //     concertName: review.concertName || '공연 정보 없음',
+  //     arenaName: review.arenaName || '공연장 정보 없음',
+  //     section: review.section || sectionId,
+  //     seatId: review.seatId || 0,
+  //     rowLine: review.rowLine || 0,
+  //     columnLine: review.columnLine || 0,
+  //     artistGrade: review.artistGrade || ArtistGrade.MODERATE,
+  //     stageGrade: review.stageGrade || StageGrade.CLEAR,
+  //     screenGrade: review.screenGrade || ScreenGrade.CLEAR,
+  //     content: review.content || '',
+  //     createdAt: review.createdAt || new Date().toISOString(),
+  //     photoUrls: review.photoUrls || [],
+  //     cameraBrand: review.cameraBrand,
+  //     cameraModel: review.cameraModel,
+  //   };
 
-    console.log('매핑 후 리뷰 데이터:', mappedReview);
+  //   console.log('매핑 후 리뷰 데이터:', mappedReview);
 
-    return mappedReview;
-  };
+  //   return mappedReview;
+  // };
 
   // 스크롤 이벤트 처리
   const handleScroll = useCallback(() => {
@@ -157,7 +158,8 @@ export default function ReviewsBottomSheet({
                   {filteredReviews.map((review, index) => (
                     <div key={review.reviewId} className={styles.reviewCard}>
                       <ReviewCard
-                        review={mapReviewForCard(review)}
+                        review={review}
+                        // review={mapReviewForCard(review)}
                         onEdit={() => {}}
                         onDelete={() => {}}
                       />

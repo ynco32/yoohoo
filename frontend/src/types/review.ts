@@ -29,11 +29,13 @@ export interface ReviewPhoto {
 export interface Review {
   reviewId: number;
   nickname: string;
+  profileNumber: number;
+  concertId?: number;
   concertName: string;
   arenaName: string;
   seatId: number;
   section: string;
-  rowLine: string; // API 응답에 맞게 string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
@@ -103,7 +105,7 @@ export interface ReviewRequest {
   photos?: string[];
 }
 
-// 리뷰 수정 요청 데이터 타입 (추가)
+// 리뷰 수정 요청 데이터 타입
 export interface ReviewUpdateRequest {
   concertId: number;
   section: string;

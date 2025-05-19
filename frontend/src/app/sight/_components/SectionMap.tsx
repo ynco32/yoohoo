@@ -94,44 +94,61 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
 
   return (
     <div className={styles.sectionMap}>
-      {/* 구역표 표시 로직 - 핀치 줌 기능 추가 */}
-      <div className={styles.svgContainer}>
+      {/* 구역표 표시 영역 */}
+      <div className={styles.svgOuterContainer}>
+        {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
+        {isZoomed && (
+          <div className={styles.zoomControls}>
+            <button
+              className={styles.resetZoomButton}
+              onClick={() => {
+                setIsZoomed(false);
+                // 트랜스폼 인스턴스가 있으면 초기화
+                if ((window as any).transformInstance) {
+                  (window as any).transformInstance.resetTransform();
+                }
+              }}
+            >
+              <span className={styles.resetZoomIcon}>⟲</span>
+              <span>초기화</span>
+            </button>
+          </div>
+        )}
+
         <TransformWrapper
           initialScale={1}
           minScale={1}
-          maxScale={3}
+          maxScale={2.5}
           centerOnInit={true}
-          limitToBounds={false}
-          wheel={{ step: 0.1 }}
-          doubleClick={{ disabled: false, mode: 'toggle' }}
-          panning={{ disabled: false, velocityDisabled: false }}
+          limitToBounds={true}
+          // 아래 wheel 설정 추가
+          wheel={{
+            step: 0.1,
+            wheelDisabled: false,
+          }}
+          // 더블클릭 설정
+          doubleClick={{
+            disabled: false,
+            mode: 'toggle',
+          }}
+          // 아래 onZoom 이벤트 핸들러 추가
           onZoom={({ state }) => {
             // 확대/축소 상태 업데이트
             setIsZoomed(state.scale !== 1);
           }}
+          // 인스턴스 저장을 위한 onInit 추가
+          onInit={({ instance }) => {
+            // 초기화 버튼에서 사용할 수 있도록 인스턴스 저장
+            (window as any).transformInstance = instance;
+          }}
         >
           {({ zoomIn, zoomOut, resetTransform }) => (
-            <>
-              <TransformComponent
-                wrapperClass={styles.transformWrapper}
-                contentClass={styles.transformContent}
-              >
-                {renderArenaMap()}
-              </TransformComponent>
-
-              {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
-              {isZoomed && (
-                <div className={styles.zoomControls}>
-                  <button
-                    className={styles.resetZoomButton}
-                    onClick={() => resetTransform()}
-                  >
-                    <span className={styles.resetZoomIcon}>⟲</span>
-                    <span>초기화</span>
-                  </button>
-                </div>
-              )}
-            </>
+            <TransformComponent
+              wrapperClass={styles.transformWrapper}
+              contentClass={styles.transformContent}
+            >
+              {renderArenaMap()}
+            </TransformComponent>
           )}
         </TransformWrapper>
       </div>

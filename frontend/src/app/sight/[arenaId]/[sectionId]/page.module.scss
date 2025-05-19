@@ -15,23 +15,30 @@
   width: 100%;
 }
 
+// .seatMapContainer {
+//   position: relative;
+//   width: 100%;
+//   margin: 0 auto;
+//   overflow: hidden;
+//   touch-action: pan-x pan-y;
+//   -webkit-overflow-scrolling: touch;
+// }
+
+// .transformWrapper {
+//   width: 100%;
+//   height: 100%;
+// }
+
+// .transformContent {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+// }
+
 .seatMapContainer {
-  position: relative;
-  width: 100%;
-  margin: 0 auto;
-  overflow: hidden;
-  touch-action: pan-x pan-y;
-  -webkit-overflow-scrolling: touch;
-}
-
-.transformWrapper {
-  width: 100%;
-  height: 100%;
-}
-
-.transformContent {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   width: 100%;
 }

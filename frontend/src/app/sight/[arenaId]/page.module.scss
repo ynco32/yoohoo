@@ -5,54 +5,6 @@
   width: 100%;
 }
 
-.card {
-  background-color: white;
-  border-radius: $border-radius-lg;
-  padding: $spacing-xl;
-  margin: $spacing-xl 0;
-  box-shadow: $shadow-con;
-  width: 100%;
-  max-width: 600px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-xs;
-}
-
-.message {
-  color: $text-main;
-  font-size: $font-size-xs;
-}
-
-.svgContainer {
-  width: 100%;
-  overflow: auto;
-  margin-bottom: 1rem;
-}
-
-.interactiveSvg {
-  width: 100%;
-  height: auto;
-
-  g[id*='section'] {
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-
-    &:hover {
-      opacity: 0.7;
-    }
-
-    path {
-      pointer-events: auto;
-    }
-  }
-}
-.container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .sections {
   width: 100%;
 }
@@ -64,14 +16,11 @@
   width: 100%;
 }
 
-.svgContainer {
+.svgOuterContainer {
   position: relative;
-  width: 100%;
-  max-width: 800px;
+  width: 100%; // 100% 너비 사용
   margin: 0 auto;
-  overflow: hidden;
-  touch-action: pan-x pan-y;
-  -webkit-overflow-scrolling: touch;
+  max-width: 100%; // 최대 너비를 제한하지 않음
 }
 
 .transformWrapper {
@@ -87,16 +36,30 @@
 }
 
 .interactiveSvg {
-  width: 100%;
+  width: 100%; // 너비 100%
   height: auto;
-  max-height: 70vh;
+  min-height: 50vh; // 최소 높이 설정
+  max-height: none; // 최대 높이 제한 없앰
+
+  g[id*='section'] {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    path {
+      pointer-events: auto;
+    }
+  }
 }
 
 .zoomControls {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  z-index: 10;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
 }
 
 .resetZoomButton {
@@ -128,11 +91,14 @@
   background-color: white;
   border-radius: $border-radius-lg;
   padding: $spacing-lg;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-con;
   margin-top: $spacing-lg;
   width: 100%;
-  max-width: 600px;
+  max-width: 90%; // 카드도 더 넓게 표시
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
 }
 
 .message {

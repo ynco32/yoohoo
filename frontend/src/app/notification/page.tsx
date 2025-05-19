@@ -61,8 +61,17 @@ export default function NotificationPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>알림</h1>
+        <div className={styles.title}>알림</div>
         <div className={styles.actions}>
+          {notifications.length > 0 && (
+            <button
+              className={styles.readAllButton}
+              onClick={markAllAsRead}
+              disabled={!hasUnread}
+            >
+              알림함 비우기
+            </button>
+          )}
           <button
             className={styles.settingsButton}
             onClick={openModal}
@@ -70,16 +79,6 @@ export default function NotificationPage() {
           >
             <SettingIcon className={styles.icon} />
           </button>
-
-          {notifications.length > 0 && (
-            <button
-              className={styles.readAllButton}
-              onClick={markAllAsRead}
-              disabled={!hasUnread}
-            >
-              전체 읽음 처리
-            </button>
-          )}
         </div>
       </div>
 

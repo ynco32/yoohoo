@@ -1,5 +1,4 @@
 .container {
-  //   max-width: 800px;
   margin: 0 auto;
   padding: $spacing-lg;
   min-height: 80vh;
@@ -10,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: $spacing-lg;
-  padding-bottom: $spacing-md;
+  padding-bottom: $spacing-xs;
   border-bottom: 1px solid $con-gray;
 }
 
@@ -18,35 +17,55 @@
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   color: $text-main;
+  margin: 0;
 }
 
 .actions {
   display: flex;
   gap: $spacing-sm;
+  align-items: center;
+}
+
+.settingsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-full;
+  color: $text-main;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  svg {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .readAllButton {
-  background-color: transparent;
-  color: $con-blue;
-  border: 1px solid $con-blue;
-  padding: $spacing-xs $spacing-md;
   border-radius: $border-radius-sm;
+  background-color: $con-blue;
+  color: white;
+  border: none;
   font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s;
 
   &:hover {
-    background-color: rgba($con-blue, 0.1);
+    background-color: darken($con-blue, 10%);
   }
 
   &:disabled {
+    background-color: #fff;
     color: $text-sub;
-    border-color: $con-gray;
-    cursor: not-allowed;
-
-    &:hover {
-      background-color: transparent;
-    }
   }
 }
 
@@ -109,107 +128,5 @@
   .emptyDescription {
     font-size: $font-size-md;
     color: $text-sub;
-  }
-}
-
-// 태블릿 및 모바일 반응형
-@media (max-width: $breakpoint-md) {
-  .container {
-    padding: $spacing-md;
-  }
-
-  .title {
-    font-size: $font-size-xl;
-  }
-
-  .emptyState {
-    .emptyMessage {
-      font-size: $font-size-lg;
-    }
-
-    .emptyDescription {
-      font-size: $font-size-sm;
-    }
-  }
-}
-
-// 모바일 반응형
-@media (max-width: $breakpoint-sm) {
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: $spacing-sm;
-  }
-
-  .actions {
-    width: 100%;
-
-    .readAllButton {
-      width: 100%;
-    }
-  }
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.title {
-  font-size: $font-size-2xl;
-  font-weight: $font-weight-bold;
-  color: $text-main;
-  margin: 0;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.settingsButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: $border-radius-full;
-  color: $text-main;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  svg {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-.readAllButton {
-  padding: 6px 12px;
-  border-radius: $border-radius-sm;
-  background-color: $con-blue;
-  color: white;
-  border: none;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  cursor: pointer;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: darken($con-blue, 10%);
-  }
-
-  &:disabled {
-    background-color: $con-gray;
-    cursor: not-allowed;
   }
 }

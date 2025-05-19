@@ -2,7 +2,12 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useReview } from '@/hooks/useReview';
-import { ReviewRequest } from '@/types/review'; // ReviewRequestDTO를 ReviewRequest로 변경
+import {
+  ReviewRequest,
+  ArtistGrade,
+  StageGrade,
+  ScreenGrade,
+} from '@/types/review';
 import { CAMERA_MODELS } from '@/lib/constants';
 import { validateReviewForm } from '@/lib/utils/reviewValidation';
 
@@ -11,9 +16,18 @@ export const useReviewForm = () => {
   const { createReview, isLoading, error } = useReview();
 
   // 리뷰 데이터 상태 관리
-  const [reviewData, setReviewData] = useState<Partial<ReviewRequest>>({
-    // ReviewRequestDTO를 ReviewRequest로 변경
+  const [reviewData, setReviewData] = useState<ReviewRequest>({
+    concertId: 0, // 초기값 설정
+    section: '', // 초기값 설정
+    rowLine: '', // 초기값 설정
+    columnLine: 0, // 초기값 설정
+    artistGrade: ArtistGrade.MODERATE, // 초기값 설정
+    stageGrade: StageGrade.CLEAR, // 초기값 설정
+    screenGrade: ScreenGrade.CLEAR, // 초기값 설정
     content: '',
+    cameraBrand: undefined,
+    cameraModel: undefined,
+    photos: undefined,
   });
 
   // 이미지 파일 상태 관리
@@ -35,7 +49,6 @@ export const useReviewForm = () => {
 
   // 값 변경 핸들러
   const handleChange = (key: keyof ReviewRequest, value: any) => {
-    // ReviewRequestDTO를 ReviewRequest로 변경
     setReviewData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -75,32 +88,15 @@ export const useReviewForm = () => {
     if (!isFormValid()) return;
 
     try {
-      // ReviewRequest 타입에 맞게 데이터 변환
-      const submitData: ReviewRequest = {
-        // ReviewRequestDTO를 ReviewRequest로 변경
-        concertId: reviewData.concertId!,
-        seatId: reviewData.seatId!, // section, rowLine, columnLine 대신 seatId 사용
-        artistGrade: reviewData.artistGrade!,
-        stageGrade: reviewData.stageGrade!,
-        screenGrade: reviewData.screenGrade!,
-        content: reviewData.content!,
-        cameraBrand: reviewData.cameraBrand,
-        cameraModel: reviewData.cameraModel,
-        photos: reviewData.photos,
-        section: '',
-        rowLine: '',
-        columnLine: 0,
-      };
-
       // API 호출
-      const reviewId = await createReview(submitData, imageFiles);
+      const reviewId = await createReview(reviewData, imageFiles);
 
       if (reviewId) {
         // 성공 처리
         setSubmitSuccess(true);
         setTimeout(() => {
-          // 성공 후 페이지 이동
-          router.push(`/reviews/${reviewId}`);
+          // 성공 후 페이지 이동 (사용자 요청에 따라 경로 수정)
+          router.push(`/sight/reviews/${reviewId}`);
         }, 2000);
       }
     } catch (err) {

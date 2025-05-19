@@ -1,6 +1,7 @@
 // src/hooks/useReviewEditForm.ts
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useReview } from '@/hooks/useReview';
 import {
   ArtistGrade,
@@ -8,7 +9,7 @@ import {
   ScreenGrade,
   ReviewUpdateRequest,
 } from '@/types/review';
-import { CAMERA_BRANDS, CAMERA_MODELS } from '@/lib/constants';
+import { CAMERA_MODELS } from '@/lib/constants';
 
 export const useReviewEditForm = (reviewId: string | number) => {
   const router = useRouter();
@@ -20,7 +21,7 @@ export const useReviewEditForm = (reviewId: string | number) => {
   } = useReview(reviewId);
 
   // 폼 상태 관리
-  const [reviewData, setReviewData] = useState<Partial<ReviewUpdateRequest>>({
+  const [reviewData, setReviewData] = useState<ReviewUpdateRequest>({
     concertId: 0,
     section: '',
     rowLine: '',
@@ -37,31 +38,35 @@ export const useReviewEditForm = (reviewId: string | number) => {
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
   // 카메라 관련 상태
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [availableModels, setAvailableModels] = useState<
-    { label: string; value: string }[]
-  >([]);
-
-  // 제출 상태
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // 선택된 브랜드에 따라 사용 가능한 모델 목록 결정 (useMemo 사용)
+  const availableModels = useMemo(() => {
+    if (!selectedBrand) return [];
+    return CAMERA_MODELS[selectedBrand] || [];
+  }, [selectedBrand]);
 
   // 리뷰 데이터가 로드되면 폼 초기화
   useEffect(() => {
     if (review) {
+      // 수정: GET 응답에서 concertId가 없어서 추가 작업 필요
+      const concertId = review.concertId || 0; // 서버에서 concertId를 제공하지 않는 경우 별도로 처리 필요
+
       setReviewData({
-        concertId: review.seatId,
-        section: review.section,
-        rowLine: review.rowLine,
-        columnLine: review.columnLine,
-        artistGrade: review.artistGrade,
-        stageGrade: review.stageGrade,
-        screenGrade: review.screenGrade,
-        content: review.content,
-        cameraBrand: review.cameraBrand,
-        cameraModel: review.cameraModel,
-        existingPhotoUrls: review.photoUrls,
+        concertId: concertId,
+        section: review.section || '',
+        rowLine: review.rowLine || '',
+        columnLine: review.columnLine || 0,
+        artistGrade: review.artistGrade || ArtistGrade.MODERATE,
+        stageGrade: review.stageGrade || StageGrade.CLEAR,
+        screenGrade: review.screenGrade || ScreenGrade.CLEAR,
+        content: review.content || '',
+        cameraBrand: review.cameraBrand || '',
+        cameraModel: review.cameraModel || '',
+        existingPhotoUrls: review.photoUrls || [],
       });
 
       // 기존 이미지 설정
@@ -70,11 +75,6 @@ export const useReviewEditForm = (reviewId: string | number) => {
       // 카메라 브랜드 설정
       if (review.cameraBrand) {
         setSelectedBrand(review.cameraBrand);
-
-        // 해당 브랜드의 모델 목록 설정
-        if (CAMERA_MODELS[review.cameraBrand]) {
-          setAvailableModels(CAMERA_MODELS[review.cameraBrand]);
-        }
       }
     }
   }, [review]);
@@ -95,12 +95,6 @@ export const useReviewEditForm = (reviewId: string | number) => {
       cameraBrand: brand,
       cameraModel: '', // 브랜드 변경 시 모델 초기화
     }));
-
-    if (brand && CAMERA_MODELS[brand]) {
-      setAvailableModels(CAMERA_MODELS[brand]);
-    } else {
-      setAvailableModels([]);
-    }
   };
 
   // 새 이미지 업로드 처리
@@ -120,8 +114,8 @@ export const useReviewEditForm = (reviewId: string | number) => {
 
   // 폼 유효성 검사
   const isFormValid = () => {
+    // 수정: concertId는 서버에서 제공하지 않을 수 있으므로 검증에서 제외하거나 다른 방식으로 처리
     return (
-      !!reviewData.concertId &&
       !!reviewData.section &&
       !!reviewData.rowLine &&
       !!reviewData.columnLine &&
@@ -136,11 +130,12 @@ export const useReviewEditForm = (reviewId: string | number) => {
   const handleSubmit = async () => {
     if (!isFormValid() || !reviewId) return;
 
-    setIsSubmitting(true);
+    setIsFormSubmitting(true);
     setError(null);
     setSubmitSuccess(false);
 
     try {
+      // 수정: existingPhotoUrls가 reviewData와 existingImages 두 곳에서 관리되므로 일관성 유지
       const updateData: ReviewUpdateRequest = {
         concertId: reviewData.concertId || 0,
         section: reviewData.section || '',
@@ -152,7 +147,7 @@ export const useReviewEditForm = (reviewId: string | number) => {
         content: reviewData.content || '',
         cameraBrand: reviewData.cameraBrand,
         cameraModel: reviewData.cameraModel,
-        existingPhotoUrls: existingImages,
+        existingPhotoUrls: existingImages, // 수정: 항상 existingImages 상태 사용
       };
 
       const updatedReview = await updateReview(
@@ -172,7 +167,7 @@ export const useReviewEditForm = (reviewId: string | number) => {
       setError(err.message || '리뷰 수정 중 오류가 발생했습니다.');
       console.error('리뷰 수정 오류:', err);
     } finally {
-      setIsSubmitting(false);
+      setIsFormSubmitting(false);
     }
   };
 
@@ -182,7 +177,8 @@ export const useReviewEditForm = (reviewId: string | number) => {
     existingImages,
     selectedBrand,
     availableModels,
-    isLoading: isLoadingReview || isSubmitting,
+    isLoading: isLoadingReview,
+    isFormSubmitting,
     error: error || reviewError,
     submitSuccess,
     handleChange,

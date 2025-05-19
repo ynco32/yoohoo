@@ -194,3 +194,97 @@
   text-align: center;
   font-weight: $font-weight-medium;
 }
+
+// 추가: 이미지 관련 스타일
+.existingImages {
+  margin-bottom: $spacing-md;
+}
+
+.subTitle {
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-sm;
+  color: $text-sub;
+  font-weight: $font-weight-medium;
+}
+
+.imageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.imageItem {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.removeButton {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  padding: 0;
+  z-index: 10;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+// 뒤로가기 버튼 스타일
+.backButton {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: $text-main;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: $spacing-md;
+
+  .icon {
+    margin-right: $spacing-xs;
+  }
+}
+
+// 제목 스타일
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-lg;
+  color: $text-main;
+  text-align: center;
+}
+
+// 로딩 스타일
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  font-size: $font-size-lg;
+  color: $text-sub;
+}

@@ -1,29 +1,34 @@
-// src/api/sight/review.ts
 import { apiClient, apiRequest, serverApiRequest } from '../api';
 import {
   ReviewRequest,
   Review,
   ReviewListApi,
   ReviewUpdateRequest,
-} from '@/types/review'; // ReviewUpdateRequest 추가
+} from '@/types/review';
 import { ApiResponse } from '@/types/api';
 
 export const reviewApi = {
   /**
    * 리뷰 조회
    */
-  getReviews: (arenaId: string, section: string) =>
-    apiClient.get<ReviewListApi>(
+  getReviews: async (arenaId: string, section: string) => {
+    const response = await apiClient.get<ApiResponse<ReviewListApi>>(
       `/api/v1/view/arenas/${arenaId}/sections/${section}/reviews`
-    ),
+    );
+    return response.data.data;
+  },
 
   /**
    * 단일 리뷰 조회
    * @param reviewId 리뷰 ID
    * @returns 단일 리뷰 정보
    */
-  getReviewById: (reviewId: string | number) =>
-    apiClient.get<ApiResponse<Review>>(`/api/v1/view/reviews/${reviewId}`),
+  getReviewById: async (reviewId: string | number) => {
+    const response = await apiClient.get<ApiResponse<Review>>(
+      `/api/v1/view/reviews/${reviewId}`
+    );
+    return response.data.data;
+  },
 
   /**
    * 리뷰 수정
@@ -36,7 +41,7 @@ export const reviewApi = {
     reviewId: string | number,
     reviewData: ReviewUpdateRequest,
     files: File[]
-  ): Promise<ApiResponse<Review>> {
+  ): Promise<Review> {
     const formData = new FormData();
 
     // reviewRequestDTO를 JSON으로 변환하여 Blob으로 추가
@@ -60,7 +65,7 @@ export const reviewApi = {
       }
     );
 
-    return response.data;
+    return response.data.data;
   },
 
   /**
@@ -68,20 +73,23 @@ export const reviewApi = {
    * @param reviewId 삭제할 리뷰 ID
    * @returns 삭제 결과
    */
-  deleteReview: (reviewId: string | number) =>
-    apiClient.delete<ApiResponse<void>>(`/api/v1/view/reviews/${reviewId}`),
+  deleteReview: async (reviewId: string | number) => {
+    const response = await apiClient.delete<ApiResponse<void>>(
+      `/api/v1/view/reviews/${reviewId}`
+    );
+    return response.data;
+  },
 
   /**
-   *
-   * @param reviewData
-   * @param files
-   * @returns
+   * 리뷰 생성
+   * @param reviewData 리뷰 데이터
+   * @param files 이미지 파일들
+   * @returns 생성된 리뷰 ID
    */
   async createReview(
-    reviewData: ReviewRequest, // ReviewRequestDTO를 ReviewRequest로 변경
+    reviewData: ReviewRequest,
     files: File[]
-  ): Promise<ApiResponse<Review>> {
-    // ReviewResponse를 Review로 변경
+  ): Promise<ApiResponse<number>> {
     const formData = new FormData();
 
     // reviewRequestDTO를 JSON으로 변환하여 Blob으로 추가
@@ -95,7 +103,7 @@ export const reviewApi = {
       formData.append('files', file);
     });
 
-    const response = await apiClient.post<ApiResponse<Review>>( // ReviewResponse를 Review로 변경
+    const response = await apiClient.post<ApiResponse<number>>(
       '/api/v1/view/reviews',
       formData,
       {
@@ -108,6 +116,10 @@ export const reviewApi = {
     return response.data;
   },
 
-  getMyReviews: () =>
-    serverApiRequest<ReviewListApi>('GET', '/api/v1/mypage/reviews'),
+  getMyReviews: async () => {
+    return await serverApiRequest<ReviewListApi>(
+      'GET',
+      '/api/v1/mypage/reviews'
+    );
+  },
 };

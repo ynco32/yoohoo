@@ -1,8 +1,9 @@
-// src/pages/sight/reviews/edit/[reviewId].tsx
+// app/sight/reviews/edit/[reviewId]/page.tsx
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // next/navigation 사용
+import { useParams } from 'next/navigation'; // 파라미터용
 import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
@@ -11,6 +12,9 @@ import ImageUpload from '@/components/sight/ImageUpload/ImageUpload';
 import { ReviewSelect } from '@/components/sight/ReviewSelect/ReviewSelect';
 import Button from '@/components/common/Button/Button';
 import { useReviewEditForm } from '@/hooks/useReviewEditForm';
+import TextInput from '@/components/common/TextInput/TextInput';
+import { useSearchConcerts } from '@/hooks/useSearchConcert';
+import { concert } from '@/types/concert';
 import {
   CAMERA_BRANDS,
   CAMERA_MODELS,
@@ -20,20 +24,32 @@ import {
 } from '@/lib/constants';
 
 export default function EditReviewPage() {
+  // App Router와 호환되는 방식으로 라우터와 파라미터 사용
   const router = useRouter();
-  const { reviewId } = router.query;
+  const params = useParams<{ reviewId: string }>();
+  const reviewId = params?.reviewId;
+  const [isLoading, setIsLoading] = useState(true);
 
-  // reviewId가 없으면 리스트 페이지로 리다이렉트
+  // 콘서트 검색 훅 추가
+  const {
+    concerts,
+    isLoading: isSearching,
+    error: searchError,
+    searchWord,
+    setSearchWord,
+  } = useSearchConcerts();
+
+  // 선택된 콘서트 상태 추가
+  const [selectedConcert, setSelectedConcert] = useState<concert | null>(null);
+
+  // 데이터 로딩 상태 관리
   useEffect(() => {
-    if (!reviewId && router.isReady) {
+    if (reviewId) {
+      setIsLoading(false);
+    } else {
       router.push('/sight/reviews');
     }
-  }, [reviewId, router.isReady]);
-
-  // reviewId가 없으면 로딩 표시
-  if (!reviewId) {
-    return <div className={styles.loading}>Loading...</div>;
-  }
+  }, [reviewId, router]);
 
   const {
     reviewData,
@@ -41,7 +57,7 @@ export default function EditReviewPage() {
     existingImages,
     selectedBrand,
     availableModels,
-    isLoading,
+    isFormSubmitting,
     error,
     submitSuccess,
     handleChange,
@@ -50,7 +66,24 @@ export default function EditReviewPage() {
     handleRemoveExistingImage,
     handleSubmit,
     isFormValid,
-  } = useReviewEditForm(reviewId as string);
+  } = useReviewEditForm(reviewId || '');
+
+  // 드롭다운에 표시할 콘서트 옵션 생성
+  const concertOptions = concerts.map((concert) => ({
+    value: concert.concertId.toString(),
+    label: concert.concertName,
+  }));
+
+  // 콘서트 선택 핸들러 함수 추가
+  const handleConcertSelect = (value: string) => {
+    handleChange('concertId', parseInt(value, 10));
+
+    // 선택된 콘서트 정보 업데이트
+    const selected = concerts.find(
+      (concert) => concert.concertId.toString() === value
+    );
+    setSelectedConcert(selected || null);
+  };
 
   // ImageUpload 컴포넌트의 onChange 타입에 맞게 핸들러 래핑
   const handleImageChange = (files: (File | string)[] | null) => {
@@ -64,6 +97,11 @@ export default function EditReviewPage() {
       originalHandleImageChange([]);
     }
   };
+
+  // 로딩 표시
+  if (isLoading) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
 
   return (
     <div className={styles.container}>
@@ -87,18 +125,32 @@ export default function EditReviewPage() {
 
       {/* 에러 메시지 */}
       {error && <div className={styles.errorMessage}>{error}</div>}
+      {searchError && <div className={styles.errorMessage}>{searchError}</div>}
 
       <div className={styles.form}>
         <div className={styles.seatInfo}>
           {/* 좌석 정보 */}
           <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
-          <Dropdown
-            options={[]}
-            placeholder='다녀온 콘서트를 선택해주세요'
-            value={String(reviewData.concertId)} // concertId를 문자열로 변환
-            onChange={(value) => handleChange('concertId', value)}
-            disabled={true} // 수정 페이지에서는 콘서트 변경 불가
+          <TextInput
+            className={styles.concertSearch}
+            value={searchWord}
+            onChange={(value: string) => setSearchWord(value)}
+            placeholder='가수명으로 콘서트 검색하기'
           />
+
+          {/* 검색어가 있을 때만 드롭다운 표시 */}
+          {searchWord && (
+            <Dropdown
+              options={concertOptions}
+              placeholder='다녀온 콘서트를 선택해주세요'
+              onChange={handleConcertSelect}
+              disabled={isSearching}
+              value={
+                reviewData.concertId ? reviewData.concertId.toString() : ''
+              }
+            />
+          )}
+
           <div className={styles.seatValue}>
             {/* 기본 input 태그로 구역 구현 */}
             <div className={styles.numberInputContainer}>
@@ -234,11 +286,11 @@ export default function EditReviewPage() {
           <Button
             variant='primary'
             onClick={handleSubmit}
-            disabled={!isFormValid() || isLoading}
+            disabled={!isFormValid() || isFormSubmitting}
             fontSize={18}
             padding='12px 0'
           >
-            {isLoading ? '수정 중...' : '수정 완료'}
+            {isFormSubmitting ? '수정 중...' : '수정 완료'}
           </Button>
         </div>
       </div>

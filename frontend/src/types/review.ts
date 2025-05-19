@@ -1,5 +1,3 @@
-// src/types/review.ts
-
 export enum ArtistGrade {
   VERY_CLOSE = 'VERY_CLOSE',
   CLOSE = 'CLOSE',
@@ -31,18 +29,20 @@ export interface ReviewPhoto {
 export interface Review {
   reviewId: number;
   nickname: string;
+  profileNumber: number;
+  concertId?: number;
   concertName: string;
   arenaName: string;
   seatId: number;
   section: string;
-  rowLine: string; // API 응답에 맞게 string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
   screenGrade: ScreenGrade;
   content: string;
-  cameraBrand?: string;
-  cameraModel?: string;
+  cameraBrand?: string | null;
+  cameraModel?: string | null;
   createdAt: string;
   photoUrls: string[];
 }
@@ -57,19 +57,19 @@ export interface GradeOption<T> {
 // UI 표시용 리뷰 데이터 타입 (ReviewHeader에서 필요로 하는 형식)
 export interface ReviewData {
   reviewId: number;
-  userId: number;
+  profileNumber: number;
   concertId: number;
   concertTitle: string;
   seatId: number;
   section: string;
-  rowLine: string; // string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
   screenGrade: ScreenGrade;
   content: string;
-  cameraBrand?: string;
-  cameraModel?: string;
+  cameraBrand?: string | null;
+  cameraModel?: string | null;
   createdAt: string;
   nickName: string;
   profilePicture: string;
@@ -93,9 +93,8 @@ export interface ReviewCardProps {
 // 리뷰 생성 요청 데이터 타입
 export interface ReviewRequest {
   concertId: number;
-  seatId: number;
   section: string;
-  rowLine: string; // string으로 변경
+  rowLine: string;
   columnLine: number;
   artistGrade: ArtistGrade;
   stageGrade: StageGrade;
@@ -106,7 +105,7 @@ export interface ReviewRequest {
   photos?: string[];
 }
 
-// 리뷰 수정 요청 데이터 타입 (추가)
+// 리뷰 수정 요청 데이터 타입
 export interface ReviewUpdateRequest {
   concertId: number;
   section: string;
@@ -122,5 +121,5 @@ export interface ReviewUpdateRequest {
 }
 
 export interface ReviewListApi {
-  reviewList: Review[];
+  reviews: Review[];
 }

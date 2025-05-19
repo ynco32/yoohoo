@@ -3,6 +3,7 @@ package com.conkiri.domain.notification.controller;
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,5 +102,22 @@ public class NotificationController {
 		@AuthenticationPrincipal UserPrincipal user) {
 
 		return ApiResponse.success(user.getUser().isNotificationEnabled());
+	}
+
+	@DeleteMapping
+	public ApiResponse<Void> deleteAllNotifications(
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		notificationFacadeService.deleteAllNotifications(user.getUser());
+		return ApiResponse.ofSuccess();
+	}
+
+	@DeleteMapping("/{notificationId}")
+	public ApiResponse<Void> deleteNotification(
+		@PathVariable Long notificationId,
+		@AuthenticationPrincipal UserPrincipal user) {
+
+		notificationFacadeService.deleteNotification(user.getUser(), notificationId);
+		return ApiResponse.ofSuccess();
 	}
 }

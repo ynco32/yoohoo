@@ -1,4 +1,4 @@
-// Header.module.scss
+// Header.module.scss (수정된 버전)
 
 .container {
   position: sticky;
@@ -30,28 +30,35 @@
   flex: 1;
   display: flex;
   justify-content: flex-start;
+  align-items: center; /* 추가: 세로 중앙 정렬 */
 }
 
 .centerSection {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center; /* 추가: 세로 중앙 정렬 */
 }
 
 .rightSection {
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  align-items: center; /* 추가: 세로 중앙 정렬 */
   gap: $spacing-sm;
 }
 
 .logoContainer {
   flex: none;
+  display: flex; /* 추가: 플렉스 표시 */
+  align-items: center; /* 추가: 세로 중앙 정렬 */
 }
 
 .logo {
   height: 2.5rem;
   width: auto;
+  display: flex; /* 추가: 플렉스 표시 */
+  align-items: center; /* 추가: 세로 중앙 정렬 */
 }
 
 .headerTitle {
@@ -159,6 +166,26 @@
 .iconContainer {
   position: static;
   display: flex;
-  align-items: center;
+  align-items: center; /* 추가: 세로 중앙 정렬 */
   gap: $spacing-sm;
+  height: 100%; /* 추가: 컨테이너 높이 설정 */
+}
+
+/* 알림 아이콘 관련 스타일 */
+.notificationContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center; /* 추가: 세로 중앙 정렬 */
+  justify-content: center; /* 추가: 가로 중앙 정렬 */
+  height: 24px; /* 추가: 높이 지정 */
+}
+
+.unreadBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff4d4f; /* 빨간색 알림 표시 */
 }

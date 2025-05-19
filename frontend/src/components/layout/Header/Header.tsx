@@ -1,14 +1,16 @@
 // src/components/Header.tsx
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.scss';
 import { useHeader } from './HeaderProvider';
 import { usePathname } from 'next/navigation';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
-import NotificationIcon from '@/assets/icons/notification.svg'; // 알림 아이콘 추가
-import MenuIcon from '@/assets/icons/menu.svg'; // 햄버거 메뉴 아이콘 추가
+import NotificationIcon from '@/assets/icons/notification.svg';
+import MenuIcon from '@/assets/icons/menu.svg';
 import LogoIcon from '/public/svgs/main/logo.svg';
+import { notificationApi } from '@/api/notification/notification'; // 알림 API 임포트
 
 const Header = () => {
   const {
@@ -23,20 +25,46 @@ const Header = () => {
   } = useHeader();
 
   const pathname = usePathname();
-  const isPlacePage = pathname.startsWith('/place'); // 현장 페이지 확인
+  const isPlacePage = pathname.startsWith('/place');
 
-  // 알림 클릭 핸들러
+  // 읽지 않은 알림 상태 추가
+  const [hasUnread, setHasUnread] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 컴포넌트 마운트 시 읽지 않은 알림 정보 가져오기
+  useEffect(() => {
+    const fetchUnreadStatus = async () => {
+      try {
+        setIsLoading(true);
+        const hasUnreadData = await notificationApi.hasUnreadNotification();
+        setHasUnread(!!hasUnreadData);
+      } catch (error) {
+        console.error('알림 상태 로딩 실패:', error);
+        setHasUnread(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUnreadStatus();
+  }, []);
+
   const handleNotificationClick = () => {
-    // 알림 관련 로직 구현
     console.log('Notification clicked');
   };
 
-  // 메뉴 클릭 핸들러
   const handleMenuClick = () => {
     setIsMenuOpen(true);
   };
 
-  // 상세 정보 헤더 렌더링 (shouldShowDetail이 true일 때)
+  // 알림 아이콘 렌더링 함수
+  const renderNotificationIcon = () => (
+    <div className={styles.notificationContainer}>
+      <NotificationIcon className={styles.icon} />
+      {hasUnread && !isLoading && <span className={styles.unreadBadge}></span>}
+    </div>
+  );
+
   if (shouldShowDetail && arenaInfo) {
     return (
       <div className={styles.detailContainer}>
@@ -49,7 +77,6 @@ const Header = () => {
         </button>
         <div
           className={styles.detailImageContainer}
-          // 현장 페이지에서만 클릭 기능 활성화
           onClick={isPlacePage ? handleArenaInfoClick : undefined}
           style={{
             cursor: isPlacePage ? 'pointer' : 'default',
@@ -75,7 +102,7 @@ const Header = () => {
             className={styles.iconButton}
             aria-label='알림'
           >
-            <NotificationIcon className={styles.icon} />
+            {renderNotificationIcon()}
           </button>
           <button
             onClick={handleMenuClick}
@@ -113,7 +140,7 @@ const Header = () => {
           </div>
           <div className={styles.rightSection}>
             <Link href='/notification' className={styles.logo}>
-              <NotificationIcon className={styles.icon} />
+              {renderNotificationIcon()}
             </Link>
             <button
               onClick={handleMenuClick}

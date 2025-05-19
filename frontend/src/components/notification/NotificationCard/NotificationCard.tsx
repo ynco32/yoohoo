@@ -24,37 +24,50 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
   onActionClick,
 }) => {
-  const { title, body, type, createdAt, concert } = notification;
+  const { title, body, type, createdAt, concert, isRead } = notification;
 
   return (
-    <div className={styles.notificationCard}>
-      <div className={styles.header}>
-        <div className={styles.date}>{formatDate(createdAt)}</div>
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.title}>{title}</div>
-        <p className={styles.body}>{body}</p>
-
-        {concert && (
-          <div className={styles.concertInfo}>
-            <div className={styles.concertImage}>
-              {concert.photoUrl && (
-                <img src={concert.photoUrl} alt={concert.concertName} />
-              )}
+    <div
+      className={`${styles.notificationCard} ${
+        isRead ? styles.read : styles.unread
+      }`}
+    >
+      <div className={styles.cardContainer}>
+        <div className={styles.leftIndicator}></div>
+        <div className={styles.content}>
+          <div className={styles.header}>
+            <div className={styles.category}>
+              {notification.type || '아티스트명'}
             </div>
-            <div className={styles.concertDetails}>
-              <div className={styles.concertName}>{concert.concertName}</div>
-              <div className={styles.artistName}>{concert.artistName}</div>
-            </div>
+            <div className={styles.date}>{formatDate(createdAt)}</div>
           </div>
-        )}
 
-        {type === 'TICKETING_DAY' && (
-          <button className={styles.actionButton} onClick={onActionClick}>
-            예매하러 가기
-          </button>
-        )}
+          <div className={styles.messageContent}>
+            <p className={styles.body}>{body}</p>
+
+            {concert && (
+              <div className={styles.concertInfo}>
+                <div className={styles.concertImage}>
+                  {concert.photoUrl && (
+                    <img src={concert.photoUrl} alt={concert.concertName} />
+                  )}
+                </div>
+                <div className={styles.concertDetails}>
+                  <div className={styles.concertName}>
+                    {concert.concertName}
+                  </div>
+                  <div className={styles.artistName}>{concert.artistName}</div>
+                </div>
+              </div>
+            )}
+
+            {type === 'TICKETING_DAY' && (
+              <button className={styles.actionButton} onClick={onActionClick}>
+                예매하러 가기
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

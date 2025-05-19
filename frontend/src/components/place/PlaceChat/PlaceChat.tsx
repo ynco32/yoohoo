@@ -326,11 +326,12 @@ export default function PlaceChat({
               <div className={styles.dateDivider}>{date}</div>
               {messagesForDate.map((msg, index) => {
                 const prevMsg = messagesForDate[index - 1];
-                const showNickname =
+                const showNickname = Boolean(
                   !msg.isSystem &&
-                  (!prevMsg ||
-                    prevMsg.nickname !== msg.nickname ||
-                    prevMsg.isSystem);
+                    (!prevMsg ||
+                      prevMsg.nickname !== msg.nickname ||
+                      prevMsg.isSystem)
+                );
 
                 return msg.isSystem ? (
                   <div key={msg.id} className={styles.systemMessageContainer}>

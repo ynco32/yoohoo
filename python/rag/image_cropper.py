@@ -7,6 +7,9 @@ import requests
 from PIL import Image
 from dotenv import load_dotenv
 from config import S3_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY
+import boto3 
+import io     
+from config import S3_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_REGION 
 
 # 환경 변수 로드
 load_dotenv()
@@ -197,6 +200,88 @@ class ImageCropper:
             return None
     
     @staticmethod
+    def save_evidence_to_s3(image, concert_id, coordinates):
+        """
+        크롭된 증거 이미지를 S3에 업로드합니다.
+        동일 좌표는 동일 파일을 재사용합니다.
+        
+        Args:
+            image: PIL.Image 객체
+            concert_id: 콘서트 ID
+            coordinates: 이미지 좌표 정보
+            
+        Returns:
+            str: S3 URL, 실패 시 None
+        """
+        try:
+            if not image:
+                logger.error("저장할 이미지가 없습니다.")
+                return None
+                
+            # 좌표가 없으면 기본값 사용
+            if not coordinates or 'top_y' not in coordinates or 'bottom_y' not in coordinates:
+                logger.warning("좌표 정보가 없습니다. 기본 좌표를 사용합니다.")
+                top_y = 0
+                bottom_y = 0
+            else:
+                top_y = coordinates['top_y']
+                bottom_y = coordinates['bottom_y']
+            
+            # 좌표에 기반한 일관된 파일명 생성 (UUID 없이)
+            filename = f"evidence_{concert_id}_{top_y}_{bottom_y}.jpg"
+            
+            # S3 키 생성
+            s3_key = f"evidence/{concert_id}/{filename}"
+            
+            # S3 URL 생성 
+            s3_url = f"https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{s3_key}"
+            
+            # S3 클라이언트 생성
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=AWS_ACCESS_KEY,
+                aws_secret_access_key=AWS_SECRET_KEY,
+                region_name=S3_REGION
+            )
+            
+            try:
+                # 객체가 이미 존재하는지 확인
+                s3_client.head_object(Bucket=S3_BUCKET_NAME, Key=s3_key)
+                
+                # 이미 존재하면 URL만 반환
+                logger.info(f"이미지가 이미 S3에 존재합니다: {s3_key}")
+                return s3_url
+                
+            except Exception as not_exist_error:
+                # 존재하지 않으면 새로 업로드
+                logger.info(f"새로운 이미지를 S3에 업로드합니다: {s3_key}")
+                
+                # 이미지를 바이트로 변환
+                byte_arr = io.BytesIO()
+                image.save(byte_arr, format='JPEG')
+                byte_arr.seek(0)
+                
+                # S3에 업로드
+                s3_client.upload_fileobj(
+                    byte_arr, 
+                    S3_BUCKET_NAME, 
+                    s3_key, 
+                    ExtraArgs={'ContentType': 'image/jpeg'}
+                )
+                
+                logger.info(f"증거 이미지 S3 업로드 완료: {s3_url}")
+                return s3_url
+            
+        except Exception as e:
+            logger.error(f"증거 이미지 S3 업로드 중 오류: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return None
+
+        # 클래스 변수로 캐시 추가
+    image_url_cache = {}  # {cache_key: s3_url}
+
+    @staticmethod
     def get_evidence_image(concert_id, coordinates, image_url=None):
         """
         증거 이미지를 가져오고 크롭합니다.
@@ -207,13 +292,13 @@ class ImageCropper:
             image_url: 직접 지정한 이미지 URL (None이면 DB에서 조회)
             
         Returns:
-            PIL.Image: 크롭된 이미지, 실패 시 None
+            str: S3 URL, 실패 시 None
         """
         try:
             # 이미지 URL 가져오기
             if not image_url:
                 image_url = ImageCropper.get_notice_image_url(concert_id)
-                
+                    
             if not image_url:
                 logger.error(f"콘서트 ID {concert_id}에 대한 이미지 URL을 찾을 수 없습니다.")
                 return None
@@ -228,11 +313,20 @@ class ImageCropper:
             # 이미지 크롭
             cropped_img = ImageCropper.crop_image(image, coordinates)
             
-            return cropped_img
-            
+            if not cropped_img:
+                logger.error("이미지 크롭에 실패했습니다.")
+                return None
+                
+            # S3에 저장 (중복 확인 기능 포함)
+            s3_url = ImageCropper.save_evidence_to_s3(cropped_img, concert_id, coordinates)
+            return s3_url
+                
         except Exception as e:
             logger.error(f"증거 이미지 처리 중 오류: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
             return None
+
 
 
 # # 메인 함수 (테스트용)

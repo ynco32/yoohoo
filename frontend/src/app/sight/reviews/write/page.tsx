@@ -90,13 +90,17 @@ export default function WriteReviewPage() {
             onChange={(value: string) => setSearchWord(value)}
             placeholder='가수명으로 콘서트 검색하기'
           />
-          <Dropdown
-            options={concertOptions}
-            placeholder='다녀온 콘서트를 선택해주세요'
-            onChange={handleConcertSelect}
-            disabled={isSearching}
-            value={reviewData.concertId ? reviewData.concertId.toString() : ''}
-          />
+          {searchWord && (
+            <Dropdown
+              options={concertOptions}
+              placeholder='다녀온 콘서트를 선택해주세요'
+              onChange={handleConcertSelect}
+              disabled={isSearching}
+              value={
+                reviewData.concertId ? reviewData.concertId.toString() : ''
+              }
+            />
+          )}
           <div className={styles.seatValue}>
             {/* 기본 input 태그로 구역 구현 */}
             <div className={styles.numberInputContainer}>

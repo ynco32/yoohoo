@@ -41,7 +41,7 @@ class ChatResponse(BaseModel):
 # 챗봇 인스턴스 생성
 chatbot = ConcertChatbot()
 
-@app.post("/api/chat", response_model=ChatResponse)
+@app.post("/api/chatbot", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     콘서트 관련 질문에 답변하는 API 엔드포인트
@@ -107,7 +107,7 @@ async def get_image(key: str):
         logger.error(f"이미지 URL 생성 중 오류: {str(e)}")
         raise HTTPException(status_code=500, detail=f"이미지 URL 생성 중 오류가 발생했습니다: {str(e)}")
 
-@app.get("/health")
+@app.get("/chatbot/health")
 async def health_check():
     """서버 상태 확인용 엔드포인트"""
     return {"status": "healthy", "service": "콘끼리 챗봇 API"}

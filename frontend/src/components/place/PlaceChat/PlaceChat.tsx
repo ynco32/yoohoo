@@ -262,9 +262,7 @@ export default function PlaceChat({
     id: 'system-guide',
     nickname: '',
     time: '',
-    content: `폭언, 음란, 불법 행위, 상업적 홍보 등\n
-      채팅방 사용을 저해하는 활동에 대해\n
-      메세지 삭제 및 계정 정지 조치를 할 수 있습니다.`,
+    content: `폭언, 음란, 불법 행위, 상업적 홍보 등\n채팅방 사용을 저해하는 활동에 대해\n메세지 삭제 및 계정 정지 조치를 할 수 있습니다.`,
     createdAt: new Date().toISOString(),
     isSystem: true,
   };

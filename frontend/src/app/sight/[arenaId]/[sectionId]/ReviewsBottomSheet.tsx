@@ -14,6 +14,7 @@ interface ReviewsBottomSheetProps {
   selectedSeats: string[];
   position?: 'full' | 'half' | 'closed';
   onClose: () => void;
+  lastSelectedSeat?: { row: string; column: number } | null;
 }
 
 export default function ReviewsBottomSheet({
@@ -22,6 +23,7 @@ export default function ReviewsBottomSheet({
   selectedSeats,
   position = 'half',
   onClose,
+  lastSelectedSeat,
 }: ReviewsBottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -120,11 +122,11 @@ export default function ReviewsBottomSheet({
             <div className={styles.titleContainer}>
               <h2 className={styles.sheetTitle}>리뷰보기</h2>
               <span className={styles.sectionName}>{sectionId}구역</span>
-              {selectedSeats.length === 1 && filteredReviews.length > 0 && (
+              {lastSelectedSeat && (
                 <>
                   <div className={styles.separator} />
                   <span className={styles.rowText}>
-                    {filteredReviews[0]?.rowLine || ''}열
+                    {lastSelectedSeat.row}열 {lastSelectedSeat.column}번
                   </span>
                 </>
               )}

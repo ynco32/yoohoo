@@ -14,6 +14,12 @@ import { useSeatMap } from '@/hooks/useSeatMap'; // useSeatMap 훅 추가
 // 바텀시트 위치 상태 타입 정의
 type SheetPosition = 'full' | 'half' | 'closed';
 
+// 마지막 선택된 좌석 정보를 위한 타입 추가
+type LastSelectedSeat = {
+  row: string;
+  column: number;
+} | null;
+
 export default function SectionPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -32,10 +38,23 @@ export default function SectionPage() {
   // 리뷰 바텀시트 위치 상태 (초기값: 'closed')
   const [sheetPosition, setSheetPosition] = useState<SheetPosition>('closed');
 
-  // 좌석이 선택되면 바텀시트 포지션을 half로 변경
+  // 마지막 선택된 좌석 정보 상태 추가
+  const [lastSelectedSeat, setLastSelectedSeat] =
+    useState<LastSelectedSeat>(null);
+
+  // 좌석이 선택되면 바텀시트 포지션을 half로 변경하고 마지막 선택 좌석 업데이트
   useEffect(() => {
     if (selectedSeats.length > 0) {
       setSheetPosition('half');
+
+      // 마지막 선택된 좌석 정보 저장
+      const lastSeat = selectedSeats[selectedSeats.length - 1];
+      setLastSelectedSeat({
+        row: lastSeat.row,
+        column: lastSeat.seat,
+      });
+    } else {
+      setLastSelectedSeat(null);
     }
   }, [selectedSeats]);
 
@@ -68,6 +87,14 @@ export default function SectionPage() {
       // 리덕스 상태 업데이트
       dispatch(setSeats(allSeats));
       console.log('전체 좌석 선택됨:', allSeats.length, '개');
+
+      // 전체 좌석 중 첫 번째 좌석을 마지막 선택 좌석으로 설정
+      if (allSeats.length > 0) {
+        setLastSelectedSeat({
+          row: allSeats[0].row,
+          column: allSeats[0].seat,
+        });
+      }
     }
   };
 
@@ -75,6 +102,7 @@ export default function SectionPage() {
   const handleReset = () => {
     dispatch(resetSeats());
     setSheetPosition('closed'); // 초기화 시 바텀시트도 닫기
+    setLastSelectedSeat(null); // 마지막 선택 좌석 정보도 초기화
   };
 
   // 리뷰 바텀시트 닫기 처리
@@ -114,13 +142,14 @@ export default function SectionPage() {
         </div>
       </div>
 
-      {/* 리뷰 바텀시트 - 항상 렌더링하고 position으로 제어 */}
+      {/* 리뷰 바텀시트 - 마지막 선택된 좌석 정보 전달 */}
       <ReviewsBottomSheet
         arenaId={arenaId}
         sectionId={section}
         selectedSeats={selectedSeatIds}
         position={sheetPosition}
         onClose={handleCloseReviews}
+        lastSelectedSeat={lastSelectedSeat}
       />
     </div>
   );

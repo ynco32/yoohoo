@@ -55,7 +55,7 @@ export default function PlaceChat({
   const didInitialScrollRef = useRef(false);
 
   useEffect(() => {
-    if (isLoading || messages.length === 0 || didInitialScrollRef.current)
+    if (isLoading || chatMessages.length === 0 || didInitialScrollRef.current)
       return;
     const container = messageListRef.current;
     if (!container) return;
@@ -64,7 +64,7 @@ export default function PlaceChat({
       container.scrollTop = container.scrollHeight;
       didInitialScrollRef.current = true;
     }, 100);
-  }, [messages, isLoading]);
+  }, [chatMessages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {
@@ -266,14 +266,28 @@ export default function PlaceChat({
 
   // 최초 메시지 불러왔을 때 공지 메시지 추가
   useEffect(() => {
-    if (!initialized && messages.length > 0) {
-      const hasSystem = messages.some((m) => m.id === 'system-guide');
-      const withSystem = hasSystem ? messages : [...messages, systemMessage]; // 맨 아래에 추가
-      setChatMessages(withSystem);
+    if (!initialized) {
+      if (messages.length === 0) {
+        // 최초 로딩 시 메시지가 없으면 공지만
+        setChatMessages([systemMessage]);
+      } else {
+        // 최초 로딩 시 메시지가 있으면 메시지 + 공지
+        setChatMessages([...messages, systemMessage]);
+      }
       setInitialized(true);
-    } else if (initialized) {
-      // 이후 메시지는 계속 누적됨
-      setChatMessages(messages);
+    } else if (initialized && messages.length > 0) {
+      // 이후 새 메시지 추가
+      const newMessages = messages.filter(
+        (msg) =>
+          !chatMessages.some(
+            (existing) =>
+              (existing.id || existing.tempId) === (msg.id || msg.tempId)
+          )
+      );
+
+      if (newMessages.length > 0) {
+        setChatMessages((prev) => [...prev, ...newMessages]);
+      }
     }
   }, [messages]);
 

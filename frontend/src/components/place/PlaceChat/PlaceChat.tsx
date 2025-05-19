@@ -366,9 +366,12 @@ export default function PlaceChat({
         {replyingTo && (
           <div className={styles.replyingToContainer}>
             <div className={styles.replyingToContent}>
-              <span className={styles.replyingToNickname}>
-                {replyingTo.nickname}
-              </span>
+              <div className={styles.replyingBox}>
+                <span className={styles.replyingToNickname}>
+                  {replyingTo.nickname}
+                </span>
+                <span className={styles.replyText}>에게 답장</span>
+              </div>
               <span className={styles.replyingToMessage}>
                 {replyingTo.content}
               </span>

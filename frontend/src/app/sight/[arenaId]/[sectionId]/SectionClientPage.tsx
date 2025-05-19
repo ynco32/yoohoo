@@ -94,48 +94,11 @@ export default function ClientSectionPage({
       <MiniMap arenaId={arenaId} currentSectionId={sectionId} />
 
       <div className={styles.seatMapContainer}>
-        <TransformWrapper
-          initialScale={1}
-          minScale={1}
-          maxScale={3}
-          centerOnInit={true}
-          limitToBounds={false}
-          wheel={{ step: 0.1 }}
-          doubleClick={{ disabled: false, mode: 'toggle' }}
-          panning={{ disabled: false, velocityDisabled: false }}
-          onZoom={({ state }) => {
-            // 확대/축소 상태 업데이트
-            setIsZoomed(state.scale !== 1);
-          }}
-        >
-          {({ zoomIn, zoomOut, resetTransform }) => (
-            <>
-              <TransformComponent
-                wrapperClass={styles.transformWrapper}
-                contentClass={styles.transformContent}
-              >
-                <SeatMap
-                  arenaId={arenaId}
-                  sectionId={sectionId}
-                  initialSeatData={initialSeatData}
-                />
-              </TransformComponent>
-
-              {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
-              {isZoomed && (
-                <div className={styles.zoomControls}>
-                  <button
-                    className={styles.resetZoomButton}
-                    onClick={() => resetTransform()}
-                  >
-                    <span className={styles.resetZoomIcon}>⟲</span>
-                    <span>초기화</span>
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </TransformWrapper>
+        <SeatMap
+          arenaId={arenaId}
+          sectionId={sectionId}
+          initialSeatData={initialSeatData}
+        />
       </div>
 
       <div className={styles.buttons}>

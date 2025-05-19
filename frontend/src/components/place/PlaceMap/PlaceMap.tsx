@@ -131,7 +131,7 @@ export default function PlaceMap({
       },
       {
         enableHighAccuracy: true,
-        timeout: 5000,
+        timeout: 10000,
       }
     );
   };

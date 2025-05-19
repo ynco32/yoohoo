@@ -61,7 +61,7 @@ export default function PlaceChat({
     const timeout = setTimeout(() => {
       messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
       didInitialScrollRef.current = true;
-    }, 50); // 브라우저 렌더링
+    }, 150); // 브라우저 렌더링 후 메시지 로딩
 
     return () => clearTimeout(timeout);
   }, [messages, isLoading]);

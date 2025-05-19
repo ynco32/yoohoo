@@ -13,35 +13,30 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  // 브라우저가 닫히거나 페이지가 새로고침될 때 세션 ID 관리
+  // 페이지 로드 시 세션 ID 초기화
   useEffect(() => {
-    // 세션 시작 시 세션 ID 설정
     if (typeof window !== 'undefined') {
-      // 이미 세션 ID가 있는지 확인
-      const currentSessionId = localStorage.getItem('sessionId');
-
-      // 세션 ID가 없으면 새로 생성
-      if (!currentSessionId) {
+      // 앱 초기 실행 시 세션 ID가 없으면 생성
+      const existingSessionId = localStorage.getItem('sessionId');
+      if (!existingSessionId) {
         localStorage.setItem('sessionId', Date.now().toString());
       }
+
+      // 브라우저 탭/창이 닫힐 때 처리하는 이벤트 핸들러
+      const handleBeforeUnload = () => {
+        // 브라우저나 탭이 닫힐 때 세션 ID를 변경하여 다음 실행 시 사용자 상태 초기화
+        const nextSessionId = `session_${Date.now()}`;
+        localStorage.setItem('sessionId', nextSessionId);
+      };
+
+      // 이벤트 리스너 등록
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      // 컴포넌트 언마운트 시 정리
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
-
-    // beforeunload 이벤트 핸들러: 페이지가 언로드되기 전에 실행
-    const handleBeforeUnload = () => {
-      if (typeof window !== 'undefined') {
-        // 새로고침이 아닌 브라우저/탭 닫기 시에만 세션 ID 재설정
-        // (페이지를 떠날 때만 세션 ID를 변경)
-        localStorage.setItem('sessionId', Date.now().toString());
-      }
-    };
-
-    // 이벤트 리스너 등록
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // 컴포넌트 언마운트 시 정리
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
   }, []);
 
   return (

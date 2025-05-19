@@ -46,33 +46,40 @@ const markerPersistConfig = {
 const sessionBasedTransform = createTransform(
   // 저장 시 변환 (state -> storage)
   (inboundState: Record<string, any>, key) => {
-    // 현재 시간을 저장
+    // 현재 세션 ID 가져오기
+    let currentSessionId = '';
+    if (typeof window !== 'undefined') {
+      currentSessionId = localStorage.getItem('sessionId') || '';
+      // 세션 ID가 없으면 새로 생성하고 저장
+      if (!currentSessionId) {
+        currentSessionId = Date.now().toString();
+        localStorage.setItem('sessionId', currentSessionId);
+      }
+    }
+
+    // 현재 시간과 세션 ID 저장
     return {
       ...inboundState,
       _sessionTimestamp: Date.now(),
-      _sessionId:
-        typeof window !== 'undefined'
-          ? localStorage.getItem('sessionId') || Date.now().toString()
-          : '',
+      _sessionId: currentSessionId,
     };
   },
   // 불러오기 시 변환 (storage -> state)
   (outboundState: Record<string, any>, key) => {
-    // 저장된 시간이 있고, 세션이 변경되었는지 확인
-    const savedTime = outboundState?._sessionTimestamp;
+    // 저장된 세션 ID
     const savedSessionId = outboundState?._sessionId;
 
-    // 세션 저장 시간이 없으면 기본 상태 반환
-    if (!savedTime) {
+    // 세션 ID가 없으면 그대로 반환
+    if (!savedSessionId) {
       return outboundState;
     }
 
-    // 세션 ID 확인용 localStorage에서 가져오기
+    // 현재 세션 ID 가져오기
     let currentSessionId = '';
     if (typeof window !== 'undefined') {
       currentSessionId = localStorage.getItem('sessionId') || '';
 
-      // 새로운 세션 ID 생성
+      // 세션 ID가 없으면 새로 생성
       if (!currentSessionId) {
         currentSessionId = Date.now().toString();
         localStorage.setItem('sessionId', currentSessionId);
@@ -80,11 +87,7 @@ const sessionBasedTransform = createTransform(
     }
 
     // 브라우저 세션이 변경된 경우 사용자 상태 초기화
-    if (
-      savedSessionId &&
-      currentSessionId &&
-      savedSessionId !== currentSessionId
-    ) {
+    if (savedSessionId !== currentSessionId) {
       // 사용자 슬라이스의 초기 상태
       return {
         data: null,

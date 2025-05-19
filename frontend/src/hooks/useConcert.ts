@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { ConcertInfo } from '@/types/mypage';
-import { editConcert, getConcerts } from '@/api/mypage/mypage';
+import { editConcert, getConcerts, getMyConcerts } from '@/api/mypage/mypage';
 import { useRouter } from 'next/navigation';
 import { ExceptionResponse } from '@/types/api';
+import { useBackNavigation } from './useBackNavigation';
 
 export const useConcert = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ export const useConcert = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const initialLoadDone = useRef<boolean>(false);
 
   // UI 상태값 추가
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
@@ -29,16 +31,105 @@ export const useConcert = () => {
     null
   );
 
+  // 뒤로가기 네비게이션 훅 사용
+  const { showExitConfirm, handleExit, confirmExit, cancelExit } =
+    useBackNavigation({
+      onConfirm: () => {
+        router.replace('/login/artist');
+      },
+    });
+
   const fetchConcerts = async (query: string = '', lastId?: number) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
+      // 초기 로딩시에만 사용자가 선택한 콘서트 목록 가져오기
+      if (!initialLoadDone.current) {
+        const selectedConcertResponse = await getMyConcerts();
+        if (selectedConcertResponse?.concerts) {
+          // 중복 없이 selected 배열과 selectedDatesMap 설정
+          const myConcertIds: number[] = [];
+          const myDatesMap: Record<
+            number,
+            { date: string; concertDetailId: number }[]
+          > = {};
+
+          selectedConcertResponse.concerts.forEach((concert) => {
+            myConcertIds.push(concert.concertId);
+
+            // 콘서트에서 알림 설정된 세션들 찾기
+            if (concert.sessions && concert.sessions.length > 0) {
+              const enabledSessions = concert.sessions.filter(
+                (session) => session.entranceNotificationEnabled
+              );
+
+              if (enabledSessions.length > 0) {
+                // 알림 설정된 세션들을 selectedDatesMap에 추가
+                myDatesMap[concert.concertId] = enabledSessions.map(
+                  (session) => ({
+                    date: session.startTime,
+                    concertDetailId: session.concertDetailId,
+                  })
+                );
+              } else {
+                myDatesMap[concert.concertId] = [];
+              }
+            } else {
+              myDatesMap[concert.concertId] = [];
+            }
+          });
+
+          setSelected(myConcertIds);
+          setSelectedDatesMap(myDatesMap);
+          initialLoadDone.current = true;
+
+          // 이제 콘서트 목록을 가져옵니다
+          const concertResponse = await getConcerts(query || undefined, lastId);
+
+          if (lastId) {
+            setConcerts((prev) => {
+              const newConcerts = concertResponse?.concerts ?? [];
+              const uniqueNewConcerts = newConcerts.filter(
+                (newConcert) =>
+                  !prev.some(
+                    (existingConcert) =>
+                      existingConcert.concertId === newConcert.concertId
+                  )
+              );
+
+              const updatedConcerts = [...prev, ...uniqueNewConcerts];
+              return updatedConcerts;
+            });
+          } else {
+            setConcerts(concertResponse?.concerts ?? []);
+          }
+
+          setIsLastPage(concertResponse?.isLastPage ?? true);
+          return; // 초기 로딩 완료 후 함수 종료
+        }
+      }
+
+      // 초기 로딩이 아니거나 초기 로딩에 실패한 경우
       const concertResponse = await getConcerts(query || undefined, lastId);
+
       if (lastId) {
-        setConcerts((prev) => [...prev, ...(concertResponse?.concerts ?? [])]);
+        setConcerts((prev) => {
+          const newConcerts = concertResponse?.concerts ?? [];
+          const uniqueNewConcerts = newConcerts.filter(
+            (newConcert) =>
+              !prev.some(
+                (existingConcert) =>
+                  existingConcert.concertId === newConcert.concertId
+              )
+          );
+
+          const updatedConcerts = [...prev, ...uniqueNewConcerts];
+          return updatedConcerts;
+        });
       } else {
         setConcerts(concertResponse?.concerts ?? []);
       }
+
       setIsLastPage(concertResponse?.isLastPage ?? true);
     } catch (error) {
       const apiError = error as ExceptionResponse;
@@ -70,7 +161,7 @@ export const useConcert = () => {
     } catch (error) {
       const apiError = error as ExceptionResponse;
       if (apiError.statusCode === 401) {
-        alert('로그인이 필요합니다.');
+        alert(apiError.message);
         router.replace('/onboarding');
         return;
       }
@@ -232,6 +323,7 @@ export const useConcert = () => {
   }, []);
 
   return {
+    router,
     concerts,
     selected,
     isLastPage,
@@ -244,6 +336,8 @@ export const useConcert = () => {
     selectedConcertForDate,
     isClosing,
     isConfirmModalOpen,
+    // 추가: 이탈 관련 상태
+    showExitConfirm,
     // 기존 핸들러
     handleSearch,
     handleSelect,
@@ -259,5 +353,9 @@ export const useConcert = () => {
     handleReselect,
     handleConfirmDeselect,
     handleCancelDeselect,
+    // 추가: 이탈 관련 핸들러
+    handleExit,
+    confirmExit,
+    cancelExit,
   };
 };

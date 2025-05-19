@@ -46,7 +46,7 @@ export default function UserSummary() {
   }, []);
 
   const handleSettingsClick = () => {
-    router.push('/settings');
+    router.push('/mypage/setting');
   };
 
   if (!user) {

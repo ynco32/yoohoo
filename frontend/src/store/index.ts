@@ -9,6 +9,7 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  createTransform,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import userReducer from './slices/userSlice';
@@ -41,23 +42,78 @@ const markerPersistConfig = {
   whitelist: ['markers', 'currentArenaId'], // 마커 데이터와 현재 경기장 ID만 지속
 };
 
-// 다른 persist 설정이 필요한 경우
+// 사용자 세션 기반 transform 설정
+const sessionBasedTransform = createTransform(
+  // 저장 시 변환 (state -> storage)
+  (inboundState: Record<string, any>, key) => {
+    // 현재 시간을 저장
+    return {
+      ...inboundState,
+      _sessionTimestamp: Date.now(),
+      _sessionId:
+        typeof window !== 'undefined'
+          ? localStorage.getItem('sessionId') || Date.now().toString()
+          : '',
+    };
+  },
+  // 불러오기 시 변환 (storage -> state)
+  (outboundState: Record<string, any>, key) => {
+    // 저장된 시간이 있고, 세션이 변경되었는지 확인
+    const savedTime = outboundState?._sessionTimestamp;
+    const savedSessionId = outboundState?._sessionId;
+
+    // 세션 저장 시간이 없으면 기본 상태 반환
+    if (!savedTime) {
+      return outboundState;
+    }
+
+    // 세션 ID 확인용 localStorage에서 가져오기
+    let currentSessionId = '';
+    if (typeof window !== 'undefined') {
+      currentSessionId = localStorage.getItem('sessionId') || '';
+
+      // 새로운 세션 ID 생성
+      if (!currentSessionId) {
+        currentSessionId = Date.now().toString();
+        localStorage.setItem('sessionId', currentSessionId);
+      }
+    }
+
+    // 브라우저 세션이 변경된 경우 사용자 상태 초기화
+    if (
+      savedSessionId &&
+      currentSessionId &&
+      savedSessionId !== currentSessionId
+    ) {
+      // 사용자 슬라이스의 초기 상태
+      return {
+        data: null,
+        isLoggedIn: false,
+        loading: false,
+        error: null,
+      };
+    }
+
+    // 세션이 동일하면 저장된 상태 반환 (세션 관련 필드 제외)
+    const { _sessionTimestamp, _sessionId, ...rest } = outboundState;
+    return rest;
+  }
+);
+
 // 사용자 정보 persist 설정
 const userPersistConfig = {
   key: 'user',
   storage,
   whitelist: ['data', 'isLoggedIn'], // 사용자 데이터와 로그인 상태만 유지
+  transforms: [sessionBasedTransform], // 세션 기반 변환 적용
 };
 
 // persist 적용
 const persistedArenaReducer = persistReducer(arenaPersistConfig, arenaReducer);
-
 const persistedMarkerReducer = persistReducer(
   markerPersistConfig,
   markerReducer
 );
-// 필요한 경우 user reducer에도 persist 적용
-// 사용자 정보에도 persist 적용
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 
 export const store = configureStore({

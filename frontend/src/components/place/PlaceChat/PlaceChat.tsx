@@ -57,13 +57,13 @@ export default function PlaceChat({
   useEffect(() => {
     if (isLoading || messages.length === 0 || didInitialScrollRef.current)
       return;
+    const container = messageListRef.current;
+    if (!container) return;
 
-    const timeout = setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
       didInitialScrollRef.current = true;
-    }, 150); // 브라우저 렌더링 후 메시지 로딩
-
-    return () => clearTimeout(timeout);
+    }, 100);
   }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장

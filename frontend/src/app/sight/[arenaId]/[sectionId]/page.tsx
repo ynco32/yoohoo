@@ -32,6 +32,13 @@ export default function SectionPage() {
   // 리뷰 바텀시트 위치 상태 (초기값: 'closed')
   const [sheetPosition, setSheetPosition] = useState<SheetPosition>('closed');
 
+  // 좌석이 선택되면 바텀시트 포지션을 half로 변경
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      setSheetPosition('half');
+    }
+  }, [selectedSeats]);
+
   // 전체 좌석에 대한 리뷰 보기 + 전체 좌석 선택
   const handleShowAllReviews = (position: SheetPosition = 'half') => {
     // 바텀시트 위치 설정
@@ -67,6 +74,7 @@ export default function SectionPage() {
   // 선택된 좌석 초기화
   const handleReset = () => {
     dispatch(resetSeats());
+    setSheetPosition('closed'); // 초기화 시 바텀시트도 닫기
   };
 
   // 리뷰 바텀시트 닫기 처리

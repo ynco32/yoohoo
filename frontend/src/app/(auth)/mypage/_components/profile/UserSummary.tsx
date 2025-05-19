@@ -34,7 +34,7 @@ export default function UserSummary() {
 
         setConcertCount(concertsResponse?.concerts?.length || 0);
         setArtistCount(artistsResponse?.artists?.length || 0);
-        setReviewCount(reviewsResponse?.reviewList?.length || 0);
+        setReviewCount(reviewsResponse?.reviews?.length || 0);
       } catch (error) {
         console.error('프로필 데이터 로딩 실패:', error);
       } finally {

@@ -53,17 +53,16 @@ export default function PlaceChat({
   const didInitialScrollRef = useRef(false);
 
   useEffect(() => {
-    if (messages.length === 0 || didInitialScrollRef.current) return;
+    if (isLoading || messages.length === 0 || didInitialScrollRef.current)
+      return;
 
-    didInitialScrollRef.current = true;
+    const timeout = setTimeout(() => {
+      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      didInitialScrollRef.current = true;
+    }, 50); // 브라우저 렌더링
 
-    // DOM 업데이트 완료 후 스크롤 반영
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      });
-    });
-  }, [messages]);
+    return () => clearTimeout(timeout);
+  }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {
@@ -145,24 +144,18 @@ export default function PlaceChat({
 
   // 인풋창 높이 계산
   useEffect(() => {
-    const inputArea = inputAreaRef.current;
+    if (isLoading) return;
 
-    if (!inputArea) return;
+    const inputArea = inputAreaRef.current;
+    const container = messageListRef.current;
+    if (!inputArea || !container) return;
 
     const inputBoxHeight = inputArea.offsetHeight;
 
-    const totalBottomPadding = inputBoxHeight + 10;
+    container.style.setProperty('--chat-bottom-padding', `${inputBoxHeight}px`);
 
-    const container = messageListRef.current;
-    if (container) {
-      container.style.setProperty(
-        '--chat-bottom-padding',
-        `${totalBottomPadding}px`
-      );
-    }
-
-    setBottomOffset(totalBottomPadding);
-  }, [inputHeight, replyingTo]);
+    setBottomOffset(inputBoxHeight);
+  }, [inputHeight, replyingTo, isLoading]);
 
   // 하단 이동 버튼 클릭 핸들러
   const handleScrollToNewMessage = () => {
@@ -293,13 +286,12 @@ export default function PlaceChat({
     return groups;
   }
 
-  const hasMessages = messages.length > 0;
-
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const allMessages = hasMessages
+  const shouldShowSystemMessage = true;
+  const messagesWithSystem = shouldShowSystemMessage
     ? [...messages, systemMessage]
-    : [systemMessage];
-  const grouped = groupMessagesByDate(allMessages);
+    : messages;
+  const grouped = groupMessagesByDate(messagesWithSystem);
 
   // 오류 처리
   if (error) {
@@ -369,9 +361,12 @@ export default function PlaceChat({
         {replyingTo && (
           <div className={styles.replyingToContainer}>
             <div className={styles.replyingToContent}>
-              <span className={styles.replyingToNickname}>
-                {replyingTo.nickname}
-              </span>
+              <div className={styles.replyingBox}>
+                <span className={styles.replyingToNickname}>
+                  {replyingTo.nickname}
+                </span>
+                <span className={styles.replyText}>에게 답장</span>
+              </div>
               <span className={styles.replyingToMessage}>
                 {replyingTo.content}
               </span>

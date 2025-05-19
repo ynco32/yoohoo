@@ -16,7 +16,8 @@ import {
 } from '@/lib/constants/review';
 import { useImageScroller } from '@/hooks/useImageScroller';
 import { useTruncatedText } from '@/hooks/useTruncatedText';
-
+import { useState } from 'react'; // 상태 관리를 위해 useState 추가
+import { useRouter } from 'next/navigation';
 // 기본 등급 정보 (fallback)
 const defaultGradeInfo = { label: '정보 없음', color: '#dddddd' };
 
@@ -33,6 +34,10 @@ const findOptionByValue = <T extends string | number>(
 };
 
 export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
+  // 이미지 확대 모달 상태
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
   // API 응답의 photoUrls를 ReviewPhoto 형태로 변환
   const photos: ReviewPhoto[] = (review.photoUrls || []).map((url, index) => ({
     reviewPhotoId: index, // 임시 ID 부여
@@ -68,6 +73,36 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
     review.screenGrade
   );
 
+  // 이미지 클릭 핸들러
+  const handleImageClick = (index: number) => {
+    // 드래그 중에는 모달이 열리지 않도록 방지
+    if (!isDragging) {
+      setSelectedImageIndex(index);
+      setShowImageModal(true);
+    }
+  };
+
+  // 모달 닫기 핸들러
+  const closeImageModal = () => {
+    setShowImageModal(false);
+  };
+
+  // 다음 이미지로 이동 (모달 내에서)
+  const goToNextImage = () => {
+    if (selectedImageIndex < photos.length - 1) {
+      setSelectedImageIndex(selectedImageIndex + 1);
+    }
+  };
+
+  // 이전 이미지로 이동 (모달 내에서)
+  const goToPrevImage = () => {
+    if (selectedImageIndex > 0) {
+      setSelectedImageIndex(selectedImageIndex - 1);
+    }
+  };
+
+  const router = useRouter();
+
   // 등급 뱃지 렌더링 함수
   const renderGradeBadge = (
     label: string,
@@ -88,8 +123,8 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   // ReviewData 형태로 변환 (ReviewHeader 컴포넌트에 전달하기 위함)
   const reviewData: ReviewData = {
     reviewId: review.reviewId,
-    userId: 0, // 임시값, 실제로는 서버에서 제공해야 함
-    concertId: 0, // 임시값, 실제로는 서버에서 제공해야 함
+    concertId: review.concertId || 0,
+    profileNumber: review.profileNumber,
     concertTitle: review.concertName,
     seatId: review.seatId,
     section: review.section,
@@ -113,8 +148,17 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   return (
     <div className={styles.reviewCard}>
       {/* 리뷰 헤더 */}
-      <ReviewHeader review={reviewData} onEdit={onEdit} />
 
+      <div
+        onClick={() => {
+          // 명시적인 이벤트 핸들러가 없을 때만 라우팅
+          if (!isDragging) {
+            router.push(`/sight/reviews/${reviewData.reviewId}`);
+          }
+        }}
+      >
+        <ReviewHeader review={reviewData} onEdit={onEdit} />
+      </div>
       {/* 리뷰 사진 (가로 스크롤) */}
       {photos.length > 0 && (
         <div className={styles.photoContainer}>
@@ -139,6 +183,8 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
                   sizes='100vw'
                   className={styles.reviewPhoto}
                   draggable={false} // 이미지 드래그 방지
+                  onClick={() => handleImageClick(index)} // 클릭 이벤트 추가
+                  style={{ cursor: 'pointer' }} // 포인터 커서 추가
                 />
               </div>
             ))}
@@ -219,6 +265,92 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
         {renderGradeBadge('무대', stageInfo)}
         {renderGradeBadge('스크린', screenInfo)}
       </div>
+
+      {/* 이미지 확대 모달 */}
+      {showImageModal && photos.length > 0 && (
+        <div className={styles.imageModal} onClick={closeImageModal}>
+          <div
+            className={styles.imageModalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className={styles.closeButton}
+              onClick={closeImageModal}
+              aria-label='닫기'
+            >
+              &times;
+            </button>
+
+            <div className={styles.modalImageContainer}>
+              <Image
+                src={photos[selectedImageIndex].photoUrl}
+                alt={`확대된 리뷰 사진 ${selectedImageIndex + 1}`}
+                width={0}
+                height={0}
+                sizes='100vw'
+                className={styles.modalImage}
+                priority
+              />
+            </div>
+
+            {photos.length > 1 && (
+              <div className={styles.modalNavigation}>
+                <button
+                  className={`${styles.modalNavButton} ${
+                    selectedImageIndex === 0 ? styles.disabled : ''
+                  }`}
+                  onClick={goToPrevImage}
+                  disabled={selectedImageIndex === 0}
+                  aria-label='이전 이미지'
+                >
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M15 18L9 12L15 6'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </button>
+
+                <span className={styles.modalCounter}>
+                  {selectedImageIndex + 1} / {photos.length}
+                </span>
+
+                <button
+                  className={`${styles.modalNavButton} ${
+                    selectedImageIndex === photos.length - 1
+                      ? styles.disabled
+                      : ''
+                  }`}
+                  onClick={goToNextImage}
+                  disabled={selectedImageIndex === photos.length - 1}
+                  aria-label='다음 이미지'
+                >
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M9 6L15 12L9 18'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

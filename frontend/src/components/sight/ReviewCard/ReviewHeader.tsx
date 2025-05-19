@@ -20,10 +20,11 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   const { deleteReview } = useReview(review.reviewId);
 
   // 현재 로그인한 사용자가 작성자인지 확인
-  const isAuthor = user?.userId === review.userId;
+  const isAuthor = user?.nickname === review.nickName;
   const router = useRouter();
 
-  const handleMenuClick = () => {
+  const handleMenuClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
     setShowMenu(!showMenu);
   };
 
@@ -40,9 +41,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
 
         if (success) {
           console.log('리뷰가 성공적으로 삭제되었습니다.');
-          // 삭제 후 리뷰 목록 페이지로 이동
-          router.push('/sight/reviews');
-          // 또는 상위 컴포넌트에 삭제 이벤트 알림
+          window.location.reload();
           if (onEdit) {
             onEdit();
           }
@@ -64,20 +63,20 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
     }
   };
 
-  const handleDeleteClick = () => {
-    setShowMenu(false);
-    setShowDeleteModal(true);
-  };
-
   const handleEdit = () => {
     // 실제 환경에서는 아래 코드 사용
-    router.push(`/sight/reviews/${review.reviewId}/edit`);
+    router.push(`/sight/reviews/edit/${review.reviewId}`);
+  };
 
-    // 스토리북 테스트 환경용 코드
-    // console.log(`Edit review ${review.reviewId}`);
-    // if (onEdit) {
-    //   onEdit();
-    // }
+  // 수정 및 삭제 버튼용 이벤트 핸들러 (이벤트 버블링 방지)
+  const handleEditClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    handleEdit();
+  };
+
+  const handleDeleteClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    handleDelete();
   };
 
   useEffect(() => {
@@ -97,14 +96,14 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   }, [showMenu]);
 
   // 좌석 정보 문자열 생성 (실제로는 ReviewData 인터페이스의 getSeatInfoString 메서드 사용 가능)
-  const seatInfo = `${review.section} ${review.rowLine}열`;
+  const seatInfo = `${review.section}구역 ${review.rowLine}열`;
 
   return (
     <>
       <div className={styles.header}>
         <div className={styles.profileWrapper}>
           <Image
-            src={review.profilePicture}
+            src={`/images/profiles/profile-${review.profileNumber}.png`}
             alt={`${review.nickName}의 프로필 사진`}
             width={0}
             height={0}
@@ -119,7 +118,10 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
             <div className={styles.bottomRow}>
               <span className={styles.concertTitle}>{review.concertTitle}</span>
               {isAuthor && (
-                <div className={styles.menuContainer}>
+                <div
+                  className={styles.menuContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     onClick={handleMenuClick}
                     className={styles.menuButton}
@@ -128,7 +130,10 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
                   </button>
                   {showMenu && (
                     <div className={styles.dropdownMenu}>
-                      <button onClick={handleEdit} className={styles.menuItem}>
+                      <button
+                        onClick={handleEditClick}
+                        className={styles.menuItem}
+                      >
                         수정
                       </button>
                       <button

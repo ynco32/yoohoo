@@ -161,23 +161,24 @@ export default function TextInput({
           </button>
         )}
       </div>
-
-      <div className={styles.messageContainer}>
-        <div className={styles.messageWrapper}>
-          {(hasError || hasSuccess) && (
+      {(hasError || hasSuccess) && (
+        <div className={styles.messageContainer}>
+          <div className={styles.messageWrapper}>
             <p
-              className={`${styles.message} ${hasError ? styles.errorMessage : styles.successMessage}`}
+              className={`${styles.message} ${
+                hasError ? styles.errorMessage : styles.successMessage
+              }`}
             >
               {hasError ? errorMessage : successMessage}
             </p>
+          </div>
+          {maxLength && (
+            <span className={styles.lengthIndicator}>
+              {value.length} / {maxLength}
+            </span>
           )}
         </div>
-        {maxLength && (
-          <span className={styles.lengthIndicator}>
-            {value.length} / {maxLength}
-          </span>
-        )}
-      </div>
+      )}
     </div>
   );
 }

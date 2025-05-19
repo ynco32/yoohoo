@@ -1,6 +1,6 @@
 // src/pages/sight/reviews/[reviewId].tsx
 'use client';
-
+import { useAppSelector } from '@/store/reduxHooks';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
@@ -29,7 +29,11 @@ export default function ReviewDetailPage() {
   const { review, isLoading, error, deleteReview } = useReview(
     reviewId as string
   );
+  const user = useAppSelector((state) => state.user.data);
+  const isAuthor = user?.nickname === review?.nickname;
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   // 삭제 다이얼로그 열기/닫기
   const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
@@ -56,7 +60,7 @@ export default function ReviewDetailPage() {
 
   // 리뷰 목록으로 돌아가기
   const handleBackToList = () => {
-    router.push('/sight/reviews');
+    router.push('/sight/');
   };
 
   // 리뷰 작성 날짜 포맷팅
@@ -131,63 +135,56 @@ export default function ReviewDetailPage() {
 
   return (
     <div className={styles.container}>
-      {/* 공연 정보 헤더 */}
-      <div className={styles.paper}>
-        <div className={styles.header}>
-          <div className={styles.icon}>{/* 공연 아이콘 */}</div>
-          <div className={styles.concertInfo}>
-            <p className={styles.arenaName}>{review.arenaName}</p>
-            <h1 className={styles.concertName}>{review.concertName}</h1>
+      {/* 대표 사진 & 정보 헤더 */}
+      <div className={styles.heroSection}>
+        {review.photoUrls && review.photoUrls.length > 0 && (
+          <div className={styles.heroImage}>
+            <Image
+              src={review.photoUrls[currentPhotoIndex]}
+              alt='공연장 전경'
+              layout='fill'
+              objectFit='cover'
+            />
+          </div>
+        )}
+
+        <div className={styles.concertOverlay}>
+          <div className={styles.concertBadge}>
+            <Image
+              src={`/images/profiles/profile-${review.profileNumber}.png`}
+              alt={`${review.nickname}의 프로필 사진`}
+              width={30}
+              height={30}
+              className={styles.badgeIcon}
+            />
+            <span className={styles.concertName}>{review.concertName}</span>
           </div>
         </div>
-
-        {/* 좌석 정보 */}
-        <h2 className={styles.seatInfo}>
-          {review.section}구역 {review.rowLine}열 {review.columnLine}번
-        </h2>
       </div>
 
-      {/* 등급 평가 */}
-      <div className={styles.gradeGrid}>
-        <div className={styles.gradeItem}>
-          <span
-            className={styles.chip}
-            style={{ backgroundColor: artistGradeOption.color }}
-          >
-            {artistGradeOption.label}
-          </span>
-          <span className={styles.gradeLabel}>아티스트 시야</span>
-        </div>
-        <div className={styles.gradeItem}>
-          <span
-            className={styles.chip}
-            style={{ backgroundColor: stageGradeOption.color }}
-          >
-            {stageGradeOption.label}
-          </span>
-          <span className={styles.gradeLabel}>무대 시야</span>
-        </div>
-        <div className={styles.gradeItem}>
-          <span
-            className={styles.chip}
-            style={{ backgroundColor: screenGradeOption.color }}
-          >
-            {screenGradeOption.label}
-          </span>
-          <span className={styles.gradeLabel}>스크린 시야</span>
+      {/* 좌석 정보 카드 */}
+      <div className={styles.seatCard}>
+        <h2 className={styles.seatTitle}>{review.arenaName}</h2>
+        <h1 className={styles.seatLocation}>
+          {review.section}구역 {review.rowLine}열 {review.columnLine}번
+        </h1>
+
+        {/* 등급 평가 칩 */}
+        <div className={styles.gradeChips}>
+          <div className={`${styles.chip} ${styles.artistChip}`}>
+            <span className={styles.chipLabel}>{artistGradeOption.label}</span>
+          </div>
+          <div className={`${styles.chip} ${styles.stageChip}`}>
+            <span className={styles.chipLabel}>{stageGradeOption.label}</span>
+          </div>
+          <div className={`${styles.chip} ${styles.screenChip}`}>
+            <span className={styles.chipLabel}>{screenGradeOption.label}</span>
+          </div>
         </div>
       </div>
 
       {/* 리뷰 내용 */}
-      <div className={styles.paper}>
-        <div className={styles.userInfo}>
-          <div className={styles.user}>
-            <div className={styles.avatar}></div>
-            <span className={styles.nickname}>{review.nickname}</span>
-          </div>
-          <span className={styles.date}>{formatDate(review.createdAt)}</span>
-        </div>
-
+      <div className={styles.reviewContent}>
         <p className={styles.content}>{review.content}</p>
 
         {(review.cameraBrand || review.cameraModel) && (
@@ -200,42 +197,55 @@ export default function ReviewDetailPage() {
         )}
       </div>
 
-      {/* 현장 사진 */}
-      {review.photoUrls && review.photoUrls.length > 0 && (
-        <div className={styles.paper}>
-          <h3>현장 사진</h3>
+      {/* 현장 사진 갤러리 */}
+      {review.photoUrls && review.photoUrls.length > 1 && (
+        <div className={styles.photoGallery}>
+          <h3>더 많은 사진 보기</h3>
           <div className={styles.photoGrid}>
             {review.photoUrls.map((photoUrl, index) => (
-              <div className={styles.photoItem} key={index}>
-                <img src={photoUrl} alt={`리뷰 이미지 ${index + 1}`} />
+              <div
+                className={`${styles.photoItem} ${
+                  currentPhotoIndex === index ? styles.active : ''
+                }`}
+                key={index}
+                onClick={() => setCurrentPhotoIndex(index)}
+              >
+                <Image
+                  src={photoUrl}
+                  alt={`리뷰 이미지 ${index + 1}`}
+                  width={100}
+                  height={100}
+                  layout='responsive'
+                  objectFit='cover'
+                />
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* 액션 버튼 */}
+      {/* 다른 리뷰 보기 버튼 */}
       <div className={styles.actions}>
-        <button
-          className={`${styles.button} ${styles.primary}`}
-          onClick={handleEditReview}
-        >
-          <span className={styles.icon}>✏️</span>
-          수정하기
-        </button>
-        <button
-          className={`${styles.button} ${styles.error}`}
-          onClick={handleOpenDeleteDialog}
-        >
-          <span className={styles.icon}>🗑️</span>
-          삭제하기
-        </button>
-        <button
-          className={`${styles.button} ${styles.outlined}`}
-          onClick={handleBackToList}
-        >
+        <button className={styles.outlined} onClick={handleBackToList}>
           다른 리뷰 보기
         </button>
+        {/* 작성자인 경우에만 삭제/수정 버튼 표시 */}
+        {isAuthor && (
+          <>
+            <button
+              className={`${styles.outlined} ${styles.edit}`}
+              onClick={handleEditReview}
+            >
+              수정
+            </button>
+            <button
+              className={`${styles.outlined} ${styles.delete}`}
+              onClick={handleOpenDeleteDialog}
+            >
+              삭제
+            </button>
+          </>
+        )}
       </div>
 
       {/* 삭제 확인 다이얼로그 */}

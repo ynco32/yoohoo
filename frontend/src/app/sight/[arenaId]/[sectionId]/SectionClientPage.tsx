@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MiniMap from '@/components/sight/MiniMap/MiniMap';
 import ReviewsBottomSheet from './ReviewsBottomSheet';
 import SeatMap from '@/components/sight/SeatMap/SeatMap';
@@ -34,6 +34,31 @@ export default function ClientSectionPage({
 
   // 리뷰 바텀시트 위치 상태 (초기값: 'closed')
   const [sheetPosition, setSheetPosition] = useState<SheetPosition>('closed');
+
+  // 마지막으로 선택한 좌석 상태 추가
+  const [lastSelectedSeat, setLastSelectedSeat] = useState<{
+    row: string;
+    column: number;
+  } | null>(null);
+
+  // 선택된 좌석이 변경될 때마다 마지막 선택한 좌석 업데이트
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      const lastSeat = selectedSeats[selectedSeats.length - 1];
+      if (
+        lastSeat &&
+        lastSeat.arenaId === arenaId &&
+        lastSeat.sectionId === sectionId
+      ) {
+        setLastSelectedSeat({
+          row: lastSeat.row,
+          column: lastSeat.seat,
+        });
+      }
+    } else {
+      setLastSelectedSeat(null);
+    }
+  }, [selectedSeats, arenaId, sectionId]);
 
   // 전체 좌석에 대한 리뷰 보기 + 전체 좌석 선택
   const handleShowAllReviews = (position: SheetPosition = 'half') => {
@@ -69,6 +94,7 @@ export default function ClientSectionPage({
   // 선택된 좌석 초기화
   const handleReset = () => {
     dispatch(resetSeats());
+    setLastSelectedSeat(null);
   };
 
   // 리뷰 바텀시트 닫기 처리
@@ -94,48 +120,11 @@ export default function ClientSectionPage({
       <MiniMap arenaId={arenaId} currentSectionId={sectionId} />
 
       <div className={styles.seatMapContainer}>
-        <TransformWrapper
-          initialScale={1}
-          minScale={1}
-          maxScale={3}
-          centerOnInit={true}
-          limitToBounds={false}
-          wheel={{ step: 0.1 }}
-          doubleClick={{ disabled: false, mode: 'toggle' }}
-          panning={{ disabled: false, velocityDisabled: false }}
-          onZoom={({ state }) => {
-            // 확대/축소 상태 업데이트
-            setIsZoomed(state.scale !== 1);
-          }}
-        >
-          {({ zoomIn, zoomOut, resetTransform }) => (
-            <>
-              <TransformComponent
-                wrapperClass={styles.transformWrapper}
-                contentClass={styles.transformContent}
-              >
-                <SeatMap
-                  arenaId={arenaId}
-                  sectionId={sectionId}
-                  initialSeatData={initialSeatData}
-                />
-              </TransformComponent>
-
-              {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
-              {isZoomed && (
-                <div className={styles.zoomControls}>
-                  <button
-                    className={styles.resetZoomButton}
-                    onClick={() => resetTransform()}
-                  >
-                    <span className={styles.resetZoomIcon}>⟲</span>
-                    <span>초기화</span>
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </TransformWrapper>
+        <SeatMap
+          arenaId={arenaId}
+          sectionId={sectionId}
+          initialSeatData={initialSeatData}
+        />
       </div>
 
       <div className={styles.buttons}>
@@ -161,6 +150,7 @@ export default function ClientSectionPage({
         selectedSeats={selectedSeatIds}
         position={sheetPosition}
         onClose={handleCloseReviews}
+        lastSelectedSeat={lastSelectedSeat}
       />
     </>
   );

@@ -22,7 +22,12 @@
 }
 
 // 공통 섹션 스타일
-.seatInfo,
+.seatInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .image,
 .sightReview,
 .content,

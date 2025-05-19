@@ -23,7 +23,7 @@
 .messageList {
   position: relative;
   padding: 0 16px;
-  padding-bottom: 10px;
+  min-height: 300px;
 }
 
 .dateLabel {
@@ -47,7 +47,6 @@
 .systemMessageContainer {
   display: flex;
   justify-content: center;
-  margin: 16px 0;
 }
 
 .systemMessage {
@@ -86,14 +85,21 @@
 .replyingToContent {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   overflow: hidden;
 }
 
 .replyingToNickname {
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 600;
   color: $con-blue;
   margin-bottom: 2px;
+}
+
+.replyText {
+  font-size: 12px;
+  margin-left: 3px;
+  color: #777;
 }
 
 .replyingToMessage {

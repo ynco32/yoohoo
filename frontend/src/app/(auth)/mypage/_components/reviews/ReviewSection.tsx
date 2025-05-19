@@ -19,7 +19,7 @@ export default function ReviewSection() {
       try {
         setLoading(true);
         const response = await reviewApi.getMyReviews();
-        setReviews(response?.reviewList || []);
+        setReviews(response?.reviews || []);
       } catch (error) {
         console.error('리뷰 데이터 로딩 실패:', error);
       } finally {

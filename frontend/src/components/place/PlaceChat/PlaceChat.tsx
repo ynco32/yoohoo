@@ -55,18 +55,17 @@ export default function PlaceChat({
   const didInitialScrollRef = useRef(false);
 
   useEffect(() => {
-    if (isLoading || chatMessages.length === 0) return;
-
-    // 이미 스크롤 했으면 다시 하지 않음
-    if (didInitialScrollRef.current) return;
+    if (isLoading || chatMessages.length === 0 || didInitialScrollRef.current)
+      return;
 
     const container = messageListRef.current;
     if (!container) return;
 
-    // requestAnimationFrame 사용하여 렌더링 직후 스크롤 처리
     requestAnimationFrame(() => {
-      container.scrollTop = container.scrollHeight;
-      didInitialScrollRef.current = true;
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+        didInitialScrollRef.current = true;
+      });
     });
   }, [chatMessages, isLoading]);
 
@@ -268,42 +267,50 @@ export default function PlaceChat({
     isSystem: true,
   };
 
+  // 공지 메시지 렌더링 여부 상태
+  const [showSystem, setShowSystem] = useState(false);
+
   // 최초 메시지 불러왔을 때 공지 메시지 추가
   useEffect(() => {
-    // 로딩 중이면 아무것도 하지 않음
-    if (isLoading) return;
+    if (isLoading || initialized) return;
 
-    if (!initialized) {
-      // 로딩이 완료되었을 때만 초기화
-      if (messages.length === 0) {
-        // 최초 로딩 시 메시지가 없으면 공지만
-        setChatMessages([systemMessage]);
-      } else {
-        // 최초 로딩 시 메시지가 있으면 메시지 + 공지
-        setChatMessages([...messages, systemMessage]);
-      }
-      setInitialized(true);
-    } else if (initialized && messages.length > 0) {
-      // 이후 새 메시지 추가
-      const newMessages = messages.filter(
-        (msg) =>
-          !chatMessages.some(
-            (existing) =>
-              (existing.id || existing.tempId) === (msg.id || msg.tempId)
-          )
+    const hasMessages = messages.length > 0;
+
+    setChatMessages(
+      hasMessages ? [...messages, systemMessage] : [systemMessage]
+    );
+    setShowSystem(true);
+
+    // 공지 5초 뒤 제거
+    setTimeout(() => {
+      setChatMessages((prev) =>
+        prev.filter((msg) => msg.id !== systemMessage.id)
       );
+      setShowSystem(false);
+    }, 5000);
 
-      if (newMessages.length > 0) {
-        setChatMessages((prev) => [...prev, ...newMessages]);
-      }
+    setInitialized(true);
+  }, [messages, isLoading, initialized]);
+
+  // 이후 새 메시지 추가 반영
+  useEffect(() => {
+    if (!initialized || messages.length === 0) return;
+
+    const newMessages = messages.filter(
+      (msg) =>
+        !chatMessages.some((m) => (m.id || m.tempId) === (msg.id || msg.tempId))
+    );
+
+    if (newMessages.length > 0) {
+      setChatMessages((prev) => [...prev, ...newMessages]);
     }
-  }, [messages, isLoading]);
+  }, [messages]);
 
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {
     const groups: { [date: string]: Message[] } = {};
-
     messages.forEach((msg) => {
+      if (msg.id === 'system-guide') return; // 공지 제외
       const dateStr = new Date(msg.createdAt || '').toLocaleDateString(
         'ko-KR',
         {
@@ -313,18 +320,16 @@ export default function PlaceChat({
           weekday: 'long',
         }
       );
-
-      if (!groups[dateStr]) {
-        groups[dateStr] = [];
-      }
+      if (!groups[dateStr]) groups[dateStr] = [];
       groups[dateStr].push(msg);
     });
-
     return groups;
   }
 
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const grouped = groupMessagesByDate(chatMessages);
+  const grouped = Object.entries(groupMessagesByDate(chatMessages)).sort(
+    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+  );
 
   // 오류 처리
   if (error) {
@@ -345,8 +350,22 @@ export default function PlaceChat({
               메시지를 불러오는 중...
             </div>
           )}
-          {/* 메세지 렌더링 */}
-          {Object.entries(grouped).map(([date, messagesForDate]) => (
+
+          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
+          {showSystem && (
+            <div className={styles.systemMessageContainer}>
+              <div className={styles.systemMessage}>
+                {systemMessage.content}
+              </div>
+            </div>
+          )}
+
+          {/* 🔹 일반 메시지 그룹 렌더링 */}
+          {grouped.length === 0 && !showSystem && (
+            <div className={styles.noMessage}>질문을 시작해보세요!</div>
+          )}
+
+          {grouped.map(([date, messagesForDate]) => (
             <div key={date}>
               <div className={styles.dateDivider}>{date}</div>
               {messagesForDate.map((msg, index) => {
@@ -358,11 +377,7 @@ export default function PlaceChat({
                       prevMsg.isSystem)
                 );
 
-                return msg.isSystem ? (
-                  <div key={msg.id} className={styles.systemMessageContainer}>
-                    <div className={styles.systemMessage}>{msg.content}</div>
-                  </div>
-                ) : (
+                return (
                   <div
                     key={msg.id || msg.tempId}
                     id={`message-${msg.id || msg.tempId}`}
@@ -386,6 +401,7 @@ export default function PlaceChat({
               })}
             </div>
           ))}
+
           <div ref={messageEndRef} />
         </div>
       </div>

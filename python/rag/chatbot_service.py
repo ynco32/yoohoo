@@ -72,37 +72,29 @@ class ConcertChatbot:
             if not chain:
                 return {
                     "answer": "죄송합니다, 해당 콘서트 정보를 처리할 수 없습니다 뿌우...",
-                    "has_evidence_image": False
+                    "has_evidence_image": False,
+                    "evidence_image_url": None,
+                    "source_documents": []
                 }
             
             # 질의 처리
             response = query_rag_system(chain, query, concert_id)
             
             # 시각적 증거 추가 (좌표가 있는 경우만)
-            evidence_image_path = None
-            if response["evidence_coordinates"] and len(response["evidence_coordinates"]) > 0:
+            evidence_image_url = None
+            if response.get("evidence_coordinates") and len(response["evidence_coordinates"]) > 0:
                 # 첫 번째 좌표 사용 (GPT가 선택한 좌표)
                 coordinates = response["evidence_coordinates"][0]
                 
-                # 이미지 크롭
-                evidence_image = ImageCropper.get_evidence_image(concert_id, coordinates)
-                
-                # 이미지 저장
-                if evidence_image:
-                    # 고유한 파일명 생성
-                    image_filename = f"evidence_{uuid.uuid4().hex}.jpg"
-                    image_path = os.path.join(self.temp_dir, image_filename)
-                    
-                    # 이미지 저장
-                    ImageCropper.save_cropped_image(evidence_image, image_path)
-                    evidence_image_path = image_path
-                    logger.info(f"증거 이미지 저장 완료: {image_path}")
+                # 이미지 크롭 및 S3 저장 (URL 반환)
+                evidence_image_url = ImageCropper.get_evidence_image(concert_id, coordinates)
+                logger.info(f"증거 이미지 URL: {evidence_image_url}")
             
             # 최종 응답 생성
             final_response = {
-                "answer": response["answer"],
-                "has_evidence_image": evidence_image_path is not None,
-                "evidence_image_path": evidence_image_path,
+                "answer": response.get("answer", "답변을 생성할 수 없습니다 뿌우..."),
+                "has_evidence_image": evidence_image_url is not None,
+                "evidence_image_url": evidence_image_url,  # S3 URL
                 "source_documents": response.get("source_documents", [])
             }
             
@@ -114,5 +106,7 @@ class ConcertChatbot:
             logger.error(traceback.format_exc())
             return {
                 "answer": f"죄송합니다, 질문 처리 중 오류가 발생했습니다 뿌우...",
-                "has_evidence_image": False
+                "has_evidence_image": False,
+                "evidence_image_url": None,
+                "source_documents": []
             }

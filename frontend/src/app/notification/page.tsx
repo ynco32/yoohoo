@@ -17,6 +17,7 @@ export default function NotificationPage() {
     fetchNotifications,
     markAsRead,
     markAllAsRead,
+    deleteAllNotifications,
   } = useNotifications();
 
   // 모달 상태 관리
@@ -66,8 +67,7 @@ export default function NotificationPage() {
           {notifications.length > 0 && (
             <button
               className={styles.readAllButton}
-              onClick={markAllAsRead}
-              disabled={!hasUnread}
+              onClick={deleteAllNotifications}
             >
               알림함 비우기
             </button>

@@ -51,8 +51,9 @@
 
 .readAllButton {
   border-radius: $border-radius-sm;
-  background-color: $con-blue;
-  color: white;
+  background-color: #fff;
+  color: $text-main;
+  padding: $spacing-xs $spacing-sm;
   border: none;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
@@ -60,7 +61,8 @@
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: darken($con-blue, 10%);
+    background-color: $con-blue;
+    color: white;
   }
 
   &:disabled {

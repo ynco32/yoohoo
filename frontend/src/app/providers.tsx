@@ -13,29 +13,34 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  // 페이지 로드 시 세션 ID 초기화
+  // 페이지 로드 시 브라우저 세션 관리
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // 앱 초기 실행 시 세션 ID가 없으면 생성
-      const existingSessionId = localStorage.getItem('sessionId');
-      if (!existingSessionId) {
-        localStorage.setItem('sessionId', Date.now().toString());
+      // 브라우저 세션 ID 관리
+      // sessionStorage는 브라우저가 닫힐 때만 초기화되므로 이 값의 존재 여부로 브라우저 세션 판단
+      const browserSessionKey = 'browser_session_active';
+      const isBrowserSessionActive = sessionStorage.getItem(browserSessionKey);
+
+      if (!isBrowserSessionActive) {
+        // 새 브라우저 세션 시작 (브라우저가 닫혔다가 다시 열림)
+        console.log('새 브라우저 세션 시작 - 사용자 정보 초기화 필요');
+
+        // 브라우저 세션 마커 설정
+        sessionStorage.setItem(browserSessionKey, 'true');
+
+        // 새 세션 ID 설정 (로컬스토리지에는 계속 보관)
+        const newSessionId = `browser_session_${Date.now()}`;
+        localStorage.setItem('session_id', newSessionId);
+
+        // 사용자 상태 초기화 필요 플래그 설정
+        localStorage.setItem('reset_user_state', 'true');
+      } else {
+        // 기존 브라우저 세션 유지 (새로고침)
+        console.log('기존 브라우저 세션 유지 - 사용자 정보 유지');
+
+        // 사용자 상태 초기화 필요 없음
+        localStorage.removeItem('reset_user_state');
       }
-
-      // 브라우저 탭/창이 닫힐 때 처리하는 이벤트 핸들러
-      const handleBeforeUnload = () => {
-        // 브라우저나 탭이 닫힐 때 세션 ID를 변경하여 다음 실행 시 사용자 상태 초기화
-        const nextSessionId = `session_${Date.now()}`;
-        localStorage.setItem('sessionId', nextSessionId);
-      };
-
-      // 이벤트 리스너 등록
-      window.addEventListener('beforeunload', handleBeforeUnload);
-
-      // 컴포넌트 언마운트 시 정리
-      return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-      };
     }
   }, []);
 

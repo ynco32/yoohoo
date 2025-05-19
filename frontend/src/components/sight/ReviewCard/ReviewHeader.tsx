@@ -23,7 +23,8 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   const isAuthor = user?.nickname === review.nickName;
   const router = useRouter();
 
-  const handleMenuClick = () => {
+  const handleMenuClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
     setShowMenu(!showMenu);
   };
 
@@ -67,6 +68,17 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
     router.push(`/sight/reviews/edit/${review.reviewId}`);
   };
 
+  // 수정 및 삭제 버튼용 이벤트 핸들러 (이벤트 버블링 방지)
+  const handleEditClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    handleEdit();
+  };
+
+  const handleDeleteClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    handleDelete();
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -106,7 +118,10 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
             <div className={styles.bottomRow}>
               <span className={styles.concertTitle}>{review.concertTitle}</span>
               {isAuthor && (
-                <div className={styles.menuContainer}>
+                <div
+                  className={styles.menuContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     onClick={handleMenuClick}
                     className={styles.menuButton}
@@ -115,11 +130,14 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
                   </button>
                   {showMenu && (
                     <div className={styles.dropdownMenu}>
-                      <button onClick={handleEdit} className={styles.menuItem}>
+                      <button
+                        onClick={handleEditClick}
+                        className={styles.menuItem}
+                      >
                         수정
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={handleDeleteClick}
                         className={styles.deleteButton}
                       >
                         삭제

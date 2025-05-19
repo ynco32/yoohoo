@@ -17,8 +17,7 @@ import {
 import { useImageScroller } from '@/hooks/useImageScroller';
 import { useTruncatedText } from '@/hooks/useTruncatedText';
 import { useState } from 'react'; // 상태 관리를 위해 useState 추가
-import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
 // 기본 등급 정보 (fallback)
 const defaultGradeInfo = { label: '정보 없음', color: '#dddddd' };
 
@@ -102,6 +101,8 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
     }
   };
 
+  const router = useRouter();
+
   // 등급 뱃지 렌더링 함수
   const renderGradeBadge = (
     label: string,
@@ -147,9 +148,17 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   return (
     <div className={styles.reviewCard}>
       {/* 리뷰 헤더 */}
-      <Link href={`/sight/reviews/${reviewData.reviewId}`}>
+
+      <div
+        onClick={() => {
+          // 명시적인 이벤트 핸들러가 없을 때만 라우팅
+          if (!isDragging) {
+            router.push(`/sight/reviews/${reviewData.reviewId}`);
+          }
+        }}
+      >
         <ReviewHeader review={reviewData} onEdit={onEdit} />
-      </Link>
+      </div>
       {/* 리뷰 사진 (가로 스크롤) */}
       {photos.length > 0 && (
         <div className={styles.photoContainer}>

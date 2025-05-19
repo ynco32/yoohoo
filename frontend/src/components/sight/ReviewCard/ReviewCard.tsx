@@ -88,8 +88,8 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   // ReviewData 형태로 변환 (ReviewHeader 컴포넌트에 전달하기 위함)
   const reviewData: ReviewData = {
     reviewId: review.reviewId,
-    userId: 0, // 임시값, 실제로는 서버에서 제공해야 함
-    concertId: 0, // 임시값, 실제로는 서버에서 제공해야 함
+    concertId: review.concertId || 0,
+    profileNumber: review.profileNumber,
     concertTitle: review.concertName,
     seatId: review.seatId,
     section: review.section,

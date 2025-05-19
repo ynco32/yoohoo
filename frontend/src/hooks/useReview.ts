@@ -46,13 +46,16 @@ export function useReview(reviewId?: string | number) {
       setIsLoading(true);
       setError(null);
 
+      // reviewApi.createReview는 ApiResponse<number>를 반환함
       const response = await reviewApi.createReview(data, files);
 
-      if (response.error) {
+      // ApiResponse<number> 형태의 응답에서 에러가 있는지 확인
+      if (response.error && response.error.message) {
         throw new Error(response.error.message);
       }
 
-      return response.data.reviewId;
+      // 응답의 data 필드가 reviewId이므로 이를 반환
+      return response.data;
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -73,8 +76,8 @@ export function useReview(reviewId?: string | number) {
     try {
       const response = await reviewApi.getReviewById(id);
       // response에서 리뷰 데이터 추출
-      if (response && response.data) {
-        setReview(response.data.data);
+      if (response) {
+        setReview(response);
       } else {
         setError('리뷰 정보를 찾을 수 없습니다.');
       }
@@ -96,9 +99,9 @@ export function useReview(reviewId?: string | number) {
     setError(null);
     try {
       const response = await reviewApi.updateReview(id, reviewData, files);
-      if (response && response.data) {
-        setReview(response.data);
-        return response.data;
+      if (response) {
+        setReview(response);
+        return response;
       }
     } catch (err: any) {
       setError(err.message || '리뷰를 수정하는 중 오류가 발생했습니다.');

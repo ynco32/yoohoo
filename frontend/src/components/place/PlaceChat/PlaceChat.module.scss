@@ -13,7 +13,7 @@
   padding-bottom: var(--chat-bottom-padding, 10px);
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100dvh - 110px);
+  height: calc(100dvh - 120px);
 
   &::-webkit-scrollbar {
     display: none;

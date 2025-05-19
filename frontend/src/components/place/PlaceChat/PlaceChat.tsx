@@ -55,12 +55,14 @@ export default function PlaceChat({
   useEffect(() => {
     if (messages.length === 0 || didInitialScrollRef.current) return;
 
-    const timeout = setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      didInitialScrollRef.current = true;
-    }, 50);
+    didInitialScrollRef.current = true;
 
-    return () => clearTimeout(timeout);
+    // DOM 업데이트 완료 후 스크롤 반영
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      });
+    });
   }, [messages]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -396,11 +398,6 @@ export default function PlaceChat({
           </button>
         )}
       </div>
-      {!isConnected && (
-        <div className={styles.connectionMessage}>
-          채팅 서버에 연결 중입니다...
-        </div>
-      )}
     </div>
   );
 }

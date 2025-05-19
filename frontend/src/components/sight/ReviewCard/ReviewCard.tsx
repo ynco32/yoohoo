@@ -17,6 +17,7 @@ import {
 import { useImageScroller } from '@/hooks/useImageScroller';
 import { useTruncatedText } from '@/hooks/useTruncatedText';
 import { useState } from 'react'; // 상태 관리를 위해 useState 추가
+import Link from 'next/link';
 
 // 기본 등급 정보 (fallback)
 const defaultGradeInfo = { label: '정보 없음', color: '#dddddd' };
@@ -146,8 +147,9 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
   return (
     <div className={styles.reviewCard}>
       {/* 리뷰 헤더 */}
-      <ReviewHeader review={reviewData} onEdit={onEdit} />
-
+      <Link href={`/sight/reviews/${reviewData.reviewId}`}>
+        <ReviewHeader review={reviewData} onEdit={onEdit} />
+      </Link>
       {/* 리뷰 사진 (가로 스크롤) */}
       {photos.length > 0 && (
         <div className={styles.photoContainer}>

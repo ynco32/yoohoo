@@ -257,6 +257,18 @@ export default function PlaceChat({
     setReplyingTo(null);
   };
 
+  // 안내 메시지
+  const systemMessage: Message = {
+    id: 'system-guide',
+    nickname: '',
+    time: '',
+    content: `폭언, 음란, 불법 행위, 상업적 홍보 등\n
+      채팅방 사용을 저해하는 활동에 대해\n
+      메세지 삭제 및 계정 정지 조치를 할 수 있습니다.`,
+    createdAt: new Date().toISOString(),
+    isSystem: true,
+  };
+
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {
     const groups: { [date: string]: Message[] } = {};
@@ -281,7 +293,13 @@ export default function PlaceChat({
     return groups;
   }
 
-  const grouped = groupMessagesByDate(messages);
+  const hasMessages = messages.length > 0;
+
+  // 시스템 메시지까지 포함시킨 후 그룹핑
+  const allMessages = hasMessages
+    ? [...messages, systemMessage]
+    : [systemMessage];
+  const grouped = groupMessagesByDate(allMessages);
 
   // 오류 처리
   if (error) {
@@ -307,26 +325,32 @@ export default function PlaceChat({
             <div key={date}>
               <div className={styles.dateDivider}>{date}</div>
 
-              {messagesForDate.map((msg) => (
-                <div
-                  id={`message-${msg.id || msg.tempId}`}
-                  key={msg.id || msg.tempId}
-                >
-                  <MessageItem
-                    message={msg}
-                    replyTo={msg.replyTo}
-                    onReply={() => handleReply(msg)}
-                    onReplyClick={
-                      msg.replyTo
-                        ? () =>
-                            scrollToMessage(
-                              msg.replyTo?.id || msg.replyTo?.tempId || ''
-                            )
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
+              {messagesForDate.map((msg) =>
+                msg.isSystem ? (
+                  <div key={msg.id} className={styles.systemMessageContainer}>
+                    <div className={styles.systemMessage}>{msg.content}</div>
+                  </div>
+                ) : (
+                  <div
+                    key={msg.id || msg.tempId}
+                    id={`message-${msg.id || msg.tempId}`}
+                  >
+                    <MessageItem
+                      message={msg}
+                      replyTo={msg.replyTo}
+                      onReply={() => handleReply(msg)}
+                      onReplyClick={
+                        msg.replyTo
+                          ? () =>
+                              scrollToMessage(
+                                msg.replyTo?.id || msg.replyTo?.tempId || ''
+                              )
+                          : undefined
+                      }
+                    />
+                  </div>
+                )
+              )}
             </div>
           ))}
           <div ref={messageEndRef} />

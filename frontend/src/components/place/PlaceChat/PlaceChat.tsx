@@ -55,15 +55,19 @@ export default function PlaceChat({
   const didInitialScrollRef = useRef(false);
 
   useEffect(() => {
-    if (isLoading || chatMessages.length === 0 || didInitialScrollRef.current)
-      return;
+    if (isLoading || chatMessages.length === 0) return;
+
+    // 이미 스크롤 했으면 다시 하지 않음
+    if (didInitialScrollRef.current) return;
+
     const container = messageListRef.current;
     if (!container) return;
 
-    setTimeout(() => {
+    // requestAnimationFrame 사용하여 렌더링 직후 스크롤 처리
+    requestAnimationFrame(() => {
       container.scrollTop = container.scrollHeight;
       didInitialScrollRef.current = true;
-    }, 100);
+    });
   }, [chatMessages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -266,7 +270,11 @@ export default function PlaceChat({
 
   // 최초 메시지 불러왔을 때 공지 메시지 추가
   useEffect(() => {
+    // 로딩 중이면 아무것도 하지 않음
+    if (isLoading) return;
+
     if (!initialized) {
+      // 로딩이 완료되었을 때만 초기화
       if (messages.length === 0) {
         // 최초 로딩 시 메시지가 없으면 공지만
         setChatMessages([systemMessage]);
@@ -289,7 +297,7 @@ export default function PlaceChat({
         setChatMessages((prev) => [...prev, ...newMessages]);
       }
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {

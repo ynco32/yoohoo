@@ -12,7 +12,7 @@ interface ReviewsBottomSheetProps {
   arenaId: string;
   sectionId: string;
   selectedSeats: string[];
-  position?: 'full' | 'half' | 'closed'; // position을 props로 받도록 추가
+  position?: 'full' | 'half' | 'closed';
   onClose: () => void;
 }
 
@@ -20,11 +20,18 @@ export default function ReviewsBottomSheet({
   arenaId,
   sectionId,
   selectedSeats,
-  position = 'half', // 기본값은 'half'
+  position = 'half',
   onClose,
 }: ReviewsBottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+
+  console.log('ReviewsBottomSheet 렌더링:', {
+    arenaId,
+    sectionId,
+    selectedSeats,
+    position,
+  });
 
   // 구역 전체 리뷰 가져오기
   const {
@@ -33,17 +40,35 @@ export default function ReviewsBottomSheet({
     error,
   } = useSectionReviews(arenaId, sectionId);
 
+  console.log('모든 리뷰:', allReviews);
+  console.log('로딩 상태:', isLoading);
+  console.log('에러 상태:', error);
+
   // 필터링된 리뷰 - 선택된 좌석이 없으면 모든 리뷰, 있으면 해당 좌석들의 리뷰만
   const filteredReviews =
     selectedSeats.length > 0
-      ? allReviews.filter((review) =>
-          selectedSeats.includes(review.seatId.toString())
-        )
+      ? allReviews.filter((review) => {
+          // 타입 문제 처리: seatId를 항상 문자열로 변환하여 비교
+          const reviewSeatId = review.seatId.toString();
+          const isIncluded = selectedSeats.includes(reviewSeatId);
+
+          console.log('좌석 ID 비교:', {
+            reviewSeatId,
+            reviewSeatIdType: typeof review.seatId,
+            selectedSeats,
+            isIncluded,
+          });
+
+          return isIncluded;
+        })
       : allReviews;
+
+  console.log('필터링된 리뷰:', filteredReviews);
+  console.log('필터링된 리뷰 개수:', filteredReviews.length);
 
   // 바텀 시트 제스처 제어 - useDraggableSheet 훅 사용
   const { handlers, style } = useDraggableSheet({
-    position, // props로 받은 position 사용
+    position,
     onClose,
   });
 
@@ -60,24 +85,32 @@ export default function ReviewsBottomSheet({
   }, [onClose]);
 
   // ReviewCard에 필요한 형태로 review 데이터 변환
-  const mapReviewForCard = (review: any) => ({
-    reviewId: review.reviewId || 0,
-    nickname: review.nickname || '익명',
-    concertName: review.concertName || '공연 정보 없음',
-    arenaName: review.arenaName || '공연장 정보 없음',
-    section: review.section || sectionId,
-    seatId: review.seatId || 0,
-    rowLine: review.rowLine || 0,
-    columnLine: review.columnLine || 0,
-    artistGrade: review.artistGrade || ArtistGrade.MODERATE,
-    stageGrade: review.stageGrade || StageGrade.CLEAR,
-    screenGrade: review.screenGrade || ScreenGrade.CLEAR,
-    content: review.content || '',
-    createdAt: review.createdAt || new Date().toISOString(),
-    photoUrls: review.photoUrls || [],
-    cameraBrand: review.cameraBrand,
-    cameraModel: review.cameraModel,
-  });
+  const mapReviewForCard = (review: any) => {
+    console.log('매핑 전 리뷰 데이터:', review);
+
+    const mappedReview = {
+      reviewId: review.reviewId || 0,
+      nickname: review.nickname || '익명',
+      concertName: review.concertName || '공연 정보 없음',
+      arenaName: review.arenaName || '공연장 정보 없음',
+      section: review.section || sectionId,
+      seatId: review.seatId || 0,
+      rowLine: review.rowLine || 0,
+      columnLine: review.columnLine || 0,
+      artistGrade: review.artistGrade || ArtistGrade.MODERATE,
+      stageGrade: review.stageGrade || StageGrade.CLEAR,
+      screenGrade: review.screenGrade || ScreenGrade.CLEAR,
+      content: review.content || '',
+      createdAt: review.createdAt || new Date().toISOString(),
+      photoUrls: review.photoUrls || [],
+      cameraBrand: review.cameraBrand,
+      cameraModel: review.cameraModel,
+    };
+
+    console.log('매핑 후 리뷰 데이터:', mappedReview);
+
+    return mappedReview;
+  };
 
   // 스크롤 이벤트 처리
   const handleScroll = useCallback(() => {
@@ -118,8 +151,6 @@ export default function ReviewsBottomSheet({
                 </>
               )}
             </div>
-
-            {/* 스크랩 버튼 부분은 생략 (선택적 추가) */}
           </div>
 
           {/* 컨텐츠 영역 */}
@@ -136,11 +167,18 @@ export default function ReviewsBottomSheet({
                   <span className={styles.errorText}>
                     리뷰를 불러오는데 실패했습니다.
                   </span>
+                  <pre>{JSON.stringify(error, null, 2)}</pre>
                 </div>
               ) : filteredReviews.length === 0 ? (
                 <div className={styles.messageState}>
                   <p>선택한 좌석에 대한 리뷰가 없습니다.</p>
-                  {/* <EmptyState message='선택한 좌석에 대한 리뷰가 없습니다.' /> */}
+                  <p>
+                    디버깅 정보: 선택된 좌석 {selectedSeats.length}개, 전체 리뷰{' '}
+                    {allReviews.length}개
+                  </p>
+                  {selectedSeats.length > 0 && (
+                    <p>선택된 좌석 ID: {selectedSeats.join(', ')}</p>
+                  )}
                 </div>
               ) : (
                 <div className={styles.reviewsWrapper}>

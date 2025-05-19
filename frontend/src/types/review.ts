@@ -1,5 +1,3 @@
-// src/types/review.ts
-
 export enum ArtistGrade {
   VERY_CLOSE = 'VERY_CLOSE',
   CLOSE = 'CLOSE',
@@ -41,8 +39,8 @@ export interface Review {
   stageGrade: StageGrade;
   screenGrade: ScreenGrade;
   content: string;
-  cameraBrand?: string;
-  cameraModel?: string;
+  cameraBrand?: string | null;
+  cameraModel?: string | null;
   createdAt: string;
   photoUrls: string[];
 }
@@ -68,8 +66,8 @@ export interface ReviewData {
   stageGrade: StageGrade;
   screenGrade: ScreenGrade;
   content: string;
-  cameraBrand?: string;
-  cameraModel?: string;
+  cameraBrand?: string | null;
+  cameraModel?: string | null;
   createdAt: string;
   nickName: string;
   profilePicture: string;
@@ -121,5 +119,5 @@ export interface ReviewUpdateRequest {
 }
 
 export interface ReviewListApi {
-  reviewList: Review[];
+  reviews: Review[];
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MiniMap from '@/components/sight/MiniMap/MiniMap';
 import ReviewsBottomSheet from './ReviewsBottomSheet';
 import SeatMap from '@/components/sight/SeatMap/SeatMap';
@@ -34,6 +34,31 @@ export default function ClientSectionPage({
 
   // 리뷰 바텀시트 위치 상태 (초기값: 'closed')
   const [sheetPosition, setSheetPosition] = useState<SheetPosition>('closed');
+
+  // 마지막으로 선택한 좌석 상태 추가
+  const [lastSelectedSeat, setLastSelectedSeat] = useState<{
+    row: string;
+    column: number;
+  } | null>(null);
+
+  // 선택된 좌석이 변경될 때마다 마지막 선택한 좌석 업데이트
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      const lastSeat = selectedSeats[selectedSeats.length - 1];
+      if (
+        lastSeat &&
+        lastSeat.arenaId === arenaId &&
+        lastSeat.sectionId === sectionId
+      ) {
+        setLastSelectedSeat({
+          row: lastSeat.row,
+          column: lastSeat.seat,
+        });
+      }
+    } else {
+      setLastSelectedSeat(null);
+    }
+  }, [selectedSeats, arenaId, sectionId]);
 
   // 전체 좌석에 대한 리뷰 보기 + 전체 좌석 선택
   const handleShowAllReviews = (position: SheetPosition = 'half') => {
@@ -69,6 +94,7 @@ export default function ClientSectionPage({
   // 선택된 좌석 초기화
   const handleReset = () => {
     dispatch(resetSeats());
+    setLastSelectedSeat(null);
   };
 
   // 리뷰 바텀시트 닫기 처리
@@ -124,6 +150,7 @@ export default function ClientSectionPage({
         selectedSeats={selectedSeatIds}
         position={sheetPosition}
         onClose={handleCloseReviews}
+        lastSelectedSeat={lastSelectedSeat}
       />
     </>
   );

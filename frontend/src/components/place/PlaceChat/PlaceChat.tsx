@@ -293,13 +293,12 @@ export default function PlaceChat({
     return groups;
   }
 
-  const hasMessages = messages.length > 0;
-
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const allMessages = hasMessages
+  const shouldShowSystemMessage = true;
+  const messagesWithSystem = shouldShowSystemMessage
     ? [...messages, systemMessage]
-    : [systemMessage];
-  const grouped = groupMessagesByDate(allMessages);
+    : messages;
+  const grouped = groupMessagesByDate(messagesWithSystem);
 
   // 오류 처리
   if (error) {

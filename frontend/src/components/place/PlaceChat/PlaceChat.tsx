@@ -55,12 +55,14 @@ export default function PlaceChat({
   useEffect(() => {
     if (messages.length === 0 || didInitialScrollRef.current) return;
 
-    const timeout = setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      didInitialScrollRef.current = true;
-    }, 50);
+    didInitialScrollRef.current = true;
 
-    return () => clearTimeout(timeout);
+    // DOM 업데이트 완료 후 스크롤 반영
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      });
+    });
   }, [messages]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -257,6 +259,16 @@ export default function PlaceChat({
     setReplyingTo(null);
   };
 
+  // 안내 메시지
+  const systemMessage: Message = {
+    id: 'system-guide',
+    nickname: '',
+    time: '',
+    content: `폭언, 음란, 불법 행위, 상업적 홍보 등\n채팅방 사용을 저해하는 활동에 대해\n메세지 삭제 및 계정 정지 조치를 할 수 있습니다.`,
+    createdAt: new Date().toISOString(),
+    isSystem: true,
+  };
+
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {
     const groups: { [date: string]: Message[] } = {};
@@ -281,7 +293,13 @@ export default function PlaceChat({
     return groups;
   }
 
-  const grouped = groupMessagesByDate(messages);
+  const hasMessages = messages.length > 0;
+
+  // 시스템 메시지까지 포함시킨 후 그룹핑
+  const allMessages = hasMessages
+    ? [...messages, systemMessage]
+    : [systemMessage];
+  const grouped = groupMessagesByDate(allMessages);
 
   // 오류 처리
   if (error) {
@@ -306,27 +324,41 @@ export default function PlaceChat({
           {Object.entries(grouped).map(([date, messagesForDate]) => (
             <div key={date}>
               <div className={styles.dateDivider}>{date}</div>
+              {messagesForDate.map((msg, index) => {
+                const prevMsg = messagesForDate[index - 1];
+                const showNickname = Boolean(
+                  !msg.isSystem &&
+                    (!prevMsg ||
+                      prevMsg.nickname !== msg.nickname ||
+                      prevMsg.isSystem)
+                );
 
-              {messagesForDate.map((msg) => (
-                <div
-                  id={`message-${msg.id || msg.tempId}`}
-                  key={msg.id || msg.tempId}
-                >
-                  <MessageItem
-                    message={msg}
-                    replyTo={msg.replyTo}
-                    onReply={() => handleReply(msg)}
-                    onReplyClick={
-                      msg.replyTo
-                        ? () =>
-                            scrollToMessage(
-                              msg.replyTo?.id || msg.replyTo?.tempId || ''
-                            )
-                        : undefined
-                    }
-                  />
-                </div>
-              ))}
+                return msg.isSystem ? (
+                  <div key={msg.id} className={styles.systemMessageContainer}>
+                    <div className={styles.systemMessage}>{msg.content}</div>
+                  </div>
+                ) : (
+                  <div
+                    key={msg.id || msg.tempId}
+                    id={`message-${msg.id || msg.tempId}`}
+                  >
+                    <MessageItem
+                      message={msg}
+                      replyTo={msg.replyTo}
+                      onReply={() => handleReply(msg)}
+                      onReplyClick={
+                        msg.replyTo
+                          ? () =>
+                              scrollToMessage(
+                                msg.replyTo?.id || msg.replyTo?.tempId || ''
+                              )
+                          : undefined
+                      }
+                      showNickname={showNickname}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ))}
           <div ref={messageEndRef} />
@@ -374,11 +406,6 @@ export default function PlaceChat({
           </button>
         )}
       </div>
-      {!isConnected && (
-        <div className={styles.connectionMessage}>
-          채팅 서버에 연결 중입니다...
-        </div>
-      )}
     </div>
   );
 }

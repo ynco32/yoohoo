@@ -40,6 +40,7 @@
   word-break: break-word;
   position: relative;
   min-width: 36px;
+  max-width: 350px;
   min-height: 24px;
   cursor: pointer;
 }
@@ -73,10 +74,10 @@
 }
 
 .replyBox {
-  padding: 10px 0 0;
   cursor: pointer;
   color: $text-sub;
   font-size: $font-size-xs;
+  white-space: wrap;
 }
 
 .replyDivider {
@@ -92,7 +93,8 @@
   font-size: $font-size-xs;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-all;
+  white-space: wrap;
   line-height: 1.2;
 }
 

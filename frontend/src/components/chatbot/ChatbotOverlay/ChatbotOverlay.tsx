@@ -19,6 +19,27 @@ export default function ChatbotOverlay({
   const [isAnimating, setIsAnimating] = useState(false);
   const firstRender = useRef(true);
 
+  // 아이폰에서 높이 계산
+  useEffect(() => {
+    // iOS 감지 (TypeScript 오류 없이)
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
+    if (isIOS && isOpen) {
+      // iOS에서 오버레이가 열릴 때 실제 화면 높이를 계산하여 적용
+      const chatbotContainer = document.querySelector(
+        `.${styles.chatbotContainer}`
+      ) as HTMLElement;
+
+      if (chatbotContainer) {
+        const viewportHeight = window.innerHeight;
+        chatbotContainer.style.height = `${viewportHeight}px`;
+        chatbotContainer.style.top = '0';
+        chatbotContainer.style.position = 'fixed';
+      }
+    }
+  }, [isOpen, styles.chatbotContainer]);
+
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false;

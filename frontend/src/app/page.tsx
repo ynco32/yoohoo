@@ -53,7 +53,7 @@ export default function Home() {
         router.push('/main');
       } else {
         // 로그인 상태이지만 닉네임이 설정되지 않은 경우 닉네임 설정 페이지로 이동
-        router.push('/nickname-setting');
+        router.push('/login/nick');
       }
     } else {
       // 로그인 상태가 아닌 경우 온보딩 페이지로 이동

@@ -1,8 +1,9 @@
-// src/pages/sight/reviews/edit/[reviewId].tsx
+// app/sight/reviews/edit/[reviewId]/page.tsx
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // next/navigation 사용
+import { useParams } from 'next/navigation'; // 파라미터용
 import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
@@ -20,20 +21,20 @@ import {
 } from '@/lib/constants';
 
 export default function EditReviewPage() {
+  // App Router와 호환되는 방식으로 라우터와 파라미터 사용
   const router = useRouter();
-  const { reviewId } = router.query;
+  const params = useParams<{ reviewId: string }>();
+  const reviewId = params?.reviewId;
+  const [isLoading, setIsLoading] = useState(true);
 
-  // reviewId가 없으면 리스트 페이지로 리다이렉트
+  // 데이터 로딩 상태 관리
   useEffect(() => {
-    if (!reviewId && router.isReady) {
+    if (reviewId) {
+      setIsLoading(false);
+    } else {
       router.push('/sight/reviews');
     }
-  }, [reviewId, router.isReady]);
-
-  // reviewId가 없으면 로딩 표시
-  if (!reviewId) {
-    return <div className={styles.loading}>Loading...</div>;
-  }
+  }, [reviewId, router]);
 
   const {
     reviewData,
@@ -41,7 +42,7 @@ export default function EditReviewPage() {
     existingImages,
     selectedBrand,
     availableModels,
-    isLoading,
+    isFormSubmitting,
     error,
     submitSuccess,
     handleChange,
@@ -50,7 +51,7 @@ export default function EditReviewPage() {
     handleRemoveExistingImage,
     handleSubmit,
     isFormValid,
-  } = useReviewEditForm(reviewId as string);
+  } = useReviewEditForm(reviewId || '');
 
   // ImageUpload 컴포넌트의 onChange 타입에 맞게 핸들러 래핑
   const handleImageChange = (files: (File | string)[] | null) => {
@@ -64,6 +65,11 @@ export default function EditReviewPage() {
       originalHandleImageChange([]);
     }
   };
+
+  // 로딩 표시
+  if (isLoading) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
 
   return (
     <div className={styles.container}>
@@ -234,11 +240,11 @@ export default function EditReviewPage() {
           <Button
             variant='primary'
             onClick={handleSubmit}
-            disabled={!isFormValid() || isLoading}
+            disabled={!isFormValid() || isFormSubmitting}
             fontSize={18}
             padding='12px 0'
           >
-            {isLoading ? '수정 중...' : '수정 완료'}
+            {isFormSubmitting ? '수정 중...' : '수정 완료'}
           </Button>
         </div>
       </div>

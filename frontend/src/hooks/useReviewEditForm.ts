@@ -1,6 +1,7 @@
 // src/hooks/useReviewEditForm.ts
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+'use client';
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useReview } from '@/hooks/useReview';
 import {
   ArtistGrade,
@@ -8,7 +9,7 @@ import {
   ScreenGrade,
   ReviewUpdateRequest,
 } from '@/types/review';
-import { CAMERA_BRANDS, CAMERA_MODELS } from '@/lib/constants';
+import { CAMERA_MODELS } from '@/lib/constants';
 
 export const useReviewEditForm = (reviewId: string | number) => {
   const router = useRouter();
@@ -37,15 +38,16 @@ export const useReviewEditForm = (reviewId: string | number) => {
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
   // 카메라 관련 상태
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [availableModels, setAvailableModels] = useState<
-    { label: string; value: string }[]
-  >([]);
-
-  // 제출 상태
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false); // 이름 변경: isSubmitting → isFormSubmitting
   const [error, setError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // 선택된 브랜드에 따라 사용 가능한 모델 목록 결정 (useMemo 사용)
+  const availableModels = useMemo(() => {
+    if (!selectedBrand) return [];
+    return CAMERA_MODELS[selectedBrand] || [];
+  }, [selectedBrand]);
 
   // 리뷰 데이터가 로드되면 폼 초기화
   useEffect(() => {
@@ -59,8 +61,8 @@ export const useReviewEditForm = (reviewId: string | number) => {
         stageGrade: review.stageGrade,
         screenGrade: review.screenGrade,
         content: review.content,
-        cameraBrand: review.cameraBrand,
-        cameraModel: review.cameraModel,
+        cameraBrand: '',
+        cameraModel: '',
         existingPhotoUrls: review.photoUrls,
       });
 
@@ -70,11 +72,6 @@ export const useReviewEditForm = (reviewId: string | number) => {
       // 카메라 브랜드 설정
       if (review.cameraBrand) {
         setSelectedBrand(review.cameraBrand);
-
-        // 해당 브랜드의 모델 목록 설정
-        if (CAMERA_MODELS[review.cameraBrand]) {
-          setAvailableModels(CAMERA_MODELS[review.cameraBrand]);
-        }
       }
     }
   }, [review]);
@@ -95,12 +92,6 @@ export const useReviewEditForm = (reviewId: string | number) => {
       cameraBrand: brand,
       cameraModel: '', // 브랜드 변경 시 모델 초기화
     }));
-
-    if (brand && CAMERA_MODELS[brand]) {
-      setAvailableModels(CAMERA_MODELS[brand]);
-    } else {
-      setAvailableModels([]);
-    }
   };
 
   // 새 이미지 업로드 처리
@@ -136,7 +127,7 @@ export const useReviewEditForm = (reviewId: string | number) => {
   const handleSubmit = async () => {
     if (!isFormValid() || !reviewId) return;
 
-    setIsSubmitting(true);
+    setIsFormSubmitting(true); // 이름 변경: setIsSubmitting → setIsFormSubmitting
     setError(null);
     setSubmitSuccess(false);
 
@@ -172,7 +163,7 @@ export const useReviewEditForm = (reviewId: string | number) => {
       setError(err.message || '리뷰 수정 중 오류가 발생했습니다.');
       console.error('리뷰 수정 오류:', err);
     } finally {
-      setIsSubmitting(false);
+      setIsFormSubmitting(false); // 이름 변경: setIsSubmitting → setIsFormSubmitting
     }
   };
 
@@ -182,7 +173,8 @@ export const useReviewEditForm = (reviewId: string | number) => {
     existingImages,
     selectedBrand,
     availableModels,
-    isLoading: isLoadingReview || isSubmitting,
+    isLoading: isLoadingReview,
+    isFormSubmitting, // isSubmitting 대신 isFormSubmitting 반환
     error: error || reviewError,
     submitSuccess,
     handleChange,

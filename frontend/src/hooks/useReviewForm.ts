@@ -123,7 +123,7 @@ export const useReviewForm = () => {
         setTimeout(() => {
           // 성공 후 페이지 이동
           router.push(`/sight/reviews/${reviewId}`);
-        }, 2000);
+        }, 500);
       }
     } catch (err) {
       console.error('리뷰 제출 오류:', err);

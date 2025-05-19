@@ -29,4 +29,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 	void markAllAsRead(@Param("user") User user);
 
 	boolean existsByUserAndConcertAndNotificationType(User user, Concert concert, NotificationType type);
+
+	void deleteAllByUser(User user);
 }

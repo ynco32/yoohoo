@@ -106,4 +106,15 @@ public class NotificationFacadeService {
 		userService.updateNotificationEnabled(user);
 	}
 
+	@Transactional
+	public void deleteAllNotifications(User user) {
+		writeService.deleteAllNotifications(user);
+	}
+
+	@Transactional
+	public void deleteNotification(User user, Long notificationId) {
+		Notification notification = readService.getNotification(notificationId);
+		readService.validateMyNotification(notification, user.getUserId());
+		writeService.deleteNotification(notificationId);
+	}
 }

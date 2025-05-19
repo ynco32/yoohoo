@@ -42,4 +42,15 @@ public class NotificationWriteService {
 		notificationRepository.findById(notificationId)
 			.ifPresent(Notification::markAsRead);
 	}
+
+
+	public void deleteAllNotifications(User user) {
+
+		notificationRepository.deleteAllByUser(user);
+	}
+
+	public void deleteNotification(Long notificationId) {
+
+		notificationRepository.deleteById(notificationId);
+	}
 }

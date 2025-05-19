@@ -1,5 +1,5 @@
 // src/hooks/useReviewForm.ts
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useReview } from '@/hooks/useReview';
 import {
@@ -9,7 +9,6 @@ import {
   ScreenGrade,
 } from '@/types/review';
 import { CAMERA_MODELS } from '@/lib/constants';
-import { validateReviewForm } from '@/lib/utils/reviewValidation';
 
 export const useReviewForm = () => {
   const router = useRouter();
@@ -17,13 +16,13 @@ export const useReviewForm = () => {
 
   // 리뷰 데이터 상태 관리
   const [reviewData, setReviewData] = useState<ReviewRequest>({
-    concertId: 0, // 초기값 설정
-    section: '', // 초기값 설정
-    rowLine: '', // 초기값 설정
-    columnLine: 0, // 초기값 설정
-    artistGrade: ArtistGrade.MODERATE, // 초기값 설정
-    stageGrade: StageGrade.CLEAR, // 초기값 설정
-    screenGrade: ScreenGrade.CLEAR, // 초기값 설정
+    concertId: 0,
+    section: '',
+    rowLine: '',
+    columnLine: 0,
+    artistGrade: ArtistGrade.MODERATE,
+    stageGrade: StageGrade.CLEAR,
+    screenGrade: ScreenGrade.CLEAR,
     content: '',
     cameraBrand: undefined,
     cameraModel: undefined,
@@ -49,6 +48,11 @@ export const useReviewForm = () => {
 
   // 값 변경 핸들러
   const handleChange = (key: keyof ReviewRequest, value: any) => {
+    // rowLine은 항상 문자열로 저장
+    if (key === 'rowLine') {
+      value = String(value); // 어떤 타입이든 확실하게 문자열로 변환
+    }
+
     setReviewData((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -73,19 +77,41 @@ export const useReviewForm = () => {
       // 최대 3개로 제한
       const limitedFiles = fileObjects.slice(0, 3);
       setImageFiles(limitedFiles);
+
+      // 이미지 파일의 URL 미리보기 생성 (UI에 표시용)
+      const imageUrls = limitedFiles.map((file) => URL.createObjectURL(file));
+
+      // reviewData의 photos 필드 업데이트
+      setReviewData((prev) => ({
+        ...prev,
+        photos: imageUrls,
+      }));
     } else {
       setImageFiles([]);
+      setReviewData((prev) => ({
+        ...prev,
+        photos: undefined,
+      }));
     }
   };
 
   // 폼 유효성 검사
   const isFormValid = () => {
-    return validateReviewForm(reviewData);
+    const isValid =
+      reviewData.concertId > 0 &&
+      reviewData.section.trim() !== '' &&
+      reviewData.rowLine.trim() !== '' &&
+      reviewData.columnLine > 0 &&
+      reviewData.content.trim().length > 0;
+
+    return isValid;
   };
 
   // 완료 버튼 클릭 핸들러 - API 연결
   const handleSubmit = async () => {
-    if (!isFormValid()) return;
+    if (!isFormValid()) {
+      return;
+    }
 
     try {
       // API 호출
@@ -95,7 +121,7 @@ export const useReviewForm = () => {
         // 성공 처리
         setSubmitSuccess(true);
         setTimeout(() => {
-          // 성공 후 페이지 이동 (사용자 요청에 따라 경로 수정)
+          // 성공 후 페이지 이동
           router.push(`/sight/reviews/${reviewId}`);
         }, 2000);
       }

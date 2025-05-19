@@ -112,11 +112,15 @@ export default function WriteReviewPage() {
               />
               <span className={styles.label}>구역</span>
             </div>
-            <NumberInput
-              label='열'
-              value={reviewData.rowLine}
-              onChange={(value) => handleChange('rowLine', value)}
-            />
+            <div className={styles.numberInputContainer}>
+              <input
+                type='text'
+                value={reviewData.rowLine || ''}
+                onChange={(e) => handleChange('rowLine', e.target.value)}
+                className={styles.numberInput}
+              />
+              <span className={styles.label}>구역</span>
+            </div>
             <NumberInput
               label='번'
               value={reviewData.columnLine}

@@ -64,7 +64,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
 
   const handleEdit = () => {
     // 실제 환경에서는 아래 코드 사용
-    router.push(`/sight/reviews/${review.reviewId}/edit`);
+    router.push(`/sight/reviews/edit/${review.reviewId}`);
   };
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   }, [showMenu]);
 
   // 좌석 정보 문자열 생성 (실제로는 ReviewData 인터페이스의 getSeatInfoString 메서드 사용 가능)
-  const seatInfo = `${review.section} ${review.rowLine}열`;
+  const seatInfo = `${review.section}구역 ${review.rowLine}열`;
 
   return (
     <>

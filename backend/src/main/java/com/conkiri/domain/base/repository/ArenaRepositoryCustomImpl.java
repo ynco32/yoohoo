@@ -28,7 +28,7 @@ public class ArenaRepositoryCustomImpl implements ArenaRepositoryCustom {
 		BooleanExpression searchCondition = (searchWord != null && !searchWord.isBlank()) ?
 			arena.arenaName.containsIgnoreCase(searchWord) : null;
 
-		BooleanExpression excludeCondition = arena.arenaId.notIn(1L, 2L);
+		BooleanExpression excludeCondition = arena.arenaId.notIn(1L, 2L, 8L);
 
 		BooleanExpression finalCondition = searchCondition != null ?
 			excludeCondition.and(searchCondition) : excludeCondition;

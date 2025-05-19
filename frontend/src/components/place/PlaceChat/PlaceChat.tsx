@@ -151,17 +151,15 @@ export default function PlaceChat({
 
     const inputBoxHeight = inputArea.offsetHeight;
 
-    const totalBottomPadding = inputBoxHeight + 10;
-
     const container = messageListRef.current;
     if (container) {
       container.style.setProperty(
         '--chat-bottom-padding',
-        `${totalBottomPadding}px`
+        `${inputBoxHeight}px`
       );
     }
 
-    setBottomOffset(totalBottomPadding);
+    setBottomOffset(inputBoxHeight);
   }, [inputHeight, replyingTo]);
 
   // 하단 이동 버튼 클릭 핸들러
@@ -368,9 +366,12 @@ export default function PlaceChat({
         {replyingTo && (
           <div className={styles.replyingToContainer}>
             <div className={styles.replyingToContent}>
-              <span className={styles.replyingToNickname}>
-                {replyingTo.nickname}
-              </span>
+              <div className={styles.replyingBox}>
+                <span className={styles.replyingToNickname}>
+                  {replyingTo.nickname}
+                </span>
+                <span className={styles.replyText}>에게 답장</span>
+              </div>
               <span className={styles.replyingToMessage}>
                 {replyingTo.content}
               </span>

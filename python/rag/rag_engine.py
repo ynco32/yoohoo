@@ -83,50 +83,45 @@ def create_rag_chain(vectorstore):
         temperature=0
     )
     
-    # 프롬프트 템플릿 설정
+# 프롬프트 템플릿 수정
     prompt_template = """
 당신은 콘서트 관련 정보를 제공하는 도우미인 '콘끼리봇'입니다. 
 아래 제공된 콘서트 공지사항 정보를 바탕으로 사용자의 질문에 정확하게 답변해주세요.
 말끝마다 '뿌우'를 붙여주세요. 예: "안녕하세요, 뿌우"
 
 <콘서트_정보>
-다음 정보는 관련 콘서트에 대한 정보입니다. 이 정보도 참고하여 답변해주세요.
 {context}
 </콘서트_정보>
 
 질문: {question}
 
 다음 지침에 따라 답변해주세요:
-1. 질문이 콘서트와 관련이 없거나 주어진 정보로 답변할 수 없는 경우, 정중하게 거절하세요.
-2. 주어진 콘서트 공지사항 정보를 기반으로만 답변하세요.
-3. 답변에 사용한 근거 중 가장 중요한 출처를 하나 선택하세요.
-4. 만약 적절한 근거가 없다면, [증거_좌표] 섹션에 "없음"이라고 명시하세요.
-5. 응답 형식을 정확히 따라주세요: 
+1. 콘서트 공지사항 정보를 기반으로 질문에 답변하세요.
+2. 답변의 출처가 되는 가장 중요한 문단이나 문서를 선택하세요.
+3. 출처 문서의 메타데이터에서 top_y와 bottom_y 좌표 값을 확인하세요.
+4. 정확한 좌표가 없거나 연관성이 낮은 경우에만 "없음"으로 응답하세요.
+5. 아래 형식으로 정확히 응답하세요:
 
 [답변]
 당신의 답변 내용을 여기에 작성하세요.
 
 [증거_좌표]
-적절한 근거가 있는 경우: top_y=숫자값,bottom_y=숫자값
-적절한 근거가 없는 경우: 없음
+좌표가 있을 경우: top_y=숫자값,bottom_y=숫자값
+좌표가 없을 경우: 없음
 
-예시 1 (근거가 있는 경우):
+좌표는 메타데이터에서 찾을 수 있으며, 정확한 좌표가 있는 경우 반드시 제공해야 합니다. 
+입력 문서가 여러 개인 경우, 답변과 가장 관련성이 높은 문서의 좌표를 선택하세요.
+
+예시 1 (정확한 좌표가 있는 경우):
 [답변]
 콘서트는 5월 17일 오후 6시에 시작합니다. 뿌우
 
 [증거_좌표]
 top_y=500,bottom_y=600
 
-예시 2 (근거가 없는 경우):
+예시 2 (좌표가 없거나 관련성이 낮은 경우):
 [답변]
-죄송합니다만, 공지에서 매표소 위치에 대한 내용을 찾을 수 없습니다. 뿌우
-
-[증거_좌표]
-없음
-
-예시 3 (콘서트와 관련 없는 질문):
-[답변]
-죄송합니다만, 저는 콘서트 관련 정보만 제공할 수 있어요. 다른 주제에 대해서는 답변드리기 어렵습니다. 뿌우
+죄송합니다만, 제공된 정보에서 공연 시작 시간에 대한 내용을 찾을 수 없습니다. 뿌우
 
 [증거_좌표]
 없음
@@ -135,9 +130,16 @@ top_y=500,bottom_y=600
             template=prompt_template,
             input_variables=["context", "question"]
         )
+    
         
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-    
+
+    document_prompt = PromptTemplate(
+        input_variables=["page_content", "metadata"], 
+        template="""내용: {page_content}
+메타데이터: top_y={metadata[top_y]}, bottom_y={metadata[bottom_y]}, 카테고리={metadata[category]}"""
+    )
+
     chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
@@ -145,10 +147,11 @@ top_y=500,bottom_y=600
         return_source_documents=True,
         chain_type_kwargs={
             "prompt": PROMPT,
-            "document_prompt": PromptTemplate(
-                input_variables=["page_content"], 
-                template="{page_content}"
-            ),
+            # "document_prompt": PromptTemplate(
+            #     input_variables=["page_content"], 
+            #     template="{page_content}"
+            # ),
+            "document_prompt": document_prompt,
             "document_variable_name": "context",
             "document_separator": "\n\n"
         }
@@ -176,6 +179,8 @@ def query_rag_system(chain, query, concert_id=None):
         # 결과 형식 확인 및 처리
         if isinstance(result, dict) and "result" in result:
             answer_text = result.get("result", "응답을 찾을 수 없습니다.")
+            logger.info(f"GPT 응답: {result['result'][:200]}...")
+
         elif isinstance(result, str):
             answer_text = result
         else:
@@ -191,22 +196,32 @@ def query_rag_system(chain, query, concert_id=None):
         else: 
             answer = answer_text
         
-        evidence_coordinates = [] 
-        if coords_match: 
+        # 좌표 정보 추출 수정
+        evidence_coordinates = []
+        if coords_match:
             coords_text = coords_match.group(1).strip()
-
+            
+            # "없음" 케이스 확인
             if "없음" in coords_text or "none" in coords_text.lower():
-                pass
+                # 증거 자료 없음 - 빈 리스트 유지
+                logger.info("GPT가 '없음'이라고 응답했습니다")
             else:
-                coords_pattern = r'top_y=(\d+),bottom_y=(\d+)'
+                # 좌표 파싱 시도 (콤마로 구분된 키-값 쌍 형식)
+                # 정규식 패턴 개선
+                coords_pattern = r'top_y\s*=\s*(\d+)\s*,\s*bottom_y\s*=\s*(\d+)'
                 coords_values = re.search(coords_pattern, coords_text)
-
+                
                 if coords_values:
-                    evidence_coordinates.append({ 
-                        "top_y": int(coords_values.group(1)), 
-                        "bottom_y": int(coords_values.group(2)) 
-                    }) 
-        
+                    top_y = int(coords_values.group(1))
+                    bottom_y = int(coords_values.group(2))
+                    logger.info(f"파싱된 좌표: top_y={top_y}, bottom_y={bottom_y}")
+                    
+                    evidence_coordinates.append({
+                        "top_y": top_y,
+                        "bottom_y": bottom_y
+                    })
+                else:
+                    logger.warning(f"좌표 형식이 맞지 않습니다: '{coords_text}'")
         # 통일된 결과 형식
         response = {
             "answer": answer,

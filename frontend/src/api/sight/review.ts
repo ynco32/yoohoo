@@ -81,15 +81,15 @@ export const reviewApi = {
   },
 
   /**
-   *
-   * @param reviewData
-   * @param files
-   * @returns
+   * 리뷰 생성
+   * @param reviewData 리뷰 데이터
+   * @param files 이미지 파일들
+   * @returns 생성된 리뷰 ID
    */
   async createReview(
     reviewData: ReviewRequest,
     files: File[]
-  ): Promise<Review> {
+  ): Promise<ApiResponse<number>> {
     const formData = new FormData();
 
     // reviewRequestDTO를 JSON으로 변환하여 Blob으로 추가
@@ -103,7 +103,7 @@ export const reviewApi = {
       formData.append('files', file);
     });
 
-    const response = await apiClient.post<ApiResponse<Review>>(
+    const response = await apiClient.post<ApiResponse<number>>(
       '/api/v1/view/reviews',
       formData,
       {
@@ -113,7 +113,7 @@ export const reviewApi = {
       }
     );
 
-    return response.data.data;
+    return response.data;
   },
 
   getMyReviews: async () => {

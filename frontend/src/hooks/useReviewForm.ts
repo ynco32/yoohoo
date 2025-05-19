@@ -88,15 +88,15 @@ export const useReviewForm = () => {
     if (!isFormValid()) return;
 
     try {
-      // API 호출 (수정된 부분: reviewData를 그대로 전달)
+      // API 호출
       const reviewId = await createReview(reviewData, imageFiles);
 
       if (reviewId) {
         // 성공 처리
         setSubmitSuccess(true);
         setTimeout(() => {
-          // 성공 후 페이지 이동
-          router.push(`/reviews/${reviewId}`);
+          // 성공 후 페이지 이동 (사용자 요청에 따라 경로 수정)
+          router.push(`/sight/reviews/${reviewId}`);
         }, 2000);
       }
     } catch (err) {

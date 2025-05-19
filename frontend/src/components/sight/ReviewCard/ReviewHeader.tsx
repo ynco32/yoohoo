@@ -20,7 +20,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   const { deleteReview } = useReview(review.reviewId);
 
   // 현재 로그인한 사용자가 작성자인지 확인
-  const isAuthor = user?.userId === review.userId;
+  const isAuthor = user?.nickname === review.nickName;
   const router = useRouter();
 
   const handleMenuClick = () => {
@@ -40,9 +40,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
 
         if (success) {
           console.log('리뷰가 성공적으로 삭제되었습니다.');
-          // 삭제 후 리뷰 목록 페이지로 이동
-          router.push('/sight/reviews');
-          // 또는 상위 컴포넌트에 삭제 이벤트 알림
+          window.location.reload();
           if (onEdit) {
             onEdit();
           }
@@ -64,20 +62,9 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
     }
   };
 
-  const handleDeleteClick = () => {
-    setShowMenu(false);
-    setShowDeleteModal(true);
-  };
-
   const handleEdit = () => {
     // 실제 환경에서는 아래 코드 사용
     router.push(`/sight/reviews/${review.reviewId}/edit`);
-
-    // 스토리북 테스트 환경용 코드
-    // console.log(`Edit review ${review.reviewId}`);
-    // if (onEdit) {
-    //   onEdit();
-    // }
   };
 
   useEffect(() => {
@@ -132,7 +119,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
                         수정
                       </button>
                       <button
-                        onClick={handleDeleteClick}
+                        onClick={handleDelete}
                         className={styles.deleteButton}
                       >
                         삭제

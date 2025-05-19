@@ -63,7 +63,8 @@ export default function SelectorContainer() {
         ).sort((a, b) => a - b);
 
         const floorOptions = uniqueFloors.map((floor) => ({
-          label: `${floor}층`,
+          // '0'인 경우 'Floor'로 라벨 지정, 그 외에는 '층' 표시
+          label: floor === 0 ? 'Floor' : `${floor}층`,
           value: floor.toString(),
         }));
 
@@ -160,7 +161,13 @@ export default function SelectorContainer() {
       ) : (
         <SmallDropdown
           options={floors}
-          placeholder={currentFloor ? `${currentFloor}층` : '층'}
+          placeholder={
+            currentFloor === '0'
+              ? 'Floor'
+              : currentFloor
+              ? `${currentFloor}층`
+              : '층'
+          }
           value={currentFloor}
           onChange={handleFloorChange}
         />

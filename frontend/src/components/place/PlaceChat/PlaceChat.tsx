@@ -53,7 +53,8 @@ export default function PlaceChat({
   const didInitialScrollRef = useRef(false);
 
   useEffect(() => {
-    if (messages.length === 0 || didInitialScrollRef.current) return;
+    if (messages.length === 0 || didInitialScrollRef.current || isLoading)
+      return;
 
     didInitialScrollRef.current = true;
 
@@ -63,7 +64,7 @@ export default function PlaceChat({
         messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
       });
     });
-  }, [messages]);
+  }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {
@@ -145,22 +146,18 @@ export default function PlaceChat({
 
   // 인풋창 높이 계산
   useEffect(() => {
-    const inputArea = inputAreaRef.current;
+    if (isLoading) return;
 
-    if (!inputArea) return;
+    const inputArea = inputAreaRef.current;
+    const container = messageListRef.current;
+    if (!inputArea || !container) return;
 
     const inputBoxHeight = inputArea.offsetHeight;
 
-    const container = messageListRef.current;
-    if (container) {
-      container.style.setProperty(
-        '--chat-bottom-padding',
-        `${inputBoxHeight}px`
-      );
-    }
+    container.style.setProperty('--chat-bottom-padding', `${inputBoxHeight}px`);
 
     setBottomOffset(inputBoxHeight);
-  }, [inputHeight, replyingTo]);
+  }, [inputHeight, replyingTo, isLoading]);
 
   // 하단 이동 버튼 클릭 핸들러
   const handleScrollToNewMessage = () => {

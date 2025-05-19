@@ -151,17 +151,15 @@ export default function PlaceChat({
 
     const inputBoxHeight = inputArea.offsetHeight;
 
-    const totalBottomPadding = inputBoxHeight + 10;
-
     const container = messageListRef.current;
     if (container) {
       container.style.setProperty(
         '--chat-bottom-padding',
-        `${totalBottomPadding}px`
+        `${inputBoxHeight}px`
       );
     }
 
-    setBottomOffset(totalBottomPadding);
+    setBottomOffset(inputBoxHeight);
   }, [inputHeight, replyingTo]);
 
   // 하단 이동 버튼 클릭 핸들러

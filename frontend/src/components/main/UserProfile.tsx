@@ -32,9 +32,19 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    console.log('UserProfile 마운트됨, 현재 유저 상태:', {
+    // 브라우저 세션 상태 확인
+    const browserSessionActive = sessionStorage.getItem(
+      'browser_session_active'
+    );
+    const resetUserState = localStorage.getItem('reset_user_state');
+
+    console.log('UserProfile 마운트됨, 상태 점검:', {
       userInfo,
       isLoggedIn,
+      browserSessionActive,
+      resetUserState,
+      sessionId: localStorage.getItem('session_id'),
+      currentPage: window.location.pathname,
     });
 
     const fetchUserInfo = async () => {

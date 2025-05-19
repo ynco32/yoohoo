@@ -170,15 +170,32 @@ class ImageProcessor:
             s3_url = ImageProcessor.upload_to_s3(image_data_to_upload, s3_key)
 
             try:
-                # OCR 결과 파일 저장 (RAG를 위한 필수 단계)
-                ocr_output_path = f"temp_images/ocr_result_{show_id}.json"
-                os.makedirs(os.path.dirname(ocr_output_path), exist_ok=True)
-                with open(ocr_output_path, 'w', encoding='utf-8') as f:
-                    json.dump(full_ocr_result, f, ensure_ascii=False, indent=2)
-                print(f"✅ OCR 결과 저장됨: {ocr_output_path}")
+                # OCR 결과 파일 S3에 저장 (로컬 저장 제거) 👈
+                s3_ocr_key = f"ocr_results/ocr_result_{show_id}.json"
+                
+                # JSON 문자열로 변환
+                ocr_json_str = json.dumps(full_ocr_result, ensure_ascii=False, indent=2)
+                
+                # S3 클라이언트 생성
+                s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=AWS_ACCESS_KEY,
+                    aws_secret_access_key=AWS_SECRET_KEY,
+                    region_name=S3_REGION
+                )
+                
+                # S3에 업로드
+                s3_client.put_object(
+                    Body=ocr_json_str.encode('utf-8'),
+                    Bucket=S3_BUCKET_NAME,
+                    Key=s3_ocr_key,
+                    ContentType='application/json; charset=utf-8'
+                )
+                
+                print(f"✅ OCR 결과 S3 저장 완료: s3://{S3_BUCKET_NAME}/{s3_ocr_key}")
             except Exception as e:
                 print(f"⚠️ OCR 결과 저장 중 오류 (무시됨): {str(e)}")
-            
+
             print("🧹 메모리 정리 중...")
             del response, image_data
 
@@ -195,8 +212,9 @@ class ImageProcessor:
 
             gc.collect()
             print("✅ 메모리 정리 완료")
-            
+
             return s3_url, full_text.strip()
+
             
         except Exception as e:
             print(f"❌ 이미지 처리 오류: {str(e)}")

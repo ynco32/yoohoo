@@ -113,14 +113,31 @@ function handleSightBack(
   previousPath: string
 ): NavigationAction {
   // 리뷰 작성 페이지 처리
-  if (pathSegments[1] === 'reviews' && pathSegments[2] === 'write') {
-    // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
-    if (
-      previousPath.startsWith('/sight/') &&
-      !previousPath.includes('/reviews/')
-    ) {
-      // 이전 경로가 시야 페이지였다면 그 경로로 이동
-      return { type: 'push', path: previousPath };
+  if (pathSegments[1] === 'reviews') {
+    if (pathSegments[2] === 'write') {
+      // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
+      if (
+        previousPath.startsWith('/sight/') &&
+        !previousPath.includes('/reviews/')
+      ) {
+        // 이전 경로가 시야 페이지였다면 그 경로로 이동
+        return { type: 'push', path: previousPath };
+      }
+
+      // 경기장 목록 페이지로 리디렉션
+      return { type: 'push', path: '/sight' };
+    } else if (pathSegments[2] === 'edit') {
+      // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
+      if (
+        previousPath.startsWith('/sight/') &&
+        !previousPath.includes('/reviews/')
+      ) {
+        // 이전 경로가 시야 페이지였다면 그 경로로 이동
+        return { type: 'push', path: previousPath };
+      } else {
+        // 이전 경로가 시야 페이지가 아니었다면 경기장 목록 페이지로 리디렉션
+        return { type: 'push', path: '/sight' };
+      }
     }
 
     // 경기장 목록 페이지로 리디렉션

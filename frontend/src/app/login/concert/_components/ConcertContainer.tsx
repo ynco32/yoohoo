@@ -11,6 +11,7 @@ import { ConcertInfo } from '@/types/mypage';
 export default function ConcertContainer() {
   const {
     concerts,
+    router,
     selected,
     isLoading,
     search,
@@ -20,6 +21,7 @@ export default function ConcertContainer() {
     selectedConcertForDate,
     isClosing,
     isConfirmModalOpen,
+    showExitConfirm,
     handleSearchChange,
     handleConcertSelect,
     handleSeatInfoClick,
@@ -29,6 +31,9 @@ export default function ConcertContainer() {
     handleConfirmDeselect,
     handleCancelDeselect,
     handleSubmit,
+    handleExit,
+    confirmExit,
+    cancelExit,
   } = useConcert();
 
   return (
@@ -72,6 +77,11 @@ export default function ConcertContainer() {
         />
       )}
       <div className={styles.buttonContainer}>
+        <Button
+          children={'이전'}
+          className={styles.prevBtn}
+          onClick={() => router.replace('/login/artist')}
+        />
         {selected.length > 0 ? (
           <Button
             children={'완료'}
@@ -91,6 +101,14 @@ export default function ConcertContainer() {
         <ConfirmModal
           onConfirm={handleConfirmDeselect}
           onCancel={handleCancelDeselect}
+        />
+      )}
+      {showExitConfirm && (
+        <ConfirmModal
+          title='떠나시겠습니까?'
+          message='저장된 내용이 사라질 수 있습니다'
+          onConfirm={confirmExit}
+          onCancel={cancelExit}
         />
       )}
     </>

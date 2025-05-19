@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
@@ -10,6 +10,8 @@ import { ReviewSelect } from '@/components/sight/ReviewSelect/ReviewSelect';
 import Button from '@/components/common/Button/Button';
 import { useReviewForm } from '@/hooks/useReviewForm';
 import TextInput from '@/components/common/TextInput/TextInput';
+import { useSearchConcerts } from '@/hooks/useSearchConcert';
+import { concert } from '@/types/concert'; // 타입 임포트 추가
 import {
   CAMERA_BRANDS,
   CAMERA_MODELS,
@@ -34,6 +36,35 @@ export default function WriteReviewPage() {
     isFormValid,
   } = useReviewForm();
 
+  // 콘서트 검색 훅 추가
+  const {
+    concerts,
+    isLoading: isSearching,
+    error: searchError,
+    searchWord,
+    setSearchWord,
+  } = useSearchConcerts();
+
+  // 선택된 콘서트 상태 추가
+  const [selectedConcert, setSelectedConcert] = useState<concert | null>(null);
+
+  // 드롭다운에 표시할 콘서트 옵션 생성
+  const concertOptions = concerts.map((concert) => ({
+    value: concert.concertId.toString(), // Dropdown이 string 값을 요구할 경우 toString() 추가
+    label: concert.concertName,
+  }));
+
+  // 콘서트 선택 핸들러 함수 추가
+  const handleConcertSelect = (value: string) => {
+    handleChange('concertId', parseInt(value, 10));
+
+    // 선택된 콘서트 정보 업데이트
+    const selected = concerts.find(
+      (concert) => concert.concertId.toString() === value
+    );
+    setSelectedConcert(selected || null);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>좌석의 후기를 남겨보세요</div>
@@ -47,6 +78,7 @@ export default function WriteReviewPage() {
 
       {/* 에러 메시지 */}
       {error && <div className={styles.errorMessage}>{error}</div>}
+      {searchError && <div className={styles.errorMessage}>{searchError}</div>}
 
       <div className={styles.form}>
         <div className={styles.seatInfo}>
@@ -54,15 +86,16 @@ export default function WriteReviewPage() {
           <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
           <TextInput
             className={styles.consertSearch}
-            value={'가수명으로 콘서트 검색하기'}
-            onChange={function (value: string): void {
-              throw new Error('Function not implemented.');
-            }}
+            value={searchWord}
+            onChange={(value: string) => setSearchWord(value)}
+            placeholder='가수명으로 콘서트 검색하기'
           />
           <Dropdown
-            options={[]}
+            options={concertOptions}
             placeholder='다녀온 콘서트를 선택해주세요'
-            onChange={(value) => handleChange('concertId', value)}
+            onChange={handleConcertSelect}
+            disabled={isSearching}
+            value={reviewData.concertId ? reviewData.concertId.toString() : ''}
           />
           <div className={styles.seatValue}>
             {/* 기본 input 태그로 구역 구현 */}

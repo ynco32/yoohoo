@@ -2,8 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // next/navigation 사용
-import { useParams } from 'next/navigation'; // 파라미터용
+import { useRouter, useParams } from 'next/navigation'; // next/navigation 사용
 import styles from './page.module.scss';
 import TextTitle from '@/components/common/TextTitle/TextTitle';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
@@ -162,11 +161,15 @@ export default function EditReviewPage() {
               />
               <span className={styles.label}>구역</span>
             </div>
-            <NumberInput
-              label='열'
-              value={reviewData.rowLine ? Number(reviewData.rowLine) : 0}
-              onChange={(value) => handleChange('rowLine', String(value))}
-            />
+            <div className={styles.numberInputContainer}>
+              <input
+                type='text'
+                value={reviewData.rowLine || ''}
+                onChange={(e) => handleChange('rowLine', e.target.value)}
+                className={styles.numberInput}
+              />
+              <span className={styles.label}>열</span>
+            </div>
             <NumberInput
               label='번'
               value={reviewData.columnLine || 0}

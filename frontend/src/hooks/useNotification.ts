@@ -94,6 +94,55 @@ export const useNotifications = () => {
   }, []);
 
   /**
+   * 특정 알림 삭제
+   */
+  const deleteNotification = useCallback(
+    async (notificationId: number | string) => {
+      try {
+        const idAsString = notificationId.toString();
+
+        await notificationApi.deleteNotification(idAsString);
+
+        // 삭제 후 상태 업데이트
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter(
+            (notification) =>
+              notification.notificationId.toString() !== idAsString
+          )
+        );
+
+        // 삭제 후 안 읽은 알림이 있는지 확인
+        const unreadResponse = await notificationApi.hasUnreadNotification();
+        setHasUnread(unreadResponse || false);
+
+        return true;
+      } catch (err) {
+        console.error('알림 삭제 실패:', err);
+        throw err;
+      }
+    },
+    []
+  );
+
+  /**
+   * 모든 알림 삭제
+   */
+  const deleteAllNotifications = useCallback(async () => {
+    try {
+      await notificationApi.deleteAllNotifications();
+
+      // 모든 알림 삭제 후 상태 업데이트
+      setNotifications([]);
+      setHasUnread(false);
+
+      return true;
+    } catch (err) {
+      console.error('모든 알림 삭제 실패:', err);
+      throw err;
+    }
+  }, []);
+
+  /**
    * 알림 권한 확인
    */
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -134,6 +183,8 @@ export const useNotifications = () => {
     markAsRead,
     markAllAsRead,
     addNotification,
+    deleteNotification, // 추가된 삭제 기능
+    deleteAllNotifications, // 추가된 전체 삭제 기능
     setNotifications,
     checkNotificationAccess,
     changeNotificationAccess,

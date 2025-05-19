@@ -29,7 +29,7 @@ export const notificationApi = {
    */
   checkNotificationAccess: () =>
     apiRequest<boolean>('GET', '/api/v1/notifications/settings'),
-  
+
   /**
    * 알림 권한 변경
    */
@@ -48,4 +48,18 @@ export const notificationApi = {
    */
   readAllNotifications: () =>
     apiRequest<null>('PATCH', '/api/v1/notifications/read-all'),
+
+  /**
+   * 전체 알림 삭제 처리
+   */
+  deleteAllNotifications: () =>
+    apiRequest<null>('DELETE', '/api/v1/notifications'),
+
+  /**
+   *
+   * @param notificationId
+   * @returns
+   */
+  deleteNotification: (notificationId: string) =>
+    apiRequest<null>('DELETE', `/api/v1/notifications/${notificationId}`),
 };

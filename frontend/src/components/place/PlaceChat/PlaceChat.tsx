@@ -45,6 +45,8 @@ export default function PlaceChat({
   const newMessageRef = useRef<number | string | undefined>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
   const [bottomOffset, setBottomOffset] = useState(120);
+  const [initialized, setInitialized] = useState(false);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -55,13 +57,13 @@ export default function PlaceChat({
   useEffect(() => {
     if (isLoading || messages.length === 0 || didInitialScrollRef.current)
       return;
+    const container = messageListRef.current;
+    if (!container) return;
 
-    const timeout = setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
       didInitialScrollRef.current = true;
-    }, 50); // 브라우저 렌더링
-
-    return () => clearTimeout(timeout);
+    }, 100);
   }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -262,6 +264,19 @@ export default function PlaceChat({
     isSystem: true,
   };
 
+  // 최초 메시지 불러왔을 때 공지 메시지 추가
+  useEffect(() => {
+    if (!initialized && messages.length > 0) {
+      const hasSystem = messages.some((m) => m.id === 'system-guide');
+      const withSystem = hasSystem ? messages : [...messages, systemMessage]; // 맨 아래에 추가
+      setChatMessages(withSystem);
+      setInitialized(true);
+    } else if (initialized) {
+      // 이후 메시지는 계속 누적됨
+      setChatMessages(messages);
+    }
+  }, [messages]);
+
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {
     const groups: { [date: string]: Message[] } = {};
@@ -287,11 +302,7 @@ export default function PlaceChat({
   }
 
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const shouldShowSystemMessage = true;
-  const messagesWithSystem = shouldShowSystemMessage
-    ? [...messages, systemMessage]
-    : messages;
-  const grouped = groupMessagesByDate(messagesWithSystem);
+  const grouped = groupMessagesByDate(chatMessages);
 
   // 오류 처리
   if (error) {

@@ -26,13 +26,6 @@ export default function ReviewsBottomSheet({
   const sheetRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
 
-  console.log('ReviewsBottomSheet 렌더링:', {
-    arenaId,
-    sectionId,
-    selectedSeats,
-    position,
-  });
-
   // 구역 전체 리뷰 가져오기
   const {
     reviews: allReviews,
@@ -40,31 +33,16 @@ export default function ReviewsBottomSheet({
     error,
   } = useSectionReviews(arenaId, sectionId);
 
-  console.log('모든 리뷰:', allReviews);
-  console.log('로딩 상태:', isLoading);
-  console.log('에러 상태:', error);
-
-  // 필터링된 리뷰 - 선택된 좌석이 없으면 모든 리뷰, 있으면 해당 좌석들의 리뷰만
+  // 필터링된 리뷰 - 선택된 좌석들의 리뷰만 표시
   const filteredReviews =
     selectedSeats.length > 0
       ? allReviews.filter((review) => {
           // 타입 문제 처리: seatId를 항상 문자열로 변환하여 비교
           const reviewSeatId = review.seatId.toString();
           const isIncluded = selectedSeats.includes(reviewSeatId);
-
-          console.log('좌석 ID 비교:', {
-            reviewSeatId,
-            reviewSeatIdType: typeof review.seatId,
-            selectedSeats,
-            isIncluded,
-          });
-
           return isIncluded;
         })
-      : allReviews;
-
-  console.log('필터링된 리뷰:', filteredReviews);
-  console.log('필터링된 리뷰 개수:', filteredReviews.length);
+      : []; // 선택된 좌석이 없으면 빈 배열 반환
 
   // 바텀 시트 제스처 제어 - useDraggableSheet 훅 사용
   const { handlers, style } = useDraggableSheet({
@@ -167,18 +145,10 @@ export default function ReviewsBottomSheet({
                   <span className={styles.errorText}>
                     리뷰를 불러오는데 실패했습니다.
                   </span>
-                  <pre>{JSON.stringify(error, null, 2)}</pre>
                 </div>
               ) : filteredReviews.length === 0 ? (
                 <div className={styles.messageState}>
                   <p>선택한 좌석에 대한 리뷰가 없습니다.</p>
-                  <p>
-                    디버깅 정보: 선택된 좌석 {selectedSeats.length}개, 전체 리뷰{' '}
-                    {allReviews.length}개
-                  </p>
-                  {selectedSeats.length > 0 && (
-                    <p>선택된 좌석 ID: {selectedSeats.join(', ')}</p>
-                  )}
                 </div>
               ) : (
                 <div className={styles.reviewsWrapper}>

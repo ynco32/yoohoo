@@ -90,7 +90,7 @@ public class ChatMessage extends BaseTime {
 				this.parentContent = parentMessage.getContent();
 
 				if (parentMessage.getUser() != null) {
-					this.parentSenderNickname = parentMessage.getUser().getNickname();
+					this.parentSenderNickname = parentMessage.getUser().getAnonym();
 				}
 			} catch (Exception e) {
 				// 지연 로딩 또는 기타 오류 처리 - 조용히 무시하거나 로깅

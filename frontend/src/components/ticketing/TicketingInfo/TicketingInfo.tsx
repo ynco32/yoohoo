@@ -71,7 +71,7 @@ export default function TicketingInfo() {
     <div
       className={`${styles.menuItem} ${styles.wide} ${styles.menuItemPractice}`}
     >
-      <Link href='/ticketing' className={styles.link}>
+      <Link href='/ticketing/real' className={styles.link}>
         <div className={styles.ticketingWrapper}>
           <div className={styles.ticketingContent}>
             <span className={styles.label}>실전 티켓팅 연습</span>

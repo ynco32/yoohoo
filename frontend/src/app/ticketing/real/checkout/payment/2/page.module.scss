@@ -40,11 +40,19 @@
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+
+  .formGroup {
+    margin-bottom: $spacing-xs;
+  }
 }
 
 .formLabel {
   font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $text-main;
+  margin-bottom: $spacing-xs;
 }
 
 .formInput {
@@ -52,23 +60,30 @@
   border-radius: $border-radius-md;
   padding: $spacing-sm;
   background-color: #f9f9f9;
+  width: 100%;
+  font-size: $font-size-sm;
 }
 
 .formInputDisabled {
   @extend .formInput;
   background-color: #f2f2f2;
+  color: $text-sub;
 }
 
 .phoneGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: $spacing-sm;
+  width: 100%;
 }
 
 .summarySection {
   border-radius: $border-radius-md;
   background-color: #f9f9f9;
   padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
 }
 
 .summaryRow {
@@ -79,6 +94,8 @@
 
 .summaryTotal {
   @extend .summaryRow;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $con-gray;
   margin-bottom: $spacing-sm;
 }
 
@@ -92,6 +109,7 @@
   @extend .summaryRow;
   font-size: $font-size-sm;
   color: #777;
+  padding: $spacing-xs 0;
 }
 
 .fixedBottom {
@@ -119,7 +137,7 @@
 .methodContainer {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: $spacing-sm;
 }
 
 .topMethodsGrid {
@@ -182,6 +200,7 @@
   align-items: center;
   cursor: pointer;
   margin-right: $spacing-lg;
+  gap: $spacing-sm;
 }
 
 .optionLabel {

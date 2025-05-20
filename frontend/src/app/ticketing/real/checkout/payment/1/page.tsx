@@ -122,7 +122,7 @@ export default function TicketingPage() {
           <div className={styles.infoRow}>
             <span className={styles.label}>날짜</span>
             <div className={styles.valueGroup}>
-              <span>2025년 2월 22일(토) 18시00분</span>
+              <span>2025년 5월 22일(목) 18시00분</span>
               <button className={styles.changeButton}>날짜변경</button>
             </div>
           </div>

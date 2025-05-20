@@ -8,6 +8,7 @@ from PIL import Image
 from dotenv import load_dotenv
 from config import S3_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY
 import boto3 
+import base64
 import io     
 from config import S3_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_REGION 
 
@@ -200,91 +201,51 @@ class ImageCropper:
             return None
     
     @staticmethod
-    def save_evidence_to_s3(image, concert_id, coordinates):
+    def crop_and_encode_image(image, coordinates, padding=20):
         """
-        크롭된 증거 이미지를 S3에 업로드합니다.
-        동일 좌표는 동일 파일을 재사용합니다.
+        이미지를 크롭하고 Base64로 인코딩합니다.
         
         Args:
             image: PIL.Image 객체
-            concert_id: 콘서트 ID
-            coordinates: 이미지 좌표 정보
+            coordinates: 크롭할 좌표 정보 (top_y, bottom_y)
+            padding: 상하 패딩 (픽셀)
             
         Returns:
-            str: S3 URL, 실패 시 None
+            str: Base64 인코딩된 이미지 문자열, 실패 시 None
         """
         try:
-            if not image:
-                logger.error("저장할 이미지가 없습니다.")
+            cropped_img = ImageCropper.crop_image(image, coordinates, padding)
+            
+            if not cropped_img:
+                logger.error("이미지 크롭에 실패했습니다.")
                 return None
                 
-            # 좌표가 없으면 기본값 사용
-            if not coordinates or 'top_y' not in coordinates or 'bottom_y' not in coordinates:
-                logger.warning("좌표 정보가 없습니다. 기본 좌표를 사용합니다.")
-                top_y = 0
-                bottom_y = 0
-            else:
-                top_y = coordinates['top_y']
-                bottom_y = coordinates['bottom_y']
+            # 이미지를 바이트로 변환
+            byte_arr = io.BytesIO()
+            cropped_img.save(byte_arr, format='JPEG')
+            byte_arr.seek(0)
             
-            # 좌표에 기반한 일관된 파일명 생성 (UUID 없이)
-            filename = f"evidence_{concert_id}_{top_y}_{bottom_y}.jpg"
+            # Base64로 인코딩
+            img_base64 = base64.b64encode(byte_arr.read()).decode('utf-8')
             
-            # S3 키 생성
-            s3_key = f"evidence/{concert_id}/{filename}"
+            # 데이터 URI 형식으로 반환 (프론트엔드에서 바로 사용 가능)
+            data_uri = f"data:image/jpeg;base64,{img_base64}"
+            logger.info(f"이미지 크롭 및 Base64 인코딩 완료: {len(data_uri)} 바이트")
             
-            # S3 URL 생성 
-            s3_url = f"https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{s3_key}"
-            
-            # S3 클라이언트 생성
-            s3_client = boto3.client(
-                's3',
-                aws_access_key_id=AWS_ACCESS_KEY,
-                aws_secret_access_key=AWS_SECRET_KEY,
-                region_name=S3_REGION
-            )
-            
-            try:
-                # 객체가 이미 존재하는지 확인
-                s3_client.head_object(Bucket=S3_BUCKET_NAME, Key=s3_key)
+            return data_uri
                 
-                # 이미 존재하면 URL만 반환
-                logger.info(f"이미지가 이미 S3에 존재합니다: {s3_key}")
-                return s3_url
-                
-            except Exception as not_exist_error:
-                # 존재하지 않으면 새로 업로드
-                logger.info(f"새로운 이미지를 S3에 업로드합니다: {s3_key}")
-                
-                # 이미지를 바이트로 변환
-                byte_arr = io.BytesIO()
-                image.save(byte_arr, format='JPEG')
-                byte_arr.seek(0)
-                
-                # S3에 업로드
-                s3_client.upload_fileobj(
-                    byte_arr, 
-                    S3_BUCKET_NAME, 
-                    s3_key, 
-                    ExtraArgs={'ContentType': 'image/jpeg'}
-                )
-                
-                logger.info(f"증거 이미지 S3 업로드 완료: {s3_url}")
-                return s3_url
-            
         except Exception as e:
-            logger.error(f"증거 이미지 S3 업로드 중 오류: {str(e)}")
+            logger.error(f"이미지 인코딩 중 오류: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
             return None
-
-        # 클래스 변수로 캐시 추가
+    # 클래스 변수로 캐시 추가
     image_url_cache = {}  # {cache_key: s3_url}
 
     @staticmethod
     def get_evidence_image(concert_id, coordinates, image_url=None):
         """
-        증거 이미지를 가져오고 크롭합니다.
+        증거 이미지를 가져오고 크롭한 후 Base64로 인코딩합니다.
         
         Args:
             concert_id: 콘서트 ID
@@ -292,7 +253,7 @@ class ImageCropper:
             image_url: 직접 지정한 이미지 URL (None이면 DB에서 조회)
             
         Returns:
-            str: S3 URL, 실패 시 None
+            str: Base64 인코딩된 이미지 데이터 URI, 실패 시 None
         """
         try:
             # 이미지 URL 가져오기
@@ -310,49 +271,11 @@ class ImageCropper:
                 logger.error("이미지를 다운로드하지 못했습니다.")
                 return None
             
-            # 이미지 크롭
-            cropped_img = ImageCropper.crop_image(image, coordinates)
-            
-            if not cropped_img:
-                logger.error("이미지 크롭에 실패했습니다.")
-                return None
-                
-            # S3에 저장 (중복 확인 기능 포함)
-            s3_url = ImageCropper.save_evidence_to_s3(cropped_img, concert_id, coordinates)
-            return s3_url
+            # 이미지 크롭 및 Base64 인코딩
+            return ImageCropper.crop_and_encode_image(image, coordinates)
                 
         except Exception as e:
             logger.error(f"증거 이미지 처리 중 오류: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
             return None
-
-
-
-# # 메인 함수 (테스트용)
-# if __name__ == "__main__":
-#     # 테스트 코드
-#     logging.basicConfig(level=logging.INFO)
-    
-#     test_concert_id = 41  # 테스트용 콘서트 ID
-#     test_coordinates = {"top_y": 500, "bottom_y": 700}  # 테스트용 좌표
-    
-#     # 이미지 URL 가져오기
-#     image_url = ImageCropper.get_notice_image_url(test_concert_id)
-    
-#     if image_url:
-#         # 이미지 다운로드
-#         image = ImageCropper.get_image_from_s3(image_url)
-        
-#         if image:
-#             # 이미지 크롭
-#             cropped = ImageCropper.crop_image(image, test_coordinates)
-            
-#             if cropped:
-#                 # 테스트용 출력 경로
-#                 os.makedirs("temp", exist_ok=True)
-#                 output_path = f"temp/cropped_{test_concert_id}.jpg"
-                
-#                 # 크롭된 이미지 저장
-#                 cropped.save(output_path, format="JPEG")
-#                 print(f"테스트 완료: {output_path}")

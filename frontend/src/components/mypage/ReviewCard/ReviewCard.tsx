@@ -12,13 +12,14 @@ import { Review, ReviewCardProps } from '@/types/review';
  */
 export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
   const router = useRouter();
-  
+
   // 더미 이미지 URL
   const fallbackImageUrl = '/images/dummyReview.jpg';
-  
+
   // 사용할 이미지 URL
-  const imageSource = review.photoUrls.length > 0 ? review.photoUrls[0] : fallbackImageUrl;
-  
+  const imageSource =
+    review.photoUrls.length > 0 ? review.photoUrls[0] : fallbackImageUrl;
+
   // 좌석 정보 포맷팅
   let seatInfo = '';
   if (review.rowLine === '0' && review.columnLine === 0) {
@@ -27,16 +28,16 @@ export function ReviewCard({ review, onEdit, onDelete }: ReviewCardProps) {
   } else {
     seatInfo = `${review.section}층 ${review.rowLine}열 ${review.columnLine}번`;
   }
-  
+
   const handleClick = () => {
-    router.push(`/mypage/sight/${review.reviewId}`);
+    router.push(`/sight/reviews/${review.reviewId}`);
   };
-  
+
   return (
-    <div 
+    <div
       className={styles.card}
       onClick={handleClick}
-      role="button"
+      role='button'
       tabIndex={0}
     >
       <div className={styles.imageContainer}>

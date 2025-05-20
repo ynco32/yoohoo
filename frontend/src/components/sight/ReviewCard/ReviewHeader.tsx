@@ -33,14 +33,11 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
 
     setIsDeleting(true);
     try {
-      console.log('삭제 작업 시작...');
-
       // 삭제 API 호출
       if (deleteReview) {
         const success = await deleteReview(review.reviewId);
 
         if (success) {
-          console.log('리뷰가 성공적으로 삭제되었습니다.');
           window.location.reload();
           if (onEdit) {
             onEdit();

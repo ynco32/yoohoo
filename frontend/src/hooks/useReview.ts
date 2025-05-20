@@ -98,14 +98,30 @@ export function useReview(reviewId?: string | number) {
     setIsLoading(true);
     setError(null);
     try {
+      // 디버깅 로그: API 호출 직전 데이터
+      console.log('updateReview 함수 호출:', {
+        id,
+        reviewData,
+        filesCount: files.length,
+      });
+
       const response = await reviewApi.updateReview(id, reviewData, files);
+
+      // 디버깅 로그: API 응답
+      console.log('updateReview 응답:', response);
+
       if (response) {
         setReview(response);
         return response;
       }
     } catch (err: any) {
+      // 상세 에러 로깅
+      console.error('updateReview 호출 오류:', {
+        message: err.message,
+        error: err,
+        stack: err.stack,
+      });
       setError(err.message || '리뷰를 수정하는 중 오류가 발생했습니다.');
-      console.error('리뷰 수정 오류:', err);
       throw err;
     } finally {
       setIsLoading(false);

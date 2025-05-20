@@ -7,6 +7,7 @@ import PlaceChat from '../PlaceChat/PlaceChat';
 import styles from './PlaceTabs.module.scss';
 import { RootState } from '@/store';
 import { useSelector } from 'react-redux';
+import AuthGuard from '@/components/auth/AuthGuard/AuthGuard';
 
 const tabItems: TabMenuItem[] = [{ name: '지도 보기' }, { name: '채팅 보기' }];
 
@@ -80,11 +81,13 @@ export default function PlaceTabs({ arenaId }: { arenaId: string | number }) {
           }}
         >
           {chatShown && (
-            <PlaceChat
-              arenaId={arenaIdNum}
-              scrollY={chatScrollY}
-              setScrollY={setChatScrollY}
-            />
+            <AuthGuard>
+              <PlaceChat
+                arenaId={arenaIdNum}
+                scrollY={chatScrollY}
+                setScrollY={setChatScrollY}
+              />
+            </AuthGuard>
           )}
         </div>
       </div>

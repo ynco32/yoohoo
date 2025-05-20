@@ -8,11 +8,11 @@ spring:
         - db-local
         - cloud
         - redis
-        - python
+        - chatbot
       dev:
         - oauth
         - db-dev
         - cloud
         - redis
-        - python
-    include: oauth, db, cloud, redis, python
+        - chatbot
+    include: oauth, db, cloud, redis, chatbot

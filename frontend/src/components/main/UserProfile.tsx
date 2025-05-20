@@ -7,9 +7,24 @@ import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '@/api/auth/auth';
 import { setUser, setLoading, setError } from '@/store/slices/userSlice';
-import { RootState, store } from '@/store';
+import { RootState } from '@/store';
 import styles from './UserProfile.module.scss';
 import ProfileBackground from '/public/svgs/main/profile-bg.svg';
+
+// 스켈레톤 프로필 컴포넌트
+const ProfileSkeleton = () => {
+  return (
+    <div className={styles.skeletonContainer}>
+      {/* 프로필 캐릭터 스켈레톤 */}
+      <div className={styles.skeletonCharacter}></div>
+
+      {/* 닉네임 스켈레톤 */}
+      <div className={styles.skeletonNicknameSection}>
+        <div className={styles.skeletonNickname}></div>
+      </div>
+    </div>
+  );
+};
 
 export default function UserProfile() {
   const router = useRouter();
@@ -95,7 +110,7 @@ export default function UserProfile() {
         {/* 컨텐츠 컨테이너 */}
         <div className={styles.contentContainer}>
           {loading ? (
-            <div className={styles.loadingState}>로딩 중...</div>
+            <ProfileSkeleton />
           ) : (
             <>
               {/* 프로필 캐릭터 이미지 */}

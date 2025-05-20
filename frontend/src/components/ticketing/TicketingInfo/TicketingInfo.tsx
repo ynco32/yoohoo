@@ -85,15 +85,13 @@ export default function TicketingInfo() {
                 : '예정된 티켓팅이 없습니다'}
             </span>
           </div>
-          {loading ? (
-            <div className={styles.ticketBadge}>
-              {loading
-                ? '로딩 중...'
-                : ticketingInfo
-                ? formatDateTime(ticketingInfo.startTime)
-                : ''}
-            </div>
-          ) : null}
+          <div className={styles.ticketBadge}>
+            {loading
+              ? '로딩 중...'
+              : ticketingInfo
+              ? formatDateTime(ticketingInfo.startTime)
+              : ''}
+          </div>
         </div>
       </Link>
     </div>

@@ -26,6 +26,7 @@ export default function ChatInterface() {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [concertList, setConcertList] = useState<ConcertInfo[]>([]);
+  const [selectedConcert, setSelectedConcert] = useState<number>(0);
   const [highlightWords, setHighlightWords] = useState<string[]>([
     '끼리봇',
     '콘서트',
@@ -104,6 +105,10 @@ export default function ChatInterface() {
     }
   };
 
+  const handleConcertClick = (concertId: number) => () => {
+    setSelectedConcert(concertId);
+  };
+
   return (
     <div className={styles.chatInterface}>
       <div className={styles.messagesContainer}>
@@ -124,13 +129,44 @@ export default function ChatInterface() {
             <div className={styles.concertList}>
               {concertList.map((concert) => {
                 return (
-                  <CardButton
+                  <div
                     key={concert.concertId}
-                    label='콘서트'
-                    imgSrc={concert.photoUrl}
-                    imgAlt={concert.concertName}
-                    size='large'
-                  />
+                    className={styles.concertContainer}
+                    onClick={handleConcertClick(concert.concertId)}
+                  >
+                    <div className={styles.concertPoster}>
+                      <Image
+                        alt={concert.concertName}
+                        src={concert.photoUrl || '/default-poster.png'}
+                        width={140}
+                        height={140}
+                        style={{
+                          objectFit: 'cover',
+                          width: '100%',
+                          height: '100%',
+                          position: 'absolute',
+                        }}
+                        className={styles.posterImage}
+                      />
+                    </div>
+                    <div className={styles.artistName}>
+                      {Array.isArray(concert.artists)
+                        ? concert.artists.length > 0
+                          ? concert.artists.length > 1
+                            ? `${concert.artists[0].artistName} 외`
+                            : concert.artists[0].artistName
+                          : '아티스트명'
+                        : concert.artists}
+                    </div>
+                    <div
+                      className={styles.concertTitle}
+                      title={concert.concertName}
+                    >
+                      {concert.concertName.length > 10
+                        ? `${concert.concertName.substring(0, 12)}...`
+                        : concert.concertName}
+                    </div>
+                  </div>
                 );
               })}
             </div>

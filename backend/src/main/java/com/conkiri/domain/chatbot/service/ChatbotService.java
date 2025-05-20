@@ -22,7 +22,7 @@ public class ChatbotService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${chatbot.python.url:http://localhost:8000}")
+    @Value("${CHATBOT_PYTHON_URL:http://localhost:8000}")
     private String pythonServiceUrl;
 
     /**

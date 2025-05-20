@@ -81,8 +81,10 @@
   border-radius: 16px;
   max-width: 90%;
   white-space: pre-wrap;
-  word-break: break-word;
+  word-break: keep-all; // 한글 단어 단위 줄바꿈
+  overflow-wrap: break-word; // 긴 단어 처리
   font-size: $font-size-md;
+  line-height: 1.3; // 줄 간격 개선
 
   &.userContent {
     background-color: $con-blue;
@@ -181,8 +183,56 @@
 
 .evidenceImage {
   width: 100%;
+  height: 100px; // 이미지 높이 제한
+  object-fit: cover; // 이미지가 잘리지 않고 채워지도록
+  margin: $spacing-sm 0;
+  border-radius: $border-radius-sm;
+  cursor: pointer; // 클릭 가능함을 표시
+  transition: transform 0.2s ease; // 호버 효과 부드럽게
+
+  &:hover {
+    transform: scale(1.02); // 마우스 오버 시 약간 확대
+  }
+}
+
+// 이미지 모달 관련 스타일
+.imageModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalImage {
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
-  margin-bottom: 5px;
+  border-radius: $border-radius-md;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: $shadow-md;
 }
 
 /* 로딩 말풍선 관련 스타일 */

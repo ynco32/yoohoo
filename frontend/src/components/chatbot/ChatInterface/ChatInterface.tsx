@@ -31,6 +31,9 @@ export default function ChatInterface() {
     '끼리봇',
     '콘서트',
   ]);
+  // 모달 관련 상태 추가
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [modalImageSrc, setModalImageSrc] = useState('');
 
   const fetchConcertList = async () => {
     const response = await getMyConcerts();
@@ -39,6 +42,17 @@ export default function ChatInterface() {
     response?.concerts.forEach((concert) => {
       setHighlightWords((prev) => [...prev, concert.concertName]);
     });
+  };
+
+  // 이미지 클릭 처리 함수 추가
+  const handleImageClick = (imageSrc: string) => {
+    setModalImageSrc(imageSrc);
+    setShowImageModal(true);
+  };
+
+  // 모달 닫기 함수 추가
+  const handleCloseModal = () => {
+    setShowImageModal(false);
   };
 
   // 텍스트 강조 처리 함수
@@ -85,7 +99,8 @@ export default function ChatInterface() {
     setIsLoading(true); // 로딩 상태 활성화
 
     try {
-      const response = await getChatbotResponse(message, 41);
+      const response = await getChatbotResponse(message, 39);
+      // const response = await getChatbotResponse(message, selectedConcert);
 
       const newBotMessage = {
         id: messages.length + 2,
@@ -137,7 +152,7 @@ export default function ChatInterface() {
                     <div className={styles.concertPoster}>
                       <Image
                         alt={concert.concertName}
-                        src={concert.photoUrl || '/default-poster.png'}
+                        src={concert.photoUrl || '/images/dummy.png'}
                         width={140}
                         height={140}
                         style={{
@@ -186,17 +201,11 @@ export default function ChatInterface() {
             >
               {message.isUser ? message.text : highlightText(message.text)}
               {message.evidenceImageData && (
-                // <Image
-                //   src={message.evidenceImageData}
-                //   alt='증거 이미지'
-                //   width={200}
-                //   height={200}
-                //   style={{ objectFit: 'contain' }}
-                // />
                 <img
                   src={message.evidenceImageData}
                   alt='증거 이미지'
                   className={styles.evidenceImage}
+                  onClick={() => handleImageClick(message.evidenceImageData!)}
                 />
               )}
             </div>
@@ -224,6 +233,21 @@ export default function ChatInterface() {
           buttonText='전송'
         />
       </div>
+
+      {/* 이미지 모달 추가 */}
+      {showImageModal && (
+        <div className={styles.imageModal} onClick={handleCloseModal}>
+          <img
+            src={modalImageSrc}
+            alt='전체 이미지'
+            className={styles.modalImage}
+            onClick={(e) => e.stopPropagation()} // 이미지 클릭 시 모달이 닫히지 않도록
+          />
+          <button className={styles.closeButton} onClick={handleCloseModal}>
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }

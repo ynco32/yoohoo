@@ -81,19 +81,27 @@ export default function ChatInterface() {
     };
 
     setMessages((prev) => [...prev, newUserMessage]);
+    setIsLoading(true); // 로딩 상태 활성화
 
-    const response = await getChatbotResponse(message, 41);
+    try {
+      const response = await getChatbotResponse(message, 41);
 
-    const newBotMessage = {
-      id: messages.length + 2,
-      text: response?.answer || '',
-      isUser: false,
-      timestamp: new Date(),
-      hasEvidanceImage: response?.hasEvidanceImage || false,
-      evidenceImageData: response?.evidenceImageData || '',
-    };
+      const newBotMessage = {
+        id: messages.length + 2,
+        text: response?.answer || '',
+        isUser: false,
+        timestamp: new Date(),
+        hasEvidanceImage: response?.hasEvidanceImage || false,
+        evidenceImageData: response?.evidenceImageData || '',
+      };
 
-    setMessages((prev) => [...prev, newBotMessage]);
+      setMessages((prev) => [...prev, newBotMessage]);
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage('메시지를 가져오는 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false); // 로딩 상태 비활성화
+    }
   };
 
   return (
@@ -158,6 +166,19 @@ export default function ChatInterface() {
             </div>
           </div>
         ))}
+
+        {/* 로딩 말풍선 */}
+        {isLoading && (
+          <div className={`${styles.messageWrapper} ${styles.botMessage}`}>
+            <div className={styles.loadingMessage}>
+              <div className={styles.typingDots}>
+                <span className={styles.dot}></span>
+                <span className={styles.dot}></span>
+                <span className={styles.dot}></span>
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputContainer}>

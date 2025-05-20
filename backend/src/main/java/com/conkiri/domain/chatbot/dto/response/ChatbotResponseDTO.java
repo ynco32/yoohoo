@@ -9,7 +9,7 @@ public record ChatbotResponseDTO(
         boolean hasEvidenceImage,
         String evidenceImageData
 ) {
-    public static ChatbotResponseDTO fromPythonResponse(Map<String, Object> pythonResponse) {
+    public static ChatbotResponseDTO from(Map<String, Object> pythonResponse) {
         String answer = (String) pythonResponse.get("answer");
         boolean hasEvidenceImage = (boolean) pythonResponse.get("has_evidence_image");
         String evidenceImageData = (String) pythonResponse.get("evidence_image_data");

@@ -287,7 +287,9 @@ pipeline {  // 파이프라인 정의 시작
                             string(credentialsId: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET', variable: 'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
                             string(credentialsId: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', variable: 'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
                             string(credentialsId: 'NEXT_PUBLIC_FIREBASE_APP_ID', variable: 'NEXT_PUBLIC_FIREBASE_APP_ID'),
-                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY', variable: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY')
+                            string(credentialsId: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY', variable: 'NEXT_PUBLIC_FIREBASE_VAPID_KEY'),
+                            string(credentialsId: 'PINECONE_API_KEY', variable: 'PINECONE_API_KEY),
+                            string(credentialsId: 'PINECONE_ENVIRONMENT', variable: 'PINECONE_ENVIRONMENT)
                         ])
                         
                         // 브랜치별 추가 credentials

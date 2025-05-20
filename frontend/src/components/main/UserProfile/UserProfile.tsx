@@ -38,6 +38,9 @@ export default function UserProfile() {
     const randomIndex = Math.floor(Math.random() * messages.length);
     setRandomMessage(messages[randomIndex]);
 
+    const SESSION_KEY = 'app_browser_session';
+    const isNewBrowserSession = !sessionStorage.getItem(SESSION_KEY);
+
     const fetchUserInfo = async () => {
       try {
         console.log('사용자 정보 가져오기 시작');
@@ -63,12 +66,12 @@ export default function UserProfile() {
       }
     };
 
-    // 사용자 정보가 없거나 로그인 상태인데 정보가 없는 경우 API 호출
-    if (!userInfo || (isLoggedIn && !userInfo.nickname)) {
-      console.log('사용자 정보 없음, API 호출 필요');
+    // 새 세션이거나 사용자 정보가 없는 경우 API 호출
+    if (isNewBrowserSession || !userInfo) {
+      console.log('새 세션 또는 사용자 정보 없음, API 호출 필요');
       fetchUserInfo();
     }
-  }, [dispatch, userInfo, isLoggedIn]);
+  }, [dispatch, userInfo]);
 
   const handleClick = () => {
     // 로그인 상태에 따라 다른 페이지로 이동

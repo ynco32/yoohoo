@@ -3,31 +3,45 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './ChatInterface.module.scss';
 import ChatInput from '@/components/common/ChatInput/ChatInput';
+import { getChatbotResponse } from '@/api/chatbot/chatbot';
+import Image from 'next/image';
+import { getMyConcerts } from '@/api/mypage/mypage';
+import { ConcertInfo } from '@/types/mypage';
+import CardButton from '@/components/common/CardButton/CardButton';
 
 interface Message {
   id: number;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  hasEvidanceImage?: boolean;
+  evidenceImageData?: string;
 }
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: '안녕하세요?\n전 당신의 콘서트 도우미 끼리봇입니끼리',
-      isUser: false,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [concertList, setConcertList] = useState<ConcertInfo[]>([]);
+  const [highlightWords, setHighlightWords] = useState<string[]>([
+    '끼리봇',
+    '콘서트',
+  ]);
+
+  const fetchConcertList = async () => {
+    const response = await getMyConcerts();
+    setConcertList(response?.concerts || []);
+
+    response?.concerts.forEach((concert) => {
+      setHighlightWords((prev) => [...prev, concert.concertName]);
+    });
+  };
 
   // 텍스트 강조 처리 함수
   const highlightText = (text: string) => {
-    // 강조할 단어들
-    const highlightWords = ['끼리봇'];
-
     // 줄바꿈과 강조 처리
     let htmlText = text;
 
@@ -50,11 +64,15 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    fetchConcertList();
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     const newUserMessage = {
       id: messages.length + 1,
       text: message,
@@ -64,31 +82,52 @@ export default function ChatInterface() {
 
     setMessages((prev) => [...prev, newUserMessage]);
 
-    // 모의 응답 생성
-    setTimeout(() => {
-      const botResponses = [
-        '입장 시간은 오후 6시부터입니다!',
-        '공연장 주변에는 여러 식당이 있어요. 지도에서 확인해보세요!',
-        '입장 게이트는 티켓에 표시되어 있습니다.',
-        '주차장은 공연장 앞쪽과 뒤쪽에 있어요.',
-      ];
+    const response = await getChatbotResponse(message, 41);
 
-      const randomResponse =
-        botResponses[Math.floor(Math.random() * botResponses.length)];
+    const newBotMessage = {
+      id: messages.length + 2,
+      text: response?.answer || '',
+      isUser: false,
+      timestamp: new Date(),
+      hasEvidanceImage: response?.hasEvidanceImage || false,
+      evidenceImageData: response?.evidenceImageData || '',
+    };
 
-      const newBotMessage = {
-        id: messages.length + 2,
-        text: randomResponse,
-        isUser: false,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, newBotMessage]);
-    }, 1000);
+    setMessages((prev) => [...prev, newBotMessage]);
   };
+
   return (
     <div className={styles.chatInterface}>
       <div className={styles.messagesContainer}>
+        <div className={`${styles.messageWrapper} ${styles.botMessage}`}>
+          <div className={`${styles.messageContent} ${styles.botContent}`}>
+            <div className={styles.botMessageText}>
+              {highlightText(
+                '안녕하세요? \n전 당신의 콘서트 도우미 끼리봇입니끼리'
+              )}
+            </div>
+          </div>
+        </div>
+        <div className={`${styles.messageWrapper} ${styles.botMessage}`}>
+          <div className={`${styles.messageContent} ${styles.botContent}`}>
+            <div className={styles.botMessageText}>
+              {highlightText('어떤 콘서트가 궁금하십니끼리?')}
+            </div>
+            <div className={styles.concertList}>
+              {concertList.map((concert) => {
+                return (
+                  <CardButton
+                    key={concert.concertId}
+                    label='콘서트'
+                    imgSrc={concert.photoUrl}
+                    imgAlt={concert.concertName}
+                    size='large'
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
         {messages.map((message) => (
           <div
             key={message.id}
@@ -102,6 +141,20 @@ export default function ChatInterface() {
               }`}
             >
               {message.isUser ? message.text : highlightText(message.text)}
+              {message.evidenceImageData && (
+                // <Image
+                //   src={message.evidenceImageData}
+                //   alt='증거 이미지'
+                //   width={200}
+                //   height={200}
+                //   style={{ objectFit: 'contain' }}
+                // />
+                <img
+                  src={message.evidenceImageData}
+                  alt='증거 이미지'
+                  className={styles.evidenceImage}
+                />
+              )}
             </div>
           </div>
         ))}

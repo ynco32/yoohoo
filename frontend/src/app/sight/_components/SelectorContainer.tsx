@@ -41,17 +41,6 @@ export default function SelectorContainer() {
   const currentFloor = searchParams.get('floor') || reduxFloor || '';
   const currentSection = extractedSectionName || reduxSection || '';
 
-  // 컴포넌트 마운트 시 Redux 상태 업데이트
-  useEffect(() => {
-    if (searchParams.get('floor')) {
-      dispatch(setCurrentFloor(searchParams.get('floor') || ''));
-    }
-
-    if (extractedSectionName) {
-      dispatch(setCurrentSection(extractedSectionName));
-    }
-  }, [dispatch, searchParams, extractedSectionName]);
-
   // 모든 구역 데이터 가져오기
   useEffect(() => {
     async function loadSections() {
@@ -74,11 +63,24 @@ export default function SelectorContainer() {
         ).sort((a, b) => a - b);
 
         const floorOptions = uniqueFloors.map((floor) => ({
-          label: `${floor}층`,
+          // '0'인 경우 'Floor'로 라벨 지정, 그 외에는 '층' 표시
+          label: floor === 0 ? 'Floor' : `${floor}층`,
           value: floor.toString(),
         }));
 
         setFloors(floorOptions);
+
+        // sectionId가 있을 경우 해당 섹션의 층을 찾아서 설정
+        if (extractedSectionName) {
+          const section = response.data.data.find(
+            (item) => item.section === extractedSectionName
+          );
+
+          if (section) {
+            const sectionFloor = section.floor.toString();
+            dispatch(setCurrentFloor(sectionFloor));
+          }
+        }
       } catch (error) {
         console.error('구역 정보를 불러오는데 실패했습니다:', error);
       } finally {
@@ -87,7 +89,18 @@ export default function SelectorContainer() {
     }
 
     loadSections();
-  }, [arenaId]);
+  }, [arenaId, extractedSectionName, dispatch]);
+
+  // 컴포넌트 마운트 시 Redux 상태 업데이트
+  useEffect(() => {
+    if (searchParams.get('floor')) {
+      dispatch(setCurrentFloor(searchParams.get('floor') || ''));
+    }
+
+    if (extractedSectionName) {
+      dispatch(setCurrentSection(extractedSectionName));
+    }
+  }, [dispatch, searchParams, extractedSectionName]);
 
   // 현재 층에 맞는 구역 필터링
   useEffect(() => {
@@ -148,7 +161,13 @@ export default function SelectorContainer() {
       ) : (
         <SmallDropdown
           options={floors}
-          placeholder={currentFloor ? `${currentFloor}층` : '층'}
+          placeholder={
+            currentFloor === '0'
+              ? 'Floor'
+              : currentFloor
+              ? `${currentFloor}층`
+              : '층'
+          }
           value={currentFloor}
           onChange={handleFloorChange}
         />

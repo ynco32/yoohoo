@@ -44,16 +44,26 @@ export const reviewApi = {
   ): Promise<Review> {
     const formData = new FormData();
 
-    // reviewRequestDTO를 JSON으로 변환하여 Blob으로 추가
-    const reviewBlob = new Blob([JSON.stringify(reviewData)], {
-      type: 'application/json',
-    });
-    formData.append('reviewRequestDTO', reviewBlob);
+    // ReviewRequestDTO를 JSON으로 변환하여 추가
+    formData.append(
+      'reviewRequestDTO',
+      new Blob([JSON.stringify(reviewData)], {
+        type: 'application/json',
+      })
+    );
 
-    // 새 파일들 추가
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
+    // 파일 추가 방식은 그대로 유지
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+    } else {
+      // 파일이 없는 경우에도 빈 배열을 전송 (백엔드에서 files를 필수로 기대하므로)
+      formData.append(
+        'files',
+        new Blob([], { type: 'application/octet-stream' })
+      );
+    }
 
     const response = await apiClient.put<ApiResponse<Review>>(
       `/api/v1/view/reviews/${reviewId}`,

@@ -9,6 +9,23 @@ import TicketIcon from '/public/svgs/main/menuTicket.svg';
 import UserProfile from '@/components/main/UserProfile/UserProfile';
 import ChatbotFloatingButton from '@/components/main/ChatbotFloatingButton/ChatbotFloatingButton';
 import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
+import TicketingInfo from '@/components/ticketing/TicketingInfo/TicketingInfo';
+
+// 고정된 메뉴 정보
+const menuInfo = {
+  sight: {
+    label: '시야보기',
+    description: '공연장 별 시야 후기',
+  },
+  place: {
+    label: '현장 정보',
+    description: '공연장 인근 현장 정보 모음',
+  },
+  miniGame: {
+    label: '티켓팅 미니게임',
+    description: '단계별로 연습하는 티켓팅',
+  },
+};
 
 export default function MainMenu() {
   const { openChatbot } = useChatbot();
@@ -24,8 +41,10 @@ export default function MainMenu() {
           <Link href='/sight' className={styles.link}>
             <div className={styles.menuContent}>
               <div className={styles.textContainer}>
-                <span className={styles.label}>시야보기</span>
-                <span className={styles.description}>공연장 별 시야 후기</span>
+                <span className={styles.label}>{menuInfo.sight.label}</span>
+                <span className={styles.description}>
+                  {menuInfo.sight.description}
+                </span>
               </div>
               <div className={styles.iconContainer}>
                 <SightIcon width={220} height={220} />
@@ -39,9 +58,9 @@ export default function MainMenu() {
           <Link href='/place' className={styles.link}>
             <div className={styles.menuContent}>
               <div className={styles.textContainer}>
-                <span className={styles.label}>현장 정보</span>
+                <span className={styles.label}>{menuInfo.place.label}</span>
                 <span className={styles.description}>
-                  공연장 인근 현장 정보 모음
+                  {menuInfo.place.description}
                 </span>
               </div>
               <div className={styles.iconContainer}>
@@ -56,9 +75,9 @@ export default function MainMenu() {
           <Link href='/minigame' className={styles.link}>
             <div className={styles.menuContent}>
               <div className={styles.textContainer}>
-                <span className={styles.label}>티켓팅 미니게임</span>
+                <span className={styles.label}>{menuInfo.miniGame.label}</span>
                 <span className={styles.description}>
-                  단계별로 연습하는 티켓팅
+                  {menuInfo.miniGame.description}
                 </span>
               </div>
               <div className={styles.iconContainer}>
@@ -68,21 +87,8 @@ export default function MainMenu() {
           </Link>
         </div>
 
-        {/* 실전 티켓팅 연습 메뉴 - 와이드 카드 */}
-        <div
-          className={`${styles.menuItem} ${styles.wide} ${styles.menuItemPractice}`}
-        >
-          <Link href='/ticketing' className={styles.link}>
-            <div className={styles.menuContent}>
-              <div className={styles.textContainer}>
-                <span className={styles.label}>실전 티켓팅 연습</span>
-                <span className={styles.description}>
-                  전 과정을 한 번에 연습!
-                </span>
-              </div>
-            </div>
-          </Link>
-        </div>
+        {/* 티켓팅 정보 부분은 클라이언트 컴포넌트로 분리 */}
+        <TicketingInfo />
       </div>
 
       <div className={styles.floatingButtonContainer}>

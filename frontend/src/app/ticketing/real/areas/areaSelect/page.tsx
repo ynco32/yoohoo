@@ -23,7 +23,6 @@ export default function Area() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('새로고침 됨');
     if (!onSuccess) {
       // 이미 보안문자를 성공하지 않았다면
       setisSecurityMessageOpen(true);

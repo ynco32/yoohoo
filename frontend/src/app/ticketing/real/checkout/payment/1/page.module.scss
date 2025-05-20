@@ -148,33 +148,23 @@
 .totalPrice {
   color: $con-blue;
 }
-
-// 하단 고정 버튼
 .fixedBottom {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
-  padding: $spacing-md;
-  background-color: white;
-  border-top: 1px solid $con-gray;
+  left: 50%;
   z-index: 10;
+  width: 100%;
+  max-width: 430px;
+  transform: translateX(-50%);
+  background-color: white;
+  padding: $spacing-md;
 }
 
-.nextButton {
+.paymentButton {
   width: 100%;
   background-color: $con-blue;
-  padding: $spacing-md 0;
-  font-weight: $font-weight-medium;
+  padding-top: $spacing-md;
+  padding-bottom: $spacing-md;
+  font-size: $font-size-md;
   color: white;
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.8;
-  }
 }

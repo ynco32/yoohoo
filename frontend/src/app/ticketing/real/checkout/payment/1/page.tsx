@@ -193,7 +193,7 @@ export default function TicketingPage() {
         </div>
       </div>
       <div className={styles.fixedBottom}>
-        <button onClick={handleNextClick} className={styles.nextButton}>
+        <button onClick={handleNextClick} className={styles.paymentButton}>
           다음
         </button>
       </div>

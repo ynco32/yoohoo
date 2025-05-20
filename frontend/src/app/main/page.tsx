@@ -1,12 +1,18 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import styles from './page.module.scss';
 import SightIcon from '/public/svgs/main/menuSight.svg';
 import PlaceIcon from '/public/svgs/main/menuPlace.svg';
 import TicketIcon from '/public/svgs/main/menuTicket.svg';
-import UserProfile from '@/components/main/UserProfile';
+import UserProfile from '@/components/main/UserProfile/UserProfile';
+import ChatbotFloatingButton from '@/components/main/ChatbotFloatingButton/ChatbotFloatingButton';
+import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 
 export default function MainMenu() {
+  const { openChatbot } = useChatbot();
+
   return (
     <div className={styles.container}>
       <UserProfile />
@@ -77,6 +83,10 @@ export default function MainMenu() {
             </div>
           </Link>
         </div>
+      </div>
+
+      <div className={styles.floatingButtonContainer}>
+        <ChatbotFloatingButton onClick={openChatbot} />
       </div>
     </div>
   );

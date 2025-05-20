@@ -96,7 +96,7 @@
 }
 
 .nickname {
-  font-size: clamp($font-size-sm, 2.5vmin, $font-size-lg);
+  font-size: clamp($font-size-sm, 2.5vmin, $font-size-md);
   font-weight: $font-weight-bold;
   color: #2c3e50;
 }

@@ -32,43 +32,6 @@ def get_embeddings_model():
     logger.info("임베딩 모델 초기화 완료!")
     return embeddings
 
-# def setup_pinecone_vectorstore(embeddings):
-    """Pinecone 벡터 저장소를 설정합니다."""
-    if not PINECONE_API_KEY or not PINECONE_ENV:
-        raise ValueError("Pinecone API 키 또는 환경이 설정되지 않았습니다.")
-    
-    logger.info("Pinecone 초기화 중...")
-    pc = Pinecone(api_key=PINECONE_API_KEY)
-    
-    # 인덱스가 이미 존재하는지 확인
-    existing_indexes = pc.list_indexes().names()
-    
-    if PINECONE_INDEX_NAME not in existing_indexes:
-        logger.info(f"Pinecone 인덱스 '{PINECONE_INDEX_NAME}' 생성 중...")
-        # 인덱스 생성
-        pc.create_index(
-            name=PINECONE_INDEX_NAME,
-            dimension=1536,        # text-embedding-3-small 임베딩 차원
-            metric="cosine",       # 코사인 유사도 측정
-            spec=ServerlessSpec(
-                cloud="aws",
-                region="us-west-2"  # 적절한 리전으로 변경 가능
-            )
-        )
-        logger.info(f"Pinecone 인덱스 '{PINECONE_INDEX_NAME}' 생성 완료!")
-    else:
-        logger.info(f"Pinecone 인덱스 '{PINECONE_INDEX_NAME}'가 이미 존재합니다.")
-    
-    vectorstore = PineconeVectorStore(
-        index_name=PINECONE_INDEX_NAME,
-        embedding=embeddings,  
-        text_key="text",
-        pinecone_api_key=PINECONE_API_KEY 
-    )
-    
-    logger.info("Pinecone 벡터 저장소 설정 완료!")
-    return vectorstore
-
 def setup_pinecone_vectorstore(embeddings, concert_info):
     """Pinecone 벡터 저장소를 설정합니다."""
     if not PINECONE_API_KEY:

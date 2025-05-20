@@ -32,6 +32,7 @@ services:
       - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
       - FIREBASE_CLIENT_ID=${FIREBASE_CLIENT_ID}
       - FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}
+      - CHATBOT_PYTHON_URL=${CHATBOT_PYTHON_URL}
     depends_on:
       mysql:
         condition: service_healthy
@@ -65,6 +66,32 @@ services:
       app-network:
         aliases:
           - concert-crawler-dev
+
+  rag-dev:
+    container_name: rag-dev
+    build:
+      context: ./python/rag
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - S3_REGION=${AWS_REGION}
+      - DB_HOST=mysql-dev
+      - DB_PORT=3306
+      - DB_USER=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=conkiri
+      - API_BASE_URL=${NEXT_PUBLIC_API_URL}
+      - TZ=Asia/Seoul
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    networks:
+      app-network:
+        aliases:
+          - rag-dev
 
   frontend-dev:
     container_name: frontend-dev-new

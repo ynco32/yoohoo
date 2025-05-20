@@ -297,7 +297,8 @@ pipeline {  // 파이프라인 정의 시작
                                 string(credentialsId: 'DEV_REDIS_HOST', variable: 'REDIS_HOST'),
                                 string(credentialsId: 'DEV_FRONTEND_URL', variable: 'FRONTEND_URL'),
                                 string(credentialsId: 'DEV_API_URL', variable: 'NEXT_PUBLIC_API_URL'),
-                                string(credentialsId: 'DEV_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI')
+                                string(credentialsId: 'DEV_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI'),
+                                string(credentialsId: 'DEV_CHATBOT_PYTHON_URL', variable: 'CHATBOT_PYTHON_URL')
                             ])
                         } else if (env.BRANCH_NAME == 'master') {
                             credentialsList.addAll([
@@ -305,7 +306,8 @@ pipeline {  // 파이프라인 정의 시작
                                 string(credentialsId: 'MASTER_REDIS_HOST', variable: 'REDIS_HOST'),
                                 string(credentialsId: 'MASTER_FRONTEND_URL', variable: 'FRONTEND_URL'),
                                 string(credentialsId: 'MASTER_API_URL', variable: 'NEXT_PUBLIC_API_URL'),
-                                string(credentialsId: 'MASTER_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI')
+                                string(credentialsId: 'MASTER_KAKAO_REDIRECT_URL', variable: 'KAKAO_REDIRECT_URI'),
+                                string(credentialsId: 'MASTER_CHATBOT_PYTHON_URL', variable: 'CHATBOT_PYTHON_URL')
                             ])
                         }
                         
@@ -351,7 +353,10 @@ pipeline {  // 파이프라인 정의 시작
                                     --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET \
                                     --build-arg NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID \
                                     --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=$NEXT_PUBLIC_FIREBASE_APP_ID \
-                                    --build-arg NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY
+                                    --build-arg NEXT_PUBLIC_FIREBASE_VAPID_KEY=$NEXT_PUBLIC_FIREBASE_VAPID_KEY \
+                                    --build-arg CHATBOT_PYTHON_URL=$CHATBOT_PYTHON_URL \
+                                    --build-arg PINECONE_API_KEY=$PINECONE_API_KEY \
+                                    --build-arg PINECONE_ENVIRONMENT=$PINECONE_ENVIRONMENT
 
                                 docker compose -f docker-compose-${BRANCH_NAME}.yml up -d
                             '''

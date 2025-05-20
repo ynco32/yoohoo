@@ -81,21 +81,21 @@ class ConcertChatbot:
             response = query_rag_system(chain, query, concert_id)
             
             # 시각적 증거 추가 (좌표가 있는 경우만)
-            evidence_image_url = None
+            evidence_image_data = None
             if response.get("evidence_coordinates") and len(response["evidence_coordinates"]) > 0:
                 # 첫 번째 좌표 사용 (GPT가 선택한 좌표)
                 coordinates = response["evidence_coordinates"][0]
                 
-                # 이미지 크롭 및 S3 저장 (URL 반환)
-                evidence_image_url = ImageCropper.get_evidence_image(concert_id, coordinates)
-                logger.info(f"증거 이미지 URL: {evidence_image_url}")
+            # 이미지 크롭 및 Base64 인코딩 (URL 반환 대신)
+            evidence_image_data = ImageCropper.get_evidence_image(concert_id, coordinates)
+            logger.info(f"증거 이미지 인코딩 완료: {evidence_image_data is not None}")
             
             # 최종 응답 생성
             final_response = {
                 "answer": response.get("answer", "답변을 생성할 수 없습니다 뿌우..."),
-                "has_evidence_image": evidence_image_url is not None,
-                "evidence_image_url": evidence_image_url,  # S3 URL
-                "source_documents": response.get("source_documents", [])
+                "has_evidence_image": evidence_image_data is not None,
+                "evidence_image_data": evidence_image_data,  
+                # "source_documents": response.get("source_documents", []) # 추후 로그 필요시 활성화
             }
             
             return final_response
@@ -107,6 +107,6 @@ class ConcertChatbot:
             return {
                 "answer": f"죄송합니다, 질문 처리 중 오류가 발생했습니다 뿌우...",
                 "has_evidence_image": False,
-                "evidence_image_url": None,
-                "source_documents": []
+                "evidence_image_data": None,
+                # "source_documents": []
             }

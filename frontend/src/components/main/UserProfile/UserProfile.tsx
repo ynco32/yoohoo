@@ -10,6 +10,7 @@ import { setUser, setLoading, setError } from '@/store/slices/userSlice';
 import { RootState } from '@/store';
 import styles from './UserProfile.module.scss';
 import ProfileBackground from '/public/svgs/main/profile-bg.svg';
+import IconBox from '@/components/common/IconBox/IconBox';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -70,7 +71,12 @@ export default function UserProfile() {
   }, [dispatch, userInfo, isLoggedIn]);
 
   const handleClick = () => {
-    router.push('/mypage');
+    // 로그인 상태에 따라 다른 페이지로 이동
+    if (isLoggedIn) {
+      router.push('/mypage');
+    } else {
+      router.push('/onboarding');
+    }
   };
 
   // 랜덤 메시지를 저장할 상태 추가
@@ -113,24 +119,48 @@ export default function UserProfile() {
             <>
               {/* 프로필 캐릭터 이미지 */}
               <div className={styles.characterImageContainer}>
-                <Image
-                  src={getProfileImagePath(userInfo?.profileNumber)}
-                  alt={`${userInfo?.nickname || '사용자'} 프로필 이미지`}
-                  width={255}
-                  height={250}
-                  className={styles.characterImage}
-                  priority
-                />
+                {isLoggedIn ? (
+                  // 로그인한 경우 - 일반 프로필 이미지
+                  <Image
+                    src={getProfileImagePath(userInfo?.profileNumber)}
+                    alt={`${userInfo?.nickname || '사용자'} 프로필 이미지`}
+                    width={255}
+                    height={250}
+                    className={styles.characterImage}
+                    priority
+                  />
+                ) : (
+                  // 로그인하지 않은 경우 - 흑백 더미 이미지
+                  <Image
+                    src='/images/login.png'
+                    alt='비로그인 프로필 이미지'
+                    width={350}
+                    height={200}
+                    className={`${styles.characterImage}`}
+                    priority
+                  />
+                )}
               </div>
 
               {/* 닉네임 */}
               <div className={styles.nicknameSection}>
-                <div className={styles.nickname}>
-                  <span className={styles.userName}>
-                    {userInfo?.nickname || '사용자'}
-                  </span>
-                  님, {randomMessage}
-                </div>
+                {isLoggedIn ? (
+                  // 로그인한 경우
+                  <div className={styles.nickname}>
+                    <span className={styles.userName}>
+                      {userInfo?.nickname || '사용자'}
+                    </span>
+                    님, {randomMessage}
+                  </div>
+                ) : (
+                  // 로그인하지 않은 경우
+                  <div className={styles.loginSection}>
+                    <div className={styles.loginMessage}>
+                      🔒 로그인하고 더 많은 기능을 이용해보세요!{' '}
+                    </div>
+                    <IconBox name='chevron-right' size={12} color='#4986e8' />
+                  </div>
+                )}
               </div>
             </>
           )}

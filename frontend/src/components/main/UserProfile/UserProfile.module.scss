@@ -132,3 +132,17 @@
     font-size: $font-size-sm;
   }
 }
+
+.loginSection {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+// 로그인 메시지 스타일
+.loginMessage {
+  font-size: clamp($font-size-sm, 2.5vmin, $font-size-md);
+  font-weight: $font-weight-bold;
+  color: #2c3e50;
+  display: inline-block;
+}

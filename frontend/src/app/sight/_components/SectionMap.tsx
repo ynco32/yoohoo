@@ -35,7 +35,6 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
 
     if (section) {
       const sectionId = section.id;
-      console.log('클릭된 섹션 ID:', sectionId);
 
       // kspo_svg__section 접두사 처리
       if (sectionId.includes('section')) {

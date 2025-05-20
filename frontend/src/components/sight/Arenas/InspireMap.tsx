@@ -13,7 +13,6 @@ export default function InspireMap() {
   // 구역 클릭 핸들러
   const handleSectionClick = (sectionId: string) => {
     const routingUrl = arenaId + sectionId;
-    console.log(`라우팅: /sight/${arenaId}/${routingUrl}`);
     router.push(`/sight/${arenaId}/${routingUrl}`);
   };
 
@@ -26,7 +25,6 @@ export default function InspireMap() {
 
     if (section) {
       const sectionId = section.id;
-      console.log('클릭된 섹션 ID:', sectionId);
 
       // kspo_svg__section 접두사 처리
       if (sectionId.includes('section')) {

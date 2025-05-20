@@ -61,12 +61,13 @@ export default function PlaceChat({
     const container = messageListRef.current;
     if (!container) return;
 
-    requestAnimationFrame(() => {
+    // 렌더링 이후 + 레이아웃 안정 이후 실행
+    setTimeout(() => {
       requestAnimationFrame(() => {
         container.scrollTop = container.scrollHeight;
         didInitialScrollRef.current = true;
       });
-    });
+    }, 100);
   }, [chatMessages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -351,15 +352,6 @@ export default function PlaceChat({
             </div>
           )}
 
-          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
-          {showSystem && (
-            <div className={styles.systemMessageContainer}>
-              <div className={styles.systemMessage}>
-                {systemMessage.content}
-              </div>
-            </div>
-          )}
-
           {/* 🔹 일반 메시지 그룹 렌더링 */}
           {grouped.length === 0 && !showSystem && (
             <div className={styles.noMessage}>질문을 시작해보세요!</div>
@@ -401,6 +393,15 @@ export default function PlaceChat({
               })}
             </div>
           ))}
+
+          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
+          {showSystem && (
+            <div className={styles.systemMessageContainer}>
+              <div className={styles.systemMessage}>
+                {systemMessage.content}
+              </div>
+            </div>
+          )}
 
           <div ref={messageEndRef} />
         </div>

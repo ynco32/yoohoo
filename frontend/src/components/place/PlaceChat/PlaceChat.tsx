@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import styles from './PlaceChat.module.scss';
@@ -67,7 +67,7 @@ export default function PlaceChat({
         container.scrollTop = container.scrollHeight;
         didInitialScrollRef.current = true;
       });
-    }, 100);
+    }, 50);
   }, [chatMessages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -276,10 +276,12 @@ export default function PlaceChat({
     if (isLoading || initialized) return;
 
     const hasMessages = messages.length > 0;
-
-    setChatMessages(
-      hasMessages ? [...messages, systemMessage] : [systemMessage]
-    );
+    const alreadyIncluded = messages.some((msg) => msg.id === systemMessage.id);
+    if (!alreadyIncluded) {
+      setChatMessages(
+        hasMessages ? [...messages, systemMessage] : [systemMessage]
+      );
+    }
     setShowSystem(true);
 
     // 공지 5초 뒤 제거
@@ -328,9 +330,11 @@ export default function PlaceChat({
   }
 
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const grouped = Object.entries(groupMessagesByDate(chatMessages)).sort(
-    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
-  );
+  const grouped = useMemo(() => {
+    return Object.entries(groupMessagesByDate(chatMessages)).sort(
+      ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+    );
+  }, [chatMessages]);
 
   // 오류 처리
   if (error) {

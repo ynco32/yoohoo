@@ -21,8 +21,13 @@
   gap: $spacing-xl;
 }
 
+.seatInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
 // 공통 섹션 스타일
-.seatInfo,
 .image,
 .sightReview,
 .content,
@@ -43,7 +48,7 @@
 .numberInputContainer {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
 }
 
 // 입력 필드 스타일

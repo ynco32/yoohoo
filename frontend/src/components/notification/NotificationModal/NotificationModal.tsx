@@ -55,19 +55,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
       // API 호출 후 상태 다시 확인
       await checkNotificationAccess();
-
-      // 성공 메시지
-      alert(
-        newStatus
-          ? '서버 알림이 활성화되었습니다.'
-          : '서버 알림이 비활성화되었습니다.'
-      );
     } catch (err) {
-      console.error('서버 알림 설정 오류:', err);
+      console.error('알림 설정 오류:', err);
       setServerError(
-        err instanceof Error
-          ? err.message
-          : '서버 알림 설정 중 오류가 발생했습니다.'
+        err instanceof Error ? err.message : '알림 설정 중 오류가 발생했습니다.'
       );
     } finally {
       setServerLoading(false);
@@ -134,11 +125,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           </div>
 
           <div className={styles.status}>
-            <h3>서버 알림 설정</h3>
+            <h3>알림 설정</h3>
             <p>
               {isServerNotificationEnabled
-                ? '서버 알림이 활성화되어 있습니다. 이메일 및 앱 푸시 알림을 받아보실 수 있습니다.'
-                : '서버 알림이 비활성화되어 있습니다. 활성화하시면 이메일 및 앱 푸시 알림을 받아보실 수 있습니다.'}
+                ? '알림이 활성화되었습니다! \n실시간 소식을 받으려면 홈 화면에 추가해 주세요.'
+                : '알림이 꺼져 있습니다. \n활성화하여 관심 공연 소식을 받아보세요.'}
             </p>
 
             {serverError && (
@@ -157,16 +148,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               {serverLoading
                 ? '처리 중...'
                 : isServerNotificationEnabled
-                ? '서버 알림 끄기'
-                : '서버 알림 켜기'}
+                ? '알림 끄기'
+                : '알림 켜기'}
             </button>
           </div>
-        </div>
-
-        <div className={styles.footer}>
-          <button className={styles.secondaryButton} onClick={onClose}>
-            닫기
-          </button>
         </div>
       </div>
     </div>

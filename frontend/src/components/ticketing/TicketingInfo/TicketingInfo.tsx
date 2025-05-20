@@ -33,12 +33,7 @@ export default function TicketingInfo() {
           setTicketingInfo(data);
         }
       } catch (error: any) {
-        if (error.response?.status === 401) {
-          setError('로그인이 필요한 서비스입니다!');
-        } else {
-          console.error('티켓팅 정보를 가져오는데 실패했습니다:', error);
-          setError('티켓팅 정보를 가져오는데 실패했습니다.');
-        }
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -85,15 +80,13 @@ export default function TicketingInfo() {
                 : '예정된 티켓팅이 없습니다'}
             </span>
           </div>
-          {loading ? (
-            <div className={styles.ticketBadge}>
-              {loading
-                ? '로딩 중...'
-                : ticketingInfo
-                ? formatDateTime(ticketingInfo.startTime)
-                : ''}
-            </div>
-          ) : null}
+          <div className={styles.ticketBadge}>
+            {loading
+              ? '로딩 중...'
+              : ticketingInfo
+              ? formatDateTime(ticketingInfo.startTime)
+              : ''}
+          </div>
         </div>
       </Link>
     </div>

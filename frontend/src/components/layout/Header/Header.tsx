@@ -97,13 +97,9 @@ const Header = () => {
           </div>
         </div>
         <div className={styles.iconContainer}>
-          <button
-            onClick={handleNotificationClick}
-            className={styles.iconButton}
-            aria-label='알림'
-          >
+          <Link href='/notification' className={styles.logo}>
             {renderNotificationIcon()}
-          </button>
+          </Link>
           <button
             onClick={handleMenuClick}
             className={styles.iconButton}

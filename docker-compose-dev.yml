@@ -87,7 +87,6 @@ services:
       - TZ=Asia/Seoul
     ports:
       - "8001:8000"
-    restart: unless-stopped
     networks:
       app-network:
         aliases:

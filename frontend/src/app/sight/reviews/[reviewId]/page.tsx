@@ -1,4 +1,5 @@
-// src/pages/sight/reviews/[reviewId].tsx
+// src/pages/sight/reviews/[reviewId].tsx 수정
+
 'use client';
 import { useAppSelector } from '@/store/reduxHooks';
 import { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ import {
   STAGE_GRADE_OPTIONS,
 } from '@/lib/constants/review';
 import styles from './page.module.scss';
+import ReactDOM from 'react-dom'; // 추가
 
 // 각 등급에 맞는 옵션 찾기 헬퍼 함수
 const getGradeOption = (
@@ -34,6 +36,12 @@ export default function ReviewDetailPage() {
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [mounted, setMounted] = useState(false); // 추가: 마운트 상태 추적
+
+  // 컴포넌트 마운트 시 상태 업데이트
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 삭제 다이얼로그 열기/닫기
   const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
@@ -131,6 +139,32 @@ export default function ReviewDetailPage() {
   const screenGradeOption = getGradeOption(
     review.screenGrade,
     SCREEN_GRADE_OPTIONS
+  );
+
+  // 삭제 확인 모달 컴포넌트
+  const DeleteConfirmModal = () => (
+    <div className={styles.dialog}>
+      <div className={styles.dialogContent}>
+        <h2 className={styles.dialogTitle}>리뷰 삭제</h2>
+        <p className={styles.dialogText}>
+          이 리뷰를 정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.
+        </p>
+        <div className={styles.dialogActions}>
+          <button
+            className={`${styles.button} ${styles.outlined}`}
+            onClick={handleCloseDeleteDialog}
+          >
+            취소
+          </button>
+          <button
+            className={`${styles.button} ${styles.error}`}
+            onClick={handleDeleteReview}
+          >
+            삭제
+          </button>
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -248,31 +282,10 @@ export default function ReviewDetailPage() {
         )}
       </div>
 
-      {/* 삭제 확인 다이얼로그 */}
-      {openDeleteDialog && (
-        <div className={styles.dialog}>
-          <div className={styles.dialogContent}>
-            <h2 className={styles.dialogTitle}>리뷰 삭제</h2>
-            <p className={styles.dialogText}>
-              이 리뷰를 정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.
-            </p>
-            <div className={styles.dialogActions}>
-              <button
-                className={`${styles.button} ${styles.outlined}`}
-                onClick={handleCloseDeleteDialog}
-              >
-                취소
-              </button>
-              <button
-                className={`${styles.button} ${styles.error}`}
-                onClick={handleDeleteReview}
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 삭제 확인 다이얼로그 - 포털 사용 */}
+      {mounted &&
+        openDeleteDialog &&
+        ReactDOM.createPortal(<DeleteConfirmModal />, document.body)}
     </div>
   );
 }

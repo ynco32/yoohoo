@@ -1,13 +1,13 @@
 // src/components/main/UserProfile/UserProfile.tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from '@/api/auth/auth';
 import { setUser, setLoading, setError } from '@/store/slices/userSlice';
-import { RootState, store } from '@/store';
+import { RootState } from '@/store';
 import styles from './UserProfile.module.scss';
 import ProfileBackground from '/public/svgs/main/profile-bg.svg';
 
@@ -24,7 +24,7 @@ export default function UserProfile() {
   const getProfileImagePath = (profileNumber?: number) => {
     // 프로필 번호가 없으면 기본 이미지 반환
     if (profileNumber === undefined) {
-      return '/images/default-profile.png';
+      return '/images/profiles/profile-1.png';
     }
 
     // 프로필 번호에 따른 이미지 경로 반환
@@ -33,6 +33,9 @@ export default function UserProfile() {
 
   useEffect(() => {
     console.log('UserProfile 마운트됨, 현재 페이지:', window.location.pathname);
+    // 랜덤 메시지 선택
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    setRandomMessage(messages[randomIndex]);
 
     const fetchUserInfo = async () => {
       try {
@@ -69,6 +72,19 @@ export default function UserProfile() {
   const handleClick = () => {
     router.push('/mypage');
   };
+
+  // 랜덤 메시지를 저장할 상태 추가
+  const [randomMessage, setRandomMessage] = useState('');
+
+  // 랜덤 메시지 배열
+  const messages = [
+    '안녕하세요 🐘',
+    '티켓팅 준비 완료되셨나요? 🎟️',
+    '티켓팅 성공을 응원합니다 ✨',
+    '최고의 시야를 찾아보세요 👀',
+    '공연장에서 만나요 🏟️',
+    '오늘도 좋은 관람 되세요 🎵',
+  ];
 
   return (
     <div className={styles.profileContainer}>
@@ -109,9 +125,12 @@ export default function UserProfile() {
 
               {/* 닉네임 */}
               <div className={styles.nicknameSection}>
-                <span className={styles.nickname}>
-                  {userInfo?.nickname || '사용자'}님
-                </span>
+                <div className={styles.nickname}>
+                  <span className={styles.userName}>
+                    {userInfo?.nickname || '사용자'}
+                  </span>
+                  님, {randomMessage}
+                </div>
               </div>
             </>
           )}

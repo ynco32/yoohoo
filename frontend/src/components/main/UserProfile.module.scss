@@ -90,7 +90,7 @@
   width: 100%;
   text-align: left;
   position: absolute;
-  bottom: 12px;
+  bottom: 16px;
   left: 16px;
   z-index: 3;
 }
@@ -99,6 +99,10 @@
   font-size: clamp($font-size-sm, 2.5vmin, $font-size-lg);
   font-weight: $font-weight-bold;
   color: #2c3e50;
+}
+
+.userName {
+  color: $con-blue;
 }
 
 @media (min-height: 800px) {

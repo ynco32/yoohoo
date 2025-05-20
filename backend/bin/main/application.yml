@@ -15,3 +15,6 @@ spring:
         - redis
     include: oauth, db, cloud, redis
   
+chatbot:
+  python:
+    url: ${CHATBOT_PYTHON_URL:http://localhost:8000}

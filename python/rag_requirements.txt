@@ -1,12 +1,30 @@
-# RAG 시스템 구축을 위한 핵심 패키지 (콘끼리 프로젝트 기준)
-python-dotenv==1.0.1
-openai==1.25.0
-langchain==0.1.12
-langchain-openai==0.0.8
-langchain-upstage==0.6.0
-faiss-cpu==1.8.0
+# 웹 서버 & API
+fastapi==0.115.12
+uvicorn==0.34.2
 
-# RAG 시스템 내 데이터 처리 관련
-numpy==1.26.4
-requests==2.31.0
-boto3==1.33.13  # S3 관련 작업에 필요
+# 자연어 처리 & AI
+langchain==0.3.25
+langchain-openai==0.3.17
+langchain-pinecone==0.2.6
+openai==1.77.0
+
+# 벡터 데이터베이스
+pinecone==6.0.2
+
+# 데이터베이스
+mysql-connector-python==9.3.0
+
+# 웹 스크래핑 & 크롤링
+beautifulsoup4==4.13.4
+selenium==4.31.0
+
+# 이미지 처리
+pillow==11.2.1
+opencv-python==4.11.0.86
+
+# AWS 서비스
+boto3==1.38.11
+
+# 유틸리티
+python-dotenv==1.1.0
+requests==2.32.3

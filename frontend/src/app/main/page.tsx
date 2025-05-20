@@ -7,6 +7,7 @@ import PlaceIcon from '/public/svgs/main/menuPlace.svg';
 import TicketIcon from '/public/svgs/main/menuTicket.svg';
 import UserProfile from '@/components/main/UserProfile';
 import TicketingInfo from '@/components/ticketing/TicketingInfo/TicketingInfo';
+import NotificationController from '@/components/notification/NotificationController/NotificationController';
 
 // 고정된 메뉴 정보
 const menuInfo = {
@@ -85,6 +86,9 @@ export default function MainMenu() {
         {/* 티켓팅 정보 부분은 클라이언트 컴포넌트로 분리 */}
         <TicketingInfo />
       </div>
+
+      {/* 알림 모달을 제어하는 클라이언트 컴포넌트 */}
+      <NotificationController />
     </div>
   );
 }

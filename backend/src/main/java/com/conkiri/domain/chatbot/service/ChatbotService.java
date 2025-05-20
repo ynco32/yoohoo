@@ -22,7 +22,7 @@ public class ChatbotService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${CHATBOT_PYTHON_URL:http://localhost:8000}")
+    @Value("${chatbot.python.url}")
     private String pythonServiceUrl;
 
     /**
@@ -60,7 +60,7 @@ public class ChatbotService {
                 return createErrorResponse("챗봇 서버 응답 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
             }
 
-            ChatbotResponseDTO response = ChatbotResponseDTO.fromPythonResponse(responseBody);
+            ChatbotResponseDTO response = ChatbotResponseDTO.from(responseBody);
             log.info("챗봇 응답 완료: hasEvidenceImage={}", response.hasEvidenceImage());
 
             if (response.hasEvidenceImage() && response.evidenceImageData() != null) {

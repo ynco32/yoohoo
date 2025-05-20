@@ -8,13 +8,11 @@ spring:
         - db-local
         - cloud
         - redis
+        - python
       dev:
         - oauth
         - db-dev
         - cloud
         - redis
-    include: oauth, db, cloud, redis
-  
-chatbot:
-  python:
-    url: ${CHATBOT_PYTHON_URL:http://localhost:8000}
+        - python
+    include: oauth, db, cloud, redis, python

@@ -63,6 +63,10 @@ public class ChatbotService {
             ChatbotResponseDTO response = ChatbotResponseDTO.fromPythonResponse(responseBody);
             log.info("챗봇 응답 완료: hasEvidenceImage={}", response.hasEvidenceImage());
 
+            if (response.hasEvidenceImage() && response.evidenceImageData() != null) {
+                log.debug("이미지 데이터 크기: {} 바이트", response.evidenceImageData().length());
+            }
+
             return response;
 
         } catch (RestClientException e) {

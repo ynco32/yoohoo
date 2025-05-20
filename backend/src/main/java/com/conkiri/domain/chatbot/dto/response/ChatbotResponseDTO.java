@@ -7,17 +7,17 @@ import java.util.Map;
 public record ChatbotResponseDTO(
         String answer,
         boolean hasEvidenceImage,
-        String evidenceImageUrl
+        String evidenceImageData
 ) {
     public static ChatbotResponseDTO fromPythonResponse(Map<String, Object> pythonResponse) {
         String answer = (String) pythonResponse.get("answer");
         boolean hasEvidenceImage = (boolean) pythonResponse.get("has_evidence_image");
-        String evidenceImageUrl = (String) pythonResponse.get("evidence_image_url");
+        String evidenceImageData = (String) pythonResponse.get("evidence_image_data");
 
         return new ChatbotResponseDTO(
                 answer,
                 hasEvidenceImage,
-                evidenceImageUrl
+                evidenceImageData
         );
     }
 }

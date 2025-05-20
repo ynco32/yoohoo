@@ -57,8 +57,8 @@ def get_concert_info(concert_id):
         query = """
         SELECT c.concert_id, c.concert_name, a.arena_name, c.photo_url, 
                c.advanced_reservation, c.reservation, c.ticketing_platform
-        FROM CONCERT c
-        JOIN ARENA a ON c.arena_id = a.arena_id
+        FROM concert c
+        JOIN arena a ON c.arena_id = a.arena_id
         WHERE c.concert_id = %s
         """
         
@@ -72,8 +72,8 @@ def get_concert_info(concert_id):
         # 아티스트 정보 조회 쿼리
         artist_query = """
         SELECT a.artist_name
-        FROM ARTIST a
-        JOIN CAST ca ON a.artist_id = ca.artist_id
+        FROM artist a
+        JOIN cast ca ON a.artist_id = ca.artist_id
         WHERE ca.concert_id = %s
         """
         
@@ -83,7 +83,7 @@ def get_concert_info(concert_id):
         # 공연 시간 정보 조회 쿼리
         times_query = """
         SELECT start_time
-        FROM CONCERT_DETAIL
+        FROM concert_detail
         WHERE concert_id = %s
         ORDER BY start_time
         """

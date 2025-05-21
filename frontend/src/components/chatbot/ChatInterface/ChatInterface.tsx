@@ -282,7 +282,7 @@ export default function ChatInterface({
                 <button
                   type="button"
                   className={styles.concertSettingButton}
-                  onClick={() => window.location.href = '/concerts/all'}
+                  onClick={() => window.location.href = '/mypage'}
                 >
                   콘서트 설정하기
                 </button>
@@ -323,7 +323,7 @@ export default function ChatInterface({
                           ? concert.artists.length > 1
                             ? `${concert.artists[0].artistName} 외`
                             : concert.artists[0].artistName
-                          : '아티스트명'
+                          : ''
                         : concert.artists}
                     </div>
                     <div

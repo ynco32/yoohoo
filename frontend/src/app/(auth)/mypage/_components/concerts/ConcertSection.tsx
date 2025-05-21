@@ -8,6 +8,10 @@ import styles from './ConcertSection.module.scss';
 import { ConcertInfo } from '@/types/mypage';
 import { deleteConcert, getMyConcerts } from '@/api/mypage/mypage';
 
+interface ConcertSectionProps {
+  onCountChange: (count: number) => void;
+}
+
 // 스켈레톤 콘서트 카드 컴포넌트
 const SkeletonConcertCard = () => {
   return (
@@ -23,7 +27,7 @@ const SkeletonConcertCard = () => {
   );
 };
 
-export default function ConcertSection() {
+export default function ConcertSection({ onCountChange }: ConcertSectionProps) {
   const [concerts, setConcerts] = useState<ConcertInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -34,11 +38,21 @@ export default function ConcertSection() {
 
   const handleDeleteConcert = async (concertId: number) => {
     try {
-      await deleteConcert(concertId);
-      setConcerts(
-        concerts.filter((concert) => concert.concertId !== concertId)
+      // 낙관적 업데이트: 서버 응답을 기다리지 않고 UI를 먼저 업데이트
+      const updatedConcerts = concerts.filter(
+        (concert) => concert.concertId !== concertId
       );
+      setConcerts(updatedConcerts);
+      onCountChange(updatedConcerts.length);
+
+      // 서버에 삭제 요청
+      await deleteConcert(concertId);
     } catch (error) {
+      // 실패 시 원래 상태로 복구
+      const response = await getMyConcerts();
+      const concertsData = response?.concerts || [];
+      setConcerts(concertsData);
+      onCountChange(concertsData.length);
       console.error('콘서트 삭제 실패:', error);
     }
   };
@@ -46,9 +60,10 @@ export default function ConcertSection() {
   useEffect(() => {
     const fetchConcerts = async () => {
       try {
-        setLoading(true);
         const response = await getMyConcerts();
-        setConcerts(response?.concerts || []);
+        const concertsData = response?.concerts || [];
+        setConcerts(concertsData);
+        onCountChange(concertsData.length);
       } catch (error) {
         console.error('콘서트 데이터 로딩 실패:', error);
       } finally {
@@ -57,9 +72,10 @@ export default function ConcertSection() {
     };
 
     fetchConcerts();
-  }, []);
+  }, [onCountChange]);
 
-  if (loading) {
+  // 초기 로딩 시에만 스켈레톤 UI 표시
+  if (loading && concerts.length === 0) {
     return (
       <section className={styles.section}>
         <div className={styles.header}>
@@ -71,7 +87,6 @@ export default function ConcertSection() {
         </div>
         <div className={styles.scrollContainer}>
           <div className={styles.concertList}>
-            {/* 스켈레톤 콘서트 카드 4개 표시 */}
             <SkeletonConcertCard />
             <SkeletonConcertCard />
             <SkeletonConcertCard />
@@ -112,7 +127,6 @@ export default function ConcertSection() {
                 )}
                 <ConcertCard
                   title={concert.concertName}
-                  // dateRange={`${concert.sessions[0].startTime.split('T')[0]} ~ ${concert.sessions[concert.sessions.length - 1].startTime.split('T')[0]}`}
                   dateRange={`${concert.arenaName}`}
                   posterUrl={concert.photoUrl}
                   onClick={() => {}}

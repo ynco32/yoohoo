@@ -70,6 +70,9 @@ export default function TicketingInfo() {
         <div className={styles.ticketingWrapper}>
           <div className={styles.ticketingContent}>
             <span className={styles.label}>실전 티켓팅 연습</span>
+            <span className={styles.description}>
+                  티켓팅 직전, 실전같은 연습!
+            </span>
             <span className={styles.ticketingTitle}>
               {loading
                 ? '티켓팅 정보를 가져오는 중...'

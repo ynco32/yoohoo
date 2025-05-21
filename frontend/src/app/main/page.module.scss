@@ -190,7 +190,7 @@
 }
 
 .ticketingTitle {
-  position: absolute;
+  // position: absolute;
   bottom: 10px;
   right: 10px;
   font-size: $font-size-md;
@@ -201,7 +201,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
 }
 
 .ticketBadge {

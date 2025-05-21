@@ -100,46 +100,6 @@ def main(ocr_file_path, concert_id, output_dir="./output"):
             logger.info(f"콘서트 ID {concert_id}의 데이터가 이미 벡터 저장소에 존재합니다.")  
             logger.info("기존 데이터를 사용합니다.")    
         
-        logger.info("RAG 체인을 생성하고 테스트 쿼리를 실행합니다...") 
-        rag_chain = create_rag_chain(vectorstore)
-
-        test_queries = [
-            "이 콘서트의 공연 시작 시간은 언제인가요?",
-            "입장 시 필요한 신분증은 무엇인가요?",
-            "매표소 어디인가요?",
-            "좌석 수는 몇 개인가요?",
-            "물품 보관소 어디인가요?",
-            "선예매는 언제인가요?",
-            "학생증으로도 본인인증할할 수 있나요?",
-            "버스 타고 가려는데 어떻게 갈 수 있나요?",
-            "어디로 입장할 수 있나요?",
-            "언제쯤 끝나는 건가요?"
-        ]
-        
-        test_results = []
-        for query in test_queries:
-            result = query_rag_system(rag_chain, query)
-
-            sources = []
-            # if "source_documents" in result:
-            #     sources = [doc.get("content", "") for doc in result.get("source_documents", [])]
-
-            if "source_documents" in result and result["source_documents"]:
-                sources = [doc.get("content", "") for doc in result["source_documents"]]
-
-            test_results.append({
-                "query": query,
-                "answer": result.get("answer", "응답 없음"),
-                "sources": sources
-            })
-            logger.info(f"테스트 질문: {query}")
-            logger.info(f"답변: {result.get('answer', '응답 없음')[:500]}...")
-            logger.info(f"참조 소스 개수: {len(sources)}")
-        
-        # 10. 테스트 결과 저장
-        test_output_path = os.path.join(output_dir, f"test_results_{concert_id}.json")
-        save_json(test_results, test_output_path)
-        
         logger.info("RAG 프로세스가 성공적으로 완료되었습니다!")
         
     except Exception as e:

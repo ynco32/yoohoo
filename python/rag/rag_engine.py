@@ -184,20 +184,20 @@ def create_rag_chain(vectorstore):
 
 
 
-def query_rag_system(chain, query, concert_id=None):
+def query_rag_system(chain, query, concert_id=None, concert_info=None):
     """RAG 시스템에 질의합니다."""
     logger.info(f"질의 처리 중: '{query}'")
     
     try:
-        # 1. 쿼리 확장 (대화 맥락 고려) 👈
+        # 1. 쿼리 확장 (대화 맥락 고려) 
         expanded_query = expand_query(query, chain.conversation_history)
         
         # 2. 검색 필터 설정 (변경 없음)
-        search_kwargs = {"k": 7}  # 👈 5에서 7로 증가
+        search_kwargs = {"k": 7}  
         if concert_id:
             search_kwargs["filter"] = {"concert_id": concert_id}
         
-        # 3. 확장된 쿼리로 검색 👈
+        # 3. 확장된 쿼리로 검색 
         logger.info(f"확장된 쿼리로 검색: '{expanded_query}'")
         docs = chain.vectorstore.similarity_search(
             expanded_query, 
@@ -215,12 +215,25 @@ def query_rag_system(chain, query, concert_id=None):
         
         # 5. 검색 결과를 컨텍스트로 변환 (변경 없음)
         context = "\n\n".join([doc.page_content for doc in docs])
+
+        db_info = ""
+        if concert_info:
+            db_info = f"""
+<DB_정보>
+콘서트 이름: {concert_info.get('concert_name', '정보 없음')}
+공연장: {concert_info.get('arena_name', '정보 없음')}
+아티스트: {', '.join(concert_info.get('artists', ['정보 없음']))}
+티켓팅 플랫폼: {concert_info.get('ticketing_platform', '정보 없음')}
+</DB_정보>
+"""
         
-        # 6. 답변 생성 프롬프트 (개선) 👈
+        # 6. 답변 생성 프롬프트 
         prompt = f"""
 당신은 콘서트 관련 정보를 제공하는 도우미인 '콘끼리봇'입니다. 
-아래 제공된 콘서트 공지사항 정보를 바탕으로 사용자의 질문에 정확하게 답변해주세요.
+아래 제공된 콘서트 공지사항 정보와 DB 정보를 바탕으로 사용자의 질문에 정확하게 답변해주세요.
 말끝마다 '뿌우'를 붙여주세요. 예: "안녕하세요, 뿌우"
+
+{db_info}
 
 <콘서트_정보>
 {context}
@@ -235,8 +248,9 @@ def query_rag_system(chain, query, concert_id=None):
 4. 공연 시간, 날짜에 관한 질문에는 모든 공연 일자와 시간을 반드시 전부 알려주세요. (예: "5월 17일은 오후 6시, 5월 18일은 오후 4시에 시작합니다."). 그리고 입장시작 시간과 공연시작 시간은 다르다는 것을 유의해주세요.
 5. 위치 관련 질문에는 정확한 위치 정보가 있을 경우만 답변하고, 없으면 "공지사항에서 위치 정보를 찾을 수 없습니다"라고 명확히 말하세요.
 6. 질문에 대한 정보가 없을 때는, "공지사항에서 [특정 내용]에 대한 정보를 찾을 수 없습니다"라고 명확히 말한 후, 관련된 다른 정보가 있다면 함께 제공하세요.
-7. 답변의 출처가 되는 가장 중요한 문서 ID 하나만 선택하세요. 관련 정보가 전혀 없으면 "없음"으로 표시하세요.
-8. 정확히 아래 형식만 사용하세요. 다른 형식이나 표현(예: "출처:", "참고:", 등)은 사용하지 마세요.
+7. 콘서트 이름, 공연장, 아티스트, 티켓팅 플랫폼이 뭔지 묻는 단순한 질문에는 DB_정보를 우선적으로 사용하세요.
+8. 답변의 출처가 되는 가장 중요한 문서 ID 하나만 선택하세요. 관련 정보가 전혀 없으면 "없음"으로 표시하세요. DB 정보로만 답변을 한 경우에도 "없음"으로 표시하세요.
+9. 정확히 아래 형식만 사용하세요. 다른 형식이나 표현(예: "출처:", "참고:", 등)은 사용하지 마세요.
 
 [답변]
 당신의 답변 내용을 여기에 작성하세요.
@@ -260,13 +274,14 @@ def query_rag_system(chain, query, concert_id=None):
 """
         
         system_message = """
-너는 콘서트 정보를 정확히 알려주는 콘끼리 챗봇이야. 
+콘끼리는 콘서트 관람을 돕는 어플이이고 너는 그 어플 속에서 콘서트 정보를 정확히 알려주는 콘끼리 챗봇이야. 
 중요한 규칙:
 1. 절대 할루시네이션하지 마세요! 제공된 문서에 명시적으로 있는 정보만 사용하세요.
 2. 문서에 없는 정보는 만들어내지 마세요. 사실 확인을 철저히 하세요.
 3. 모든 공연 날짜와 시간을 질문 시 항상 함께 알려주세요.
 4. 정확하게 "뿌우"로 모든 답변을 끝내세요.
 5. 절대로 가격, 시간, 위치 등의 정보를 추측하지 마세요.
+6. 콘끼리 이용법에 대해 묻는 질문에 대해서는 온보딩 페이지를 참고해달라고 하세요. 
 """
         
         # 7. GPT 호출 (변경 없음)

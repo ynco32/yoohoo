@@ -56,21 +56,17 @@ export default function PlaceChat({
 
   // 초기 스크롤 로직
   useEffect(() => {
-    if (isLoading || messages.length === 0 || didInitialScrollRef.current) {
+    if (isLoading || messages.length === 0 || didInitialScrollRef.current)
       return;
-    }
 
-    const container = messageListRef.current;
-    if (!container) return;
-
-    const timer = setTimeout(() => {
-      if (container.scrollHeight > 0) {
-        container.scrollTop = container.scrollHeight;
+    const frame = requestAnimationFrame(() => {
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
         didInitialScrollRef.current = true;
-      }
-    }, 200);
+      }, 50); // DOM 렌더링 반영 시간
+    });
 
-    return () => clearTimeout(timer);
+    return () => cancelAnimationFrame(frame);
   }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -341,7 +337,7 @@ export default function PlaceChat({
             </div>
           )}
 
-          {/* 🔹 일반 메시지 그룹 렌더링 */}
+          {/* 일반 메시지 그룹 렌더링 */}
           {grouped.length === 0 && !showSystemMessage && (
             <div className={styles.noMessage}>질문을 시작해보세요!</div>
           )}

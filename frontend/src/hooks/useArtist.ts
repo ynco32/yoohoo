@@ -153,7 +153,7 @@ export const useArtist = () => {
     // 1초 후에 검색 실행하는 타이머 설정
     searchTimerRef.current = setTimeout(() => {
       fetchArtists(query);
-    }, 1000);
+    }, 500);
   };
 
   // 컴포넌트 언마운트 시 타이머 정리

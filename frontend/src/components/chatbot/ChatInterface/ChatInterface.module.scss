@@ -403,3 +403,21 @@
     opacity: 1;
   }
 }
+
+.selectConcertMessage {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  background-color: #f9f9f9;
+  border-radius: $border-radius-md;
+  color: $text-sub;
+  font-weight: $font-weight-medium;
+  border: 1px solid #e0e0e0;
+
+  p {
+    margin: 0;
+  }
+}

@@ -119,7 +119,7 @@ export default function WriteReviewPage() {
                 onChange={(e) => handleChange('rowLine', e.target.value)}
                 className={styles.numberInput}
               />
-              <span className={styles.label}>구역</span>
+              <span className={styles.label}>열</span>
             </div>
             <NumberInput
               label='번'

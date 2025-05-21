@@ -389,13 +389,18 @@ export default function ChatInterface({
         <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputContainer}>
-        <ChatInput
-          onSend={handleSendMessage}
-          placeholder='여기에 질문을 입력하세요.'
-          buttonText='전송'
-        />
+        {selectedConcert > 0 ? (
+          <ChatInput
+            onSend={handleSendMessage}
+            placeholder='여기에 질문을 입력하세요.'
+            buttonText='전송'
+          />
+        ) : (
+          <div className={styles.selectConcertMessage}>
+            <p>질문할 콘서트를 선택해주세요</p>
+          </div>
+        )}
       </div>
-
       {/* 이미지 모달 추가 */}
       {showImageModal && (
         <div className={styles.imageModal} onClick={handleCloseModal}>

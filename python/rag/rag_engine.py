@@ -193,7 +193,7 @@ def query_rag_system(chain, query, concert_id=None, concert_info=None):
         expanded_query = expand_query(query, chain.conversation_history)
         
         # 2. 검색 필터 설정 (변경 없음)
-        search_kwargs = {"k": 7}  
+        search_kwargs = {"k": 5}  
         if concert_id:
             search_kwargs["filter"] = {"concert_id": concert_id}
         
@@ -288,7 +288,7 @@ def query_rag_system(chain, query, concert_id=None, concert_info=None):
         from openai import OpenAI
         client = OpenAI()
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.1-mini",
             messages=[
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": prompt}

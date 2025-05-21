@@ -216,19 +216,38 @@ def query_rag_system(chain, query, concert_id=None, concert_info=None):
         # 5. 검색 결과를 컨텍스트로 변환 (변경 없음)
         context = "\n\n".join([doc.page_content for doc in docs])
 
+        # DB 정보 문자열 준비
         db_info = ""
         if concert_info:
+            # datetime 객체를 문자열로 변환 
+            start_times = concert_info.get('start_times', [])
+            times_str_list = []
+            for time_obj in start_times:
+                if hasattr(time_obj, 'strftime'):  # datetime 객체인 경우 👈
+                    times_str_list.append(time_obj.strftime('%Y-%m-%d %H:%M:%S'))
+                else:  # 이미 문자열인 경우
+                    times_str_list.append(str(time_obj))
+            
+            # 선예매/일반예매 시간 문자열 변환 
+            adv_res = concert_info.get('advanced_reservation')
+            if hasattr(adv_res, 'strftime'):
+                adv_res = adv_res.strftime('%Y-%m-%d %H:%M:%S')
+                
+            res = concert_info.get('reservation')
+            if hasattr(res, 'strftime'):
+                res = res.strftime('%Y-%m-%d %H:%M:%S')
+            
             db_info = f"""
-<DB_정보>
-콘서트 이름: {concert_info.get('concert_name', '정보 없음')}
-공연장: {concert_info.get('arena_name', '정보 없음')}
-아티스트: {', '.join(concert_info.get('artists', ['정보 없음']))}
-선예매 시작: {concert_info.get('advanced_reservation', '정보 없음')}
-일반예매 시작: {concert_info.get('reservation', '정보 없음')}
-공연 시작 시간: {', '.join(concert_info.get('start_times', ['정보 없음']))}
-티켓팅 플랫폼: {concert_info.get('ticketing_platform', '정보 없음')}
-</DB_정보>
-"""
+        <DB_정보>
+        콘서트 이름: {concert_info.get('concert_name', '정보 없음')}
+        공연장: {concert_info.get('arena_name', '정보 없음')}
+        아티스트: {', '.join(concert_info.get('artists', ['정보 없음']))}
+        선예매 시작: {adv_res if adv_res else '정보 없음'}
+        일반예매 시작: {res if res else '정보 없음'}
+        티켓팅 플랫폼: {concert_info.get('ticketing_platform', '정보 없음')}
+        공연 시작 시간: {', '.join(times_str_list) if times_str_list else '정보 없음'}
+        </DB_정보>
+        """
         
         # 6. 답변 생성 프롬프트 
         prompt = f"""
@@ -252,7 +271,7 @@ def query_rag_system(chain, query, concert_id=None, concert_info=None):
 5. 위치 관련 질문에는 정확한 위치 정보가 있을 경우만 답변하고, 없으면 "공지사항에서 위치 정보를 찾을 수 없습니다"라고 명확히 말하세요.
 6. 질문에 대한 정보가 없을 때는, "공지사항에서 [특정 내용]에 대한 정보를 찾을 수 없습니다"라고 명확히 말한 후, 관련된 다른 정보가 있다면 함께 제공하세요.
 7. 콘서트 이름, 공연장, 아티스트, 티켓팅 플랫폼이 뭔지 묻는 단순한 질문에는 DB_정보를 우선적으로 사용하세요.
-8. 답변의 출처가 되는 가장 중요한 문서 ID 하나만 선택하세요. 관련 정보가 전혀 없으면 "없음"으로 표시하세요. DB 정보로만 답변을 한 경우에도 "없음"으로 표시하세요.
+8. 답변의 출처가 되는 가장 중요한 문서 ID 하나만 선택하세요. 질문 관련 정보가 콘서트_정보에 전혀 없으면 "없음"으로 표시하세요. DB_정보로만 답변을 한 경우에도 "없음"으로 표시하세요.
 9. 정확히 아래 형식만 사용하세요. 다른 형식이나 표현(예: "출처:", "참고:", 등)은 사용하지 마세요.
 
 [답변]

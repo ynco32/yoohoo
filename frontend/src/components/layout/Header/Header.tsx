@@ -7,11 +7,10 @@ import styles from './Header.module.scss';
 import { useHeader } from './HeaderProvider';
 import { usePathname } from 'next/navigation';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
-import NotificationIcon from '@/assets/icons/notification.svg';
-import MenuIcon from '@/assets/icons/menu.svg';
 import LogoIcon from '/public/svgs/main/logo.svg';
-import { notificationApi } from '@/api/notification/notification'; // 알림 API 임포트
 import IconBox from '@/components/common/IconBox/IconBox';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 const Header = () => {
   const {
@@ -28,35 +27,38 @@ const Header = () => {
   const pathname = usePathname();
   const isPlacePage = pathname.startsWith('/place');
 
-  // 읽지 않은 알림 상태 추가
-  const [hasUnread, setHasUnread] = useState(false);
+  // Redux 스토어에서 읽지 않은 알림 상태 가져오기
+  const hasUnread = useSelector(
+    (state: RootState) => state.notification.hasUnread
+  );
   const [isLoading, setIsLoading] = useState(true);
 
-  // 컴포넌트 마운트 시 읽지 않은 알림 정보 가져오기
-  useEffect(() => {
-    const fetchUnreadStatus = async () => {
-      try {
-        setIsLoading(true);
-        const hasUnreadData = await notificationApi.hasUnreadNotification();
-        setHasUnread(!!hasUnreadData);
-      } catch (error) {
-        console.error('알림 상태 로딩 실패:', error);
-        setHasUnread(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // 강제 리렌더링을 위한 상태
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
-    fetchUnreadStatus();
+  // 초기 로딩 상태 설정
+  useEffect(() => {
+    setIsLoading(false);
   }, []);
 
-  const handleNotificationClick = () => {
-    console.log('Notification clicked');
-  };
+  // 알림 업데이트 이벤트 감지
+  useEffect(() => {
+    const handleNotificationUpdate = () => {
+      // 강제 리렌더링 트리거
+      setUpdateTrigger((prev) => prev + 1);
+    };
 
-  const handleMenuClick = () => {
-    setIsMenuOpen(true);
-  };
+    // 이벤트 리스너 등록
+    window.addEventListener('notification-update', handleNotificationUpdate);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener(
+        'notification-update',
+        handleNotificationUpdate
+      );
+    };
+  }, []);
 
   // 알림 아이콘 렌더링 함수
   const renderNotificationIcon = () => (

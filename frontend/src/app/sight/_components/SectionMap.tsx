@@ -106,7 +106,7 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
       {/* 구역표 표시 영역 */}
       <div className={styles.svgOuterContainer}>
         {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
-        {isZoomed && (
+        {/* {isZoomed && (
           <div className={styles.zoomControls}>
             <button
               className={styles.resetZoomButton}
@@ -122,7 +122,7 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
               <span>초기화</span>
             </button>
           </div>
-        )}
+        )} */}
 
         <TransformWrapper
           initialScale={1}

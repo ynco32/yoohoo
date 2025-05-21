@@ -15,7 +15,8 @@ public record TicketingInfoResponseDTO(
 	boolean isWithin10Minutes,
 	boolean isFinished,
 	String concertName,
-	String ticketingPlatform
+	String ticketingPlatform,
+	String photoUrl
 ) {
 
 	public static TicketingInfoResponseDTO from(RedisTemplate<String, String> redisTemplate) {
@@ -26,6 +27,7 @@ public record TicketingInfoResponseDTO(
 		String endTimeStr = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "endTime");
 		String concertName = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "concertName");
 		String ticketingPlatform = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "ticketingPlatform");
+		String photoUrl = (String)redisTemplate.opsForHash().get(RedisKeys.TIME, "photoUrl");
 
 		if (startTimeStr == null || endTimeStr == null) {
 			throw new BaseException(ErrorCode.NO_TICKETING_TODAY);
@@ -43,7 +45,8 @@ public record TicketingInfoResponseDTO(
 			isWithin10Minutes,
 			isFinished,
 			concertName,
-			ticketingPlatform
+			ticketingPlatform,
+			photoUrl
 		);
 	}
 }

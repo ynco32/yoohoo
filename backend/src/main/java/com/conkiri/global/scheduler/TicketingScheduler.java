@@ -92,6 +92,7 @@ public class TicketingScheduler {
 			concert.getAdvancedReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 사전 예매 시간 감지", concert.getConcertName());
 			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 선예매");
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "photoUrl", concert.getPhotoUrl());
 			return concert.getAdvancedReservation().minusHours(1);
 		}
 
@@ -99,6 +100,7 @@ public class TicketingScheduler {
 			concert.getReservation().toLocalDate().equals(today)) {
 			log.info("콘서트 [{}]: 일반 예매 시간 감지", concert.getConcertName());
 			redisTemplate.opsForHash().put(RedisKeys.TIME, "concertName", concert.getConcertName() + " 일반예매");
+			redisTemplate.opsForHash().put(RedisKeys.TIME, "photoUrl", concert.getPhotoUrl());
 			return concert.getReservation().minusHours(1);
 		}
 

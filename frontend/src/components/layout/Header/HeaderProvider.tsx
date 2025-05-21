@@ -112,15 +112,7 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
 
   // 경로에 따른 상세 정보 표시 여부 결정
   const updateDetailState = (path: string) => {
-    if (path.startsWith('/sight/reviews/write')) {
-      setShouldShowDetail(true);
-      setSeatDetail('리뷰 쓰기');
-    }
-    // 리뷰 수정 페이지
-    else if (path.match(/^\/sight\/reviews\/[^\/]+\/edit$/)) {
-      setShouldShowDetail(true);
-      setSeatDetail('리뷰 수정');
-    } else if (path === '/place' || path === '/sight') {
+    if (path === '/place' || path === '/sight') {
       setShouldShowDetail(false);
       // 목록 페이지로 돌아갈 때 경기장 정보 유지 (새로고침 대비)
     }
@@ -128,6 +120,8 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     else if (path.match(/^\/sight\/[^\/]+$/)) {
       setShouldShowDetail(true);
       setSeatDetail('시야 보기');
+    } else if (path.match(/^\/sight\/reviews\/[^\/]+$/)) {
+      setShouldShowDetail(false);
     }
     // /sight/[arenaId]/[sectionId] - 좌석 선택 페이지
     else if (path.match(/^\/sight\/[^\/]+\/[^\/]+$/)) {
@@ -172,9 +166,7 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
   // 경로에 따른 타이틀 매핑
   const getTitleByPath = () => {
     const pathSegments = pathname.split('/').filter(Boolean);
-    if (pathname.startsWith('/sight/reviews/write')) return '리뷰 쓰기';
     if (pathname.startsWith('/mypage/sight')) return '나의 후기';
-    if (pathname.startsWith('/mypage/sharing')) return '나의 나눔글';
     if (pathname.startsWith('/mypage/ticketing')) return '티켓팅 기록';
 
     if (pathSegments[0] === 'minigame' && pathSegments[1] === 'entrance') {
@@ -191,13 +183,10 @@ export const HeaderProvider = ({ children }: HeaderProviderProps) => {
     }
     if (pathname.startsWith('/minigame')) return '티켓팅 미니 게임';
 
-    if (pathSegments[0] === 'sharing' && pathSegments[2] === 'write') {
-      return '나눔 등록';
+    if (pathSegments[0] === 'sight' && pathSegments[2] === 'write') {
+      return '리뷰 쓰기';
     }
-    if (pathSegments[0] === 'sharing' && pathSegments[3] === 'edit') {
-      return '나눔글 수정';
-    }
-    if (pathSegments[0] === 'sight' && pathSegments[3] === 'edit') {
+    if (pathSegments[0] === 'sight' && pathSegments[2] === 'edit') {
       return '리뷰 수정';
     }
 

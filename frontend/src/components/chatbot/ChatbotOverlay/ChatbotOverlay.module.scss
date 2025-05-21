@@ -148,6 +148,17 @@
     background-color: #f5f8ff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   }
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #aaaaaa;
+
+    &:hover {
+      background-color: #f0f0f0;
+      box-shadow: none;
+    }
+  }
 }
 
 .newChatIcon {

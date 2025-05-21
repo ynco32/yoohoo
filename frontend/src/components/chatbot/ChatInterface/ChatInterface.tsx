@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './ChatInterface.module.scss';
 import ChatInput from '@/components/common/ChatInput/ChatInput';
 import { getChatbotResponse } from '@/api/chatbot/chatbot';
@@ -32,6 +32,7 @@ interface ChatInterfaceProps {
   onStartNewChat?: () => void;
   selectedConcertName?: string;
   resetChat?: boolean; // 채팅 초기화 트리거 추가
+  onLoadingStateChange?: (loading: boolean) => void; // 로딩 상태 변경 알림 추가
 }
 
 export default function ChatInterface({
@@ -39,10 +40,12 @@ export default function ChatInterface({
   onStartNewChat,
   selectedConcertName: externalSelectedConcertName,
   resetChat = false, // 초기화 트리거 기본값
+  onLoadingStateChange,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null); // 메시지 컨테이너 ref 추가
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -57,14 +60,38 @@ export default function ChatInterface({
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
 
+  // isLoading 상태가 변경될 때마다 부모에게 알림
+  useEffect(() => {
+    if (onLoadingStateChange) {
+      onLoadingStateChange(isLoading);
+    }
+  }, [isLoading, onLoadingStateChange]);
+
+  // 채팅 초기화 함수를 useCallback으로 분리
+  const resetChatState = useCallback(() => {
+    setMessages([]);
+    setSelectedConcert(0);
+    setSelectedConcertName('');
+
+    // 스크롤 위치를 상단으로 초기화
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = 0;
+    }
+
+    // 초기 인사말 메시지가 보이도록 스크롤
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+      }
+    }, 100);
+  }, []);
+
   // resetChat prop이 변경될 때 채팅 초기화
   useEffect(() => {
     if (resetChat) {
-      setMessages([]);
-      setSelectedConcert(0);
-      setSelectedConcertName('');
+      resetChatState();
     }
-  }, [resetChat]);
+  }, [resetChat, resetChatState]);
 
   // 외부에서 전달받은 선택된 콘서트 이름 동기화
   useEffect(() => {
@@ -171,9 +198,7 @@ export default function ChatInterface({
 
   // 새로운 채팅 시작 함수 수정
   const handleStartNewChat = () => {
-    setMessages([]);
-    setSelectedConcert(0);
-    setSelectedConcertName('');
+    resetChatState();
 
     // 부모 컴포넌트에 알림
     if (onStartNewChat) {
@@ -239,7 +264,8 @@ export default function ChatInterface({
 
   return (
     <div className={styles.chatInterface}>
-      <div className={styles.messagesContainer}>
+      {/* ref 추가 */}
+      <div className={styles.messagesContainer} ref={messagesContainerRef}>
         <div className={`${styles.messageWrapper} ${styles.botMessage}`}>
           <div className={`${styles.messageContent} ${styles.botContent}`}>
             <div className={styles.botMessageText}>

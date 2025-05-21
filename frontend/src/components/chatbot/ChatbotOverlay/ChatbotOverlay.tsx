@@ -1,3 +1,4 @@
+// ChatbotOverlay.tsx 수정
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -21,6 +22,7 @@ export default function ChatbotOverlay({
   const [selectedConcertId, setSelectedConcertId] = useState<number>(0);
   const [selectedConcertName, setSelectedConcertName] = useState<string>('');
   const [resetChatTrigger, setResetChatTrigger] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // 로딩 상태 추가
 
   // 아이폰에서 높이 계산
   useEffect(() => {
@@ -80,12 +82,19 @@ export default function ChatbotOverlay({
     setSelectedConcertName(concertName);
   };
 
+  // 로딩 상태 업데이트 함수
+  const handleLoadingStateChange = (loading: boolean) => {
+    setIsLoading(loading);
+  };
+
   // 새 채팅 시작 핸들러
   const handleStartNewChat = () => {
-    setSelectedConcertId(0);
-    setSelectedConcertName('');
-    // resetChatTrigger 토글하여 자식 컴포넌트 초기화 트리거
-    setResetChatTrigger((prev) => !prev);
+    // 로딩 중이 아닐 때만 초기화 허용
+    if (!isLoading) {
+      setSelectedConcertId(0);
+      setSelectedConcertName('');
+      setResetChatTrigger((prev) => !prev);
+    }
   };
 
   if (!isVisible && !isOpen) return null;
@@ -126,10 +135,12 @@ export default function ChatbotOverlay({
               <p className={styles.concertName}>{selectedConcertName}</p>
             </div>
             <button
-              className={styles.newChatButton}
+              className={`${styles.newChatButton} ${
+                isLoading ? styles.disabled : ''
+              }`}
               onClick={handleStartNewChat}
+              disabled={isLoading} // 로딩 중일 때 버튼 비활성화
             >
-              <span className={styles.newChatIcon}>+</span>
               새로운 채팅
             </button>
           </div>
@@ -141,6 +152,7 @@ export default function ChatbotOverlay({
             onStartNewChat={handleStartNewChat}
             selectedConcertName={selectedConcertName}
             resetChat={resetChatTrigger}
+            onLoadingStateChange={handleLoadingStateChange} // 로딩 상태 변경 콜백 추가
           />
         </div>
       </div>

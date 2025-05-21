@@ -33,16 +33,48 @@ export default function OnboardingPage() {
         loop={true}
       >
         <SwiperSlide className={styles.swiperSlide}>
-          <Image src='/images/dummyArtist.jpg' alt='dummyArtist' fill />
+          <div className={styles.imageContainer}>
+            <Image
+              src='/images/onboarding1.png'
+              alt='dummyArtist'
+              width={430}
+              height={640}
+              className={styles.slideImage}
+            />
+          </div>
         </SwiperSlide>
         <SwiperSlide className={styles.swiperSlide}>
-          <Image src='/images/dummyConcert.jpg' alt='dummyConcert' fill />
+          <div className={styles.imageContainer}>
+            <Image
+              src='/images/onboarding2.png'
+              alt='dummyConcert'
+              width={430}
+              height={640}
+              className={styles.slideImage}
+            />
+          </div>
         </SwiperSlide>
         <SwiperSlide className={styles.swiperSlide}>
-          <Image src='/images/dummyArtist.jpg' alt='dummyArtist' fill />
+          <div className={styles.imageContainer}>
+            <Image
+              src='/images/onboarding3.png'
+              alt='dummyArtist'
+              width={430}
+              height={640}
+              className={styles.slideImage}
+            />
+          </div>
         </SwiperSlide>
         <SwiperSlide className={styles.swiperSlide}>
-          <Image src='/images/dummyConcert.jpg' alt='dummyConcert' fill />
+          <div className={styles.imageContainer}>
+            <Image
+              src='/images/onboarding4.png'
+              alt='dummyConcert'
+              width={430}
+              height={640}
+              className={styles.slideImage}
+            />
+          </div>
         </SwiperSlide>
       </Swiper>
 

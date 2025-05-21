@@ -1,5 +1,3 @@
-// src/pages/sight/reviews/[reviewId].tsx 수정
-
 'use client';
 import { useAppSelector } from '@/store/reduxHooks';
 import { useState, useEffect } from 'react';
@@ -14,7 +12,7 @@ import {
   STAGE_GRADE_OPTIONS,
 } from '@/lib/constants/review';
 import styles from './page.module.scss';
-import ReactDOM from 'react-dom'; // 추가
+import ReactDOM from 'react-dom';
 
 // 각 등급에 맞는 옵션 찾기 헬퍼 함수
 const getGradeOption = (
@@ -58,12 +56,38 @@ export default function ReviewDetailPage() {
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const [mounted, setMounted] = useState(false); // 추가: 마운트 상태 추적
+  const [mounted, setMounted] = useState(false);
 
-  // 컴포넌트 마운트 시 상태 업데이트
+  // 자동 슬라이드 효과를 위한 타이머 설정
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    // 사진이 여러 장일 경우 자동 슬라이드 시작
+    if (review?.photoUrls && review.photoUrls.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentPhotoIndex((prev) =>
+          prev === review.photoUrls.length - 1 ? 0 : prev + 1
+        );
+      }, 4000); // 4초마다 다음 사진으로 전환
+
+      return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
+    }
+  }, [review]);
+
+  // 사진 수동 이동 함수
+  const goToNextPhoto = () => {
+    if (!review?.photoUrls) return;
+    setCurrentPhotoIndex((prev) =>
+      prev === review.photoUrls.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const goToPrevPhoto = () => {
+    if (!review?.photoUrls) return;
+    setCurrentPhotoIndex((prev) =>
+      prev === 0 ? review.photoUrls.length - 1 : prev - 1
+    );
+  };
 
   // 삭제 다이얼로그 열기/닫기
   const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
@@ -90,7 +114,12 @@ export default function ReviewDetailPage() {
 
   // 리뷰 목록으로 돌아가기
   const handleBackToList = () => {
-    router.push('/sight/');
+    if (!review) {
+      router.push('/sight');
+      return;
+    }
+    const url = review?.arenaId + review?.section;
+    router.push(`/sight/${review.arenaId}/${url}`);
   };
 
   // 리뷰 작성 날짜 포맷팅
@@ -192,17 +221,61 @@ export default function ReviewDetailPage() {
 
   return (
     <div className={styles.container}>
-      {/* 대표 사진 & 정보 헤더 */}
+      {/* 대표 사진 & 정보 헤더 - 슬라이더로 변경 */}
       <div className={styles.heroSection}>
         {review.photoUrls && review.photoUrls.length > 0 && (
-          <div className={styles.heroImage}>
-            <Image
-              src={review.photoUrls[currentPhotoIndex]}
-              alt='공연장 전경'
-              layout='fill'
-              objectFit='cover'
-            />
-          </div>
+          <>
+            <div className={styles.heroImageSlider}>
+              {review.photoUrls.map((photoUrl, index) => (
+                <div
+                  key={index}
+                  className={`${styles.heroImage} ${
+                    currentPhotoIndex === index ? styles.active : ''
+                  }`}
+                >
+                  <Image
+                    src={photoUrl}
+                    alt={`공연장 사진 ${index + 1}`}
+                    layout='fill'
+                    objectFit='cover'
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* 사진이 2장 이상일 경우 네비게이션 버튼 표시 */}
+            {review.photoUrls.length > 1 && (
+              <>
+                <button
+                  className={`${styles.sliderNavButton} ${styles.prevButton}`}
+                  onClick={goToPrevPhoto}
+                  aria-label='이전 사진'
+                >
+                  &lt;
+                </button>
+                <button
+                  className={`${styles.sliderNavButton} ${styles.nextButton}`}
+                  onClick={goToNextPhoto}
+                  aria-label='다음 사진'
+                >
+                  &gt;
+                </button>
+
+                {/* 현재 슬라이드 위치 인디케이터 */}
+                <div className={styles.sliderIndicators}>
+                  {review.photoUrls.map((_, index) => (
+                    <span
+                      key={index}
+                      className={`${styles.indicator} ${
+                        currentPhotoIndex === index ? styles.active : ''
+                      }`}
+                      onClick={() => setCurrentPhotoIndex(index)}
+                    ></span>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
 
         <div className={styles.concertOverlay}>
@@ -261,33 +334,6 @@ export default function ReviewDetailPage() {
           )}
         </div>
       </div>
-
-      {/* 현장 사진 갤러리 */}
-      {review.photoUrls && review.photoUrls.length > 1 && (
-        <div className={styles.photoGallery}>
-          <h3>더 많은 사진 보기</h3>
-          <div className={styles.photoGrid}>
-            {review.photoUrls.map((photoUrl, index) => (
-              <div
-                className={`${styles.photoItem} ${
-                  currentPhotoIndex === index ? styles.active : ''
-                }`}
-                key={index}
-                onClick={() => setCurrentPhotoIndex(index)}
-              >
-                <Image
-                  src={photoUrl}
-                  alt={`리뷰 이미지 ${index + 1}`}
-                  width={100}
-                  height={100}
-                  layout='responsive'
-                  objectFit='cover'
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* 다른 리뷰 보기 버튼 */}
       <div className={styles.actions}>

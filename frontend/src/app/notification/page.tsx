@@ -1,3 +1,4 @@
+// src/app/notification/page.tsx (또는 해당 파일 위치)
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from '@/hooks/useNotification';
@@ -16,13 +17,15 @@ export default function NotificationPage() {
     hasUnread,
     fetchNotifications,
     markAsRead,
-    markAllAsRead,
+    markAllAsRead, // 이 함수는 이미 hasUnread를 false로 업데이트
     deleteAllNotifications,
   } = useNotifications();
 
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [highlightedNotifications, setHighlightedNotifications] = useState<Set<number>>(new Set());
+  const [highlightedNotifications, setHighlightedNotifications] = useState<
+    Set<number>
+  >(new Set());
 
   // 컴포넌트 마운트 시 알림 목록 가져오기
   useEffect(() => {
@@ -34,18 +37,20 @@ export default function NotificationPage() {
     if (notifications.length > 0) {
       // 읽지 않은 알림 ID들을 하이라이트 상태에 추가
       const unreadIds = notifications
-        .filter(notification => !notification.isRead)
-        .map(notification => notification.notificationId);
-      
+        .filter((notification) => !notification.isRead)
+        .map((notification) => notification.notificationId);
+
       setHighlightedNotifications(new Set(unreadIds));
-      
+
       // 2초 후 하이라이트 제거
       const timer = setTimeout(() => {
         setHighlightedNotifications(new Set());
       }, 2000);
 
-      // 모든 알림 읽음 처리
-      markAllAsRead();
+      // 모든 알림 읽음 처리 - 이미 Redux 상태도 업데이트함
+      if (unreadIds.length > 0) {
+        markAllAsRead(); // 이 함수에서 이미 Redux markAllAsReadAction()을 디스패치합니다
+      }
 
       return () => clearTimeout(timer);
     }
@@ -59,7 +64,7 @@ export default function NotificationPage() {
   const handleNotificationClick = (notification: NotificationType) => {
     // 읽지 않은 알림이면 읽음 처리
     if (!notification.isRead) {
-      markAsRead(notification.notificationId.toString());
+      markAsRead(notification.notificationId);
     }
 
     // 알림 타입에 따라 다른 동작 수행
@@ -90,7 +95,7 @@ export default function NotificationPage() {
           {notifications.length > 0 && (
             <button
               className={styles.readAllButton}
-              onClick={deleteAllNotifications}
+              onClick={deleteAllNotifications} // 이 함수도 이미 setHasUnread(false)를 디스패치합니다
             >
               알림함 비우기
             </button>
@@ -133,13 +138,14 @@ export default function NotificationPage() {
               <NotificationCard
                 notification={notification}
                 onActionClick={() => handleTicketingClick(notification)}
-                isHighlighted={highlightedNotifications.has(notification.notificationId)}
+                isHighlighted={highlightedNotifications.has(
+                  notification.notificationId
+                )}
               />
             </div>
           ))}
         </div>
       )}
-      {/* <Link href='/notification/setting'>디버깅 페이지로 가기 </Link> */}
 
       {/* 알림 설정 모달 */}
       <NotificationModal isOpen={isModalOpen} onClose={closeModal} />

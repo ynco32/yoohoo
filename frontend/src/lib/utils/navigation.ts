@@ -123,33 +123,51 @@ function handleSightBack(
 ): NavigationAction {
   // 리뷰 작성 페이지 처리
   if (pathSegments[1] === 'reviews') {
+    // /sight/reviews/write
     if (pathSegments[2] === 'write') {
-      // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
+      // /mypage에서 작성으로 왔다면 다시 마이페이지로
+      if (previousPath === '/mypage') {
+        return { type: 'push', path: '/mypage' };
+      }
+
+      // /sight 내부에서 이동했으면 이전 경로로
       if (
         previousPath.startsWith('/sight/') &&
         !previousPath.includes('/reviews/')
       ) {
-        // 이전 경로가 시야 페이지였다면 그 경로로 이동
         return { type: 'push', path: previousPath };
       }
 
-      // 경기장 목록 페이지로 리디렉션
+      // 그 외에는 시야 목록으로
       return { type: 'push', path: '/sight' };
-    } else if (pathSegments[2] === 'edit') {
-      // 이전 경로가 시야 페이지의 특정 경기장이나 구역이었는지 확인
-      if (
-        previousPath.startsWith('/sight/') &&
-        !previousPath.includes('/reviews/')
-      ) {
-        // 이전 경로가 시야 페이지였다면 그 경로로 이동
-        return { type: 'push', path: previousPath };
-      } else {
-        // 이전 경로가 시야 페이지가 아니었다면 경기장 목록 페이지로 리디렉션
-        return { type: 'push', path: '/sight' };
-      }
     }
 
-    // 경기장 목록 페이지로 리디렉션
+    // /sight/reviews/edit
+    if (pathSegments[2] === 'edit') {
+      const detailId = pathSegments[3]; // /sight/reviews/edit/[id]
+      const reviewDetailPath = `/sight/reviews/${detailId}`;
+
+      // /sight/reviews/[id] → edit → 뒤로가기 시 다시 상세
+      if (previousPath === reviewDetailPath) {
+        return { type: 'push', path: reviewDetailPath };
+      }
+
+      // 이전 경로가 마이페이지였다면 상세 → 마이페이지 흐름 유지
+      if (previousPath === '/mypage') {
+        return { type: 'push', path: '/sight/reviews/' + detailId };
+      }
+
+      return { type: 'push', path: '/sight' };
+    }
+
+    // /sight/reviews/[id] → 이전 페이지로 (조건 1)
+    if (
+      pathSegments.length === 3 &&
+      !['write', 'edit'].includes(pathSegments[2])
+    ) {
+      return { type: 'push', path: previousPath };
+    }
+
     return { type: 'push', path: '/sight' };
   }
 
@@ -159,7 +177,6 @@ function handleSightBack(
     return { type: 'push', path: upperPath };
   }
 
-  // sight 루트 경로에서는 메인으로
   return { type: 'push', path: '/main' };
 }
 

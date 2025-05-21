@@ -27,6 +27,7 @@ export interface ReviewPhoto {
 
 // API 응답용 리뷰 타입 (실제 API 응답에 맞게 수정)
 export interface Review {
+  arenaId: number;
   reviewId: number;
   nickname: string;
   profileNumber: number;

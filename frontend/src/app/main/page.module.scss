@@ -196,7 +196,8 @@
   font-size: $font-size-md;
   color: $text-sub;
   font-weight: $font-weight-medium;
-  text-align: right;
+  // text-align: right;
+  padding-top: $spacing-xs;
   max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;

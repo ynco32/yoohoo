@@ -68,3 +68,29 @@
   color: $text-sub;
   margin-bottom: $spacing-xs;
 }
+
+// 로딩 애니메이션 스타일 추가
+.loadingSpinner {
+  width: 3rem;
+  height: 3rem;
+  border: 0.25rem solid $con-gray;
+  border-top: 0.25rem solid $con-blue;
+  border-radius: 50%;
+  margin: 1rem auto;
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  font-size: $font-size-md;
+  color: $text-main;
+  margin-top: $spacing-md;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

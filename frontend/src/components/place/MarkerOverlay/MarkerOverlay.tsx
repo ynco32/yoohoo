@@ -55,9 +55,8 @@ export default function MarkerOverlay({ marker, onClose }: MarkerOverlayProps) {
             <div className={styles.detailInfo}>
               {toiletDetail?.floor && <p>층: {toiletDetail.floor}층</p>}
               {toiletDetail?.stalls !== undefined && (
-                <p>개수: {toiletDetail.stalls}개</p>
+                <p>칸수: {toiletDetail.stalls}칸</p>
               )}
-              {/* <p>휴지: {toiletDetail?.tissue ? '있음' : '없음'}</p> */}
             </div>
           </div>
         );

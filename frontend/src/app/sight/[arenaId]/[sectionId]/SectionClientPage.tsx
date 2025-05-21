@@ -41,6 +41,26 @@ export default function ClientSectionPage({
     column: number;
   } | null>(null);
 
+  // 전체 좌석 수를 저장할 상태 추가
+  const [totalSeats, setTotalSeats] = useState(0);
+
+  // 초기 좌석 데이터가 변경될 때마다 전체 좌석 수 계산
+  useEffect(() => {
+    if (initialSeatData && initialSeatData.seatMap) {
+      let count = 0;
+      for (const row of initialSeatData.seatMap) {
+        if (row.row !== '') {
+          for (const seat of row.activeSeats) {
+            if (seat.seat !== 0) {
+              count++;
+            }
+          }
+        }
+      }
+      setTotalSeats(count);
+    }
+  }, [initialSeatData]);
+
   // 선택된 좌석이 변경될 때마다 마지막 선택한 좌석 업데이트
   useEffect(() => {
     if (selectedSeats.length > 0) {
@@ -62,10 +82,7 @@ export default function ClientSectionPage({
 
   // 전체 좌석에 대한 리뷰 보기 + 전체 좌석 선택
   const handleShowAllReviews = (position: SheetPosition = 'half') => {
-    // 바텀시트 위치 설정
-    setSheetPosition(position);
-
-    // 전체 좌석 선택
+    // 현재 구역의 모든 좌석이 선택되어 있는지 확인
     if (initialSeatData && initialSeatData.seatMap) {
       const allSeats = [];
 
@@ -86,8 +103,16 @@ export default function ClientSectionPage({
         }
       }
 
-      // 리덕스 상태 업데이트
+      // 현재 선택된 좌석 수가 전체 좌석 수와 같다면 초기화
+      if (currentSectionSelectedSeats.length === totalSeats) {
+        handleReset();
+        setSheetPosition('closed');
+        return;
+      }
+
+      // 그렇지 않다면 전체 좌석 선택
       dispatch(setSeats(allSeats));
+      setSheetPosition(position);
     }
   };
 
@@ -133,7 +158,7 @@ export default function ClientSectionPage({
           iconName='check-box'
           onClick={handleShowAllReviews}
         >
-          전체 좌석 리뷰 보기
+          {currentSectionSelectedSeats.length === totalSeats ? '전체 좌석 선택 해제' : '전체 좌석 리뷰 보기'}
         </TagButton>
         <TagButton
           type={hasSelectedSeats ? 'default' : 'disabled'}

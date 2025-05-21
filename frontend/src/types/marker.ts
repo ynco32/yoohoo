@@ -8,6 +8,7 @@ export interface ToiletDetail {
   stalls?: number;
   name?: string;
   tissue?: boolean;
+  floor?: number;
 }
 
 export interface ConvenienceDetail {

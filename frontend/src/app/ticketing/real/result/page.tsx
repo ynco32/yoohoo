@@ -137,7 +137,7 @@ export default function RealResultPage() {
             </button>
 
             <button
-              onClick={() => router.push('/ticketing')}
+              onClick={() => router.push('/ticketing/real')}
               className={styles.actionButton}
             >
               <span className={styles.buttonText}>홈으로</span>

@@ -144,7 +144,7 @@ export default function RealResultPage() {
             </button>
 
             <button
-              onClick={() => router.push('/mypage/ticketing')}
+              onClick={() => router.push('/mypage')}
               className={styles.actionButton}
             >
               <span className={styles.buttonText}>내 기록</span>

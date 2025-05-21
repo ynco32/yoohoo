@@ -22,6 +22,7 @@ export default function ProfileSection() {
   const [isAvailable, setIsAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const editContainerRef = useRef<HTMLDivElement>(null);
 
   // Redux에서 사용자 정보 가져오기
   const dispatch = useAppDispatch();
@@ -42,6 +43,24 @@ export default function ProfileSection() {
       }
     }
   }, [isEditingNickname, userData?.nickname]);
+
+  // 외부 클릭 감지를 위한 useEffect
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isEditingNickname &&
+        editContainerRef.current &&
+        !editContainerRef.current.contains(event.target as Node)
+      ) {
+        handleCancelEdit();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditingNickname]);
 
   const handleImageSelect = (src: string) => {
     // 이미지 경로에서 프로필 번호 추출
@@ -197,38 +216,36 @@ export default function ProfileSection() {
 
       <div className={styles.profileName}>
         {isEditingNickname ? (
-          <>
-            <div className={styles.nicknameEditContainer}>
-              <input
-                ref={inputRef}
-                type='text'
-                value={nickname}
-                onChange={handleNicknameChange}
-                className={`${styles.nicknameInput} ${
-                  nicknameError ? styles.inputError : ''
-                }`}
-                maxLength={11}
-                placeholder='2-11자 입력'
-              />
-              <button
-                className={styles.nicknameButton}
-                onClick={
-                  isChecked && isAvailable
-                    ? handleNicknameUpdate
-                    : handleNicknameCheck
-                }
-                disabled={isLoading || !nickname || !!nicknameError}
-              >
-                {isChecked && isAvailable ? '확인' : '중복확인'}
-              </button>
-            </div>
+          <div ref={editContainerRef} className={styles.nicknameEditContainer}>
+            <input
+              ref={inputRef}
+              type='text'
+              value={nickname}
+              onChange={handleNicknameChange}
+              className={`${styles.nicknameInput} ${
+                nicknameError ? styles.inputError : ''
+              }`}
+              maxLength={11}
+              placeholder='2-11자 입력'
+            />
+            <button
+              className={styles.nicknameButton}
+              onClick={
+                isChecked && isAvailable
+                  ? handleNicknameUpdate
+                  : handleNicknameCheck
+              }
+              disabled={isLoading || !nickname || !!nicknameError}
+            >
+              {isChecked && isAvailable ? '확인' : '중복확인'}
+            </button>
             {nicknameError && (
               <div className={styles.errorMessage}>{nicknameError}</div>
             )}
             {nicknameSuccess && (
               <div className={styles.successMessage}>{nicknameSuccess}</div>
             )}
-          </>
+          </div>
         ) : (
           <>
             <div>{userData?.nickname || '사용자'}</div>

@@ -253,7 +253,7 @@ export const useConcert = () => {
     // 1초 후에 검색 실행
     searchTimeoutRef.current = setTimeout(() => {
       fetchConcerts(value);
-    }, 1000);
+    }, 500);
   };
 
   const handleConcertSelect = (id: number) => {

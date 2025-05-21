@@ -22,11 +22,34 @@ export default function NotificationPage() {
 
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [highlightedNotifications, setHighlightedNotifications] = useState<Set<number>>(new Set());
 
   // 컴포넌트 마운트 시 알림 목록 가져오기
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  // 알림 읽음 처리 및 하이라이트 효과
+  useEffect(() => {
+    if (notifications.length > 0) {
+      // 읽지 않은 알림 ID들을 하이라이트 상태에 추가
+      const unreadIds = notifications
+        .filter(notification => !notification.isRead)
+        .map(notification => notification.notificationId);
+      
+      setHighlightedNotifications(new Set(unreadIds));
+      
+      // 2초 후 하이라이트 제거
+      const timer = setTimeout(() => {
+        setHighlightedNotifications(new Set());
+      }, 2000);
+
+      // 모든 알림 읽음 처리
+      markAllAsRead();
+
+      return () => clearTimeout(timer);
+    }
+  }, [notifications, markAllAsRead]);
 
   // 모달 열기/닫기 핸들러
   const openModal = () => setIsModalOpen(true);
@@ -110,6 +133,7 @@ export default function NotificationPage() {
               <NotificationCard
                 notification={notification}
                 onActionClick={() => handleTicketingClick(notification)}
+                isHighlighted={highlightedNotifications.has(notification.notificationId)}
               />
             </div>
           ))}

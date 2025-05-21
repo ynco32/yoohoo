@@ -109,20 +109,8 @@ export default function ChatInterface({
     {
       id: 1,
       question: '입장 시간',
-      icon: '🕒',
+      icon: '🚪',
       query: '입장 시간은 언제인가요?',
-    },
-    {
-      id: 2,
-      question: '유의 사항',
-      icon: '🏛️',
-      query: '유의 사항은 무엇인가요?',
-    },
-    {
-      id: 3,
-      question: '선예매 날짜',
-      icon: '🎫',
-      query: '선예매 날짜는 언제인가요?',
     },
     {
       id: 4,
@@ -139,7 +127,7 @@ export default function ChatInterface({
     {
       id: 6,
       question: '대중교통',
-      icon: '🔍',
+      icon: '🚇',
       query: '대중교통은 무엇을 이용하면 되나요?',
     },
   ];

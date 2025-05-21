@@ -67,6 +67,7 @@ class ConcertChatbot:
     def process_query(self, query, concert_id):
         """사용자 질의를 처리하고 응답을 생성합니다."""
         try:
+            concert_info = get_concert_info(concert_id)
             # RAG 체인 가져오기
             chain = self.get_rag_chain(concert_id)
             if not chain:
@@ -78,10 +79,11 @@ class ConcertChatbot:
                 }
             
             # 질의 처리
-            response = query_rag_system(chain, query, concert_id)
+            response = query_rag_system(chain, query, concert_id, concert_info)
             
             # 시각적 증거 추가 (좌표가 있는 경우만)
             evidence_image_data = None
+            coordinates = None
             if response.get("evidence_coordinates") and len(response["evidence_coordinates"]) > 0:
                 # 첫 번째 좌표 사용 (GPT가 선택한 좌표)
                 coordinates = response["evidence_coordinates"][0]

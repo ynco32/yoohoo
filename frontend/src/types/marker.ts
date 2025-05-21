@@ -39,7 +39,7 @@ export interface Marker {
   latitude: number;
   longitude: number;
   category: MarkerCategory;
-  detail: MarkerDetail;
+  detail?: MarkerDetail;
 }
 
 // 마커 목록 데이터 타입

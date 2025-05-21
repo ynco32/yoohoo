@@ -107,6 +107,22 @@ const SeatMap: React.FC<SeatMapProps> = ({
 
   return (
     <div className={styles.container}>
+      {/* 좌석 상태 범례 추가 */}
+      <div className={styles.seatLegend}>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendSeat} ${styles.defaultSeat}`}></div>
+          <span>일반 좌석</span>
+        </div>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendSeat} ${styles.reviewedSeat}`}></div>
+          <span>리뷰 있음</span>
+        </div>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendSeat} ${styles.selectedSeat}`}></div>
+          <span>선택됨</span>
+        </div>
+      </div>
+
       {isScrollable && showScrollHint && (
         <div className={styles.scrollHint}>
           좌우로 스크롤하여 모든 좌석을 확인하세요

@@ -31,7 +31,6 @@ export default function PlaceMap({
   const dispatch = useAppDispatch();
   const { openChatbot } = useChatbot();
 
-
   // 마커 데이터 가져오기 (이제 Redux를 통해 가져옴)
   const {
     markers,
@@ -207,13 +206,13 @@ export default function PlaceMap({
   const getMarkerTitle = (marker: (typeof markers)[0]) => {
     switch (marker.category) {
       case 'TOILET':
-        return (marker.detail as any).name || '화장실';
+        return (marker.detail as any)?.name || '화장실';
       case 'CONVENIENCE':
-        return `${(marker.detail as any).category || '편의시설'}`;
+        return `${(marker.detail as any)?.category || '편의시설'}`;
       case 'STORAGE':
-        return (marker.detail as any).name || '물품 보관소';
+        return (marker.detail as any)?.name || '물품 보관소';
       case 'TICKET':
-        return (marker.detail as any).name || '티켓 부스';
+        return (marker.detail as any)?.name || '티켓 부스';
       default:
         return '시설';
     }

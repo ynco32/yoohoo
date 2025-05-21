@@ -7,6 +7,10 @@ import { ArtistInfo } from '@/types/mypage';
 import styles from './ArtistSection.module.scss';
 import { deleteArtist, getMyArtists } from '@/api/mypage/mypage';
 
+interface ArtistSectionProps {
+  onCountChange: (count: number) => void;
+}
+
 // 스켈레톤 아티스트 아이템 컴포넌트
 const SkeletonArtistItem = () => {
   return (
@@ -19,7 +23,7 @@ const SkeletonArtistItem = () => {
   );
 };
 
-export default function ArtistSection() {
+export default function ArtistSection({ onCountChange }: ArtistSectionProps) {
   const [artists, setArtists] = useState<ArtistInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,9 +34,21 @@ export default function ArtistSection() {
 
   const handleDeleteArtist = async (artistId: number) => {
     try {
+      // 낙관적 업데이트: 서버 응답을 기다리지 않고 UI를 먼저 업데이트
+      const updatedArtists = artists.filter(
+        (artist) => artist.artistId !== artistId
+      );
+      setArtists(updatedArtists);
+      onCountChange(updatedArtists.length);
+
+      // 서버에 삭제 요청
       await deleteArtist(artistId);
-      setArtists(artists.filter((artist) => artist.artistId !== artistId));
     } catch (error) {
+      // 실패 시 원래 상태로 복구
+      const response = await getMyArtists();
+      const artistsData = response?.artists || [];
+      setArtists(artistsData);
+      onCountChange(artistsData.length);
       console.error('아티스트 삭제 실패:', error);
     }
   };
@@ -40,9 +56,10 @@ export default function ArtistSection() {
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        setLoading(true);
         const response = await getMyArtists();
-        setArtists(response?.artists || []);
+        const artistsData = response?.artists || [];
+        setArtists(artistsData);
+        onCountChange(artistsData.length);
       } catch (error) {
         console.error('아티스트 데이터 로딩 실패:', error);
       } finally {
@@ -50,10 +67,10 @@ export default function ArtistSection() {
       }
     };
     fetchArtists();
-  }, []);
+  }, [onCountChange]);
 
-  // 로딩 중일 때 스켈레톤 UI 표시
-  if (loading) {
+  // 초기 로딩 시에만 스켈레톤 UI 표시
+  if (loading && artists.length === 0) {
     return (
       <section className={styles.section}>
         <div className={styles.header}>
@@ -65,7 +82,6 @@ export default function ArtistSection() {
         </div>
         <div className={styles.scrollContainer}>
           <div className={styles.artistList}>
-            {/* 스켈레톤 아이템 5개 표시 */}
             <SkeletonArtistItem />
             <SkeletonArtistItem />
             <SkeletonArtistItem />

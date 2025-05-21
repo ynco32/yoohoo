@@ -9,40 +9,38 @@ import { useAppSelector } from '@/store/reduxHooks';
 import { getMyArtists, getMyConcerts } from '@/api/mypage/mypage';
 import { reviewApi } from '@/api/sight/review';
 
-export default function UserSummary() {
+interface UserSummaryProps {
+  concertCount: number;
+  artistCount: number;
+}
+
+export default function UserSummary({
+  concertCount,
+  artistCount,
+}: UserSummaryProps) {
   const router = useRouter();
   const fallbackImageUrl = '/svgs/main/profile.svg';
 
   // 스토어에서 유저 정보 가져오기
   const user = useAppSelector((state) => state.user.data);
 
-  // 각 카운트를 위한 상태
-  const [concertCount, setConcertCount] = useState(0);
-  const [artistCount, setArtistCount] = useState(0);
+  // 리뷰 카운트를 위한 상태
   const [reviewCount, setReviewCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCounts = async () => {
+    const fetchReviewCount = async () => {
       try {
-        const [concertsResponse, artistsResponse, reviewsResponse] =
-          await Promise.all([
-            getMyConcerts(),
-            getMyArtists(),
-            reviewApi.getMyReviews(),
-          ]);
-
-        setConcertCount(concertsResponse?.concerts?.length || 0);
-        setArtistCount(artistsResponse?.artists?.length || 0);
+        const reviewsResponse = await reviewApi.getMyReviews();
         setReviewCount(reviewsResponse?.reviews?.length || 0);
       } catch (error) {
-        console.error('프로필 데이터 로딩 실패:', error);
+        console.error('리뷰 데이터 로딩 실패:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCounts();
+    fetchReviewCount();
   }, []);
 
   const handleSettingsClick = () => {
@@ -80,24 +78,24 @@ export default function UserSummary() {
 
           <div className={styles.stats}>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>예정된 콘서트</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : concertCount}
               </span>
-              <span className={styles.statLabel}>예정된 콘서트</span>
             </div>
             <div className={styles.separator}></div>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>관심 아티스트</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : artistCount}
               </span>
-              <span className={styles.statLabel}>관심 아티스트</span>
             </div>
             <div className={styles.separator}></div>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>나의 시야 후기</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : reviewCount}
               </span>
-              <span className={styles.statLabel}>내가 쓴 시야 후기</span>
             </div>
           </div>
         </div>

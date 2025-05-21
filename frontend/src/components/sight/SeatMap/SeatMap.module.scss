@@ -120,3 +120,39 @@
   width: 100%;
   margin: 6px 0;
 }
+// SeatMap.module.scss에 추가할 스타일
+
+.seatLegend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin: 0 8px;
+  font-size: 14px;
+}
+
+.legendSeat {
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 1px;
+
+  &.defaultSeat {
+    background-color: rgb(225, 229, 234); // 기본 좌석 색상
+  }
+
+  &.reviewedSeat {
+    background-color: rgb(167, 222, 255); // 리뷰 있음 색상 ($con-lightblue)
+  }
+
+  &.selectedSeat {
+    background-color: rgb(73, 134, 232); // 선택됨 색상 ($con-blue)
+  }
+}

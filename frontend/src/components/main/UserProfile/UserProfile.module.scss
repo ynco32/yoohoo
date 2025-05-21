@@ -90,15 +90,19 @@
   width: 100%;
   text-align: left;
   position: absolute;
-  bottom: 12px;
+  bottom: 16px;
   left: 16px;
   z-index: 3;
 }
 
 .nickname {
-  font-size: clamp($font-size-sm, 2.5vmin, $font-size-lg);
+  font-size: clamp($font-size-sm, 2.5vmin, $font-size-md);
   font-weight: $font-weight-bold;
   color: #2c3e50;
+}
+
+.userName {
+  color: $con-blue;
 }
 
 /* 스켈레톤 애니메이션 */
@@ -183,4 +187,18 @@
   .skeletonNickname {
     height: 14px;
   }
+}
+
+.loginSection {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+// 로그인 메시지 스타일
+.loginMessage {
+  font-size: clamp($font-size-sm, 2.5vmin, $font-size-md);
+  font-weight: $font-weight-bold;
+  color: #2c3e50;
+  display: inline-block;
 }

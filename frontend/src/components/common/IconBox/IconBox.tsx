@@ -30,6 +30,7 @@ import CheckIcon from '@/assets/icons/check.svg';
 import CheckMarkIcon from '@/assets/icons/check-mark.svg';
 import CheckBoxIcon from '@/assets/icons/check-box.svg';
 import GpsIcon from '@/assets/icons/gps.svg';
+import HomeIcon from '@/assets/icons/home.svg'
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -59,6 +60,7 @@ const ICON_COMPONENTS = {
   'check-mark': CheckMarkIcon,
   'check-box': CheckBoxIcon,
   gps: GpsIcon,
+  home: HomeIcon,
 } as const;
 
 // 아이콘 이름 타입

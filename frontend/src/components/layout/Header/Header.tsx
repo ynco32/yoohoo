@@ -11,6 +11,7 @@ import NotificationIcon from '@/assets/icons/notification.svg';
 import MenuIcon from '@/assets/icons/menu.svg';
 import LogoIcon from '/public/svgs/main/logo.svg';
 import { notificationApi } from '@/api/notification/notification'; // 알림 API 임포트
+import IconBox from '@/components/common/IconBox/IconBox';
 
 const Header = () => {
   const {
@@ -60,7 +61,7 @@ const Header = () => {
   // 알림 아이콘 렌더링 함수
   const renderNotificationIcon = () => (
     <div className={styles.notificationContainer}>
-      <NotificationIcon className={styles.icon} />
+      <IconBox name='bell' size={23.5} className={styles.icon} />
       {hasUnread && !isLoading && <span className={styles.unreadBadge}></span>}
     </div>
   );
@@ -100,13 +101,9 @@ const Header = () => {
           <Link href='/notification' className={styles.logo}>
             {renderNotificationIcon()}
           </Link>
-          <button
-            onClick={handleMenuClick}
-            className={styles.iconButton}
-            aria-label='메뉴'
-          >
-            <MenuIcon className={styles.icon} />
-          </button>
+          <Link href='/main' className={styles.logo}>
+            <IconBox name='home' size={25.3} className={styles.icon} />
+          </Link>
         </div>
       </div>
     );
@@ -138,13 +135,11 @@ const Header = () => {
             <Link href='/notification' className={styles.logo}>
               {renderNotificationIcon()}
             </Link>
-            <button
-              onClick={handleMenuClick}
-              className={styles.iconButton}
-              aria-label='메뉴'
-            >
-              <MenuIcon className={styles.icon} />
-            </button>
+            {!shouldShowLogo && (
+              <Link href='/main' className={styles.logo}>
+                <IconBox name='home' size={25.3} className={styles.icon} />
+              </Link>
+            )}
           </div>
         </div>
       </header>

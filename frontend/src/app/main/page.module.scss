@@ -163,6 +163,15 @@
     transform: scale(0.8);
   }
 }
+
+.floatingButtonContainer {
+  position: absolute;
+  top: 145px;
+  right: 16px;
+  z-index: 50;
+}
+// 기존 page.module.scss에 추가할 스타일
+
 // 수정된 ticketingWrapper 스타일
 .ticketingWrapper {
   width: 100%;

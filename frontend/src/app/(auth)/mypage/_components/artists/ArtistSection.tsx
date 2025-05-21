@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,6 +6,18 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import { ArtistInfo } from '@/types/mypage';
 import styles from './ArtistSection.module.scss';
 import { deleteArtist, getMyArtists } from '@/api/mypage/mypage';
+
+// 스켈레톤 아티스트 아이템 컴포넌트
+const SkeletonArtistItem = () => {
+  return (
+    <div className={styles.artistItem}>
+      <div className={`${styles.artistImageContainer} ${styles.skeleton}`}>
+        <div className={styles.skeletonCircle}></div>
+      </div>
+      <div className={`${styles.skeletonName}`}></div>
+    </div>
+  );
+};
 
 export default function ArtistSection() {
   const [artists, setArtists] = useState<ArtistInfo[]>([]);
@@ -38,10 +49,10 @@ export default function ArtistSection() {
         setLoading(false);
       }
     };
-
     fetchArtists();
   }, []);
 
+  // 로딩 중일 때 스켈레톤 UI 표시
   if (loading) {
     return (
       <section className={styles.section}>
@@ -50,8 +61,18 @@ export default function ArtistSection() {
             <IconBox name='heart-filled' size={24} color='#4986e8' />
             <h2 className={styles.title}>관심 아티스트</h2>
           </div>
+          <div className={`${styles.editButton} ${styles.skeletonEdit}`}></div>
         </div>
-        <div>로딩 중...</div>
+        <div className={styles.scrollContainer}>
+          <div className={styles.artistList}>
+            {/* 스켈레톤 아이템 5개 표시 */}
+            <SkeletonArtistItem />
+            <SkeletonArtistItem />
+            <SkeletonArtistItem />
+            <SkeletonArtistItem />
+            <SkeletonArtistItem />
+          </div>
+        </div>
       </section>
     );
   }
@@ -67,7 +88,6 @@ export default function ArtistSection() {
           {isEditing ? '완료' : '편집'}
         </div>
       </div>
-
       {artists.length > 0 ? (
         <div className={styles.scrollContainer}>
           <div className={styles.artistList}>

@@ -8,6 +8,21 @@ import styles from './ConcertSection.module.scss';
 import { ConcertInfo } from '@/types/mypage';
 import { deleteConcert, getMyConcerts } from '@/api/mypage/mypage';
 
+// 스켈레톤 콘서트 카드 컴포넌트
+const SkeletonConcertCard = () => {
+  return (
+    <div className={styles.concertCard}>
+      <div className={styles.skeletonConcert}>
+        <div className={styles.skeletonPoster}></div>
+        <div className={styles.skeletonContent}>
+          <div className={styles.skeletonTitle}></div>
+          <div className={styles.skeletonSubtitle}></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function ConcertSection() {
   const [concerts, setConcerts] = useState<ConcertInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,8 +67,17 @@ export default function ConcertSection() {
             <IconBox name='calendar' size={24} color='#4986e8' />
             <h2 className={styles.title}>예정된 콘서트</h2>
           </div>
+          <div className={`${styles.viewAll} ${styles.skeletonEdit}`}></div>
         </div>
-        <div>로딩 중...</div>
+        <div className={styles.scrollContainer}>
+          <div className={styles.concertList}>
+            {/* 스켈레톤 콘서트 카드 4개 표시 */}
+            <SkeletonConcertCard />
+            <SkeletonConcertCard />
+            <SkeletonConcertCard />
+            <SkeletonConcertCard />
+          </div>
+        </div>
       </section>
     );
   }

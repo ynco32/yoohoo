@@ -54,26 +54,20 @@ export default function PlaceChat({
   // 최초 렌더일 때만 맨 아래로 이동
   const didInitialScrollRef = useRef(false);
 
-  const scrollToBottom = () => {
-    const container = messageListRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  };
-
   useEffect(() => {
-    if (isLoading || messages.length === 0 || didInitialScrollRef.current)
-      return;
+    if (isLoading || didInitialScrollRef.current) return;
+    if (messages.length === 0) return;
+
+    const container = messageListRef.current;
+    if (!container) return;
 
     const frame = requestAnimationFrame(() => {
-      setTimeout(() => {
-        scrollToBottom();
-        didInitialScrollRef.current = true;
-      }, 100); // 렌더링 시간 고려
+      container.scrollTop = container.scrollHeight;
+      didInitialScrollRef.current = true;
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [messages, isLoading]);
+  }, [messages.length, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {

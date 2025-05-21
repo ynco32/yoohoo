@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
 import TagButton from '@/components/common/TagButton/TagButton';
 import styles from './PlaceMap.module.scss';
 import useKakaoMap from '@/hooks/useKakaoMap';
@@ -10,7 +11,8 @@ import { updateMapSettings } from '@/store/slices/arenaSlice';
 import ChatbotButton from '@/components/chatbot/ChatbotButton/ChatbotButton';
 import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 import useMarkers, { UICategoryType } from '@/hooks/useMarkers';
-import { MarkerCategory } from '@/types/marker';
+import { MarkerCategory, Marker } from '@/types/marker';
+import MarkerOverlay from '../MarkerOverlay/MarkerOverlay';
 
 interface PlaceMapProps {
   latitude: number;
@@ -28,8 +30,10 @@ export default function PlaceMap({
   const mapRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const userMarkerRef = useRef<kakao.maps.CustomOverlay | null>(null);
+  const markerRefs = useRef<{ [key: number]: kakao.maps.Marker }>({});
   const dispatch = useAppDispatch();
   const { openChatbot } = useChatbot();
+  const [mapLevel, setMapLevel] = useState(zoom);
 
   // 마커 데이터 가져오기 (이제 Redux를 통해 가져옴)
   const {
@@ -135,72 +139,136 @@ export default function PlaceMap({
     );
   };
 
+  // 오버레이 닫기 함수
+  const closeOverlay = () => {
+    if (overlayRef.current) {
+      overlayRef.current.setMap(null);
+      overlayRef.current = null;
+    }
+  };
+
   // 지도 클릭 시 오버레이 닫기 (한 번만 등록)
   useEffect(() => {
     if (!map) return;
 
     const handleClickMap = () => {
-      if (overlayRef.current) {
-        overlayRef.current.setMap(null);
-        overlayRef.current = null;
-      }
+      closeOverlay();
     };
 
     window.kakao.maps.event.addListener(map, 'click', handleClickMap);
   }, [map]);
 
+  // 카테고리에 따른 마커 이미지 URL 가져오기
+  const getMarkerImageByCategory = (category: MarkerCategory) => {
+    switch (category) {
+      case 'TOILET':
+        return '/svgs/place/marker1.svg';
+      case 'STORAGE':
+        return '/svgs/place/marker2.svg';
+      case 'CONVENIENCE':
+        return '/svgs/place/marker3.svg';
+      case 'TICKET':
+        return '/svgs/place/marker4.svg';
+      default:
+        return '/svgs/place/marker1.svg';
+    }
+  };
+
+  // 오버레이 생성 함수 (React 컴포넌트로 렌더링)
+  const createMarkerOverlay = useCallback(
+    (marker: Marker, position: any) => {
+      // 기존 오버레이 닫기
+      closeOverlay();
+
+      // 오버레이 컨테이너 생성
+      const overlayContainer = document.createElement('div');
+      overlayContainer.className = styles.overlayContainer;
+      overlayContainer.style.cssText = `
+        position: relative;
+        transform: translate(-50%, -160%);
+        margin-bottom: 20px;
+        pointer-events: auto;
+      `;
+
+      // React 컴포넌트를 오버레이 컨테이너에 렌더링
+      createRoot(overlayContainer).render(
+        <MarkerOverlay
+          marker={marker}
+          onClose={() => {
+            closeOverlay();
+          }}
+        />
+      );
+
+      // 오버레이 생성 및 반환
+      return new window.kakao.maps.CustomOverlay({
+        content: overlayContainer,
+        position: position,
+        xAnchor: 0.5,
+        yAnchor: 0,
+        zIndex: 3,
+        map: map,
+      });
+    },
+    [map]
+  );
+
   // 마커 + 오버레이 렌더링
   useEffect(() => {
-    if (!map || loading) return; // 기존 오버레이 닫기
+    if (!map || loading) return;
 
-    if (overlayRef.current) {
-      overlayRef.current.setMap(null);
-      overlayRef.current = null;
-    }
+    // 기존 오버레이 닫기
+    closeOverlay();
 
-    const markerList: kakao.maps.Marker[] = [];
+    // 기존 마커 제거
+    Object.values(markerRefs.current).forEach((marker) => {
+      marker.setMap(null);
+    });
+    markerRefs.current = {};
 
+    // 새로운 마커 추가
     markers.forEach((markerData) => {
       const position = new window.kakao.maps.LatLng(
         markerData.latitude,
         markerData.longitude
       );
 
+      // 마커 이미지 설정 (카테고리별 다른 이미지)
+      const imageUrl = getMarkerImageByCategory(markerData.category);
+      const imageSize = new window.kakao.maps.Size(32, 36); // 종횡비 유지
+      const imageOption = { offset: new window.kakao.maps.Point(16, 36) }; // 마커 중심 좌표
+
+      const markerImage = new window.kakao.maps.MarkerImage(
+        imageUrl,
+        imageSize,
+        imageOption
+      );
+
       const marker = new window.kakao.maps.Marker({
         map,
         position,
         title: getMarkerTitle(markerData),
+        image: markerImage,
       });
 
-      const overlayContent = document.createElement('div');
-      overlayContent.className = styles.overlay;
-      overlayContent.innerHTML = `<div class="${
-        styles.overlayBox
-      }">${getMarkerTitle(markerData)}</div>`;
-
-      const overlay = new window.kakao.maps.CustomOverlay({
-        position,
-        content: overlayContent,
-        yAnchor: 1,
-        zIndex: 3,
-      });
-
-      // 마커 클릭 시 오버레이 표시
-      window.kakao.maps.event.addListener(marker, 'click', () => {
-        if (overlayRef.current) {
-          overlayRef.current.setMap(null);
-        }
-        overlay.setMap(map);
+      // 마커 클릭 이벤트 - createMarkerOverlay 함수 사용
+      window.kakao.maps.event.addListener(marker, 'click', (e: any) => {
+        const overlay = createMarkerOverlay(markerData, position);
         overlayRef.current = overlay;
       });
 
-      markerList.push(marker);
+      // 마커 참조 저장
+      markerRefs.current[markerData.markerId] = marker;
     });
 
     return () => {
-      markerList.forEach((m) => m.setMap(null));
+      // 마커 제거
+      Object.values(markerRefs.current).forEach((marker) => {
+        marker.setMap(null);
+      });
+      markerRefs.current = {};
     };
-  }, [map, markers, loading]);
+  }, [map, markers, activeCategory, loading, mapLevel, createMarkerOverlay]);
 
   // 마커 타이틀 생성 함수
   const getMarkerTitle = (marker: (typeof markers)[0]) => {

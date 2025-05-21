@@ -8,6 +8,9 @@ interface UseImageScrollerReturn {
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseMove: (e: React.MouseEvent) => void;
   handleDragEnd: () => void;
+  handleTouchStart: (e: React.TouchEvent) => void;
+  handleTouchMove: (e: React.TouchEvent) => void;
+  handleTouchEnd: () => void;
 }
 
 export const useImageScroller = (
@@ -18,6 +21,7 @@ export const useImageScroller = (
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
 
   // 현재 활성화된 사진 인덱스 업데이트 (스크롤 위치에 따라)
   const updateActivePhotoIndex = () => {
@@ -70,7 +74,26 @@ export const useImageScroller = (
     photoScrollerRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  // 드래그 종료 핸들러
+  // 터치 시작 핸들러
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!photoScrollerRef.current) return;
+
+    setIsDragging(true);
+    setTouchStartX(e.touches[0].pageX - photoScrollerRef.current.offsetLeft);
+    setScrollLeft(photoScrollerRef.current.scrollLeft);
+  };
+
+  // 터치 이동 핸들러
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !photoScrollerRef.current) return;
+
+    e.preventDefault();
+    const x = e.touches[0].pageX - photoScrollerRef.current.offsetLeft;
+    const walk = (x - touchStartX) * 1.5; // 스크롤 속도 조절 (1.5)
+    photoScrollerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  // 드래그/터치 종료 핸들러
   const handleDragEnd = () => {
     setIsDragging(false);
     document.body.style.userSelect = '';
@@ -126,5 +149,8 @@ export const useImageScroller = (
     handleMouseDown,
     handleMouseMove,
     handleDragEnd,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd: handleDragEnd,
   };
 };

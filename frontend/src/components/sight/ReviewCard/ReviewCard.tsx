@@ -55,6 +55,9 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
     handleMouseDown,
     handleMouseMove,
     handleDragEnd,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
   } = useImageScroller(photoCount);
 
   // 텍스트 자르기 관련 로직 분리
@@ -172,7 +175,13 @@ export const ReviewCard = ({ review, onEdit, onDelete }: ReviewCardProps) => {
           )}
 
           {/* 가로 스크롤 컨테이너 */}
-          <div className={styles.photoScroller} ref={photoScrollerRef}>
+          <div 
+            className={styles.photoScroller} 
+            ref={photoScrollerRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             {photos.map((photo, index) => (
               <div key={photo.reviewPhotoId} className={styles.photoWrapper}>
                 <Image

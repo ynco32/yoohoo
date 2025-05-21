@@ -223,6 +223,9 @@ def query_rag_system(chain, query, concert_id=None, concert_info=None):
 콘서트 이름: {concert_info.get('concert_name', '정보 없음')}
 공연장: {concert_info.get('arena_name', '정보 없음')}
 아티스트: {', '.join(concert_info.get('artists', ['정보 없음']))}
+선예매 시작: {concert_info.get('advanced_reservation', '정보 없음')}
+일반예매 시작: {concert_info.get('reservation', '정보 없음')}
+공연 시작 시간: {', '.join(concert_info.get('start_times', ['정보 없음']))}
 티켓팅 플랫폼: {concert_info.get('ticketing_platform', '정보 없음')}
 </DB_정보>
 """

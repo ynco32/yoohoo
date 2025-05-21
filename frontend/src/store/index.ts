@@ -21,11 +21,13 @@ import sectionReducer from './slices/sectionSlice';
 import markerReducer from './slices/markerSlice';
 import revertSeatReducer from './slices/revertSeatSlice';
 import seatSelectionReducer from './slices/seatSelectionSlice';
+import notificationReducer from './slices/notificationSlice';
 import {
   TypedUseSelectorHook,
   useDispatch as useReduxDispatch,
   useSelector as useReduxSelector,
 } from 'react-redux';
+import { combineReducers } from 'redux';
 
 // persist 설정
 const arenaPersistConfig = {
@@ -57,20 +59,30 @@ const persistedMarkerReducer = persistReducer(
 );
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['user'], // user 상태만 영구 저장
+};
+
+const rootReducer = combineReducers({
+  user: persistedUserReducer,
+  queue: queueReducer,
+  error: errorReducer,
+  ticketing: ticketingSeatReducer,
+  notification: notificationReducer,
+  captcha: captchaReducer,
+  arena: persistedArenaReducer,
+  section: sectionReducer,
+  marker: persistedMarkerReducer,
+  revertSeat: revertSeatReducer,
+  seatSelection: seatSelectionReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const store = configureStore({
-  reducer: {
-    user: persistedUserReducer, // persistedUserReducer 사용
-    queue: queueReducer,
-    error: errorReducer,
-    ticketing: ticketingSeatReducer, // 키 이름 확인 필요
-    captcha: captchaReducer,
-    arena: persistedArenaReducer,
-    section: sectionReducer,
-    marker: persistedMarkerReducer,
-    revertSeat: revertSeatReducer,
-    seatSelection: seatSelectionReducer,
-    // 다른 리듀서들 추가
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

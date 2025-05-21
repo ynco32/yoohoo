@@ -1,7 +1,7 @@
 // app/sight/_components/SelectorContainer.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import SmallDropdown from '@/components/common/Dropdown/SmallDropdown';
@@ -11,6 +11,7 @@ import { ArenaSection } from '@/types/arena';
 import {
   setCurrentFloor,
   setCurrentSection,
+  resetSectionState,
 } from '@/store/slices/sectionSlice';
 import { RootState } from '@/store';
 
@@ -35,6 +36,12 @@ export default function SelectorContainer() {
 
   const dispatch = useDispatch();
 
+  // 이전 arenaId와 sectionId를 추적하기 위한 ref
+  const previousStateRef = useRef<{
+    arenaId: string | null;
+    sectionId: string | null;
+  }>({ arenaId: null, sectionId: null });
+
   // Redux에서 현재 층과 구역 가져오기
   const { currentFloor: reduxFloor, currentSection: reduxSection } =
     useSelector((state: RootState) => state.section);
@@ -52,6 +59,34 @@ export default function SelectorContainer() {
   // URL 파라미터에서 값을 가져오되, 없으면 Redux 값을 사용
   const currentFloor = searchParams.get('floor') || reduxFloor || '';
   const currentSection = extractedSectionName || reduxSection || '';
+
+  // 페이지 이동 추적 및 상태 초기화
+  useEffect(() => {
+    const prevArenaId = previousStateRef.current.arenaId;
+    const prevSectionId = previousStateRef.current.sectionId;
+
+    // 조건 1: arenaId가 변경되었을 때 (다른 공연장으로 이동)
+    const arenaChanged = prevArenaId !== null && prevArenaId !== arenaId;
+
+    // 조건 2: sectionId가 있는 페이지에서 없는 페이지로 이동할 때 (뒤로가기)
+    const movedFromSectionToArena = prevSectionId !== null && !sectionId;
+
+    if (arenaChanged || movedFromSectionToArena) {
+      console.log('초기화 조건 감지:', {
+        arenaChanged,
+        movedFromSectionToArena,
+      });
+      // Redux 상태 초기화
+      dispatch(resetSectionState());
+      // 로컬 상태도 초기화
+      setAllSections([]);
+      setFloors([]);
+      setSections([]);
+    }
+
+    // 현재 상태를 ref에 저장
+    previousStateRef.current = { arenaId, sectionId };
+  }, [arenaId, sectionId, dispatch]);
 
   // 모든 구역 데이터 가져오기
   useEffect(() => {

@@ -106,7 +106,7 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
       {/* 구역표 표시 영역 */}
       <div className={styles.svgOuterContainer}>
         {/* 확대/축소 상태일 때만 컨트롤 버튼 표시 */}
-        {isZoomed && (
+        {/* {isZoomed && (
           <div className={styles.zoomControls}>
             <button
               className={styles.resetZoomButton}
@@ -122,7 +122,7 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
               <span>초기화</span>
             </button>
           </div>
-        )}
+        )} */}
 
         <TransformWrapper
           initialScale={1}
@@ -158,7 +158,14 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
 
       <div className={styles.card}>
         <p className={styles.boldMessage}>구역을 선택해 시야를 확인하세요!</p>
-
+        <div className={styles.subMessageContainer}>
+          <p className={styles.subMessage}>
+            같은 좌석이어도 사람마다 생각이 다를 수 있어요. <br />
+          </p>
+          <p className={styles.subMessage}>
+            시야 후기는 참고용으로만 활용하세요.
+          </p>
+        </div>
         {/* 각 공연장별로 다른 설명 표시 */}
         {arenaDescriptions.map(
           (description, index) =>

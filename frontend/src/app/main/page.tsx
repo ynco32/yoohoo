@@ -15,7 +15,7 @@ import NotificationController from '@/components/notification/NotificationContro
 // 고정된 메뉴 정보
 const menuInfo = {
   sight: {
-    label: '시야보기',
+    label: '시야 보기',
     description: '공연장 별 시야 후기',
   },
   place: {

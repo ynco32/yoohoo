@@ -42,10 +42,11 @@
 
 .submitBtn {
   flex: 5;
-  background: #1976ed;
+  background: #1976ed !important;
   color: #fff;
-  font-size: 16px;
-  font-weight: 700;
+  height: 48px;
+  font-size: 16px !important;
+  font-weight: 700 !important;
   border: none;
   border-radius: 12px;
   padding: 14px 0;

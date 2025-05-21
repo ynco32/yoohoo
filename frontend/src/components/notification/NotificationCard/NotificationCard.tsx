@@ -5,6 +5,7 @@ import styles from './NotificationCard.module.scss';
 interface NotificationCardProps {
   notification: NotificationType;
   onActionClick?: () => void;
+  isHighlighted?: boolean;
 }
 
 // 날짜 포맷팅 함수 (YYYY-MM-DD -> YYYY.MM.DD)
@@ -23,6 +24,7 @@ const formatDate = (dateString: string) => {
 const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
   onActionClick,
+  isHighlighted = false,
 }) => {
   const { title, body, type, createdAt, concert, isRead } = notification;
 
@@ -30,7 +32,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
     <div
       className={`${styles.notificationCard} ${
         isRead ? styles.read : styles.unread
-      }`}
+      } ${isHighlighted ? styles.highlighted : ''}`}
     >
       <div className={styles.cardContainer}>
         <div className={styles.leftIndicator}></div>

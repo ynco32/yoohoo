@@ -179,35 +179,38 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; // space-between에서 flex-start로 변경
+  justify-content: flex-start;
 }
 
 .ticketingContent {
   display: flex;
   flex-direction: column;
   z-index: 2;
-  padding-top: clamp(4px, 2vmin, 8px); // 상단 패딩 축소
+  padding-top: clamp(4px, 2vmin, 8px);
 }
 
 .ticketingTitle {
-  margin-top: 4px; // 여백 축소
-  font-family: $font-family-base;
-  font-size: $font-size-md; // 폰트 크기 축소
-  font-weight: $font-weight-medium;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: $font-size-md;
   color: $text-sub;
-  line-height: 1.2; // 줄 높이 축소
-  white-space: nowrap; // 긴 콘서트 이름이 줄바꿈되지 않도록
+  font-weight: $font-weight-medium;
+  text-align: right;
+  max-width: 70%;
   overflow: hidden;
-  text-overflow: ellipsis; // 길이가 넘치면 ...으로 표시
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
 }
 
 .ticketBadge {
   position: absolute;
-  top: 8px; // 위치 조정
+  top: 8px;
   right: 8px;
   background-color: #3debc0;
   color: white;
-  padding: 4px 8px; // 패딩 축소
+  padding: 4px 8px;
   border-radius: 16px;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;

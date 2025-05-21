@@ -266,60 +266,78 @@ export default function ChatInterface({
 
         <div className={`${styles.messageWrapper} ${styles.botMessage}`}>
           <div className={`${styles.messageContent} ${styles.botContent}`}>
-            <div className={styles.botMessageText}>
-              {highlightText('어떤 콘서트가 궁금하십니끼리?')}
-            </div>
+            {concertList.length > 0 && (
+              <div className={styles.botMessageText}>
+                {highlightText('어떤 콘서트가 궁금하십니끼리?')}
+              </div>
+            )}
 
             {/* 콘서트 목록 */}
-            <div className={styles.concertList}>
-              {concertList.map((concert) => (
-                <div
-                  key={concert.concertId}
-                  className={`${styles.concertContainer} ${
-                    selectedConcert === concert.concertId
-                      ? styles.selectedConcert
-                      : ''
-                  }`}
-                  onClick={handleConcertClick(
-                    concert.concertId,
-                    concert.concertName
-                  )}
-                >
-                  <div className={styles.concertPoster}>
-                    <Image
-                      alt={concert.concertName}
-                      src={concert.photoUrl || '/images/dummy.png'}
-                      width={140}
-                      height={140}
-                      style={{
-                        objectFit: 'cover',
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                      }}
-                      className={styles.posterImage}
-                    />
-                  </div>
-                  <div className={styles.artistName}>
-                    {Array.isArray(concert.artists)
-                      ? concert.artists.length > 0
-                        ? concert.artists.length > 1
-                          ? `${concert.artists[0].artistName} 외`
-                          : concert.artists[0].artistName
-                        : '아티스트명'
-                      : concert.artists}
-                  </div>
-                  <div
-                    className={styles.concertTitle}
-                    title={concert.concertName}
-                  >
-                    {concert.concertName.length > 10
-                      ? `${concert.concertName.substring(0, 12)}...`
-                      : concert.concertName}
-                  </div>
+            {concertList.length === 0 ? (
+              <div className={styles.emptyConcertContainer}>
+                <div className={styles.emptyConcertMessage}>
+                  관람 예정인 콘서트를 등록하고 <br /> 끼리봇에게 질문해보세요!
                 </div>
-              ))}
-            </div>
+                
+                <button
+                  type="button"
+                  className={styles.concertSettingButton}
+                  onClick={() => window.location.href = '/concerts/all'}
+                >
+                  콘서트 설정하기
+                </button>
+              </div>
+            ) : (
+              <div className={styles.concertList}>
+                {concertList.map((concert) => (
+                  <div
+                    key={concert.concertId}
+                    className={`${styles.concertContainer} ${
+                      selectedConcert === concert.concertId
+                        ? styles.selectedConcert
+                        : ''
+                    }`}
+                    onClick={handleConcertClick(
+                      concert.concertId,
+                      concert.concertName
+                    )}
+                  >
+                    <div className={styles.concertPoster}>
+                      <Image
+                        alt={concert.concertName}
+                        src={concert.photoUrl || '/images/dummy.png'}
+                        width={140}
+                        height={140}
+                        style={{
+                          objectFit: 'cover',
+                          width: '100%',
+                          height: '100%',
+                          position: 'absolute',
+                        }}
+                        className={styles.posterImage}
+                      />
+                    </div>
+                    <div className={styles.artistName}>
+                      {Array.isArray(concert.artists)
+                        ? concert.artists.length > 0
+                          ? concert.artists.length > 1
+                            ? `${concert.artists[0].artistName} 외`
+                            : concert.artists[0].artistName
+                          : '아티스트명'
+                        : concert.artists}
+                    </div>
+                    <div
+                      className={styles.concertTitle}
+                      title={concert.concertName}
+                    >
+                      {concert.concertName.length > 10
+                        ? `${concert.concertName.substring(0, 12)}...`
+                        : concert.concertName}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* 선택된 콘서트 이름 표시 */}
             {selectedConcertName && (

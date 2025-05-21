@@ -75,6 +75,15 @@ function handleTicketingBack(pathSegments: string[]): NavigationAction {
     return { type: 'push', path: '/main' };
   }
 
+  // /ticketing/real 에서 뒤로가기 시 메인으로 이동
+  if (
+    pathSegments.length === 2 &&
+    pathSegments[0] === 'ticketing' &&
+    pathSegments[1] === 'real'
+  ) {
+    return { type: 'push', path: '/main' };
+  }
+
   // /ticketing/real/areas/[areaId] 경로에서는 areaSelect로 이동
   if (
     pathSegments.length >= 4 &&

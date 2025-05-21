@@ -179,7 +179,7 @@ services:
       - app-network
 
   rabbitmq:
-    container_name: rabbitmq
+    container_name: rabbitmq-dev
     image: rabbitmq:3-management
     ports:
       - "5673:5672"

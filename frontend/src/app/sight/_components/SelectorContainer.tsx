@@ -14,6 +14,18 @@ import {
 } from '@/store/slices/sectionSlice';
 import { RootState } from '@/store';
 
+// 스켈레톤 로딩 컴포넌트 추가
+const SkeletonDropdown = () => {
+  return (
+    <div className={`${styles.skeletonDropdown} ${styles.small}`}>
+      <div className={styles.skeletonTrigger}>
+        <span className={styles.skeletonText}></span>
+        <span className={styles.skeletonArrow}></span>
+      </div>
+    </div>
+  );
+};
+
 export default function SelectorContainer() {
   const params = useParams();
   const router = useRouter();
@@ -157,7 +169,7 @@ export default function SelectorContainer() {
     <div className={styles.selects}>
       {/* 층 선택기 */}
       {isLoading ? (
-        <div>층 정보 로딩 중...</div>
+        <SkeletonDropdown />
       ) : (
         <SmallDropdown
           options={floors}
@@ -181,7 +193,7 @@ export default function SelectorContainer() {
           disabled
         />
       ) : isLoading ? (
-        <div>구역 정보 로딩 중...</div>
+        <SkeletonDropdown />
       ) : (
         <SmallDropdown
           options={sections}

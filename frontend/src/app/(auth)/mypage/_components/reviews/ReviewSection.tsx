@@ -9,6 +9,23 @@ import { ReviewCard } from '@/components/mypage/ReviewCard/ReviewCard';
 import { Review } from '@/types/review';
 import { reviewApi } from '@/api/sight/review';
 
+// 스켈레톤 리뷰 카드 컴포넌트
+const SkeletonReviewCard = () => {
+  return (
+    <div className={styles.skeletonCard}>
+      <div className={styles.skeletonImage}></div>
+      <div className={styles.skeletonContent}>
+        <div className={styles.skeletonTitle}></div>
+        <div className={styles.skeletonInfo}></div>
+        <div className={styles.skeletonTags}>
+          <div className={styles.skeletonTag}></div>
+          <div className={styles.skeletonTag}></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function ReviewSection() {
   const router = useRouter();
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -39,7 +56,15 @@ export default function ReviewSection() {
             <h2 className={styles.title}>내 시야 후기</h2>
           </div>
         </div>
-        <div>로딩 중...</div>
+        <div className={styles.reviewsGrid}>
+          {/* 3x2 그리드로 스켈레톤 카드 표시 */}
+          <SkeletonReviewCard />
+          <SkeletonReviewCard />
+          <SkeletonReviewCard />
+          <SkeletonReviewCard />
+          <SkeletonReviewCard />
+          <SkeletonReviewCard />
+        </div>
       </section>
     );
   }

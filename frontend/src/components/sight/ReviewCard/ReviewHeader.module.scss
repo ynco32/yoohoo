@@ -2,14 +2,14 @@
   margin-bottom: $spacing-md;
   display: flex;
   width: 100%;
-  align-items: center;
+  align-items: flex-end; // 하단 정렬로 변경
   // padding: 0 $spacing-md;
 }
 
 .profileWrapper {
   display: flex;
   width: 100%;
-  align-items: flex-start; // 상단 정렬로 변경
+  align-items: flex-end; // 하단 정렬로 변경
   gap: $spacing-sm;
 }
 
@@ -25,6 +25,7 @@
   flex-grow: 1;
   flex-direction: column;
   width: 100%;
+  justify-content: flex-end; // 하단 정렬
 }
 
 .topRow {
@@ -41,7 +42,7 @@
   color: $text-main;
   text-align: left;
   margin-right: auto;
-  margin-top: 6px;
+  margin-top: 0; // 상단 여백 제거
 }
 
 .seatBadge {
@@ -57,7 +58,6 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  min-height: 32px;
   flex-wrap: nowrap;
 }
 
@@ -74,14 +74,12 @@
   width: calc(100% - 20px); // 메뉴 버튼 공간 확보
   word-break: keep-all; // 한글 단어 단위로 줄바꿈
   word-wrap: break-word; // 영문 단어 길이 제한
-  align-self: flex-end;
 }
 
 .menuContainer {
   position: relative;
   flex-shrink: 0; // 컨테이너 크기 고정
-  align-self: flex-start; // 상단 정렬
-  margin-top: 2px; // 미세 조정
+  align-self: center; // 중앙 정렬로 수정
 }
 
 .menuButton {

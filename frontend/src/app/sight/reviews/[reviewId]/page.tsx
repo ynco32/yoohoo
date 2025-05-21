@@ -75,7 +75,7 @@ export default function ReviewDetailPage() {
 
     try {
       await deleteReview(reviewId as string);
-      router.push('/sight/reviews');
+      router.push('/mypage');
     } catch (err) {
       console.error('리뷰 삭제 실패:', err);
     } finally {

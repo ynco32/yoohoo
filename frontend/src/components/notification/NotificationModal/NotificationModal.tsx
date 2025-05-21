@@ -125,11 +125,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           </div>
 
           <div className={styles.status}>
-            <h3>알림 설정</h3>
+            <h3>{isServerNotificationEnabled ? '알림이 활성화되었습니다!' : '알림이 꺼져있습니다'}</h3>
             <p>
               {isServerNotificationEnabled
-                ? '알림이 활성화되었습니다! \n실시간 소식을 받으려면 홈 화면에 추가해 주세요.'
-                : '알림이 꺼져 있습니다. \n활성화하여 관심 공연 소식을 받아보세요.'}
+                ? '실시간 소식을 받으려면 홈 화면에 추가해 주세요.'
+                : '활성화하여 관심 공연 소식을 받아보세요.'}
             </p>
 
             {serverError && (
@@ -140,7 +140,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <div className={styles.toggle}>
             <button
               className={`${styles.toggleButton} ${
-                isServerNotificationEnabled ? styles.active : styles.inactive
+                isServerNotificationEnabled ? styles.inactive : styles.active
               }`}
               onClick={handleToggleServerNotification}
               disabled={serverLoading}
@@ -150,6 +150,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                 : isServerNotificationEnabled
                 ? '알림 끄기'
                 : '알림 켜기'}
+            </button>
+            <button className={`${styles.toggleButton} ${styles.outline}`}>
+              확인
             </button>
           </div>
         </div>

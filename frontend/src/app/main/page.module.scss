@@ -123,7 +123,6 @@
 
 // 미디어 쿼리 추가 - 모바일 뷰
 @media (max-width: $breakpoint-sm) {
-
   .label {
     font-size: $font-size-lg;
     margin-bottom: 2px;
@@ -163,4 +162,33 @@
   .iconContainer {
     transform: scale(0.8);
   }
+}
+// 기존 page.module.scss에 추가할 스타일
+.ticketingWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ticketingContent {
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.ticketBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #3debc0;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  z-index: 3;
 }

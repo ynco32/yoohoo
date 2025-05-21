@@ -30,10 +30,6 @@ export default function ReviewSection() {
     fetchReviews();
   }, []);
 
-  const handleReviewClick = (reviewId: number) => {
-    router.push(`/mypage/sight/${reviewId}`);
-  };
-
   if (loading) {
     return (
       <section className={styles.section}>
@@ -60,12 +56,7 @@ export default function ReviewSection() {
       {reviews.length > 0 ? (
         <div className={styles.reviewsGrid}>
           {reviews.map((review) => (
-            <ReviewCard
-              key={review.reviewId}
-              review={review}
-              onEdit={() => {}}
-              onDelete={() => {}}
-            />
+            <ReviewCard key={review.reviewId} review={review} />
           ))}
         </div>
       ) : (

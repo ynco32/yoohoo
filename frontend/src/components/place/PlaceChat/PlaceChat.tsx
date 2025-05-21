@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import styles from './PlaceChat.module.scss';
@@ -61,12 +61,13 @@ export default function PlaceChat({
     const container = messageListRef.current;
     if (!container) return;
 
-    requestAnimationFrame(() => {
+    // 렌더링 이후 + 레이아웃 안정 이후 실행
+    setTimeout(() => {
       requestAnimationFrame(() => {
         container.scrollTop = container.scrollHeight;
         didInitialScrollRef.current = true;
       });
-    });
+    }, 50);
   }, [chatMessages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -275,10 +276,12 @@ export default function PlaceChat({
     if (isLoading || initialized) return;
 
     const hasMessages = messages.length > 0;
-
-    setChatMessages(
-      hasMessages ? [...messages, systemMessage] : [systemMessage]
-    );
+    const alreadyIncluded = messages.some((msg) => msg.id === systemMessage.id);
+    if (!alreadyIncluded) {
+      setChatMessages(
+        hasMessages ? [...messages, systemMessage] : [systemMessage]
+      );
+    }
     setShowSystem(true);
 
     // 공지 5초 뒤 제거
@@ -327,9 +330,11 @@ export default function PlaceChat({
   }
 
   // 시스템 메시지까지 포함시킨 후 그룹핑
-  const grouped = Object.entries(groupMessagesByDate(chatMessages)).sort(
-    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
-  );
+  const grouped = useMemo(() => {
+    return Object.entries(groupMessagesByDate(chatMessages)).sort(
+      ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+    );
+  }, [chatMessages]);
 
   // 오류 처리
   if (error) {
@@ -348,15 +353,6 @@ export default function PlaceChat({
           {isLoading && messages.length === 0 && (
             <div className={styles.loadingContainer}>
               메시지를 불러오는 중...
-            </div>
-          )}
-
-          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
-          {showSystem && (
-            <div className={styles.systemMessageContainer}>
-              <div className={styles.systemMessage}>
-                {systemMessage.content}
-              </div>
             </div>
           )}
 
@@ -401,6 +397,15 @@ export default function PlaceChat({
               })}
             </div>
           ))}
+
+          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
+          {showSystem && (
+            <div className={styles.systemMessageContainer}>
+              <div className={styles.systemMessage}>
+                {systemMessage.content}
+              </div>
+            </div>
+          )}
 
           <div ref={messageEndRef} />
         </div>

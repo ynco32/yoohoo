@@ -34,7 +34,6 @@ export default function KspoMinimap({ currentSectionId }: KspoMinimapProps) {
       path.setAttribute('style', 'fill: #cccccc; opacity: 0.5;');
     });
 
-    console.log('???', currentSectionId);
     // 선택된 구역이 있는 경우 해당 구역만 강조
     if (currentSectionId) {
       // ID에 해당하는 구역 그룹 찾기

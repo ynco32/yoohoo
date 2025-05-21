@@ -78,24 +78,24 @@ export default function UserSummary({
 
           <div className={styles.stats}>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>예정된 콘서트</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : concertCount}
               </span>
-              <span className={styles.statLabel}>예정된 콘서트</span>
             </div>
             <div className={styles.separator}></div>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>관심 아티스트</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : artistCount}
               </span>
-              <span className={styles.statLabel}>관심 아티스트</span>
             </div>
             <div className={styles.separator}></div>
             <div className={styles.statItem}>
+              <span className={styles.statLabel}>나의 시야 후기</span>
               <span className={styles.statNumber}>
                 {loading ? '...' : reviewCount}
               </span>
-              <span className={styles.statLabel}>내가 쓴 시야 후기</span>
             </div>
           </div>
         </div>

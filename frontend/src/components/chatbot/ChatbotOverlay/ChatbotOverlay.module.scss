@@ -104,3 +104,56 @@
   );
   -webkit-overflow-scrolling: touch; // 모바일에서 부드러운 스크롤
 }
+
+.concertHeaderBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #eaf6ff;
+  border-bottom: 1px solid #d8ecff;
+}
+
+.concertInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.concertName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4986e8;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px; // 적절히 조정
+}
+
+.newChatButton {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  color: #4986e8;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: #f5f8ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.newChatIcon {
+  margin-right: 6px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+// chatbotContent에 패딩 추가 필요 없음 - ChatInterface에서 관리

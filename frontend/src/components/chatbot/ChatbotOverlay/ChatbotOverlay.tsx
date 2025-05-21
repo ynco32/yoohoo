@@ -18,6 +18,9 @@ export default function ChatbotOverlay({
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const firstRender = useRef(true);
+  const [selectedConcertId, setSelectedConcertId] = useState<number>(0);
+  const [selectedConcertName, setSelectedConcertName] = useState<string>('');
+  const [resetChatTrigger, setResetChatTrigger] = useState<boolean>(false);
 
   // 아이폰에서 높이 계산
   useEffect(() => {
@@ -71,6 +74,20 @@ export default function ChatbotOverlay({
     }
   }, [isOpen]);
 
+  // 콘서트 선택 핸들러
+  const handleSelectConcert = (concertId: number, concertName: string) => {
+    setSelectedConcertId(concertId);
+    setSelectedConcertName(concertName);
+  };
+
+  // 새 채팅 시작 핸들러
+  const handleStartNewChat = () => {
+    setSelectedConcertId(0);
+    setSelectedConcertName('');
+    // resetChatTrigger 토글하여 자식 컴포넌트 초기화 트리거
+    setResetChatTrigger((prev) => !prev);
+  };
+
   if (!isVisible && !isOpen) return null;
 
   return (
@@ -80,6 +97,7 @@ export default function ChatbotOverlay({
       }`}
     >
       <div className={styles.chatbotContainer}>
+        {/* 기본 헤더 - 항상 표시 */}
         <div className={styles.chatbotHeader}>
           <div className={styles.profileInfo}>
             <div className={styles.avatarContainer}>
@@ -100,8 +118,30 @@ export default function ChatbotOverlay({
             <CloseIcon />
           </button>
         </div>
+
+        {/* 콘서트 선택 시 표시되는 서브 헤더 */}
+        {selectedConcertName && (
+          <div className={styles.concertHeaderBar}>
+            <div className={styles.concertInfo}>
+              <p className={styles.concertName}>{selectedConcertName}</p>
+            </div>
+            <button
+              className={styles.newChatButton}
+              onClick={handleStartNewChat}
+            >
+              <span className={styles.newChatIcon}>+</span>
+              새로운 채팅
+            </button>
+          </div>
+        )}
+
         <div className={styles.chatbotContent}>
-          <ChatInterface />
+          <ChatInterface
+            onSelectConcert={handleSelectConcert}
+            onStartNewChat={handleStartNewChat}
+            selectedConcertName={selectedConcertName}
+            resetChat={resetChatTrigger}
+          />
         </div>
       </div>
     </div>

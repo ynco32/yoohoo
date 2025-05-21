@@ -8,17 +8,27 @@ import KspoSvg from '@/assets/svgs/kspo.svg';
 import HandballSvg from '@/assets/svgs/handball.svg';
 import JamsilSvg from '@/assets/svgs/jamsil.svg';
 import { useRouter } from 'next/navigation';
-import { ArenaInfo } from '@/types/arena'; // 기존 타입 임포트
+import { ArenaInfo } from '@/types/arena';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { ARENA_DESCRIPTIONS } from '@/lib/constants/arenaDescription';
 
 interface SectionMapProps {
   arenaId: string;
-  arenaInfo?: ArenaInfo; // 서버에서 페칭한 데이터를 props로 받음
+  arenaInfo?: ArenaInfo;
 }
 
 export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
   const router = useRouter();
   const [isZoomed, setIsZoomed] = useState(false);
+
+  // 공연장 설명 정보 가져오기
+  const arenaDescriptions = ARENA_DESCRIPTIONS[arenaId] || [
+    '이 공연장 정보는 준비 중입니다.',
+    '구역을 선택하여 시야를 확인해보세요.',
+    '',
+    '',
+    '',
+  ];
 
   const handleSectionClick = (sectionId: string) => {
     const routingUrl = arenaId + sectionId;
@@ -120,24 +130,18 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
           maxScale={2.5}
           centerOnInit={true}
           limitToBounds={true}
-          // 아래 wheel 설정 추가
           wheel={{
             step: 0.1,
             wheelDisabled: false,
           }}
-          // 더블클릭 설정
           doubleClick={{
             disabled: false,
             mode: 'toggle',
           }}
-          // 아래 onZoom 이벤트 핸들러 추가
           onZoom={({ state }) => {
-            // 확대/축소 상태 업데이트
             setIsZoomed(state.scale !== 1);
           }}
-          // 인스턴스 저장을 위한 onInit 추가
           onInit={({ instance }) => {
-            // 초기화 버튼에서 사용할 수 있도록 인스턴스 저장
             (window as any).transformInstance = instance;
           }}
         >
@@ -153,22 +157,18 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
       </div>
 
       <div className={styles.card}>
-        {arenaInfo ? (
-          <>
-            <p className={styles.message}>
-              {arenaInfo.arenaName}은(는) {arenaInfo.address}에 위치해있어요.
-            </p>
-            <p className={styles.message}>000석 규모입니다.</p>
-          </>
-        ) : (
-          <>
-            <p className={styles.message}>
-              올림픽 체조경기장은 00역 인근에 위치해있어요.
-            </p>
-            <p className={styles.message}>10000석 규모로 어쩌구저쩌구</p>
-          </>
+        <p className={styles.boldMessage}>구역을 선택해 시야를 확인하세요!</p>
+
+        {/* 각 공연장별로 다른 설명 표시 */}
+        {arenaDescriptions.map(
+          (description, index) =>
+            description && (
+              <p key={index} className={styles.message}>
+                {description}
+              </p>
+            )
         )}
-        <p className={styles.message}>구역을 선택해 시야를 확인하세요!</p>
+        {/* <p className={styles.message}>구역을 선택해 시야를 확인하세요!</p> */}
       </div>
     </div>
   );

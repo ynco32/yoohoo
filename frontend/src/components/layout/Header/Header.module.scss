@@ -45,7 +45,8 @@
   display: flex;
   justify-content: flex-end;
   align-items: center; /* 추가: 세로 중앙 정렬 */
-  gap: $spacing-sm;
+  gap: 0.8rem;
+  margin-bottom: 2px;
 }
 
 .logoContainer {
@@ -76,13 +77,13 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
 }
 
 .icon {
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
   color: $con-blue;
 }
 
@@ -167,8 +168,9 @@
   position: static;
   display: flex;
   align-items: center; /* 추가: 세로 중앙 정렬 */
-  gap: $spacing-sm;
   height: 100%; /* 추가: 컨테이너 높이 설정 */
+  gap: 0.8rem;
+  margin-bottom: 2px;
 }
 
 /* 알림 아이콘 관련 스타일 */

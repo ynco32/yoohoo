@@ -1,12 +1,16 @@
-// src/pages/MainMenu.tsx
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import styles from './page.module.scss';
 import SightIcon from '/public/svgs/main/menuSight.svg';
 import PlaceIcon from '/public/svgs/main/menuPlace.svg';
 import TicketIcon from '/public/svgs/main/menuTicket.svg';
-import UserProfile from '@/components/main/UserProfile';
+import UserProfile from '@/components/main/UserProfile/UserProfile';
+import ChatbotFloatingButton from '@/components/main/ChatbotFloatingButton/ChatbotFloatingButton';
+import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 import TicketingInfo from '@/components/ticketing/TicketingInfo/TicketingInfo';
+import NotificationController from '@/components/notification/NotificationController/NotificationController';
 
 // 고정된 메뉴 정보
 const menuInfo = {
@@ -25,6 +29,8 @@ const menuInfo = {
 };
 
 export default function MainMenu() {
+  const { openChatbot } = useChatbot();
+
   return (
     <div className={styles.container}>
       <UserProfile />
@@ -85,6 +91,13 @@ export default function MainMenu() {
         {/* 티켓팅 정보 부분은 클라이언트 컴포넌트로 분리 */}
         <TicketingInfo />
       </div>
+
+      <div className={styles.floatingButtonContainer}>
+        <ChatbotFloatingButton onClick={openChatbot} />
+      </div>
+
+      {/* 알림 모달을 제어하는 클라이언트 컴포넌트 */}
+      <NotificationController />
     </div>
   );
 }

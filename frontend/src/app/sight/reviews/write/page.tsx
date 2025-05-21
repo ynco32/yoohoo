@@ -83,7 +83,7 @@ export default function WriteReviewPage() {
       <div className={styles.form}>
         <div className={styles.seatInfo}>
           {/* 좌석 정보 */}
-          <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
+          <TextTitle title='좌석 정보' />
           <TextInput
             className={styles.consertSearch}
             value={searchWord}
@@ -119,7 +119,7 @@ export default function WriteReviewPage() {
                 onChange={(e) => handleChange('rowLine', e.target.value)}
                 className={styles.numberInput}
               />
-              <span className={styles.label}>구역</span>
+              <span className={styles.label}>열</span>
             </div>
             <NumberInput
               label='번'
@@ -190,7 +190,7 @@ export default function WriteReviewPage() {
           {/* 촬영 기종 */}
           <TextTitle
             title='촬영기종'
-            description='시야 사진을 촬영한 핸드폰 기종을 알려주세요'
+            description='시야 사진을 촬영한 핸드폰 기종을 알려주세요. (선택)'
           />
           <div className={styles.cameraFields}>
             <Dropdown

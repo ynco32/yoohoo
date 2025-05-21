@@ -45,8 +45,8 @@ export default function PlaceChat({
   const newMessageRef = useRef<number | string | undefined>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
   const [bottomOffset, setBottomOffset] = useState(120);
-  const [initialized, setInitialized] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [showSystemMessage, setShowSystemMessage] = useState(false);
+  const systemMessageTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 스크롤 위치 저장 참조
   const scrollPositionRef = useRef(0);
@@ -54,21 +54,24 @@ export default function PlaceChat({
   // 최초 렌더일 때만 맨 아래로 이동
   const didInitialScrollRef = useRef(false);
 
+  // 초기 스크롤 로직
   useEffect(() => {
-    if (isLoading || chatMessages.length === 0 || didInitialScrollRef.current)
+    if (isLoading || messages.length === 0 || didInitialScrollRef.current) {
       return;
+    }
 
     const container = messageListRef.current;
     if (!container) return;
 
-    // 렌더링 이후 + 레이아웃 안정 이후 실행
-    setTimeout(() => {
-      requestAnimationFrame(() => {
+    const timer = setTimeout(() => {
+      if (container.scrollHeight > 0) {
         container.scrollTop = container.scrollHeight;
         didInitialScrollRef.current = true;
-      });
-    }, 50);
-  }, [chatMessages, isLoading]);
+      }
+    }, 200); // 시간을 좀 더 늘림
+
+    return () => clearTimeout(timer);
+  }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
   useEffect(() => {
@@ -268,46 +271,24 @@ export default function PlaceChat({
     isSystem: true,
   };
 
-  // 공지 메시지 렌더링 여부 상태
-  const [showSystem, setShowSystem] = useState(false);
-
-  // 최초 메시지 불러왔을 때 공지 메시지 추가
+  // 시스템 메시지 관리 useEffect
   useEffect(() => {
-    if (isLoading || initialized) return;
+    if (isLoading) return;
 
-    const hasMessages = messages.length > 0;
-    const alreadyIncluded = messages.some((msg) => msg.id === systemMessage.id);
-    if (!alreadyIncluded) {
-      setChatMessages(
-        hasMessages ? [...messages, systemMessage] : [systemMessage]
-      );
+    if (messages.length > 0 && !showSystemMessage) {
+      setShowSystemMessage(true);
+
+      systemMessageTimerRef.current = setTimeout(() => {
+        setShowSystemMessage(false);
+      }, 5000);
     }
-    setShowSystem(true);
 
-    // 공지 5초 뒤 제거
-    setTimeout(() => {
-      setChatMessages((prev) =>
-        prev.filter((msg) => msg.id !== systemMessage.id)
-      );
-      setShowSystem(false);
-    }, 5000);
-
-    setInitialized(true);
-  }, [messages, isLoading, initialized]);
-
-  // 이후 새 메시지 추가 반영
-  useEffect(() => {
-    if (!initialized || messages.length === 0) return;
-
-    const newMessages = messages.filter(
-      (msg) =>
-        !chatMessages.some((m) => (m.id || m.tempId) === (msg.id || msg.tempId))
-    );
-
-    if (newMessages.length > 0) {
-      setChatMessages((prev) => [...prev, ...newMessages]);
-    }
-  }, [messages]);
+    return () => {
+      if (systemMessageTimerRef.current) {
+        clearTimeout(systemMessageTimerRef.current);
+      }
+    };
+  }, [isLoading, messages.length, showSystemMessage]);
 
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {
@@ -331,10 +312,10 @@ export default function PlaceChat({
 
   // 시스템 메시지까지 포함시킨 후 그룹핑
   const grouped = useMemo(() => {
-    return Object.entries(groupMessagesByDate(chatMessages)).sort(
+    return Object.entries(groupMessagesByDate(messages)).sort(
       ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
     );
-  }, [chatMessages]);
+  }, [messages]);
 
   // 오류 처리
   if (error) {
@@ -357,7 +338,7 @@ export default function PlaceChat({
           )}
 
           {/* 🔹 일반 메시지 그룹 렌더링 */}
-          {grouped.length === 0 && !showSystem && (
+          {grouped.length === 0 && !showSystemMessage && (
             <div className={styles.noMessage}>질문을 시작해보세요!</div>
           )}
 
@@ -398,8 +379,8 @@ export default function PlaceChat({
             </div>
           ))}
 
-          {/* 🔹 공지 메시지 렌더링 (5초 동안만) */}
-          {showSystem && (
+          {/* 시스템 메시지 별도 렌더링 */}
+          {showSystemMessage && (
             <div className={styles.systemMessageContainer}>
               <div className={styles.systemMessage}>
                 {systemMessage.content}

@@ -37,6 +37,24 @@ export function useReview(reviewId?: string | number) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 에러 메시지 추출 헬퍼 함수
+  const extractErrorMessage = (err: any): string => {
+    // API 응답 형식의 에러인 경우
+    if (err?.response?.data?.error?.message) {
+      return err.response.data.error.message;
+    }
+    // 직접 error 객체에 접근할 수 있는 경우
+    if (err?.error?.message) {
+      return err.error.message;
+    }
+    // 일반 Error 객체인 경우
+    if (err instanceof Error) {
+      return err.message;
+    }
+    // 그 외의 경우 기본 메시지 반환
+    return '알 수 없는 오류가 발생했습니다.';
+  };
+
   // 리뷰 생성
   const createReview = async (
     data: ReviewRequest,
@@ -57,10 +75,7 @@ export function useReview(reviewId?: string | number) {
       // 응답의 data 필드가 reviewId이므로 이를 반환
       return response.data;
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : '후기 작성 중 오류가 발생했습니다.';
+      const errorMessage = extractErrorMessage(err);
       setError(errorMessage);
       console.error('Review creation error:', err);
       return undefined;
@@ -82,7 +97,7 @@ export function useReview(reviewId?: string | number) {
         setError('리뷰 정보를 찾을 수 없습니다.');
       }
     } catch (err: any) {
-      setError(err.message || '리뷰를 불러오는 중 오류가 발생했습니다.');
+      setError(extractErrorMessage(err));
       console.error('리뷰 로드 오류:', err);
     } finally {
       setIsLoading(false);
@@ -121,7 +136,7 @@ export function useReview(reviewId?: string | number) {
         error: err,
         stack: err.stack,
       });
-      setError(err.message || '리뷰를 수정하는 중 오류가 발생했습니다.');
+      setError(extractErrorMessage(err));
       throw err;
     } finally {
       setIsLoading(false);
@@ -137,7 +152,7 @@ export function useReview(reviewId?: string | number) {
       // 성공했을 경우 true 반환
       return true;
     } catch (err: any) {
-      setError(err.message || '리뷰를 삭제하는 중 오류가 발생했습니다.');
+      setError(extractErrorMessage(err));
       console.error('리뷰 삭제 오류:', err);
       // 실패했을 경우 에러 발생
       throw err;

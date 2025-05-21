@@ -24,9 +24,9 @@ export const getUserProfile = async () => {
   return apiRequest<UserInfo>('GET', '/api/v1/main/user-info');
 };
 
-export const patchProfileImage = async (profile: number) => {
+export const patchProfileImage = async (profileNumber: number) => {
   return apiRequest<null>('PATCH', '/api/v1/main/profile', {
-    profile,
+    profileNumber,
   });
 };
 

@@ -7,6 +7,19 @@ import SearchBar from '@/components/common/SearchBar/SearchBar';
 import styles from './MyPageConcertContainer.module.scss';
 import { useMypageConcert } from '@/hooks/useMypageConcert';
 
+// 스켈레톤 카드 컴포넌트 추가
+const SkeletonCard = () => {
+  return (
+    <div className={styles.skeletonCard}>
+      <div className={styles.skeletonPoster}></div>
+      <div className={styles.skeletonContent}>
+        <div className={styles.skeletonTitle}></div>
+        <div className={styles.skeletonDate}></div>
+      </div>
+    </div>
+  );
+};
+
 export default function MyPageConcertContainer() {
   const {
     concerts,
@@ -42,9 +55,17 @@ export default function MyPageConcertContainer() {
         {concerts.map((concert) => (
           <ConcertCard
             key={concert.concertId}
-            className={`${styles.concertCard} ${selected.includes(concert.concertId) ? styles.selected : ''}`}
+            className={`${styles.concertCard} ${
+              selected.includes(concert.concertId) ? styles.selected : ''
+            }`}
             title={concert.concertName}
-            dateRange={`${concert.sessions[0]?.startTime.split('T')[0] || ''} ~ ${concert.sessions[concert.sessions.length - 1]?.startTime.split('T')[0] || ''}`}
+            dateRange={`${
+              concert.sessions[0]?.startTime.split('T')[0] || ''
+            } ~ ${
+              concert.sessions[concert.sessions.length - 1]?.startTime.split(
+                'T'
+              )[0] || ''
+            }`}
             posterUrl={concert.photoUrl}
             onClick={() => handleConcertSelect(concert.concertId)}
             isSelected={selected.includes(concert.concertId)}
@@ -53,9 +74,16 @@ export default function MyPageConcertContainer() {
             onReselect={() => handleReselect(concert.concertId)}
           />
         ))}
-        <div ref={loadMoreRef} className={styles.loadMore}>
-          {isLoading && <div className={styles.loader}>로딩 중...</div>}
-        </div>
+
+        {/* 로딩 상태 처리 - 로딩 중일 때 스켈레톤 카드 2개 보여주기 */}
+        {isLoading && (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        )}
+
+        <div ref={loadMoreRef} className={styles.loadMore}></div>
       </div>
       {isDateModalOpen && (
         <DateSelectionModal

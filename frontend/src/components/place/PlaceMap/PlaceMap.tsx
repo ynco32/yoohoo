@@ -163,9 +163,9 @@ export default function PlaceMap({
     switch (category) {
       case 'TOILET':
         return '/svgs/place/marker1.svg';
-      case 'CONVENIENCE':
-        return '/svgs/place/marker2.svg';
       case 'STORAGE':
+        return '/svgs/place/marker2.svg';
+      case 'CONVENIENCE':
         return '/svgs/place/marker3.svg';
       case 'TICKET':
         return '/svgs/place/marker4.svg';

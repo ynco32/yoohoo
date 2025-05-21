@@ -18,11 +18,11 @@ export default function MarkerOverlay({ marker, onClose }: MarkerOverlayProps) {
       case 'TOILET':
         return '화장실';
       case 'CONVENIENCE':
-        return (detail as any)?.category || '편의시설';
+        return '편의시설';
       case 'STORAGE':
         return '물품 보관소';
       case 'TICKET':
-        return '공연 관련 시설';
+        return '공연';
       default:
         return '시설';
     }

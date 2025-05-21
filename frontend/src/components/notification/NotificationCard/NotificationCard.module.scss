@@ -5,6 +5,7 @@
   background-color: white;
   border-radius: $border-radius-md;
   box-shadow: $shadow-sm;
+  transition: all 0.3s ease;
 }
 
 .cardContainer {
@@ -130,4 +131,24 @@
 
 .unread {
   box-shadow: $shadow-con;
+}
+
+.highlighted {
+  animation: highlight-pulse 2s ease-out;
+  box-shadow: 0 0 0 2px $con-blue;
+}
+
+@keyframes highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba($con-blue, 0.5);
+    transform: scale(1.02);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba($con-blue, 0.3);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($con-blue, 0);
+    transform: scale(1);
+  }
 }

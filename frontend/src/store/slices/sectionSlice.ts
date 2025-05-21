@@ -25,10 +25,18 @@ const sectionSlice = createSlice({
       state.currentFloor = '';
       state.currentSection = '';
     },
+    resetSectionState: (state) => {
+      state.currentFloor = initialState.currentFloor;
+      state.currentSection = initialState.currentSection;
+    },
   },
 });
 
-export const { setCurrentFloor, setCurrentSection, clearSectionData } =
-  sectionSlice.actions;
+export const {
+  setCurrentFloor,
+  setCurrentSection,
+  clearSectionData,
+  resetSectionState,
+} = sectionSlice.actions;
 
 export default sectionSlice.reducer;

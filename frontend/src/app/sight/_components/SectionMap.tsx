@@ -158,7 +158,14 @@ export default function SectionMap({ arenaId, arenaInfo }: SectionMapProps) {
 
       <div className={styles.card}>
         <p className={styles.boldMessage}>구역을 선택해 시야를 확인하세요!</p>
-
+        <div className={styles.subMessageContainer}>
+          <p className={styles.subMessage}>
+            같은 좌석이어도 사람마다 생각이 다를 수 있어요. <br />
+          </p>
+          <p className={styles.subMessage}>
+            시야 후기는 참고용으로만 활용하세요.
+          </p>
+        </div>
         {/* 각 공연장별로 다른 설명 표시 */}
         {arenaDescriptions.map(
           (description, index) =>

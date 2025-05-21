@@ -7,7 +7,18 @@ import { RootState } from '@/store';
 import { useTicketingTimer } from '@/hooks/useTicketingTimer';
 import ScheduleSelection from '@/components/ticketing/ScheduleSelection/ScheduleSelection';
 import { useWebSocketQueue } from '@/hooks/useWebSocketQueue';
+import { apiRequest } from '@/api/api';
+
 import styles from './page.module.scss';
+interface TicketingTimeInfo {
+  startTime: string;
+  serverTime: string;
+  isWithin10Minutes: boolean;
+  isFinished: boolean;
+  concertName: string;
+  ticketingPlatform: string;
+  photoUrl:string;
+}
 
 // WebSocket을 사용하는 컴포넌트만 dynamic으로 로드
 const DynamicWebSocketProvider = dynamic(
@@ -24,12 +35,60 @@ const DynamicErrorPopup = dynamic(
 );
 
 export default function RealModePage() {
+
   const [isSchedulePopupOpen, setSchedulePopupOpen] = useState(false);
   const [isQueuePopupOpen, setQueuePopupOpen] = useState(false);
   const [isWebSocketConnected, setWebSocketConnected] = useState(false);
   const { buttonDisabled, buttonMessage } = useTicketingTimer();
   const { disconnectWebSocket, enterQueue } = useWebSocketQueue();
   const mountedRef = useRef(false);
+
+
+  const [ticketingInfo, setTicketingInfo] = useState<TicketingTimeInfo | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [concertError, setConcertError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTicketingInfo = async () => {
+      try {
+        const data = await apiRequest<TicketingTimeInfo>(
+          'GET',
+          '/api/v1/ticketing/time-info'
+        );
+        if (data) {
+          setTicketingInfo(data);
+        }
+      } catch (error: any) {
+        setConcertError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTicketingInfo();
+  }, []);
+
+  // 날짜 포맷팅 함수
+  const formatDateTime = (dateTimeStr: string) => {
+    const date = new Date(dateTimeStr);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    // 요일 배열
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const weekday = weekdays[date.getDay()];
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    return `${month.toString().padStart(2, '0')}.${day
+      .toString()
+      .padStart(2, '0')}(${weekday}) ${hours
+      .toString()
+      .padStart(2, '0')}:${minutes.toString().padStart(2, '0')} OPEN!`;
+  };
 
   const error = useSelector((state: RootState) => state.error.message);
 
@@ -68,10 +127,10 @@ export default function RealModePage() {
       <div className={styles.posterSection}>
         <Image
           className={styles.poster}
-          src='/images/dummy.png'
+          src={ticketingInfo?.photoUrl || '/images/dummy.png'}
           alt='poster'
-          width={80}
-          height={150}
+          width={100}
+          height={170}
         />
         <div className={styles.posterInfo}>
           <div className={styles.badgeContainer}>
@@ -80,7 +139,7 @@ export default function RealModePage() {
           </div>
           <div className={styles.titleSection}>
             <h3 className={styles.concertTitle}>
-              20XX ASIA TOUR CONCERT in SEOUL
+              {ticketingInfo ? ticketingInfo.concertName : '20XX ASIA TOUR CONCERT in SEOUL'}
             </h3>
             <p className={styles.concertCategory}>콘서트 | 7세 이상</p>
           </div>

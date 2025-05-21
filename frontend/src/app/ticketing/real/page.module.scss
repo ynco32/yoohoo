@@ -1,10 +1,14 @@
 .posterSection {
   display: flex;
   background-color: #f7f7f8;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-md;
 }
 
 .poster {
-  margin: $spacing-md;
+  margin: 0;
+  object-fit: contain;
 }
 
 .posterInfo {

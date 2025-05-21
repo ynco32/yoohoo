@@ -65,11 +65,15 @@ const ResultPage = () => {
       <div className={styles.wrapper}>
         <div className={styles.header}>
           <h1 className={styles.title}>결과</h1>
-          <p className={styles.subtitle}>당신의 반응 속도는...</p>
+          <p className={styles.subtitle}>
+            {gameMode === 'GRAPE' && '당신의 좌석 선택 속도는...'}
+            {gameMode === 'QUEUE' && '당신의 대기열 입장 속도는...'}
+            {gameMode === 'CAPCHA' && '당신의 보안문자 입력 속도는...'}
+          </p>
         </div>
         <div className={styles.resultContainer}>
-          <p className={styles.reactionTime}>{reactionTime.toFixed(3)}</p>
-          <p className={styles.reactionTimeUnit}>밀리초</p>
+          <p className={styles.reactionTime}>{(reactionTime / 1000).toFixed(3)}</p>
+          <p className={styles.reactionTimeUnit}>초</p>
 
           {successRate !== undefined && (
             <div className={styles.successRateSection}>

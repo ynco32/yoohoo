@@ -71,12 +71,11 @@ export default function TicketingInfo() {
           <div className={styles.ticketingContent}>
             <span className={styles.label}>실전 티켓팅 연습</span>
             <span className={styles.description}>
-                  티켓팅 직전, 실전같은 연습!
+              티켓팅 직전, 실전같은 연습!
             </span>
           </div>
-          
+
           <div className={styles.ticketingTitle}>
-            
             {loading
               ? '티켓팅 정보를 가져오는 중...'
               : error
@@ -85,13 +84,11 @@ export default function TicketingInfo() {
               ? ticketingInfo.concertName
               : '예정된 티켓팅이 없습니다'}
           </div>
-          <div className={styles.ticketBadge}>
-            {loading
-              ? '로딩 중...'
-              : ticketingInfo
-              ? formatDateTime(ticketingInfo.startTime)
-              : ''}
-          </div>
+          {!loading && ticketingInfo && (
+            <div className={styles.ticketBadge}>
+              {formatDateTime(ticketingInfo.startTime)}
+            </div>
+          )}
         </div>
       </Link>
     </div>

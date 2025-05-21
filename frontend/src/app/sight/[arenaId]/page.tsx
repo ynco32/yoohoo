@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import styles from './page.module.scss';
 import SectionMap from '../_components/SectionMap';
-// import { getArenaInfo } from '@/lib/api/arena'; // 가정된 API 함수
+import SectionMapSkeleton from '../_components/SectionMapSkeleton'; // 스켈레톤 컴포넌트 추가
 
 interface ArenaPageProps {
   params: Promise<{
@@ -21,7 +21,7 @@ export default async function ArenaPage({ params }: ArenaPageProps) {
   return (
     <div className={styles.container}>
       <div className={styles.sections}>
-        <Suspense fallback={<div>구역표 로딩 중...</div>}>
+        <Suspense fallback={<SectionMapSkeleton />}>
           <SectionMap arenaId={arenaId} arenaInfo={arenaInfo} />
         </Suspense>
       </div>

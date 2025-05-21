@@ -81,8 +81,10 @@
   border-radius: 16px;
   max-width: 90%;
   white-space: pre-wrap;
-  word-break: break-word;
+  word-break: keep-all; // 한글 단어 단위 줄바꿈
+  overflow-wrap: break-word; // 긴 단어 처리
   font-size: $font-size-md;
+  line-height: 1.3; // 줄 간격 개선
 
   &.userContent {
     background-color: $con-blue;
@@ -112,14 +114,172 @@
 
 .concertList {
   display: flex;
-  gap: 8px;
+  gap: 12px; // 간격 증가
   overflow-x: auto;
   height: 100%;
-  padding-top: 10px;
+  padding: 16px 0; // 상하 패딩 증가
+
+  // 스크롤바 숨기기
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    width: 0;
+    height: 0; /* 가로 스크롤바를 위해 height 추가 */
+    background: transparent;
+  }
+}
+
+.concertContainer {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  width: calc(33% - 8px);
+  max-width: 180px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  margin-bottom: $spacing-sm; // 하단 여백 추가
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.concertPoster {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%; // 1:1 비율 유지
+  position: relative;
+  background-color: #f0f0f0;
+  border-radius: $border-radius-md $border-radius-md 0 0;
+  overflow: hidden;
+}
+
+.artistName {
+  font-size: $font-size-sm;
+  color: $text-sub;
+  margin-top: $spacing-sm;
+  padding: 0 $spacing-sm;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // 아티스트 이름도 길면 생략
+}
+
+.concertTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $text-main;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 $spacing-sm;
+  margin-bottom: $spacing-sm;
 }
 
 .evidenceImage {
   width: 100%;
+  height: 100px; // 이미지 높이 제한
+  object-fit: cover; // 이미지가 잘리지 않고 채워지도록
+  margin: $spacing-sm 0;
+  border-radius: $border-radius-sm;
+  cursor: pointer; // 클릭 가능함을 표시
+  transition: transform 0.2s ease; // 호버 효과 부드럽게
+
+  &:hover {
+    transform: scale(1.02); // 마우스 오버 시 약간 확대
+  }
+}
+
+// 이미지 모달 관련 스타일
+.imageModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalImage {
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
-  margin-bottom: 5px;
+  border-radius: $border-radius-md;
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: $shadow-md;
+}
+
+/* 로딩 말풍선 관련 스타일 */
+.loadingMessage {
+  padding: 10px 16px;
+  border-radius: 16px;
+  max-width: 90%;
+  background-color: white;
+  color: $text-main;
+  border-top-left-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.typingDots {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $text-sub;
+  margin: 0 2px;
+  opacity: 0.6;
+  animation: bounce 1.5s infinite;
+
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
 }

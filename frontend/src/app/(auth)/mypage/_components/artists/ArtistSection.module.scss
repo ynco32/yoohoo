@@ -157,3 +157,48 @@
   font-size: 14px;
   color: #fff;
 }
+
+/* 스켈레톤 애니메이션 */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* 스켈레톤 UI 스타일 */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonCircle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}
+
+.skeletonName {
+  width: 70%;
+  height: 14px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonEdit {
+  width: 30px;
+  height: 14px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+  cursor: default;
+}

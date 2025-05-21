@@ -10,6 +10,7 @@ import UserProfile from '@/components/main/UserProfile/UserProfile';
 import ChatbotFloatingButton from '@/components/main/ChatbotFloatingButton/ChatbotFloatingButton';
 import { useChatbot } from '@/components/chatbot/ChatbotProvider/ChatbotProvider';
 import TicketingInfo from '@/components/ticketing/TicketingInfo/TicketingInfo';
+import NotificationController from '@/components/notification/NotificationController/NotificationController';
 
 // 고정된 메뉴 정보
 const menuInfo = {
@@ -94,6 +95,9 @@ export default function MainMenu() {
       <div className={styles.floatingButtonContainer}>
         <ChatbotFloatingButton onClick={openChatbot} />
       </div>
+
+      {/* 알림 모달을 제어하는 클라이언트 컴포넌트 */}
+      <NotificationController />
     </div>
   );
 }

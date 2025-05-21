@@ -104,17 +104,6 @@ export default function EditReviewPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <button
-          className={styles.backButton}
-          onClick={() => router.push(`/sight/reviews/${reviewId}`)}
-        >
-          <span className={styles.icon}>←</span>
-          취소
-        </button>
-        <h1 className={styles.title}>리뷰 수정</h1>
-      </div>
-
       {/* 성공 메시지 */}
       {submitSuccess && (
         <div className={styles.successMessage}>
@@ -129,7 +118,7 @@ export default function EditReviewPage() {
       <div className={styles.form}>
         <div className={styles.seatInfo}>
           {/* 좌석 정보 */}
-          <TextTitle title='좌석 정보' help='열과 번이 무엇인가요?' />
+          <TextTitle title='좌석 정보' />
           <TextInput
             className={styles.concertSearch}
             value={searchWord}
@@ -265,7 +254,7 @@ export default function EditReviewPage() {
           {/* 촬영 기종 */}
           <TextTitle
             title='촬영기종'
-            description='시야 사진을 촬영한 핸드폰 기종을 알려주세요'
+            description='시야 사진을 촬영한 핸드폰 기종을 알려주세요! (선택)'
           />
           <div className={styles.cameraFields}>
             <Dropdown

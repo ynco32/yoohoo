@@ -93,7 +93,7 @@ export const ReviewHeader = ({ review, onEdit }: ReviewHeaderProps) => {
   }, [showMenu]);
 
   // 좌석 정보 문자열 생성 (실제로는 ReviewData 인터페이스의 getSeatInfoString 메서드 사용 가능)
-  const seatInfo = `${review.section}구역 ${review.rowLine}열`;
+  const seatInfo = `${review.rowLine}열 ${review.columnLine}번`;
 
   return (
     <>

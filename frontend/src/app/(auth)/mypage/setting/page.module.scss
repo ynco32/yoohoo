@@ -265,3 +265,63 @@
     cursor: not-allowed;
   }
 }
+
+// 기존 스타일 뒤에 추가
+
+/* 스켈레톤 애니메이션 */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* 스켈레톤 UI 공통 스타일 */
+.skeleton {
+  background-color: #f0f0f0;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* 프로필 이미지 스켈레톤 */
+.profileImageWrapper.skeleton {
+  background-color: #f0f0f0;
+  border: none;
+  box-shadow: none;
+}
+
+/* 카메라 아이콘 스켈레톤 */
+.skeletonIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* 프로필 이름 스켈레톤 */
+.skeletonName {
+  width: 100px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* 메뉴 아이템 스켈레톤 */
+.skeletonMenuItem {
+  background-color: #f0f0f0 !important;
+  border: none !important;
+  color: transparent !important;
+  box-shadow: none !important;
+  animation: pulse 1.5s infinite ease-in-out;
+
+  &:hover {
+    background-color: #f0f0f0 !important;
+    transform: none !important;
+  }
+}

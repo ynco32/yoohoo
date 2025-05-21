@@ -115,7 +115,7 @@ export default function NotificationPage() {
           ))}
         </div>
       )}
-      <Link href='/notification/setting'>디버깅 페이지로 가기 </Link>
+      {/* <Link href='/notification/setting'>디버깅 페이지로 가기 </Link> */}
 
       {/* 알림 설정 모달 */}
       <NotificationModal isOpen={isModalOpen} onClose={closeModal} />

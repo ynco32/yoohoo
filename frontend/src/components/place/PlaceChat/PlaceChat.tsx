@@ -63,19 +63,14 @@ export default function PlaceChat({
     const container = messageListRef.current;
     if (!container) return;
 
-    const scrollToBottom = () => {
-      container.scrollTop = container.scrollHeight;
-      didInitialScrollRef.current = true;
-    };
+    const timer = setTimeout(() => {
+      if (container.scrollHeight > 0) {
+        container.scrollTop = container.scrollHeight;
+        didInitialScrollRef.current = true;
+      }
+    }, 200);
 
-    // DOM이 완전히 렌더된 뒤 실행되도록 raf + setTimeout 조합
-    const animationFrame = requestAnimationFrame(() => {
-      setTimeout(scrollToBottom, 50);
-    });
-
-    return () => {
-      cancelAnimationFrame(animationFrame);
-    };
+    return () => clearTimeout(timer);
   }, [messages, isLoading]);
 
   // 메시지 수신 시 마지막 메시지 저장
@@ -276,17 +271,17 @@ export default function PlaceChat({
     isSystem: true,
   };
 
-  // 시스템 메시지 관리 useEffect
+  // 1. 공지 보이기 트리거
   useEffect(() => {
-    // 메시지 로딩 완료 후 한 번만 보여줌
     if (!isLoading && !didInitialScrollRef.current) {
-      setShowSystemMessage(true);
+      setShowSystemMessage(true); // 이 시점엔 true로만 바꿈
       didInitialScrollRef.current = true;
+    }
+  }, [isLoading]);
 
-      if (systemMessageTimerRef.current) {
-        clearTimeout(systemMessageTimerRef.current);
-      }
-
+  // 2. 공지 상태 변화 감지하여 타이머 설정
+  useEffect(() => {
+    if (showSystemMessage) {
       systemMessageTimerRef.current = setTimeout(() => {
         setShowSystemMessage(false);
       }, 5000);
@@ -297,7 +292,7 @@ export default function PlaceChat({
         clearTimeout(systemMessageTimerRef.current);
       }
     };
-  }, [isLoading]);
+  }, [showSystemMessage]);
 
   // 날짜별로 메시지 그룹화
   function groupMessagesByDate(messages: Message[]) {

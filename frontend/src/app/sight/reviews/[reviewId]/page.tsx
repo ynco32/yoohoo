@@ -90,7 +90,12 @@ export default function ReviewDetailPage() {
 
   // 리뷰 목록으로 돌아가기
   const handleBackToList = () => {
-    router.push('/sight/');
+    if (!review) {
+      router.push('/sight');
+      return;
+    }
+    const url = review?.arenaId + review?.section;
+    router.push(`/sight/${review.arenaId}/${url}`);
   };
 
   // 리뷰 작성 날짜 포맷팅

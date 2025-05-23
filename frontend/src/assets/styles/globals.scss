@@ -17,7 +17,6 @@ li,
 ul,
 ol,
 nav {
-  // 모든 텍스트 요소 추가
   padding: 0;
   margin: 0;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
@@ -35,10 +34,9 @@ a {
 
 * {
   box-sizing: border-box;
-  font-family: inherit; // 폰트 상속 추가
+  font-family: inherit;
 }
 
-// 색상 변수 설정
 :root {
   // Brand Colors
   --con-blue: #4986e8;
@@ -49,17 +47,19 @@ a {
   --color-text: #515151;
   --color-text-light: #949494;
   --color-background: #ffffff;
-  // 배경색 설정 필요
   --color-background-light: #f8f9fa;
   --color-border: #e0e0e0;
 
   // Text Colors
   --text-main: #515151;
   --text-sub: #949494;
+
+  // 배경 이미지 - 최소한의 fallback만 제공
+  --desktop-bg-url: url('/images/desktop.webp');
 }
 
 html {
-  background-image: url('/images/desktop.png');
+  background-image: var(--desktop-bg-url);
   background-size: cover;
   background-position: center;
   min-height: 100dvh;

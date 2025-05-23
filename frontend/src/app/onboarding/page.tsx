@@ -36,7 +36,7 @@ export default function OnboardingPage() {
           <div className={styles.imageContainer}>
             <Image
               src='/images/onboarding1.png'
-              alt='dummyArtist'
+              alt='온보딩페이지1'
               width={430}
               height={640}
               className={styles.slideImage}
@@ -47,7 +47,7 @@ export default function OnboardingPage() {
           <div className={styles.imageContainer}>
             <Image
               src='/images/onboarding2.png'
-              alt='dummyConcert'
+              alt='온보딩페이지2'
               width={430}
               height={640}
               className={styles.slideImage}
@@ -58,7 +58,7 @@ export default function OnboardingPage() {
           <div className={styles.imageContainer}>
             <Image
               src='/images/onboarding3.png'
-              alt='dummyArtist'
+              alt='온보딩페이지3'
               width={430}
               height={640}
               className={styles.slideImage}
@@ -69,7 +69,7 @@ export default function OnboardingPage() {
           <div className={styles.imageContainer}>
             <Image
               src='/images/onboarding4.png'
-              alt='dummyConcert'
+              alt='온보딩페이지4'
               width={430}
               height={640}
               className={styles.slideImage}

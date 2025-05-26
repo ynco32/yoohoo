@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -51,6 +52,6 @@ public class ConcertNotice {
 	}
 
 	public static ConcertNotice of(Concert concert, String originalUrl, String noticeText, String noticeImageUrl, String showId) {
-		return new ConcertNotice(concert, originalUrl, noticeText, noticeImageUrl, String showId);
+		return new ConcertNotice(concert, originalUrl, noticeText, noticeImageUrl, showId);
 	}
 }

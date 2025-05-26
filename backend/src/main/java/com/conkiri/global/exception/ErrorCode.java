@@ -100,6 +100,8 @@ public enum ErrorCode {
     // 나의 공연
     MY_CONCERT_NOT_FOUND(HttpStatus.BAD_REQUEST, "등록한 나의 공연이 없습니다."),
 
+    //RAG
+    RAG_PROCESS_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "RAG 처리 실행에 실패했습니다"),
 	;
     private final HttpStatus httpStatus;
     private final String message;

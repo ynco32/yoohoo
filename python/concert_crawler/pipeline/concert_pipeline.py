@@ -44,6 +44,7 @@ class ConcertPipeline:
             
             # 4. 기본 정보에 상세 정보 병합
             concert.update(detail_info)
+            concert['show_id'] = concert.get('show_id')
             print(f"pipline 에서 이제 보내는거: {concert}")
             
             # 5. API 저장

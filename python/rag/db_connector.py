@@ -28,23 +28,6 @@ def get_connection():
 
 
 def get_concert_info(concert_id):
-
-    """콘서트 ID로 콘서트 정보를 조회합니다. (하드코딩 방식)"""
-    logger.info(f"콘서트 ID {concert_id}에 대한 정보를 하드코딩된 데이터로 반환합니다.")
-    
-    # # 하드코딩된 콘서트 정보 반환
-    # return {
-    #     'concert_id': int(concert_id),
-    #     'concert_name': '2025 KAI SOLO CONCERT TOUR 〈KAION〉 IN SEOUL',
-    #     'arena_name': '고척스카이돔',
-    #     'photo_url': 'https://cdnticket.melon.co.kr/resource/image/upload/product/2025/04/20250414172508241996c1-b71e-4f2d-864a-892469a83d09.jpg/melon/strip/true/quality/80',
-    #     'advanced_reservation': '2025-03-17 20:00:00.000000',
-    #     'reservation': '2025-04-22 20:00:00.000000',
-    #     'ticketing_platform': 'MELON',
-    #     'artist_name': ['카이'],
-    #     'start_times': ['2025-05-17 18:00:00.000000', '2025-05-18 16:00:00']
-    # }
-
     """콘서트 ID로 콘서트 정보를 조회합니다."""
     conn = None
     cursor = None
@@ -118,4 +101,73 @@ def get_concert_info(concert_id):
         if conn and conn.is_connected():
             conn.close()
 
+def get_unprocessed_concerts():
+    """RAG 처리되지 않은 콘서트 목록을 조회합니다."""
+    conn = None
+    cursor = None
     
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # RAG 미처리 콘서트 조회
+        query = """
+        SELECT cn.concert_id, cn.show_id, c.concert_name
+        FROM concert_notice cn
+        JOIN concert c ON cn.concert_id = c.concert_id
+        WHERE cn.rag_processed_at IS NULL
+        AND cn.show_id IS NOT NULL
+        ORDER BY cn.concert_notice_id ASC
+        """
+        
+        cursor.execute(query)
+        results = cursor.fetchall()
+        
+        logger.info(f"RAG 미처리 콘서트 {len(results)}개 조회됨")
+        return results
+        
+    except Exception as e:
+        logger.error(f"미처리 콘서트 조회 중 오류: {e}")
+        return []
+        
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+def mark_rag_processed(concert_id):
+    """콘서트의 RAG 처리 완료를 표시합니다."""
+    conn = None
+    cursor = None
+    
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # RAG 처리 완료 시간 업데이트
+        query = """
+        UPDATE concert_notice 
+        SET rag_processed_at = NOW()
+        WHERE concert_id = %s
+        """
+        
+        cursor.execute(query, (concert_id,))
+        conn.commit()
+        
+        if cursor.rowcount > 0:
+            logger.info(f"콘서트 ID {concert_id}의 RAG 처리 완료 표시됨")
+            return True
+        else:
+            logger.warning(f"콘서트 ID {concert_id}에 대한 업데이트 대상이 없음")
+            return False
+            
+    except Exception as e:
+        logger.error(f"RAG 처리 완료 표시 중 오류: {e}")
+        return False
+        
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()

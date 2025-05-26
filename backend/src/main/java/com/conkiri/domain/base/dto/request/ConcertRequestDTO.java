@@ -17,7 +17,8 @@ public record ConcertRequestDTO(
         List<LocalDateTime> startTimes,
         String noticeImageUrl,
         String noticeText,
-        String originalUrl
+        String originalUrl,
+        String showId
 ) {
 
 }

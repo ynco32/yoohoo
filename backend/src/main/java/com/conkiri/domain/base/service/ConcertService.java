@@ -192,7 +192,8 @@ public class ConcertService {
 				concert,
 				dto.originalUrl(),
 				dto.noticeText(),
-				dto.noticeImageUrl()
+				dto.noticeImageUrl(),
+				dto.showId()
 			);
 
 			concertNoticeRepository.save(concertNotice);

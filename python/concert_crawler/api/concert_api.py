@@ -75,7 +75,8 @@ def save_concert_to_java_api(concert_data):
         "startTimes": concert_data.get('start_times', []),
         "noticeImageUrl": notice_image_url,
         "noticeText": concert_data.get('ocr_text'),
-        "originalUrl": original_url
+        "originalUrl": original_url,
+        "showId": concert_data.get('show_id')
     }
     print("📡 API 요청 데이터:")
     import json

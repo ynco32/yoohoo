@@ -77,16 +77,16 @@ def main(ocr_file_path, concert_id, output_dir="./output"):
             paragraphs = parse_paragraphs(ocr_data)
             
             # 3. 중간 결과 저장
-            parsed_output_path = os.path.join(output_dir, f"parsed_paragraphs_{concert_id}.json")
-            save_json(paragraphs, parsed_output_path)
+            # parsed_output_path = os.path.join(output_dir, f"parsed_paragraphs_{concert_id}.json")
+            # save_json(paragraphs, parsed_output_path)
 
             # 4. GPT로 문단 그룹화 (추가된 부분)
             logger.info("GPT를 사용하여 문단을 의미적으로 그룹화합니다...")
             grouped_paragraphs = group_paragraphs_with_gpt(paragraphs)
             
             # 5. 그룹화 결과 저장 (추가된 부분)
-            grouped_output_path = os.path.join(output_dir, f"grouped_paragraphs_{concert_id}.json")
-            save_json(grouped_paragraphs, grouped_output_path)
+            # grouped_output_path = os.path.join(output_dir, f"grouped_paragraphs_{concert_id}.json")
+            # save_json(grouped_paragraphs, grouped_output_path)
             
             # 6. 문서 분할
             texts, metadatas = split_documents(grouped_paragraphs, concert_info)

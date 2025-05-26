@@ -36,15 +36,21 @@ public class ConcertNotice {
 	@Column(name = "notice_image_url", columnDefinition = "TEXT")
 	private String noticeImageUrl; // s3 주소
 
-	private ConcertNotice(Concert concert, String originalUrl, String noticeText, String noticeImageUrl) {
+	@Column(name = "show_id", length = 50)
+    private String showId;
+
+	@Column(name = "rag_processed_at")
+    private LocalDateTime ragProcessedAt;
+
+	private ConcertNotice(Concert concert, String originalUrl, String noticeText, String noticeImageUrl, String showId) {
 		this.concert = concert;
 		this.originalUrl = originalUrl;
 		this.noticeText = noticeText;
 		this.noticeImageUrl = noticeImageUrl;
+		this.showId = showId;
 	}
 
-	public static ConcertNotice of(Concert concert, String originalUrl, String noticeText, String noticeImageUrl) {
-		return new ConcertNotice(concert, originalUrl, noticeText, noticeImageUrl);
+	public static ConcertNotice of(Concert concert, String originalUrl, String noticeText, String noticeImageUrl, String showId) {
+		return new ConcertNotice(concert, originalUrl, noticeText, noticeImageUrl, String showId);
 	}
-
 }
